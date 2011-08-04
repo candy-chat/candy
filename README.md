@@ -15,4 +15,4 @@ Features
 
 Plugins
 -------
-If you wish to add new functionality (to your candy installation) or contribute plugins, take a look at our [[plugin repository|http://github.com/amiadogroup/candy-plugins]].
+If you wish to add new functionality (to your candy installation) or contribute plugins, take a look at our [plugin repository](http://github.com/amiadogroup/candy-plugins).
