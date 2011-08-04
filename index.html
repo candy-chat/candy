@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="description" content="Candy is a simple but powerful multi-user chat client for Jabber (XMPP) that's built for your community." />
+	<title>Candy &mdash; a JavaScript-based multi-user chat client</title>
+	<link rel="shortcut icon" href="public/favicon.png" />
+	<link rel="stylesheet" type="text/css" href="public/stylesheet.css" />
+	<link rel="stylesheet" type="text/css" href="public/syntax.css" />
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="public/application.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="public/fancybox/jquery.fancybox.css" />
+	<script type="text/javascript" src="public/fancybox/jquery.fancybox.js"></script>
+</head>
+<body>
+	<article>
+		<header>
+			<div id="download">
+				<a href="http://github.com/amiadogroup/candy/downloads/candy.tar.gz" class="button">
+					Download candy.tar.gz
+					<small>v1.0 &mdash; <time datetime="2011-07-14">August 2nd, 2011</time></small>
+				</a>
+				<span>Released under the <a href="http://github.com/amiadogroup/candy/blob/master/LICENSE">MIT Licence</a></span>
+			</div>
+			<h1>Candy</h1>
+		 	<em>&mdash; a JavaScript-based multi-user chat client</em>
+			<section>
+				There are plenty of web-based chat clients out there. Most of them are built to emulate your instant messenger. They offer you tons of settings. They can join multiple networks, let you edit your profile, and even manage your message history.<br />
+				<strong>Candy is different. It's <mark>built for your community.</mark></strong>
+			</section>
+		</header>
+		<section id="short">
+			<h2>Why Candy?</h2>
+			<ul>
+				<li>
+					Focused on real-time <mark>multi-user chatting</mark>
+					<a href="#demo">→ Screenshot &amp; Demo</a>
+				</li>
+				<li>
+					Easy to configure, easy to run, <mark>easy to use</mark>
+					<a href="#setup">→ Setup &amp; Usage</a>
+				</li>
+				<li>
+					Highly <mark>customizable</mark>
+					<a href="#customization">→ Plugins &amp; Event Hooks</a>
+				</li>
+				<li>
+					100% <mark>well-documented</mark> JavaScript source code
+					<a href="#api">→ API Documentation</a>
+				</li>
+				<li>
+					Built for <mark>Jabber (XMPP)</mark>, using famous technologies
+					<a href="#underthehood">→ Under The Hood</a>
+				</li>
+				<li>
+					Used and approved in a <mark>productive environment</mark> with up to 400 concurrent users
+					<a href="#about">→ About Candy</a>
+				</li>
+				<li>
+					Works with <mark>all major web browsers</mark> including IE7
+				</li>
+			</ul>
+			<div id="demo">
+				<div id="showcase"></div>
+				<div class="demo">
+					<div id="demoarrow"></div>
+					<a id="demobutton" href="javascript:;">Try the Demo</a><br />
+					It's worth more than a thousand pictures!
+				</div>
+				<span class="demo-sponsor">
+					Demo powered by <a href="http://www.swissjabber.ch"><img src="public/images/swissjabber.png" alt="Swissjabber" /></a> &mdash; a service operated by <a href="http://nine.ch"><img src="public/images/nine_ch.png" alt="nine.ch" /></a>
+				</span>
+				<h3>Awesome Features!</h3>
+				<ol>
+					<li style="background-image: url(public/images/icons/beautiful.png);">
+						Beautiful default theme
+					</li>
+					<li style="background-image: url(public/images/icons/multiple.png);">
+						Join multiple rooms and start private conversations
+					</li>
+					<li style="background-image: url(public/images/icons/notifications.png);">
+						Get notified when new messages arrive
+					</li>
+					<li style="background-image: url(public/images/icons/ignore.png);">
+						Ignore spammers and people you don't like
+					</li>
+					<li style="background-image: url(public/images/icons/moderation.png);">
+						Moderation: Kick and ban users, change the subject of the room
+					</li>
+				</ol>
+			</div>
+		</section>
+
+		<section id="setup">
+			<h2>Setup &amp; Usage</h2>
+			<h3>Prerequisites</h3>
+			<p>
+				Before you get started you need access to a <strong>Jabber server</strong> with HTTP-binding enabled. We provide guides for <a href="http://www.ejabberd.im/">ejabberd</a> and <a href="http://www.igniterealtime.org/projects/openfire/index.jsp">Openfire</a> to help you setting up and configuring your own server within minutes: <a href="https://github.com/amiadogroup/candy/wiki/Installing-a-Jabber-server">Installing a Jabber server</a>.
+			</p>
+			<p>
+				To run the example you'll also need <a href="http://httpd.apache.org/">Apache HTTP server</a> with the following modules enabled: mod_rewrite, mod_proxy and mod_proxy_http.
+			</p>
+			<h3>Setup</h3>
+			<p>
+				<a href="http://github.com/amiadogroup/candy/downloads/candy.tar.gz" class="download-arrow">Download Candy</a> and extract it in your web directory.<br />
+			</p>
+			<h4>Getting Started</h4>
+			<p>
+				Rename <code>example/htaccess</code> to <code>example/.htaccess</code> and change the rewrite rule to point to your HTTP-Bind service.
+				If you have problems with the configuration we recommend you following article: <a href="#TODO">HTTP-Bind for Jabber</a>.
+			</p>
+			<p>Sample .htaccess file, assuming your Jabber host is running the HTTP-Bind service at <code>yourhost.com/http-bind/</code> on port 5280:</p>
+			<code>AddDefaultCharset UTF-8
+Options +MultiViews
+RewriteEngine On
+RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
+			<p>
+				Open your web browser and navigate to <code>example/index.html</code>. Make sure that you're visiting the site via Apache because it's essential that the requests to http-bind/ are redirected to your jabber server by the .htaccess file.
+			</p>
+			<p>
+				You should be greeted with a login form. Enter your JID (username@yourhost.com) and password to connect to the Jabber server.
+			</p>
+			<h3>Configuration</h3>
+			<p>
+				Configuring Candy is pretty simple. Take a look at the <a href="https://github.com/amiadogroup/candy/blob/master/example/index.html">example/index.html</a> file to get an idea how to load the libraries and to initialize Candy.
+			</p>
+			<p>
+				 You can configure Candy by passing an object containing following options to <code>Candy.init</code>:
+			</p>
+			<code>Candy.init( BOSH_URL, <strong>{ core: <mark>{ CORE_OPTIONS }</mark>, view: <mark>{ VIEW_OPTIONS }</mark> }</strong> );</code>
+			<h4>Core Options</h4>
+			<dl>
+				<dt><code><strong>debug</strong> &mdash; true or <u>false</u></code></dt>
+				<dd>
+					Enable debug output to browser console.
+				</dd>
+				<dt><code><strong>autojoin</strong> &mdash; boolean <u>true</u> or an array containing rooms to auto-join: [room1,room2,...]</code></dt>
+				<dd>
+					If set to <strong>true</strong>, Candy will follow <a href="http://xmpp.org/extensions/xep-0048.html">XEP-0048</a> and auto-join rooms based on the bookmarks configuration of your Jabber server.<br />Please note: <mark>Bookmarks are supported by Openfire, but not by ejabberd.</mark><br />
+					You need to tell ejabberd which rooms to join by passing an array such as <strong>['jid1', 'jid2', ...]</strong>
+				</dd>
+			</dl>
+			<h4>View Options</h4>
+			<dl>
+				<dt><code><strong>language</strong> &mdash; language identifier, default: '<u>en</u>'</code></dt>
+				<dd>
+					Tell Candy which language pack to use. Following languages are currently delivered with the package:<br />
+					English (<strong>en</strong>), German (<strong>de</strong>), French (<strong>fr</strong>).
+					<mark>Please contribute your translations to the project.</mark>
+				</dd>
+				<dt><code><strong>resources</strong> &mdash; path to resources folder, default: '<u>res/</u>'</code></dt>
+				<dd>
+					Path to the resources folder with trailing slash.
+				</dd>
+				<dt><code><strong>messages</strong> &mdash; object containing settings to clean up old messages: {limit: <u>2000</u>, remove: <u>500</u>}</code></dt>
+				<dd>
+					If message count hits <strong>limit</strong>, remove <strong>n</strong> messages.<br />
+					Because browsers are getting slower as the DOM tree grows, Candy will remove messages from each room based on this settings to keep the DOM tree at an acceptable size.	<strong>You probably don't want to change the default values.</strong>
+				</dd>
+			</dl>
+			<h4>Example</h4>
+			<p>
+				Following example configuration will enable debugging, auto-join two rooms, and display the front end in german language:
+			</p>
+			<code>Candy.init( 'http://yourhost.com/http-bind/', {
+	core: {
+		<mark>debug: true,</mark>
+		<mark>autojoin: ['room1@conference.yourhost.com', 'room2@conference.yourhost.com']</mark>
+	}, view: {
+		<mark>language: 'de'</mark>
+	}
+});</code>
+			<h4>Login Methods</h4>
+			<p>
+				There are four different methods to connect to a chat server:
+			</p>
+			<dl>
+				<dt>
+					<code>Candy.Core.<strong>connect('jid', 'password')</strong></code>
+				<dt>
+				<dd>
+					Connnect as a registered user.
+				</dd>
+				<dt>
+					<code>Candy.Core.<strong>connect('servername')</strong></code>
+				<dt>
+				<dd>
+					Connnect anonymously to a specific server.
+				</dd>
+				<dt>
+					<code>Candy.Core.<strong>connect()</strong></code>
+				<dt>
+				<dd>
+					Users will be greeted with a login form. In order to authenticate they have to provide their JID (username@yourhost.com).
+				</dd>
+				<dt>
+					<code>Candy.Core.<strong>attach(jid, sid, rid)</strong></code>
+				<dt>
+				<dd>
+					Attach to an established session (HTTP pre-binding). This method is useful to intialize sessions at server side. Jack Moffitt, creator of Strophe, has written a nice <a href="http://metajack.im/2009/12/14/fastest-xmpp-sessions-with-http-prebinding/">article about pre-binding</a>. 
+				</dd>
+			</dl>
+			<h3>Usage</h3>
+			<p>
+				The user interface of Candy is very intuitive. Just take a look at the screenshot. No things to learn. No manual to read.<br />
+				You might want to <a href="#showcase">try the demo</a> and get the real feeling instead.
+			</p>
+			<h4>Administrative Options</h4>
+			<p>
+				Room moderators are able to kick or ban users and change the room's subject.
+			</p>
+			<p>
+				<img src="public/images/administrative-usage.png" alt="Administrative usage" class="shadow" />
+			</p>
+			<h3>Getting Help</h3>
+			<ul>
+				<li>
+					Check out the official <a href="http://github.com/amiadogroup/candy/wiki">wiki pages</a> and <a href="http://github.com/amiadogroup/candy/issues">issue tracker</a> on GitHub.
+				</li>
+				<li>
+					There's also a <a href="http://groups.google.com/group/candy-chat">mailing list</a> on Google Groups.
+				</li>
+			</p>
+			<h3><mark>Contributing</mark></h3>
+			<ul>
+				<li>
+					<strong>Use it, love it, spread it</strong>: Tell the world about Candy.
+				</li>
+				<li>
+					<strong>Improve it:</strong> Feel free to fork and push your changes back into the main repository.
+				</li>
+				<li>
+					<strong>Extend it:</strong> <a href="#customization">Write plugins</a> to make Candy more awesome.
+				</li>
+				<li>
+					<strong>Give us feedback:</strong> Tell us what you like about Candy and what you don't by <a href="http://groups.google.com/group/candy-chat">dropping an email</a>.
+				</li>
+			</ul>
+		</section>
+
+		<section id="customization">
+			<h2>Plugins &amp; Event Hooks</h2>
+			<p>
+				Due to the nature of JavaScript and the built-in event hooks, customizing Candy is no rocket science.
+			</p>
+			<h3>Plugins</h3>
+			<p>
+				There's an <mark>official plugin repository</mark> called <a href="http://github.com/amiadogroup/candy-plugins">candy-plugins</a>. We would like to see the number of plugins grow. Just fork it, write your own plugin and push it back into the main respository.
+			</p>
+			<p>
+				<a href="http://github.com/amiadogroup/candy-plugins/tarball/master" class="download-arrow">Download Candy Plugins</a> and extract it in your web directory.
+			</p>
+			<h4>The <i>Colors</i> Plugin &mdash; An Example</h4>
+			<p>
+				<img src="public/images/colors-plugin.png" alt="Colors Plugin" class="right" />
+				This plugin has originally been developed for our productive chat and because our users love it, we decided to share it with you. It's also a great example how to customize Candy.
+			</p>
+			<p>
+				What it does is adding a color chooser to the UI and displaying messages sent by users in their chosen colors.
+			</p>
+			<p>
+				To enable <i>Colors</i> you have to include its JavaScript code and stylesheet:
+			</p>
+			<code>&lt;script type="text/javascript" src="<mark>candyshop/colors/candy.js</mark>"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" type="text/css" href="<mark>candyshop/colors/candy.css</mark>" /&gt;</code>
+			<p>
+				Finally call its <code>init()</code> method after Candy has been initialized:
+			</p>
+			<code>Candy.init('/http-bind/');
+<mark>CandyShop.Colors.init();</mark>
+Candy.Core.connect();</code>
+			<h4>Styles &amp; Templates</h4>
+			<p>
+				We use to write our themes as plugins. The plugin folder is a good place to put your custom stylesheet into. During the process of styling you'll probably find yourself changing a template here and adding some logic there. If this happens you're already organized. Just think about it as writing a plugin that changes the appearance.
+			</p>
+			<h3>Event Hooks</h3>
+			<p>
+				Candy provides easy accessible hooks that will be called before or after a specific event happens. Just overwrite the default handlers in order to extend the basic functionality with your custom code. <a href="http://amiadogroup.github.com/candy/docs/files/candy-bundle-js.html#Candy.View.Event">All available event hooks are listed in the API documentation.</a>
+			</p>
+		</section>
+
+		<section id="api">
+			<h2>API Documentation</h2>
+			<p>
+				<a href="http://amiadogroup.github.com/candy/docs/">The API documentation of the latest version can be found here.</a>
+			</p>
+		</section>
+
+		<section id="underthehood">
+			<h2>Under The Hood</h2>
+			<p>
+				Candy is built with JavaScript using long poll AJAX requests to emulate bidirectional-streams between client and server following the draft standard <a href="http://xmpp.org/extensions/xep-0124.html">XEP-0124</a> of the XMPP Standards Foundation. By using this standard there are no additional requirements on client-side but having a web browser installed.
+			</p>
+			<h3>Used Libraries</h3>
+			<ul>
+				<li>
+					<a href="http://strophe.im/strophejs/">Strophe.js</a> <small>an XMPP library for JavaScript</small>
+				</li>
+				<li>
+					<a href="http://jquery.org">jQuery</a> <small>The Write Less, Do More, JavaScript Library</small>
+				</li>
+				<li>
+					<a href="https://github.com/janl/mustache.js">mustache.js</a> <small>Logic-less templates with JavaScript</small>
+				</li>
+			</ul>
+			<h3>Credits</h3>
+			<ul>
+				<li>
+					<a href="http://www.famfamfam.com/lab/icons/silk/">famfamfam.com: Silk Icons</a> <small>is a smooth, free icon set, containing over 700 16-by-16 pixel icons.</small>
+				</li>
+				<li>
+					<a href="http://simplesmileys.org">Simple Smileys</a> <small>are beautifully simple emoticons.</small>
+				</li>
+				<li>
+					<a href="http://flash-mp3-player.net/players/js">Flash MP3 Player</a> <small>is a very simple flash audio player used by Candy for audio notifications.</small>
+				</li>
+				<li>
+					<a href="http://zetafleet.com/blog/javascript-dateparse-for-iso-8601">Colin Snover</a> <small>provides a fix for browsers not supporting latest Date.parse().</small>
+				</li>
+				<li>
+					<a href="http://www.adequatelygood.com/2010/3/JavaScript-Module-Pattern-In-Depth">Ben Cherry</a> <small>wrote a great article about the JS module pattern.</small>
+				</li>
+				<li>
+					<a href="http://www.swissjabber.ch">Swissjabber</a> <small>provides the chat server for our official demo. Swissjabber is a service by <a href="nine.ch">nine.ch</a></small>
+				</li>
+				<li>
+					<a href="http://www.amiadogroup.com">Amiado Group</a> <small>allowed us to make Candy freely available for everyone! :)</small>
+				</li>
+			</ul>
+		</section>
+
+		<section id="about">
+			<h2>About Candy</h2>
+			<p>
+				Candy &mdash; abbreviation for <mark><i>Chats are not dead yet</i></mark> &mdash; was developed by <a href="http://github.com/mweibel">Michael Weibel</a> and <a href="http://koeniglich.ch">Patrick Stadler</a> on behalf of our employer <a href="http://www.amiadogroup.com">Amiado Group</a>.
+			</p>
+			<p>
+				This project was built as a replacement for the ancient chat software used by one of our large community websites. We love open source software. Therefore we decided to make Candy <mark>freely available for everyone</mark> and give something back to the community.
+			</p>
+		</section>
+	</article>
+
+	<a href="http://github.com/amiadogroup/candy"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/e6bef7a091f5f3138b8cd40bc3e114258dd68ddf/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub"></a>
+	
+</body>
+</html>

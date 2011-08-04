@@ -1,0 +1,303 @@
+html, body {
+	font-family: Georgia, serif;
+	background-color: #ccc;
+}
+
+ul, ol {
+	list-style: none;
+	padding: 0;
+}
+
+li, dd, dt {
+	padding: 5px 0;
+}
+
+ol li {
+	background-position: left center;
+	background-repeat: no-repeat;
+	padding-left: 25px;
+}
+
+ul li:before {
+	content: '\2013';
+}
+
+dd {
+	font-size: 0.9em;
+	margin: 0 0 15px 20px;
+}
+
+p {
+	line-height: 1.2em;
+	margin-bottom: 0;
+}
+
+img.shadow {
+	-webkit-box-shadow: 0 0 7px 1px #666;
+	box-shadow: 0 0 7px 1px #666;
+}
+
+img.right {
+	float: right;
+	margin-left: 15px;
+	border: 5px solid #EEEEEE;
+}
+
+a {
+	font-size: .9em;
+	font-weight: bold;
+	font-family: Helvetica, Arial, sans-serif;
+	color: #aa0000;
+	text-decoration: none;
+	padding: 1px 2px;
+}
+
+a img {
+	border: 0 none;
+}
+
+a:hover {
+ background-color: #fce8e8;
+}
+
+a.button {
+	text-align: left;
+	display: inline-block;
+	padding: 12px 20px 12px 60px;
+	color: white;
+	border: 1px solid white;
+	border-radius: 12px;
+	text-shadow: 0 0 1px black;
+	-webkit-box-shadow: 0 0 2px 1px #666;
+	box-shadow: 0 0 2px 1px #666;
+	background: #7d0000 url(images/download.png) no-repeat top left;
+}
+
+.button small {
+	display: block;
+	margin-top: 5px;
+	color: #eab4b4;
+}
+
+mark {
+	display: inline;
+	padding: 0 5px;
+	color: inherit;
+	background-color: rgba(255, 255, 0, 0.3);
+}
+
+article {
+	display: block;
+	margin: 30px auto;
+	width: 960px;
+}
+
+section {
+	display: block;
+	color: #333;
+	padding: 25px;
+	margin: 30px 0;
+	background-color: white;
+	border-radius: 15px;
+}
+
+header {
+	background: url(logo.png) no-repeat left -5px;
+	padding-top: 15px;
+}
+
+h1 {
+	font-size: 3em;
+	margin: 0;
+	padding: 0 0 10px 145px;
+	text-shadow: 1px 1px 3px #666;
+}
+
+h2 {
+	margin: 0;
+}
+
+h3, h4 {
+	font-size: 1.4em;
+	font-weight: normal;
+	padding-bottom: 2px;
+	border-bottom: 1px solid #ccc;
+	margin: 25px 0 0 0;
+}
+
+h4 {
+	font-size: 1.1em;
+	font-weight: bold;
+	border: none;
+} 
+
+header em {
+	display: block;
+	padding: 0 0 20px 165px;
+	font-style: italic;
+	color: #666;
+	font-weight: bold;
+	font-size: 1.4em;
+}
+
+header section {
+	text-align: center;
+	font-size: 1.2em;
+	line-height: 1.7em;
+	padding: 15px;
+	margin: 40px auto;
+	background-color: #bbb;
+	border-radius: 0;
+}
+
+#download {
+	float: right;
+	text-align: center;
+}
+
+#download span, .demo-sponsor {
+	display: block;
+	font-family: Helvetica, Arial, sans-serif;
+	color: #666;
+	font-size: .7em;
+	padding-top: 5px;
+}
+
+#download span a {
+	color: inherit;
+	font: inherit;
+	text-decoration: underline;
+	padding: 0;
+}
+
+#download span a:hover {
+	background: none;
+	color: black;
+}
+
+.download-arrow {
+	padding-left: 14px;
+	background: url('images/download-arrow.png') no-repeat left center;
+}
+
+code {
+	font-family: Lucida Console, Courier New, serif;
+	font-size: 0.8em;
+	padding: 5px;
+	margin-top: 5px;
+	white-space: pre;
+	display: block;
+	background-color: #f2f2f2;
+	border: 1px solid #ddd;
+}
+
+p code, dt code, dd code {
+	margin: 0;
+	display: inline;
+	padding: 2px;
+}
+
+section div {
+	margin-top: 25px;
+}
+
+#showcase {
+	margin: 0 -25px;
+	height: 545px;
+	background: url('images/screenshot.png') no-repeat center;
+	-webkit-box-shadow: 0 0 5px black inset;
+	box-shadow: 0 0 5px black inset;
+}
+
+#showcase iframe {
+	width: 903px;
+	height: 423px;
+	background-color: white;
+	border: 0 none;
+	margin: 78px 0 0 28px;
+}
+
+#demolabel {
+	position: absolute;
+	left: 50%;
+	width: 250px;
+	margin: 31px 0 0 -125px;
+	padding: 2px 0;
+	text-align: center;
+	font-family: Helvetica, Arial, sans-serif;	
+}
+
+#demo h3 {
+	font-size: 1.5em;
+	font-weight: bold;
+	font-style: italic;
+	border: none;
+	padding: 0;
+	margin: 25px 0 0 0;
+}
+
+.demo {
+	background-color: #f2f2f2;
+	border: 5px solid #eee;
+	color: #666;
+	font-style: italic;
+	font-size: 1.4em;
+	float: right;
+	padding: 27px 25px;
+	margin: 25px 5px 0 0;
+	width: 300px;
+	text-align: center;
+}
+
+.demo a {
+	display: inline-block;
+	color: white;
+	margin-bottom: 25px;
+	font-style: normal;
+	padding: 10px 0;
+	width: 170px;
+	border: 3px solid #333;
+	background: #212121; /* Old browsers */
+	background: -moz-linear-gradient(top, #777777 0%, #212121 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#777777), color-stop(100%,#212121)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #777777 0%,#212121 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #777777 0%,#212121 100%); /* Opera11.10+ */
+	background: -ms-linear-gradient(top, #777777 0%,#212121 100%); /* IE10+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#777777', endColorstr='#212121',GradientType=0 ); /* IE6-9 */
+	background: linear-gradient(top, #777777 0%,#212121 100%); /* W3C */
+	box-shadow: 0 0 10px 2px #777 inset;
+	text-shadow: 1px 1px 1px black;
+}
+
+.demo a.demomode {
+	letter-spacing: 5px;
+	color: #6fc458;
+	background: #444 none;
+	box-shadow: 0 0 15px 2px black inset;
+}
+
+#demoarrow {
+	display: none;
+	margin: -49px 0 0 130px;
+	position: absolute;
+	height: 45px;
+	width: 40px;
+	background: url('images/demo-arrow.png');
+}
+
+.demo-sponsor {
+	font-style: italic;
+	clear: right;
+	float: right;
+	width: 360px;
+	padding-right: 5px;
+	text-align: center;
+}
+
+.demo-sponsor img {
+	margin-bottom: -5px;
+}
+
+.demo-sponsor a {
+	padding: 0;
+}
