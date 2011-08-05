@@ -99,7 +99,7 @@
 				Before you get started you need access to a <strong>Jabber server</strong> with HTTP-binding enabled. We provide guides for <a href="http://www.ejabberd.im/">ejabberd</a> and <a href="http://www.igniterealtime.org/projects/openfire/index.jsp">Openfire</a> to help you setting up and configuring your own server within minutes: <a href="https://github.com/amiadogroup/candy/wiki/Installing-a-Jabber-server">Installing a Jabber server</a>.
 			</p>
 			<p>
-				To run the example you'll also need <a href="http://httpd.apache.org/">Apache HTTP server</a> with the following modules enabled: mod_rewrite, mod_proxy and mod_proxy_http.
+				To run the example you'll also need an <strong>HTTP server with proxy capabilities</strong> because it's not allowed to make cross-domain AJAX requests.<br />Candy is delivered with a sample <code>.htaccess</code> file for <a href="http://httpd.apache.org/">Apache HTTP server</a>. Please note that you need to have to following Apache modules enabled: mod_rewrite, mod_proxy and mod_proxy_http.	For more information about the configuration of different web servers take a look at the following guide: <a href="https://github.com/amiadogroup/candy/wiki/HTTP-Proxy-Configuration">HTTP Proxy Configuration</a>.
 			</p>
 			<h3>Setup</h3>
 			<p>
@@ -107,8 +107,7 @@
 			</p>
 			<h4>Getting Started</h4>
 			<p>
-				Rename <code>example/htaccess</code> to <code>example/.htaccess</code> and change the rewrite rule to point to your HTTP-Bind service.
-				If you have problems with the configuration we recommend you following article: <a href="#TODO">HTTP-Bind for Jabber</a>.
+				If you're using Apache copy <code>example/htaccess</code> to <code>example/.htaccess</code> and change the rewrite rule to point to your HTTP-Bind service. For other web servers check out the <a href="https://github.com/amiadogroup/candy/wiki/HTTP-Proxy-Configuration">HTTP Proxy Configuration</a> guide.
 			</p>
 			<p>Sample .htaccess file, assuming your Jabber host is running the HTTP-Bind service at <code>yourhost.com/http-bind/</code> on port 5280:</p>
 			<code>AddDefaultCharset UTF-8
