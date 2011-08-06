@@ -60,7 +60,11 @@ Candy.View.Template = (function(self){
 	};
 
 	self.Login = {
-		form: '<form method="post" id="login-form" class="login-form"><label for="username">{{_labelUsername}}</label><input type="text" id="username" name="username"/><label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" /><input type="submit" class="button" value="{{_loginSubmit}}" /></form>'
+		form: '<form method="post" id="login-form" class="login-form">'
+			+ '{{^presetJid}}<label for="username">{{_labelUsername}}</label><input type="text" id="username" name="username"/>{{/presetJid}}'
+			+ '{{#presetJid}}<input type="hidden" id="username" name="username" value="{{presetJid}}"/>{{/presetJid}}'
+			+ '<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />'
+			+ '<input type="submit" class="button" value="{{_loginSubmit}}" /></form>'
 	};
 
 	return self;

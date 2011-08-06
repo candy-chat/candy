@@ -568,12 +568,14 @@ Candy.View.Pane = (function(self, $) {
 			 *
 			 * Parameters:
 			 *  (String) message - optional message to display above the form
+			 *	(String) presetJid - optional user jid. if set, the user will only be prompted for password.
 			 */
-			showLoginForm: function(message) {
+			showLoginForm: function(message, presetJid) {
 				Candy.View.Pane.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
 					_labelUsername: $.i18n._('labelUsername'),
 					_labelPassword: $.i18n._('labelPassword'),
-					_loginSubmit  : $.i18n._('loginSubmit')
+					_loginSubmit  : $.i18n._('loginSubmit'),
+					presetJid : (presetJid ? presetJid : false)
 				}));
 
 				// register submit handler
@@ -581,7 +583,8 @@ Candy.View.Pane = (function(self, $) {
 					var username = $('#username').val(),
 						password = $('#password').val(),
 						// guess the input and create a jid out of it
-						jid = Candy.Core.getUser() && username.indexOf("@") < 0 ? username + '@' + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
+						jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
+							username + '@' + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
 						
 					if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
 						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('loginInvalid'));

@@ -103,9 +103,12 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 
 	/** Function: Login
 	 * Notify view that the login window should be displayed
+	 *
+	 * Parameters:
+	 *   (String) presetJid - Preset user JID
 	 */
-	self.Login = function() {
-		self.notifyObservers(self.KEYS.LOGIN);
+	self.Login = function(presetJid) {
+		self.notifyObservers(self.KEYS.LOGIN, { presetJid: presetJid } );
 	};
 
 	/** Class: Candy.Core.Event.Jabber

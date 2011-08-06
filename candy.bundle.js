@@ -29,7 +29,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.0'
+		version: '1.1-dev'
 	};
 
 	/** Function: init
@@ -180,37 +180,40 @@ Candy.Core = (function(self, Strophe, $) {
 	};
 
 	/** Function: connect
-	 * Connect by javascript to the jabber server.
+	 * Connect to the jabber host.
 	 *
-	 * There are three different procedures to login:
+	 * There are four different procedures to login:
 	 *   connect('JID', 'password') - Connect a registered user
-	 *   connect('domain') - Connect anonymously
-	 *   connect() - Show login form to let the user enter his JID / password manually
+	 *   connect('domain') - Connect anonymously to the domain. The user should receive a random JID.
+	 *   connect('JID') - Show login form and prompt for password. JID input is hidden.
+	 *   connect() - Show login form and prompt for JID and password.
 	 * 
 	 * See:
 	 *   <Candy.Core.attach()> for attaching an already established session.
 	 *
 	 * Parameters:
-	 *   (String) jidOrHost - Jabber ID or Host [supply host when anonymous login should be attempted]
-	 *   (String) password - Password of the user [optional, when anonymous login should be attempted]
+	 *   (String) jidOrHost - JID or Host
+	 *   (String) password - Password of the user
 	 */
 	self.connect = function(jidOrHost, password) {
 		// Reset before every connection attempt to make sure reconnections work after authfail, alltabsclosed, ...
 		_connection.reset();
 		_registerEventHandlers();
-		// Register event handlers
-		if(!jidOrHost && !password) {
-			// display login window
-			Candy.Core.Event.Login();
-		} else {
-			if(jidOrHost && password) {
-				// authentication
-				_connection.connect(jidOrHost + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
-				_user = new self.ChatUser(jidOrHost, Strophe.getNodeFromJid(jidOrHost));
-			} else {
-				// anonymous login
+		if(jidOrHost && password) {
+			// authentication
+			_connection.connect(jidOrHost + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
+			_user = new self.ChatUser(jidOrHost, Strophe.getNodeFromJid(jidOrHost));
+		} else if(jidOrHost) {
+			if(jidOrHost.indexOf("@") < 0) {
+				// Not a JID, anonymous login
 				_connection.connect(jidOrHost, null, Candy.Core.Event.Strophe.Connect);
+			} else {
+				// Most likely a JID, display login modal
+				Candy.Core.Event.Login(jidOrHost);
 			}
+		} else {
+			// display login modal
+			Candy.Core.Event.Login();
 		}
 	};
 
@@ -1682,9 +1685,12 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 
 	/** Function: Login
 	 * Notify view that the login window should be displayed
+	 *
+	 * Parameters:
+	 *   (String) presetJid - Preset user JID
 	 */
-	self.Login = function() {
-		self.notifyObservers(self.KEYS.LOGIN);
+	self.Login = function(presetJid) {
+		self.notifyObservers(self.KEYS.LOGIN, { presetJid: presetJid } );
 	};
 
 	/** Class: Candy.Core.Event.Jabber
@@ -2348,10 +2354,10 @@ Candy.View.Observer = (function(self, $) {
 		 *
 		 * Parameters:
 		 *   (Candy.Core.Event) obj - Candy core event object
-		 *   (Object) args - undefined
+		 *   (Object) args - {presetJid}
 		 */
 		update: function(obj, args) {
-			Candy.View.Pane.Chat.Modal.showLoginForm();
+			Candy.View.Pane.Chat.Modal.showLoginForm(null, args.presetJid);
 		}
 	};
 
@@ -2926,12 +2932,14 @@ Candy.View.Pane = (function(self, $) {
 			 *
 			 * Parameters:
 			 *  (String) message - optional message to display above the form
+			 *	(String) presetJid - optional user jid. if set, the user will only be prompted for password.
 			 */
-			showLoginForm: function(message) {
+			showLoginForm: function(message, presetJid) {
 				Candy.View.Pane.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
 					_labelUsername: $.i18n._('labelUsername'),
 					_labelPassword: $.i18n._('labelPassword'),
-					_loginSubmit  : $.i18n._('loginSubmit')
+					_loginSubmit  : $.i18n._('loginSubmit'),
+					presetJid : (presetJid ? presetJid : false)
 				}));
 
 				// register submit handler
@@ -2939,7 +2947,8 @@ Candy.View.Pane = (function(self, $) {
 					var username = $('#username').val(),
 						password = $('#password').val(),
 						// guess the input and create a jid out of it
-						jid = Candy.Core.getUser() && username.indexOf("@") < 0 ? username + '@' + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
+						jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
+							username + '@' + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
 						
 					if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
 						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('loginInvalid'));
@@ -3945,7 +3954,11 @@ Candy.View.Template = (function(self){
 	};
 
 	self.Login = {
-		form: '<form method="post" id="login-form" class="login-form"><label for="username">{{_labelUsername}}</label><input type="text" id="username" name="username"/><label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" /><input type="submit" class="button" value="{{_loginSubmit}}" /></form>'
+		form: '<form method="post" id="login-form" class="login-form">'
+			+ '{{^presetJid}}<label for="username">{{_labelUsername}}</label><input type="text" id="username" name="username"/>{{/presetJid}}'
+			+ '{{#presetJid}}<input type="hidden" id="username" name="username" value="{{presetJid}}"/>{{/presetJid}}'
+			+ '<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />'
+			+ '<input type="submit" class="button" value="{{_loginSubmit}}" /></form>'
 	};
 
 	return self;

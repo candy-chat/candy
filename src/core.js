@@ -128,37 +128,40 @@ Candy.Core = (function(self, Strophe, $) {
 	};
 
 	/** Function: connect
-	 * Connect by javascript to the jabber server.
+	 * Connect to the jabber host.
 	 *
-	 * There are three different procedures to login:
+	 * There are four different procedures to login:
 	 *   connect('JID', 'password') - Connect a registered user
-	 *   connect('domain') - Connect anonymously
-	 *   connect() - Show login form to let the user enter his JID / password manually
+	 *   connect('domain') - Connect anonymously to the domain. The user should receive a random JID.
+	 *   connect('JID') - Show login form and prompt for password. JID input is hidden.
+	 *   connect() - Show login form and prompt for JID and password.
 	 * 
 	 * See:
 	 *   <Candy.Core.attach()> for attaching an already established session.
 	 *
 	 * Parameters:
-	 *   (String) jidOrHost - Jabber ID or Host [supply host when anonymous login should be attempted]
-	 *   (String) password - Password of the user [optional, when anonymous login should be attempted]
+	 *   (String) jidOrHost - JID or Host
+	 *   (String) password - Password of the user
 	 */
 	self.connect = function(jidOrHost, password) {
 		// Reset before every connection attempt to make sure reconnections work after authfail, alltabsclosed, ...
 		_connection.reset();
 		_registerEventHandlers();
-		// Register event handlers
-		if(!jidOrHost && !password) {
-			// display login window
-			Candy.Core.Event.Login();
-		} else {
-			if(jidOrHost && password) {
-				// authentication
-				_connection.connect(jidOrHost + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
-				_user = new self.ChatUser(jidOrHost, Strophe.getNodeFromJid(jidOrHost));
-			} else {
-				// anonymous login
+		if(jidOrHost && password) {
+			// authentication
+			_connection.connect(jidOrHost + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
+			_user = new self.ChatUser(jidOrHost, Strophe.getNodeFromJid(jidOrHost));
+		} else if(jidOrHost) {
+			if(jidOrHost.indexOf("@") < 0) {
+				// Not a JID, anonymous login
 				_connection.connect(jidOrHost, null, Candy.Core.Event.Strophe.Connect);
+			} else {
+				// Most likely a JID, display login modal
+				Candy.Core.Event.Login(jidOrHost);
 			}
+		} else {
+			// display login modal
+			Candy.Core.Event.Login();
 		}
 	};
 

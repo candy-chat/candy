@@ -1,5 +1,6 @@
+docs
+example/.htaccess
 .DS_Store
 ._*
 .ndproj
-docs
 .idea

@@ -182,10 +182,10 @@ Candy.View.Observer = (function(self, $) {
 		 *
 		 * Parameters:
 		 *   (Candy.Core.Event) obj - Candy core event object
-		 *   (Object) args - undefined
+		 *   (Object) args - {presetJid}
 		 */
 		update: function(obj, args) {
-			Candy.View.Pane.Chat.Modal.showLoginForm();
+			Candy.View.Pane.Chat.Modal.showLoginForm(null, args.presetJid);
 		}
 	};
 
