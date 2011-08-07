@@ -870,7 +870,7 @@ Candy.View.Pane = (function(self, $) {
 				$('#tooltip').hide();
 
 				for(i = Candy.Util.Parser.emoticons.length-1; i >= 0; i--) {
-					emoticons = '<img src="' + Candy.View.getOptions().resources + Candy.Util.Parser.emoticonDir + Candy.Util.Parser.emoticons[i].image + '" alt="' + Candy.Util.Parser.emoticons[i].plain + '" />' + emoticons;
+					emoticons = '<img src="' + Candy.Util.Parser._emoticonPath + Candy.Util.Parser.emoticons[i].image + '" alt="' + Candy.Util.Parser.emoticons[i].plain + '" />' + emoticons;
 				}
 				content.html('<li class="emoticons">' + emoticons + '</li>');
 				content.find('img').click(function() {

@@ -253,13 +253,22 @@ Candy.Util = (function(self, $){
 	 * Parser for emoticons, links and also supports escaping.
 	 */
 	self.Parser = {
-		/** Variable: emoticonDir
-		 * Base directory where the emoticons lie.
+		/** PrivateVariable: emoticonDir
+		 * Path where the emoticons lie.
 		 *
-		 * Must be a relative path inside the resources directory.
-		 * See: Candy#init
+		 * Use setEmoticonPath() to change it
 		 */
-		emoticonDir: 'img/emoticons/',
+		_emoticonPath: '',
+		
+		/** Function: setEmoticonPath
+		 * Set emoticons location.
+		 *
+		 * Parameters:
+		 *   (String) path - location of emoticons with trailing slash
+		 */
+		setEmoticonPath: function(path) {
+			this._emoticonPath = path;
+		},
 
 		/** Array: emoticons
 		 * Array containing emoticons to be replaced by their images.
@@ -359,10 +368,9 @@ Candy.Util = (function(self, $){
 		 *   Emotified text
 		 */
 		emotify: function(text) {
-			var resourcesDir = Candy.View.getOptions().resources, 
-				i;
+			var i;
 			for(i = this.emoticons.length-1; i >= 0; i--) {
-				text = text.replace(this.emoticons[i].regex, '$2<img class="emoticon" alt="$1" src="' + resourcesDir +  this.emoticonDir + this.emoticons[i].image + '" />$3');
+				text = text.replace(this.emoticons[i].regex, '$2<img class="emoticon" alt="$1" src="' + this._emoticonPath + this.emoticons[i].image + '" />$3');
 			}
 			return text;
 		},

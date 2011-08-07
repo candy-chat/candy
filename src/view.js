@@ -109,6 +109,9 @@ Candy.View = (function(self, $) {
 	self.init = function(container, options) {
 		$.extend(_options, options);
 		_setupTranslation(_options.language);
+		
+		// Set path to emoticons
+		Candy.Util.Parser.setEmoticonPath(this.getOptions().resources + 'img/emoticons/');
 
 		// Start DOMination...
 		_current.container = container;
