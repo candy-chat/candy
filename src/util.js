@@ -256,9 +256,10 @@ Candy.Util = (function(self, $){
 		/** Variable: emoticonDir
 		 * Base directory where the emoticons lie.
 		 *
-		 * Can be overridden.
+		 * Must be a relative path inside the resources directory.
+		 * See: Candy#init
 		 */
-		emoticonDir: Candy.View.getOptions().resources + 'img/emoticons/',
+		emoticonDir: 'img/emoticons/',
 
 		/** Array: emoticons
 		 * Array containing emoticons to be replaced by their images.
@@ -358,9 +359,10 @@ Candy.Util = (function(self, $){
 		 *   Emotified text
 		 */
 		emotify: function(text) {
-			var i;
+			var resourcesDir = Candy.View.getOptions().resources, 
+				i;
 			for(i = this.emoticons.length-1; i >= 0; i--) {
-				text = text.replace(this.emoticons[i].regex, '$2<img class="emoticon" alt="$1" src="' + this.emoticonDir + this.emoticons[i].image + '" />$3');
+				text = text.replace(this.emoticons[i].regex, '$2<img class="emoticon" alt="$1" src="' + resourcesDir +  this.emoticonDir + this.emoticons[i].image + '" />$3');
 			}
 			return text;
 		},
