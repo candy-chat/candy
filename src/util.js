@@ -253,8 +253,8 @@ Candy.Util = (function(self, $){
 	 * Parser for emoticons, links and also supports escaping.
 	 */
 	self.Parser = {
-		/** PrivateVariable: emoticonDir
-		 * Path where the emoticons lie.
+		/** PrivateVariable: _emoticonPath
+		 * Path to emoticons.
 		 *
 		 * Use setEmoticonPath() to change it
 		 */

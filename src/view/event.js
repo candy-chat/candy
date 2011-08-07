@@ -10,7 +10,7 @@
  */
 
 /** Class: Candy.View.Event
- * View events which can be overridden by users of candy.
+ * Empty hooks to capture events and inject custom code.
  *
  * Parameters:
  *   (Candy.View.Event) self - itself
@@ -22,7 +22,7 @@ Candy.View.Event = (function(self, $) {
 	 */
 	self.Chat = {
 		/** Function: onAdminMessage
-		 * Called when a admin sent a message
+		 * Called when receiving admin messages
 		 *
 		 * Parameters:
 		 *   (Object) args - {subject, message}
@@ -127,7 +127,7 @@ Candy.View.Event = (function(self, $) {
 
 		/** Function: onContextMenu
 		 * Called when a user clicks on the action menu arrow.
-		 * The return value gets concatenated to the menulinks.
+		 * The return value is getting appended to the menulinks.
 		 *
 		 * Parameters:
 		 *   (Object) args - {roomJid, user}
