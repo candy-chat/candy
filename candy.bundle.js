@@ -29,7 +29,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.1-dev'
+		version: '1.0.1'
 	};
 
 	/** Function: init
@@ -766,8 +766,8 @@ Candy.Util = (function(self, $){
 	 * Parser for emoticons, links and also supports escaping.
 	 */
 	self.Parser = {
-		/** PrivateVariable: emoticonDir
-		 * Path where the emoticons lie.
+		/** PrivateVariable: _emoticonPath
+		 * Path to emoticons.
 		 *
 		 * Use setEmoticonPath() to change it
 		 */
@@ -2001,7 +2001,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
  */
 
 /** Class: Candy.View.Event
- * View events which can be overridden by users of candy.
+ * Empty hooks to capture events and inject custom code.
  *
  * Parameters:
  *   (Candy.View.Event) self - itself
@@ -2013,7 +2013,7 @@ Candy.View.Event = (function(self, $) {
 	 */
 	self.Chat = {
 		/** Function: onAdminMessage
-		 * Called when a admin sent a message
+		 * Called when receiving admin messages
 		 *
 		 * Parameters:
 		 *   (Object) args - {subject, message}
@@ -2118,7 +2118,7 @@ Candy.View.Event = (function(self, $) {
 
 		/** Function: onContextMenu
 		 * Called when a user clicks on the action menu arrow.
-		 * The return value gets concatenated to the menulinks.
+		 * The return value is getting appended to the menulinks.
 		 *
 		 * Parameters:
 		 *   (Object) args - {roomJid, user}
