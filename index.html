@@ -172,7 +172,7 @@ RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
 });</code>
 			<h4>Login Methods</h4>
 			<p>
-				There are four different methods to connect to a chat server:
+				There are five different methods to connect to a chat server:
 			</p>
 			<dl>
 				<dt>
@@ -188,10 +188,16 @@ RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
 					Connnect anonymously to a specific server.
 				</dd>
 				<dt>
+					<code>Candy.Core.<strong>connect('jid')</strong></code>
+				<dt>
+				<dd>
+					Users will be greeted with a login form. In order to authenticate they have to provide their password.
+				</dd>
+				<dt>
 					<code>Candy.Core.<strong>connect()</strong></code>
 				<dt>
 				<dd>
-					Users will be greeted with a login form. In order to authenticate they have to provide their JID (username@yourhost.com).
+					Users will be greeted with a login form. In order to authenticate they have to provide their JID (username@yourhost.com) and password.
 				</dd>
 				<dt>
 					<code>Candy.Core.<strong>attach(jid, sid, rid)</strong></code>
