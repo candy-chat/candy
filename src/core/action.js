@@ -31,6 +31,22 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		Version: function(msg) {
 			Candy.Core.getConnection().send($iq({type: 'result', to: msg.attr('from'), from: msg.attr('to'), id: msg.attr('id')}).c('query', {name: Candy.about.name, version: Candy.about.version, os: navigator.userAgent}));
 		},
+		
+		/** Function: SetNickname
+		 * Sets the supplied nickname for all rooms (if parameter "room" is not specified) or
+		 * sets it only for the specified rooms
+		 *
+		 * Parameters:
+		 *   (String) nickname - New nickname
+		 *   (Array) rooms - Rooms
+		 */
+		SetNickname: function(nickname, rooms) {
+			rooms = rooms instanceof Array ? rooms : Candy.Core.getRooms();
+			$.each(rooms, function(roomJid, room) {
+				Candy.Core.getConnection().muc.changeNick(roomJid, nickname);
+				room.getUser().setNick(nickname);
+			});
+		},
 
 		/** Function: Roster
 		 * Sends a request for a roster
