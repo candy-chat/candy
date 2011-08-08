@@ -1360,15 +1360,18 @@ Candy.View.Pane = (function(self, $) {
 					if(!userInserted) {
 						rosterPane.append(html);
 					}
-
-					self.Roster.joinAnimation('user-' + roomId + '-' + userId);
-					// only show other users joining & don't show if there's no message in the room.
-					if(currentUser !== undefined && user.getNick() !== currentUser.getNick() && self.Room.getUser(roomJid)) {
-						// always show join message in private room, even if status messages have been disabled
-						if (self.Chat.rooms[roomJid].type === 'chat') {
-							self.Chat.onInfoMessage(roomJid, $.i18n._('userJoinedRoom', [user.getNick()]));
-						} else {
-							self.Chat.infoMessage(roomJid, $.i18n._('userJoinedRoom', [user.getNick()]));
+					console.log('USER: ', user);
+					// don't show if the user has recently changed the nickname.
+					if (!user.getOldNick()) {
+						self.Roster.joinAnimation('user-' + roomId + '-' + userId);
+						// only show other users joining & don't show if there's no message in the room.
+						if(currentUser !== undefined && user.getNick() !== currentUser.getNick() && self.Room.getUser(roomJid)) {
+							// always show join message in private room, even if status messages have been disabled
+							if (self.Chat.rooms[roomJid].type === 'chat') {
+								self.Chat.onInfoMessage(roomJid, $.i18n._('userJoinedRoom', [user.getNick()]));
+							} else {
+								self.Chat.infoMessage(roomJid, $.i18n._('userJoinedRoom', [user.getNick()]));
+							}
 						}
 					}
 				// user is in room but maybe the affiliation/role has changed
@@ -1403,6 +1406,15 @@ Candy.View.Pane = (function(self, $) {
 					self.Chat.onInfoMessage(roomJid, $.i18n._('userLeftRoom', [user.getNick()]));
 				} else {
 					self.Chat.infoMessage(roomJid, $.i18n._('userLeftRoom', [user.getNick()]));
+				}
+
+			} else if(action === 'nickchange') {
+				// if private chat, just change nickname. In public chat, show leave/join because it's not detectable.
+				if (self.Chat.rooms[roomJid].type === 'chat') {
+					self.Chat.onInfoMessage(roomJid, $.i18n._('userChangedNick', [user.getNick()]));
+				} else {
+					self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
+					self.Chat.infoMessage(roomJid, $.i18n._('userChangedNick', [user.getNick()]));
 				}
 			// user has been kicked
 			} else if(action === 'kick') {

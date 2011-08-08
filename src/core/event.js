@@ -346,6 +346,17 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					}
 					user = roster.get(from);
 					roster.remove(from);
+					if (item.attr('nick')) {
+						// user changed nick
+						var nick = item.attr('nick');
+						action = 'nickchange';
+						newUser = user.clone(); // copy user to newUser because otherwise leaveAnimation won't work
+						newUser.setOldNick(user.getNick());
+						console.log('OLD NICK', newUser.getOldNick());
+						newUser.setNick(nick);
+						newUser.setJid(Strophe.getBareJidFromJid(from) + '/' + nick);
+						roster.add(newUser);
+					}
 				}
 
 				self.notifyObservers(self.KEYS.PRESENCE, {'roomJid': roomJid, 'roomName': room.getName(), 'user': user, 'action': action, 'currentUser': Candy.Core.getUser() } );
