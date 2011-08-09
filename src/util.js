@@ -211,7 +211,7 @@ Candy.Util = (function(self, $){
 						minutesOffset = -minutesOffset;
 					}
 				}
-				return new Date(+struct[1], +struct[2] - 1, +struct[3], +struct[4], +struct[5] + minutesOffset, +struct[6], +struct[7].substr(0, 3));
+				return new Date(+struct[1], +struct[2] - 1, +struct[3], +struct[4], +struct[5] + minutesOffset, +struct[6], struct[7] ? +struct[7].substr(0, 3) : 0);
 			}
         }
         return new Date(timestamp);
