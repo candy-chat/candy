@@ -141,8 +141,8 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		 */
 		Presence: function(msg) {
 			Candy.Core.log('[Jabber] Presence');
-			var x = $('x', msg);
-			if(x.attr('xmlns') && x.attr('xmlns').match(Strophe.NS.MUC)) {
+			msg = $(msg);
+			if(msg.children('x[xmlns^="' + Strophe.NS.MUC + '"]').length > 0) {
 				self.Jabber.Room.Presence(msg);
 			}
 			return true;
@@ -290,14 +290,13 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			 * Acts on various presence messages (room leaving, room joining, error presence) and notifies view.
 			 *
 			 * Parameters:
-			 *   (String) msg - Raw XML Message
+			 *   (Object) msg - jQuery object of XML message
 			 *
 			 * Returns:
 			 *   (Boolean) - true
 			 */
 			Presence: function(msg) {
 				Candy.Core.log('[Jabber:Room] Presence');
-				msg = $(msg);
 				var from = msg.attr('from'),
 					roomJid = Strophe.getBareJidFromJid(from),
 					presenceType = msg.attr('type');
