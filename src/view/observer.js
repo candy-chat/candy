@@ -164,6 +164,8 @@ Candy.View.Observer = (function(self, $) {
 		update: function(obj, args) {
 			if(args.message.type === 'subject') {
 				Candy.View.Pane.Room.setSubject(args.roomJid, args.message.body);
+			} else if(args.message.type === 'error') {
+				Candy.View.Pane.Chat.infoMessage(args.roomJid, args.message.body);
 			} else {
 				// Initialize room if it's a message for a new private user chat
 				if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[args.roomJid]) {

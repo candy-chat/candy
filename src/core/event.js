@@ -206,7 +206,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				type = msg.attr('type'),
 				toJid = msg.attr('to');
 			// Room message
-			if(fromJid !== Strophe.getDomainFromJid(fromJid) && (type === 'groupchat' || type === 'chat')) {
+			if(fromJid !== Strophe.getDomainFromJid(fromJid) && (type === 'groupchat' || type === 'chat' || type === 'error')) {
 				self.Jabber.Room.Message(msg);
 			// Admin message
 			} else if(!toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
@@ -372,6 +372,13 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				if(msg.children('subject').length > 0) {
 					roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
 					message = { name: Strophe.getNodeFromJid(roomJid), body: msg.children('subject').text(), type: 'subject' };
+				// Error messsage
+				} else if(msg.attr('type') === 'error') {
+					var error = msg.children('error');
+					if(error.attr('code') === '500' && error.children('text').length > 0) {
+						roomJid = msg.attr('from');
+						message = { type: 'error', body: error.children('text').text() };
+					}
 				// Private chat message
 				} else if(msg.attr('type') === 'chat') {
 					roomJid = msg.attr('from');

@@ -29,7 +29,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.0.2-dev'
+		version: '1.0.2'
 	};
 
 	/** Function: init
@@ -1801,7 +1801,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				type = msg.attr('type'),
 				toJid = msg.attr('to');
 			// Room message
-			if(fromJid !== Strophe.getDomainFromJid(fromJid) && (type === 'groupchat' || type === 'chat')) {
+			if(fromJid !== Strophe.getDomainFromJid(fromJid) && (type === 'groupchat' || type === 'chat' || type === 'error')) {
 				self.Jabber.Room.Message(msg);
 			// Admin message
 			} else if(!toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
@@ -1967,6 +1967,13 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				if(msg.children('subject').length > 0) {
 					roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
 					message = { name: Strophe.getNodeFromJid(roomJid), body: msg.children('subject').text(), type: 'subject' };
+				// Error messsage
+				} else if(msg.attr('type') === 'error') {
+					var error = msg.children('error');
+					if(error.attr('code') === '500' && error.children('text').length > 0) {
+						roomJid = msg.attr('from');
+						message = { type: 'error', body: error.children('text').text() };
+					}
 				// Private chat message
 				} else if(msg.attr('type') === 'chat') {
 					roomJid = msg.attr('from');
@@ -2352,6 +2359,8 @@ Candy.View.Observer = (function(self, $) {
 		update: function(obj, args) {
 			if(args.message.type === 'subject') {
 				Candy.View.Pane.Room.setSubject(args.roomJid, args.message.body);
+			} else if(args.message.type === 'error') {
+				Candy.View.Pane.Chat.infoMessage(args.roomJid, args.message.body);
 			} else {
 				// Initialize room if it's a message for a new private user chat
 				if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
