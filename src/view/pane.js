@@ -1348,8 +1348,9 @@ Candy.View.Pane = (function(self, $) {
 						// insert alphabetically
 						var userSortCompare = user.getNick().toUpperCase();
 						rosterPane.children().each(function() {
-							if($(this).attr('data-nick').toUpperCase() > userSortCompare) {
-								$(this).before(html);
+							var elem = $(this);
+							if(elem.attr('data-nick').toUpperCase() > userSortCompare) {
+								elem.before(html);
 								userInserted = true;
 								return false;
 							}
@@ -1428,7 +1429,8 @@ Candy.View.Pane = (function(self, $) {
 		 * Click handler for opening a private room
 		 */
 		userClick: function() {
-			self.PrivateRoom.open($(this).attr('data-jid'), $(this).attr('data-nick'), true);
+			var elem = $(this);
+			self.PrivateRoom.open(elem.attr('data-jid'), elem.attr('data-nick'), true);
 		},
 
 		/** Function: joinAnimation

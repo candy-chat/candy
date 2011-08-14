@@ -93,7 +93,7 @@ Candy.View.Observer = (function(self, $) {
 				self.Presence.notifyPrivateChats(user, args.type);
 			// Client has been kicked or banned
 			} else if (args.type === 'kick' || args.type === 'ban') {
-				var actorName = Strophe.getNodeFromJid(args.actor),
+				var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : args.roomName,
 					actionLabel;
 				switch(args.type) {
 					case 'kick':
@@ -113,7 +113,7 @@ Candy.View.Observer = (function(self, $) {
 						Candy.View.Pane.Room.close(args.roomJid);
 						self.Presence.notifyPrivateChats(args.user, args.type);
 					});
-				}, 3500);
+				}, 5000);
 				Candy.View.Event.Room.onPresenceChange({ type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user });
 			// A user changed presence
 			} else {
@@ -130,6 +130,7 @@ Candy.View.Observer = (function(self, $) {
 				}
 			}
 		},
+		
 		/** Function: notifyPrivateChats
 		 * Notify private user chats if existing
 		 *

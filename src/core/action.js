@@ -134,7 +134,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *   (String) roomJid - Room to leave
 			 */
 			Leave: function(roomJid) {
-				Candy.Core.getConnection().muc.leave(roomJid, Candy.Core.getRoom(roomJid).getUser().getNick(), Candy.Core.Event.Jabber.Room.Leave);
+				Candy.Core.getConnection().muc.leave(roomJid, Candy.Core.getRoom(roomJid).getUser().getNick(), function() {});
 			},
 
 			/** Function: Disco
