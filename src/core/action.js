@@ -79,8 +79,14 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		ResetIgnoreList: function() {
 			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set1'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).c('item', {'action': 'allow', 'order': '0'}).tree());
-			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set2'})
-				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('active', {name:'ignore'}).tree());
+		},
+
+		/** Function: RemoveIgnoreList
+		 * Remove an existing ignore list.
+		 */
+		RemoveIgnoreList: function() {
+			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'remove1'})
+				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).tree());
 		},
 
 		/** Function: GetIgnoreList
@@ -89,6 +95,12 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		GetIgnoreList: function() {
 			Candy.Core.getConnection().send($iq({type: 'get', from: Candy.Core.getUser().getJid(), id: 'get1'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).tree());
+		},
+
+		/** Function: SetIgnoreListActive
+		 * Set ignore privacy list active
+		 */
+		SetIgnoreListActive: function() {
 			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set2'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('active', {name:'ignore'}).tree());
 		},

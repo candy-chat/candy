@@ -130,7 +130,8 @@ Candy.Core = (function(self, Strophe, $) {
 			_connection.addHandler(self.Event.Jabber.Message, null, 'message');
 			_connection.addHandler(self.Event.Jabber.Bookmarks, Strophe.NS.PRIVATE, 'iq');
 			_connection.addHandler(self.Event.Jabber.Room.Disco, Strophe.NS.DISCO_INFO, 'iq');
-			_connection.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq');
+			_connection.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq', 'result');
+			_connection.addHandler(self.Event.Jabber.PrivacyListError, Strophe.NS.PRIVACY, 'iq', 'error');
 		};
 
 	/** Function: init
@@ -158,13 +159,13 @@ Candy.Core = (function(self, Strophe, $) {
 			};
 			self.log('[Init] Debugging enabled');
 		}
-				
+
 		_addNamespaces();
 		// Connect to BOSH service
 		_connection = new Strophe.Connection(_service);
 		_connection.rawInput = self.rawInput.bind(self);
 		_connection.rawOutput = self.rawOutput.bind(self);
-		
+
 		// Window unload handler... works on all browsers but Opera. There is NO workaround.
 		// Opera clients getting disconnected 1-2 minutes delayed.
 		window.onbeforeunload = self.onWindowUnload;
@@ -187,7 +188,7 @@ Candy.Core = (function(self, Strophe, $) {
 	 *   connect('domain') - Connect anonymously to the domain. The user should receive a random JID.
 	 *   connect('JID') - Show login form and prompt for password. JID input is hidden.
 	 *   connect() - Show login form and prompt for JID and password.
-	 * 
+	 *
 	 * See:
 	 *   <Candy.Core.attach()> for attaching an already established session.
 	 *
@@ -1083,8 +1084,14 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		ResetIgnoreList: function() {
 			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set1'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).c('item', {'action': 'allow', 'order': '0'}).tree());
-			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set2'})
-				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('active', {name:'ignore'}).tree());
+		},
+
+		/** Function: RemoveIgnoreList
+		 * Remove an existing ignore list.
+		 */
+		RemoveIgnoreList: function() {
+			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'remove1'})
+				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).tree());
 		},
 
 		/** Function: GetIgnoreList
@@ -1093,6 +1100,12 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		GetIgnoreList: function() {
 			Candy.Core.getConnection().send($iq({type: 'get', from: Candy.Core.getUser().getJid(), id: 'get1'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).tree());
+		},
+
+		/** Function: SetIgnoreListActive
+		 * Set ignore privacy list active
+		 */
+		SetIgnoreListActive: function() {
 			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set2'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('active', {name:'ignore'}).tree());
 		},
@@ -1767,6 +1780,8 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		/** Function: PrivacyList
 		 * Acts on a privacy list event and sets up the current privacy list of this user.
 		 *
+		 * If no privacy list has been added yet, create the privacy list and listen again to this event.
+		 *
 		 * Parameters:
 		 *   (String) msg - Raw XML Message
 		 *
@@ -1776,12 +1791,35 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		PrivacyList: function(msg) {
 			Candy.Core.log('[Jabber] PrivacyList');
 			var currentUser = Candy.Core.getUser();
-			$('list[name=ignore] item', msg).each(function() {
+
+			$('list[name="ignore"] item', msg).each(function() {
 				var item = $(this);
 				if (item.attr('action') === 'deny') {
 					currentUser.addToOrRemoveFromPrivacyList('ignore', item.attr('value'));
 				}
 			});
+			Candy.Core.Action.Jabber.SetIgnoreListActive();
+			return false;
+		},
+
+		/** Function: PrivacyListError
+		 * Acts when a privacy list error has been received.
+		 *
+		 * Currently only handles the case, when a privacy list doesn't exist yet and creates one.
+		 *
+		 * Parameters:
+		 *   (String) msg - Raw XML Message
+		 *
+		 * Returns:
+		 *   (Boolean) - false to disable the handler after first call.
+		 */
+		PrivacyListError: function(msg) {
+			Candy.Core.log('[Jabber] PrivacyListError');
+			// check if msg says that privacyList doesn't exist
+			if ($('error[code="404"][type="cancel"] item-not-found', msg)) {
+				Candy.Core.Action.Jabber.ResetIgnoreList();
+				Candy.Core.Action.Jabber.SetIgnoreListActive();
+			}
 			return false;
 		},
 

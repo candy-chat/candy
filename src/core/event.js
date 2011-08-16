@@ -172,6 +172,8 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		/** Function: PrivacyList
 		 * Acts on a privacy list event and sets up the current privacy list of this user.
 		 *
+		 * If no privacy list has been added yet, create the privacy list and listen again to this event.
+		 *
 		 * Parameters:
 		 *   (String) msg - Raw XML Message
 		 *
@@ -181,12 +183,35 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		PrivacyList: function(msg) {
 			Candy.Core.log('[Jabber] PrivacyList');
 			var currentUser = Candy.Core.getUser();
-			$('list[name=ignore] item', msg).each(function() {
+
+			$('list[name="ignore"] item', msg).each(function() {
 				var item = $(this);
 				if (item.attr('action') === 'deny') {
 					currentUser.addToOrRemoveFromPrivacyList('ignore', item.attr('value'));
 				}
 			});
+			Candy.Core.Action.Jabber.SetIgnoreListActive();
+			return false;
+		},
+
+		/** Function: PrivacyListError
+		 * Acts when a privacy list error has been received.
+		 *
+		 * Currently only handles the case, when a privacy list doesn't exist yet and creates one.
+		 *
+		 * Parameters:
+		 *   (String) msg - Raw XML Message
+		 *
+		 * Returns:
+		 *   (Boolean) - false to disable the handler after first call.
+		 */
+		PrivacyListError: function(msg) {
+			Candy.Core.log('[Jabber] PrivacyListError');
+			// check if msg says that privacyList doesn't exist
+			if ($('error[code="404"][type="cancel"] item-not-found', msg)) {
+				Candy.Core.Action.Jabber.ResetIgnoreList();
+				Candy.Core.Action.Jabber.SetIgnoreListActive();
+			}
 			return false;
 		},
 
