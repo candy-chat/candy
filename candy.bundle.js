@@ -553,7 +553,7 @@ Candy.Util = (function(self, $){
 	 */
 	self.crop = function(str, len) {
 		if (str.length > len) {
-			str = str.substr(0, len) + '...';
+			str = str.substr(0, len - 3) + '...';
 		}
 		return str;
 	};
