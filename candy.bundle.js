@@ -4258,6 +4258,61 @@ Candy.View.Translation = {
 		'tooltipStatusmessage'	: 'Statusberichten weergeven',
 		'tooltipAdministration'	: 'Instellingen',
 		'tooltipUsercount'		: 'Gebruikers',
+
 		'raptorMessageBlocked' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
+	},
+	'es': {
+		'status': 'Estado: %s',
+		'statusConnecting': 'Conectando...',
+		'statusConnected' : 'Conectado',
+		'statusDisconnecting': 'Desconectando...',
+		'statusDisconnected' : 'Desconectado',
+		'statusAuthfail': 'Falló la autenticación',
+
+		'roomSubject'  : 'Asunto:',
+		'messageSubmit': 'Enviar',
+
+		'labelUsername': 'Usuario:',
+		'labelPassword': 'Clave:',
+		'loginSubmit'  : 'Entrar',
+		'loginInvalid'  : 'JID no válido',
+
+		'reason'				: 'Razón:',
+		'subject'				: 'Asunto:',
+		'reasonWas'				: 'La razón fue: %s.',
+		'kickActionLabel'		: 'Expulsar',
+		'youHaveBeenKickedBy'   : 'Has sido expulsado de %s por %s',
+		'banActionLabel'		: 'Prohibir',
+		'youHaveBeenBannedBy'   : 'Has sido expulsado permanentemente de %s por %s',
+
+		'privateActionLabel' : 'Chat privado',
+		'ignoreActionLabel'  : 'Ignorar',
+		'unignoreActionLabel' : 'No ignorar',
+
+		'setSubjectActionLabel': 'Cambiar asunto',
+
+		'administratorMessageSubject' : 'Administrador',
+
+		'userJoinedRoom'           : '%s se ha unido a la sala.',
+		'userLeftRoom'             : '%s ha dejado la sala.',
+		'userHasBeenKickedFromRoom': '%s ha sido expulsado de la sala.',
+		'userHasBeenBannedFromRoom': '%s ha sido expulsado permanentemente de la sala.',
+
+		'presenceUnknownWarningSubject': 'Atención:',
+		'presenceUnknownWarning'       : 'Éste usuario podría estar desconectado..',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'Moderador',
+		'tooltipIgnored'		: 'Ignoras a éste usuario',
+		'tooltipEmoticons'		: 'Emoticonos',
+		'tooltipSound'			: 'Reproducir un sonido para nuevos mensajes privados',
+		'tooltipAutoscroll'		: 'Desplazamiento automático',
+		'tooltipStatusmessage'	: 'Mostrar mensajes de estado',
+		'tooltipAdministration'	: 'Administración de la sala',
+		'tooltipUsercount'		: 'Usuarios en la sala',
+
+		'raptorMessageBlocked' : 'Por favor, no hagas spam. Has sido bloqueado temporalmente.'
 	}
 };
