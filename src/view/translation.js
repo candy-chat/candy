@@ -175,5 +175,58 @@ Candy.View.Translation = {
 		'tooltipUsercount'		: 'Nombre d\'utilisateurs dans le salon',
 
 		'raptorMessageBlocked' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
+	},
+	'nl' : {
+		'status': 'Status: %s',
+		'statusConnecting': 'Verbinding maken...',
+		'statusConnected' : 'Verbinding is gereed',
+		'statusDisconnecting': 'Verbinding verbreken...',
+		'statusDisconnected' : 'Verbinding is verbroken',
+		'statusAuthfail': 'Authenticatie is mislukt',
+
+		'roomSubject'  : 'Onderwerp:',
+		'messageSubmit': 'Verstuur',
+
+		'labelUsername': 'Gebruikersnaam:',
+		'labelPassword': 'Wachtwoord:',
+		'loginSubmit'  : 'Inloggen',
+		'loginInvalid'  : 'JID is onjuist',
+
+		'reason'				: 'Reden:',
+		'subject'				: 'Onderwerp:',
+		'reasonWas'				: 'De reden was: %s.',
+		'kickActionLabel'		: 'Verwijderen',
+		'youHaveBeenKickedBy'   : 'Je bent verwijderd van %s door %s',
+		'banActionLabel'		: 'Blokkeren',
+		'youHaveBeenBannedBy'   : 'Je bent geblokkeerd van %s door %s',
+
+		'privateActionLabel' : 'Prive gesprek',
+		'ignoreActionLabel'  : 'Negeren',
+		'unignoreActionLabel' : 'Niet negeren',
+
+		'setSubjectActionLabel': 'Onderwerp wijzigen',
+
+		'administratorMessageSubject' : 'Beheerder',
+
+		'userJoinedRoom'           : '%s komt de chat binnen.',
+		'userLeftRoom'             : '%s heeft de chat verlaten.',
+		'userHasBeenKickedFromRoom': '%s is verwijderd.',
+		'userHasBeenBannedFromRoom': '%s is geblokkeerd.',
+
+		'presenceUnknownWarningSubject': 'Mededeling:',
+		'presenceUnknownWarning'       : 'Deze gebruiker is waarschijnlijk offline, we kunnen zijn/haar aanwezigheid niet vaststellen.',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'Moderator',
+		'tooltipIgnored'		: 'Je negeert deze gebruiker',
+		'tooltipEmoticons'		: 'Emotie-iconen',
+		'tooltipSound'			: 'Speel een geluid af bij nieuwe privé berichten.',
+		'tooltipAutoscroll'		: 'Automatisch scrollen',
+		'tooltipStatusmessage'	: 'Statusberichten weergeven',
+		'tooltipAdministration'	: 'Instellingen',
+		'tooltipUsercount'		: 'Gebruikers',
+		'raptorMessageBlocked' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
 	}
 };
