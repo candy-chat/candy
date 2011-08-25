@@ -118,6 +118,7 @@ Candy.Core = (function(self, Strophe, $) {
 			_addNamespace('PRIVATE', 'jabber:iq:private');
 			_addNamespace('BOOKMARKS', 'storage:bookmarks');
 			_addNamespace('PRIVACY', 'jabber:iq:privacy');
+			_addNamespace('DELAY', 'jabber:x:delay');
 		},
 
 		/** PrivateFunction: _registerEventHandlers
@@ -726,6 +727,9 @@ Candy.Util = (function(self, $){
 					}
 				}
 				return new Date(+struct[1], +struct[2] - 1, +struct[3], +struct[4], +struct[5] + minutesOffset, +struct[6], struct[7] ? +struct[7].substr(0, 3) : 0);
+			} else {
+				// XEP-0091 date
+				timestamp = Date.parse(date.replace(/^(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') + 'Z');
 			}
         }
         return new Date(timestamp);
@@ -2025,8 +2029,10 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
 					message = { name: Strophe.getResourceFromJid(msg.attr('from')), body: msg.children('body').text(), type: msg.attr('type') };
 				}
-
-				var delay = msg.children('delay'),
+				
+				// besides the delayed delivery (XEP-0203), there exists also XEP-0091 which is the legacy delayed delivery.
+				// the x[xmlns=jabber:x:delay] is the format in XEP-0091.
+				var delay = msg.children('delay') ? msg.children('delay') : msg.children('x[xmlns="' + Strophe.NS.DELAY +'"]'),
 					timestamp = delay !== undefined ? delay.attr('stamp') : null;
 
 				self.notifyObservers(self.KEYS.MESSAGE, {roomJid: roomJid, message: message, timestamp: timestamp } );
