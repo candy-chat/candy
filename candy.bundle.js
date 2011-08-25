@@ -1239,20 +1239,21 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				 *   (Boolean) - true if sent successfully, false if type is not one of "kick" or "ban".
 				 */
 				UserAction: function(roomJid, userJid, type, reason) {
-					var iqId, qRole;
+					var iqId,
+						itemObj = {nick: Strophe.getResourceFromJid(userJid)};
 					switch(type) {
 						case 'kick':
 							iqId = 'kick1';
-							qRole = 'none';
+							itemObj.role = 'none';
 							break;
 						case 'ban':
 							iqId = 'ban1';
-							qRole = 'outcast';
+							itemObj.affiliation = 'outcast';
 							break;
 						default:
 							return false;
 					}
-					Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), to: roomJid, id: iqId}).c('query', {xmlns: Strophe.NS.MUC_ADMIN }).c('item', {nick: Strophe.getResourceFromJid(userJid), role: qRole}).c('reason').t(reason).tree());
+					Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), to: roomJid, id: iqId}).c('query', {xmlns: Strophe.NS.MUC_ADMIN }).c('item', itemObj).c('reason').t(reason).tree());
 					return true;
 				},
 
