@@ -417,8 +417,10 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
 					message = { name: Strophe.getResourceFromJid(msg.attr('from')), body: msg.children('body').text(), type: msg.attr('type') };
 				}
-
-				var delay = msg.children('delay'),
+				
+				// besides the delayed delivery (XEP-0203), there exists also XEP-0091 which is the legacy delayed delivery.
+				// the x[xmlns=jabber:x:delay] is the format in XEP-0091.
+				var delay = !msg.children('delay') ? msg.children('delay') : msg.children('x[xmlns="' + Strophe.NS.DELAY +'"]'),
 					timestamp = delay !== undefined ? delay.attr('stamp') : null;
 
 				self.notifyObservers(self.KEYS.MESSAGE, {roomJid: roomJid, message: message, timestamp: timestamp } );
