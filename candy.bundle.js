@@ -29,7 +29,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.0.2'
+		version: '1.0.3-dev'
 	};
 
 	/** Function: init
@@ -232,7 +232,7 @@ Candy.Core = (function(self, Strophe, $) {
 	self.attach = function(jid, sid, rid) {
 		_user = new self.ChatUser(jid, Strophe.getNodeFromJid(jid));
 		_registerEventHandlers();
-		_connection.attach(Strophe.getBareJidFromJid(jid) + '/' + Candy.about.name, sid, rid, Candy.Core.Event.Strophe.Connect);
+		_connection.attach(jid, sid, rid, Candy.Core.Event.Strophe.Connect);
 	};
 
 	/** Function: disconnect
@@ -2100,7 +2100,7 @@ Candy.View.Event = (function(self, $) {
 		 * Called when a new room gets added
 		 *
 		 * Parameters:
-		 *   (Object) args - {roomJid, element}
+		 *   (Object) args - {roomJid, type=chat|groupchat, element}
 		 */
 		onAdd: function(args) {
 			return;
@@ -3377,7 +3377,7 @@ Candy.View.Pane = (function(self, $) {
 			self.Chat.addTab(roomJid, roomName, roomType);
 			self.Room.getPane(roomJid, '.message-form').submit(self.Message.submit);
 
-			Candy.View.Event.Room.onAdd({'roomJid': roomJid, 'element' : self.Room.getPane(roomJid)});
+			Candy.View.Event.Room.onAdd({'roomJid': roomJid, 'type': roomType, 'element': self.Room.getPane(roomJid)});
 
 			return roomId;
 		},
@@ -3689,6 +3689,9 @@ Candy.View.Pane = (function(self, $) {
 		 *                            (e.g. when user clicks itself on another user to open a private chat)
 		 *   (Boolean) isNoConferenceRoomJid - true if a 3rd-party client sends a direct message to this user (not via the room)
 		 *										then the username is the node and not the resource. This param addresses this case.
+		 *
+		 * Calls:
+		 *   - <Candy.View.Event.Room.onAdd>
 		 */
 		open: function(roomJid, roomName, switchToRoom, isNoConferenceRoomJid) {
 			var user = isNoConferenceRoomJid ? Candy.Core.getUser() : self.Room.getUser(Strophe.getBareJidFromJid(roomJid));
@@ -3710,6 +3713,8 @@ Candy.View.Pane = (function(self, $) {
 			if(isNoConferenceRoomJid) {
 				self.Chat.infoMessage(roomJid, $.i18n._('presenceUnknownWarningSubject'), $.i18n._('presenceUnknownWarning'));
 			}
+
+			Candy.View.Event.Room.onAdd({'roomJid': roomJid, type: 'chat', 'element': self.Room.getPane(roomJid)});
 		},
 
 		/** Function: setStatus
@@ -3965,7 +3970,8 @@ Candy.View.Pane = (function(self, $) {
 	};
 
 	return self;
-}(Candy.View.Pane || {}, jQuery));/** File: template.js
+}(Candy.View.Pane || {}, jQuery));
+/** File: template.js
  * Candy - Chats are not dead yet.
  *
  * Authors:
