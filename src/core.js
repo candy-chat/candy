@@ -180,7 +180,7 @@ Candy.Core = (function(self, Strophe, $) {
 	self.attach = function(jid, sid, rid) {
 		_user = new self.ChatUser(jid, Strophe.getNodeFromJid(jid));
 		_registerEventHandlers();
-		_connection.attach(Strophe.getBareJidFromJid(jid) + '/' + Candy.about.name, sid, rid, Candy.Core.Event.Strophe.Connect);
+		_connection.attach(jid, sid, rid, Candy.Core.Event.Strophe.Connect);
 	};
 
 	/** Function: disconnect
