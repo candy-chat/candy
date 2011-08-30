@@ -31,7 +31,8 @@ Candy.View = (function(self, $) {
 		_options = {
 			language: 'en',
 			resources: 'res/',
-			messages: { limit: 2000, remove: 500 }
+			messages: { limit: 2000, remove: 500 },
+			crop: { message: { displayName: 15 } , roster: { displayNick: 10 } }
 		},
 
 		/** PrivateFunction: _setupTranslation
