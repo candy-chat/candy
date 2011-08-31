@@ -384,7 +384,8 @@ Candy.View = (function(self, $) {
 		_options = {
 			language: 'en',
 			resources: 'res/',
-			messages: { limit: 2000, remove: 500 }
+			messages: { limit: 2000, remove: 500 },
+			crop: { message: { displayName: 15 } , roster: { displayNick: 10 } }
 		},
 
 		/** PrivateFunction: _setupTranslation
@@ -3771,7 +3772,7 @@ Candy.View.Pane = (function(self, $) {
 						userId : userId,
 						userJid: user.getJid(),
 						nick: user.getNick(),
-						displayNick: Candy.Util.crop(user.getNick(), 15),
+						displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.displayNick),
 						role: user.getRole(),
 						affiliation: user.getAffiliation(),
 						me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
@@ -3939,7 +3940,7 @@ Candy.View.Pane = (function(self, $) {
 			message = Candy.View.Event.Message.beforeShow(message);
 			var html = Mustache.to_html(Candy.View.Template.Message.item, {
 				name: name,
-				displayName: Candy.Util.crop(name, 10),
+				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.displayName),
 				message: message,
 				time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
 			});
