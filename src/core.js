@@ -66,6 +66,7 @@ Candy.Core = (function(self, Strophe, $) {
 			_addNamespace('PRIVATE', 'jabber:iq:private');
 			_addNamespace('BOOKMARKS', 'storage:bookmarks');
 			_addNamespace('PRIVACY', 'jabber:iq:privacy');
+			_addNamespace('DELAY', 'jabber:x:delay');
 		},
 
 		/** PrivateFunction: _registerEventHandlers
@@ -78,7 +79,8 @@ Candy.Core = (function(self, Strophe, $) {
 			_connection.addHandler(self.Event.Jabber.Message, null, 'message');
 			_connection.addHandler(self.Event.Jabber.Bookmarks, Strophe.NS.PRIVATE, 'iq');
 			_connection.addHandler(self.Event.Jabber.Room.Disco, Strophe.NS.DISCO_INFO, 'iq');
-			_connection.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq');
+			_connection.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq', 'result');
+			_connection.addHandler(self.Event.Jabber.PrivacyListError, Strophe.NS.PRIVACY, 'iq', 'error');
 		};
 
 	/** Function: init
@@ -106,13 +108,13 @@ Candy.Core = (function(self, Strophe, $) {
 			};
 			self.log('[Init] Debugging enabled');
 		}
-				
+
 		_addNamespaces();
 		// Connect to BOSH service
 		_connection = new Strophe.Connection(_service);
 		_connection.rawInput = self.rawInput.bind(self);
 		_connection.rawOutput = self.rawOutput.bind(self);
-		
+
 		// Window unload handler... works on all browsers but Opera. There is NO workaround.
 		// Opera clients getting disconnected 1-2 minutes delayed.
 		window.onbeforeunload = self.onWindowUnload;
@@ -135,7 +137,7 @@ Candy.Core = (function(self, Strophe, $) {
 	 *   connect('domain') - Connect anonymously to the domain. The user should receive a random JID.
 	 *   connect('JID') - Show login form and prompt for password. JID input is hidden.
 	 *   connect() - Show login form and prompt for JID and password.
-	 * 
+	 *
 	 * See:
 	 *   <Candy.Core.attach()> for attaching an already established session.
 	 *
@@ -178,7 +180,7 @@ Candy.Core = (function(self, Strophe, $) {
 	self.attach = function(jid, sid, rid) {
 		_user = new self.ChatUser(jid, Strophe.getNodeFromJid(jid));
 		_registerEventHandlers();
-		_connection.attach(Strophe.getBareJidFromJid(jid) + '/' + Candy.about.name, sid, rid, Candy.Core.Event.Strophe.Connect);
+		_connection.attach(jid, sid, rid, Candy.Core.Event.Strophe.Connect);
 	};
 
 	/** Function: disconnect

@@ -39,7 +39,7 @@ Candy.Util = (function(self, $){
 	 */
 	self.crop = function(str, len) {
 		if (str.length > len) {
-			str = str.substr(0, len) + '...';
+			str = str.substr(0, len - 3) + '...';
 		}
 		return str;
 	};
@@ -212,6 +212,9 @@ Candy.Util = (function(self, $){
 					}
 				}
 				return new Date(+struct[1], +struct[2] - 1, +struct[3], +struct[4], +struct[5] + minutesOffset, +struct[6], struct[7] ? +struct[7].substr(0, 3) : 0);
+			} else {
+				// XEP-0091 date
+				timestamp = Date.parse(date.replace(/^(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') + 'Z');
 			}
         }
         return new Date(timestamp);

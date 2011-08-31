@@ -79,8 +79,14 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		ResetIgnoreList: function() {
 			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set1'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).c('item', {'action': 'allow', 'order': '0'}).tree());
-			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set2'})
-				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('active', {name:'ignore'}).tree());
+		},
+
+		/** Function: RemoveIgnoreList
+		 * Remove an existing ignore list.
+		 */
+		RemoveIgnoreList: function() {
+			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'remove1'})
+				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).tree());
 		},
 
 		/** Function: GetIgnoreList
@@ -89,6 +95,12 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		GetIgnoreList: function() {
 			Candy.Core.getConnection().send($iq({type: 'get', from: Candy.Core.getUser().getJid(), id: 'get1'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).tree());
+		},
+
+		/** Function: SetIgnoreListActive
+		 * Set ignore privacy list active
+		 */
+		SetIgnoreListActive: function() {
 			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set2'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('active', {name:'ignore'}).tree());
 		},
@@ -218,20 +230,21 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				 *   (Boolean) - true if sent successfully, false if type is not one of "kick" or "ban".
 				 */
 				UserAction: function(roomJid, userJid, type, reason) {
-					var iqId, qRole;
+					var iqId,
+						itemObj = {nick: Strophe.getResourceFromJid(userJid)};
 					switch(type) {
 						case 'kick':
 							iqId = 'kick1';
-							qRole = 'none';
+							itemObj.role = 'none';
 							break;
 						case 'ban':
 							iqId = 'ban1';
-							qRole = 'outcast';
+							itemObj.affiliation = 'outcast';
 							break;
 						default:
 							return false;
 					}
-					Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), to: roomJid, id: iqId}).c('query', {xmlns: Strophe.NS.MUC_ADMIN }).c('item', {nick: Strophe.getResourceFromJid(userJid), role: qRole}).c('reason').t(reason).tree());
+					Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), to: roomJid, id: iqId}).c('query', {xmlns: Strophe.NS.MUC_ADMIN }).c('item', itemObj).c('reason').t(reason).tree());
 					return true;
 				},
 

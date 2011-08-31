@@ -54,7 +54,7 @@ Candy.View.Event = (function(self, $) {
 		 * Called when a new room gets added
 		 *
 		 * Parameters:
-		 *   (Object) args - {roomJid, element}
+		 *   (Object) args - {roomJid, type=chat|groupchat, element}
 		 */
 		onAdd: function(args) {
 			return;
