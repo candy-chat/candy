@@ -16,7 +16,7 @@
 			<div id="download">
 				<a href="http://github.com/amiadogroup/candy/tarball/master" class="button">
 					Download candy.tar.gz
-					<small>v1.0.2 &mdash; <time datetime="2011-08-14">August 14th, 2011</time></small>
+					<small>v1.0.3 &mdash; <time datetime="2011-08-31">August 31st, 2011</time></small>
 				</a>
 				<span>Released under the <a href="http://github.com/amiadogroup/candy/blob/master/LICENSE">MIT Licence</a></span>
 			</div>
@@ -148,6 +148,10 @@ RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
 				<dt><code><strong>resources</strong> &mdash; path to resources folder, default: '<u>res/</u>'</code></dt>
 				<dd>
 					Path to the resources folder with trailing slash.
+				</dd>
+				<dt><code><strong>crop</strong> &mdash; settings to crop messages &amp; nicknames: { message: { nickname: <u>15</u>, body: <u>15</u> }, roster: { nickname: <u>15</u> } }</code></dt>
+				<dd>
+					Messages and nicknames will be cropped to the specified lengths.
 				</dd>
 				<dt><code><strong>messages</strong> &mdash; object containing settings to clean up old messages: {limit: <u>2000</u>, remove: <u>500</u>}</code></dt>
 				<dd>
