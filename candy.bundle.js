@@ -380,12 +380,16 @@ Candy.View = (function(self, $) {
 		 *   (String) language - language to use
 		 *   (String) resources - path to resources directory (with trailing slash)
 		 *   (Object) messages - limit: clean up message pane when n is reached / remove: remove n messages after limit has been reached
+		 *   (Object) crop - crop if longer than defined: message.nickname=15, message.body=1000, roster.nickname=10
 		 */
 		_options = {
 			language: 'en',
 			resources: 'res/',
 			messages: { limit: 2000, remove: 500 },
-			crop: { message: { displayName: 15 } , roster: { displayNick: 10 } }
+			crop: {
+				message: { nickname: 15, body: 1000 },
+				roster: { nickname: 10 }
+			}
 		},
 
 		/** PrivateFunction: _setupTranslation
@@ -3365,7 +3369,8 @@ Candy.View.Pane = (function(self, $) {
 				roomJid: roomJid,
 				roomType: roomType,
 				form: {
-					_messageSubmit: $.i18n._('messageSubmit')
+					_messageSubmit: $.i18n._('messageSubmit'),
+					_maxLength: Candy.View.getOptions().crop.message.body
 				},
 				roster: {
 					_userOnline: $.i18n._('userOnline')
@@ -3772,7 +3777,7 @@ Candy.View.Pane = (function(self, $) {
 						userId : userId,
 						userJid: user.getJid(),
 						nick: user.getNick(),
-						displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.displayNick),
+						displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.nickname),
 						role: user.getRole(),
 						affiliation: user.getAffiliation(),
 						me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
@@ -3912,7 +3917,7 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		submit: function(event) {
 			var roomType = Candy.View.Pane.Chat.rooms[Candy.View.getCurrent().roomJid].type,
-				message = $(this).children('.field').val().substring(0, 1000);
+				message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body);
 
 			message = Candy.View.Event.Message.beforeSend(message);
 
@@ -3936,11 +3941,11 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) timestamp - [optional] Timestamp of the message, if not present, current date.
 		 */
 		show: function(roomJid, name, message, timestamp) {
-			message = Candy.Util.Parser.all(message.substring(0, 1000));
+			message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
 			message = Candy.View.Event.Message.beforeShow(message);
 			var html = Mustache.to_html(Candy.View.Template.Message.item, {
 				name: name,
-				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.displayName),
+				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.nickname),
 				message: message,
 				time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
 			});
@@ -4020,7 +4025,7 @@ Candy.View.Template = (function(self){
 	self.Room = {
 		pane: '<div class="room-pane roomtype-{{roomType}}" id="chat-room-{{roomId}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">{{> roster}}{{> messages}}{{> form}}</div>',
 		subject: '<dt>{{time}}</dt><dd class="subject"><span class="label">{{roomName}}</span>{{_roomSubject}} {{subject}}</dd>',
-		form: '<div class="message-form-wrapper"></div><form method="post" class="message-form"><input name="message" class="field" type="text" autocomplete="off" maxlength="1000" /><input type="submit" class="submit" name="submit" value="{{_messageSubmit}}" /></form>'
+		form: '<div class="message-form-wrapper"></div><form method="post" class="message-form"><input name="message" class="field" type="text" autocomplete="off" maxlength="{{_maxLength}}" /><input type="submit" class="submit" name="submit" value="{{_messageSubmit}}" /></form>'
 	};
 
 	self.Roster = {

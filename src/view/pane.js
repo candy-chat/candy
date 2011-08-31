@@ -929,7 +929,8 @@ Candy.View.Pane = (function(self, $) {
 				roomJid: roomJid,
 				roomType: roomType,
 				form: {
-					_messageSubmit: $.i18n._('messageSubmit')
+					_messageSubmit: $.i18n._('messageSubmit'),
+					_maxLength: Candy.View.getOptions().crop.message.body
 				},
 				roster: {
 					_userOnline: $.i18n._('userOnline')
@@ -1336,7 +1337,7 @@ Candy.View.Pane = (function(self, $) {
 						userId : userId,
 						userJid: user.getJid(),
 						nick: user.getNick(),
-						displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.displayNick),
+						displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.nickname),
 						role: user.getRole(),
 						affiliation: user.getAffiliation(),
 						me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
@@ -1476,7 +1477,7 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		submit: function(event) {
 			var roomType = Candy.View.Pane.Chat.rooms[Candy.View.getCurrent().roomJid].type,
-				message = $(this).children('.field').val().substring(0, 1000);
+				message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body);
 
 			message = Candy.View.Event.Message.beforeSend(message);
 
@@ -1500,11 +1501,11 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) timestamp - [optional] Timestamp of the message, if not present, current date.
 		 */
 		show: function(roomJid, name, message, timestamp) {
-			message = Candy.Util.Parser.all(message.substring(0, 1000));
+			message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
 			message = Candy.View.Event.Message.beforeShow(message);
 			var html = Mustache.to_html(Candy.View.Template.Message.item, {
 				name: name,
-				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.displayName),
+				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.nickname),
 				message: message,
 				time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
 			});
