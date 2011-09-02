@@ -2209,13 +2209,13 @@ Candy.View.Event = (function(self, $) {
 		 * Called before a new message will be shown.
 		 *
 		 * Parameters:
-		 *   (String) message - parsed message
+		 *   (Object) args - {roomJid, nick, message}
 		 *
 		 * Returns:
 		 *   (String) message
 		 */
-		beforeShow: function(message) {
-			return message;
+		beforeShow: function(args) {
+			return args.message;
 		},
 		
 		/** Function: onShow
@@ -3945,7 +3945,11 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		show: function(roomJid, name, message, timestamp) {
 			message = Candy.Util.Parser.all(message.substring(0, 1000));
-			message = Candy.View.Event.Message.beforeShow(message);
+			message = Candy.View.Event.Message.beforeShow({'roomJid': roomJid, 'nick': name, 'message': message});
+			if(!message) {
+				return;
+			}
+			
 			var html = Mustache.to_html(Candy.View.Template.Message.item, {
 				name: name,
 				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.displayName),
