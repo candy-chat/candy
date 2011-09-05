@@ -331,6 +331,10 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					item = msg.find('item');
 				// User joined a room
 				if(presenceType !== 'unavailable') {
+					if (roster.get(from)) {
+						// user changed nick before
+						return false;
+					}
 					user = new Candy.Core.ChatUser(from, Strophe.getResourceFromJid(from), item.attr('affiliation'), item.attr('role'));
 					roster.add(user);
 					action = 'join';
@@ -350,12 +354,11 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 						// user changed nick
 						var nick = item.attr('nick');
 						action = 'nickchange';
-						newUser = user.clone(); // copy user to newUser because otherwise leaveAnimation won't work
-						newUser.setOldNick(user.getNick());
-						console.log('OLD NICK', newUser.getOldNick());
-						newUser.setNick(nick);
-						newUser.setJid(Strophe.getBareJidFromJid(from) + '/' + nick);
-						roster.add(newUser);
+						user.setOldNick(user.getNick());
+						user.setNick(nick);
+						user.setJid(Strophe.getBareJidFromJid(from) + '/' + nick);
+						roster.add(user);
+					} else {
 					}
 				}
 

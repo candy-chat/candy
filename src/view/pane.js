@@ -1237,6 +1237,21 @@ Candy.View.Pane = (function(self, $) {
 					return $('#chat-room-' + self.Chat.rooms[roomJid].id);
 				}
 			}
+		},
+		
+		/** Function: changeDataUserJidIfUserIsMe
+		 * Changes the room's data-userjid attribute if the specified user is the current user.
+		 *
+		 * Parameters:
+		 *   (String) roomId - Id of the room
+		 *   (Candy.Core.ChatUser) user - User
+		 */
+		changeDataUserJidIfUserIsMe: function(roomId, user) {
+			if (user.getNick() === Candy.Core.getUser().getNick()) {
+				var roomElement = $('#chat-room-' + roomId);
+				console.log(roomElement);
+				roomElement.attr('data-userjid', Strophe.getBareJidFromJid(roomElement.attr('data-userjid')) + '/' + user.getNick());
+			}
 		}
 	};
 
@@ -1360,7 +1375,7 @@ Candy.View.Pane = (function(self, $) {
 					if(!userInserted) {
 						rosterPane.append(html);
 					}
-					console.log('USER: ', user);
+
 					// don't show if the user has recently changed the nickname.
 					if (!user.getOldNick()) {
 						self.Roster.joinAnimation('user-' + roomId + '-' + userId);
@@ -1409,11 +1424,11 @@ Candy.View.Pane = (function(self, $) {
 				}
 
 			} else if(action === 'nickchange') {
-				// if private chat, just change nickname. In public chat, show leave/join because it's not detectable.
 				if (self.Chat.rooms[roomJid].type === 'chat') {
 					self.Chat.onInfoMessage(roomJid, $.i18n._('userChangedNick', [user.getNick()]));
 				} else {
-					self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
+					self.Roster.changeNick(roomId, user);
+					self.Room.changeDataUserJidIfUserIsMe(roomId, user);
 					self.Chat.infoMessage(roomJid, $.i18n._('userChangedNick', [user.getNick()]));
 				}
 			// user has been kicked
@@ -1465,6 +1480,26 @@ Candy.View.Pane = (function(self, $) {
 					$(this).slideUp('normal', function() { $(this).remove(); });
 				}
 			});
+		},
+		
+		/** Function: changeNick 
+		 * Change nick of an existing user in the roster
+		 *
+		 * UserId has to be recalculated from the user because at the time of this call,
+		 * the user is already set with the new jid & nick.
+		 *
+		 * Parameters:
+		 *   (String) roomId - Id of the room
+		 *   (Candy.Core.ChatUser) user - User object
+		 */
+		changeNick: function(roomId, user) {
+			var oldUserJid = Strophe.getBareJidFromJid(user.getJid()) + '/' + user.getOldNick(),
+				elementId = 'user-' + roomId + '-' + Candy.Util.jidToId(oldUserJid),
+				el = $('#' + elementId);
+			el.attr('data-nick', user.getNick());
+			el.attr('data-jid', user.getJid());
+			el.children('div.label').text(user.getNick());
+			el.attr('id', 'user-' + roomId + '-' + Candy.Util.jidToId(user.getJid()));
 		}
 	};
 
