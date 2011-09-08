@@ -1249,7 +1249,6 @@ Candy.View.Pane = (function(self, $) {
 		changeDataUserJidIfUserIsMe: function(roomId, user) {
 			if (user.getNick() === Candy.Core.getUser().getNick()) {
 				var roomElement = $('#chat-room-' + roomId);
-				console.log(roomElement);
 				roomElement.attr('data-userjid', Strophe.getBareJidFromJid(roomElement.attr('data-userjid')) + '/' + user.getNick());
 			}
 		}
@@ -1301,6 +1300,7 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		setStatus: function(roomJid, status) {
 			var messageForm = self.Room.getPane(roomJid, '.message-form');
+			console.log(roomJid, status);
 			if(status === 'join') {
 				self.Chat.getTab(roomJid).addClass('online').removeClass('offline');
 
@@ -1308,12 +1308,53 @@ Candy.View.Pane = (function(self, $) {
 				messageForm.children('.submit').removeAttr('disabled');
 
 				self.Chat.getTab(roomJid);
-			} else {
+			} else if(status === 'leave') {
 				self.Chat.getTab(roomJid).addClass('offline').removeClass('online');
 
 				messageForm.children('.field').attr('disabled', true);
 				messageForm.children('.submit').attr('disabled', true);
 			}
+		},
+		
+		/** Function: changeNick
+		 * Changes the nick for every private room opened with this roomJid.
+		 *
+		 * Parameters:
+		 *   (String) roomJid - Public room jid
+		 *   (Candy.Core.ChatUser) user - User which changes his nick
+		 */
+		changeNick: function(roomJid, user) {
+			var oldPrivateRoomJid = roomJid + '/' + user.getOldNick(),
+				newPrivateRoomJid = roomJid + '/' + user.getNick(),
+				oldPrivateRoomId = Candy.Util.jidToId(oldPrivateRoomJid),
+				newPrivateRoomId = Candy.Util.jidToId(newPrivateRoomJid),
+				room = self.Chat.rooms[oldPrivateRoomJid],
+				roomElement = $('#chat-room-' + oldPrivateRoomId + '[data-roomjid="' + oldPrivateRoomJid + '"]'),
+				roomTabElement = $('#chat-tabs li[data-roomjid="' + oldPrivateRoomJid + '"]');
+			
+			if (room) { /* someone I talk with, changed nick */
+				room.name = user.getNick();
+				room.id   = newPrivateRoomId;
+				
+				self.Chat.rooms[newPrivateRoomJid] = room;
+				delete self.Chat.rooms[oldPrivateRoomJid];
+
+				roomElement.attr('data-roomjid', newPrivateRoomJid);
+				roomTabElement.attr('data-roomjid', newPrivateRoomJid);
+				/* TODO: The '@' is defined in the template. Somehow we should 
+				 * extract both things to the CSS or something else to prevent 
+				 */
+				roomTabElement.children('a.label').text('@' + user.getNick());
+				
+				self.Roster.changeNick(oldPrivateRoomId, user);
+				
+				if (Candy.View.getCurrent().roomJid === oldPrivateRoomJid) {
+					Candy.View.getCurrent().roomJid = newPrivateRoomJid;
+				}
+			} else { /* I changed the nick */
+				
+			}
+			
 		}
 	};
 
@@ -1429,6 +1470,7 @@ Candy.View.Pane = (function(self, $) {
 				} else {
 					self.Roster.changeNick(roomId, user);
 					self.Room.changeDataUserJidIfUserIsMe(roomId, user);
+					self.PrivateRoom.changeNick(roomJid, user);
 					self.Chat.infoMessage(roomJid, $.i18n._('userChangedNick', [user.getNick()]));
 				}
 			// user has been kicked
