@@ -55,7 +55,7 @@ Candy.Util = (function(self, $){
 	self.setCookie = function(name, value, lifetime_days) {
 		var exp = new Date();
 		exp.setDate(new Date().getDate() + lifetime_days);
-		document.cookie = name + '=' + value + ';expires=' + exp.toUTCString() + 'path=/';
+		document.cookie = name + '=' + value + ';expires=' + exp.toUTCString() + ';path=/';
 	};
 
 	/** Function: cookieExists
