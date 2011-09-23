@@ -402,7 +402,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					var error = msg.children('error');
 					if(error.attr('code') === '500' && error.children('text').length > 0) {
 						roomJid = msg.attr('from');
-						message = { type: 'error', body: error.children('text').text() };
+						message = { type: 'info', body: error.children('text').text() };
 					}
 				// Chat message
 				} else if(msg.children('body').length > 0) {
@@ -417,7 +417,14 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					// Multi-user chat message
 					} else {
 						roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
-						message = { name: Strophe.getResourceFromJid(msg.attr('from')), body: msg.children('body').text(), type: msg.attr('type') };
+						var resource = Strophe.getResourceFromJid(msg.attr('from'));
+						// Message from a user
+						if(resource) {
+							message = { name: resource, body: msg.children('body').text(), type: msg.attr('type') };
+						// Message from server (XEP-0045#registrar-statuscodes)
+						} else {
+							message = { name: '', body: msg.children('body').text(), type: 'info' };
+						}
 					}
 				// Unhandled message
 				} else {
