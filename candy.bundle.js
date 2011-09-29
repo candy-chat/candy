@@ -3802,6 +3802,12 @@ Candy.View.Pane = (function(self, $) {
 				room = self.Chat.rooms[oldPrivateRoomJid],
 				roomElement,
 				roomTabElement;
+				
+			// it could happen that the new private room is already existing -> close it first.
+			// if this is not done, errors appear as two rooms would have the same id
+			if (self.Chat.rooms[newPrivateRoomJid]) {
+				self.Room.close(newPrivateRoomJid);
+			}
 			
 			if (room) { /* someone I talk with, changed nick */
 				room.name = user.getNick();
@@ -3900,8 +3906,10 @@ Candy.View.Pane = (function(self, $) {
 					}
 
 					// don't show if the user has recently changed the nickname.
-					if (!user.getOldNick()) {
-						self.Roster.joinAnimation('user-' + roomId + '-' + userId);
+					var rosterUserId = 'user-' + roomId + '-' + userId;
+					console.log(roomId, userId);
+					if (!user.getOldNick() || !$('#' + rosterUserId)) {
+						self.Roster.joinAnimation(rosterUserId);
 						// only show other users joining & don't show if there's no message in the room.
 						if(currentUser !== undefined && user.getNick() !== currentUser.getNick() && self.Room.getUser(roomJid)) {
 							// always show join message in private room, even if status messages have been disabled
