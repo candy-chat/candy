@@ -58,7 +58,6 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			switch(status) {
 				case Strophe.Status.CONNECTED:
 					Candy.Core.log('[Connection] Connected');
-					Candy.Core.Action.Jabber.GetJidIfAnonymous();
 					// fall through because the same things need to be done :)
 				case Strophe.Status.ATTACHED:
 					Candy.Core.log('[Connection] Attached');

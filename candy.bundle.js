@@ -86,6 +86,10 @@ Candy.Core = (function(self, Strophe, $) {
 		 * Opened rooms, containing instances of Candy.Core.ChatRooms
 		 */
 		_rooms = {},
+		/** PrivateVariable: _anonymousConnection
+		 * Set in <Candy.Core.connect> when jidOrHost doesn't contain a @-char.
+		 */
+		_anonymousConnection = false,
 		/** PrivateVariable: _options
 		 * Options:
 		 *   (Boolean) debug - Debug (Default: false)
@@ -201,18 +205,15 @@ Candy.Core = (function(self, Strophe, $) {
 		// Reset before every connection attempt to make sure reconnections work after authfail, alltabsclosed, ...
 		_connection.reset();
 		_registerEventHandlers();
-		if(jidOrHost && password) {
+
+		_anonymousConnection = !_anonymousConnection ? jidOrHost && jidOrHost.indexOf("@") < 0 : true;
+
+		if((jidOrHost && password) || (jidOrHost && jidOrHost.indexOf("@") >= 0 && _anonymousConnection)) {
 			// authentication
 			_connection.connect(jidOrHost + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
 			_user = new self.ChatUser(jidOrHost, Strophe.getNodeFromJid(jidOrHost));
 		} else if(jidOrHost) {
-			if(jidOrHost.indexOf("@") < 0) {
-				// Not a JID, anonymous login
-				_connection.connect(jidOrHost, null, Candy.Core.Event.Strophe.Connect);
-			} else {
-				// Most likely a JID, display login modal
-				Candy.Core.Event.Login(jidOrHost);
-			}
+			Candy.Core.Event.Login(jidOrHost);
 		} else {
 			// display login modal
 			Candy.Core.Event.Login();
@@ -286,6 +287,16 @@ Candy.Core = (function(self, Strophe, $) {
 	self.getRooms = function() {
 		return _rooms;
 	};
+
+	/** Function: isAnonymousConnection
+	 * Returns true if <Candy.Core.connect> was first called with a domain instead of a jid as the first param.
+	 *
+	 * Returns:
+	 *   (Boolean)
+	 */
+	self.isAnonymousConnection = function() {
+		return _anonymousConnection;
+	}
 
 	/** Function: getOptions
 	 * Gets options
@@ -1119,21 +1130,6 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('active', {name:'ignore'}).tree());
 		},
 
-		/** Function: GetJidIfAnonymous
-		 * On anonymous login, initially we don't know the jid and as a result, Candy.Core._user is not set.
-		 * Check if user is not set & set it if if necessary.
-		 */
-		GetJidIfAnonymous: function() {
-			if (!Candy.Core.getUser()) {
-				Candy.Core.log("[Jabber] Anonymous login");
-				var connection = Candy.Core.getConnection(),
-					nick = connection.stream_id,
-					jid = connection.jid;
-				Candy.Core.setUser(new Candy.Core.ChatUser(jid, nick));
-			}
-		},
-
-
 		/** Class: Candy.Core.Action.Jabber.Room
 		 * Room-specific commands
 		 */
@@ -1676,7 +1672,6 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			switch(status) {
 				case Strophe.Status.CONNECTED:
 					Candy.Core.log('[Connection] Connected');
-					Candy.Core.Action.Jabber.GetJidIfAnonymous();
 					// fall through because the same things need to be done :)
 				case Strophe.Status.ATTACHED:
 					Candy.Core.log('[Connection] Attached');
@@ -3032,22 +3027,31 @@ Candy.View.Pane = (function(self, $) {
 					_labelUsername: $.i18n._('labelUsername'),
 					_labelPassword: $.i18n._('labelPassword'),
 					_loginSubmit  : $.i18n._('loginSubmit'),
-					presetJid : (presetJid ? presetJid : false)
+					displayPassword: !Candy.Core.isAnonymousConnection(),
+					displayUsername: Candy.Core.isAnonymousConnection() || !presetJid,
+					presetJid: presetJid ? presetJid : false,
 				}));
 
 				// register submit handler
 				$('#login-form').submit(function(event) {
 					var username = $('#username').val(),
 						password = $('#password').val(),
+						jid;
+
+					if (!Candy.Core.isAnonymousConnection()) {
 						// guess the input and create a jid out of it
 						jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
 							username + '@' + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
-						
-					if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
-						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('loginInvalid'));
-					} else {
-						//Candy.View.Pane.Chat.Modal.hide();
-						Candy.Core.connect(jid, password);
+
+						if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
+							Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('loginInvalid'));
+						} else {
+							//Candy.View.Pane.Chat.Modal.hide();
+							Candy.Core.connect(jid, password);
+						}
+					} else { // anonymous login
+						jid = username + '@' + presetJid;
+						Candy.Core.connect(jid);
 					}
 					return false;
 				});
@@ -4060,9 +4064,9 @@ Candy.View.Template = (function(self){
 
 	self.Login = {
 		form: '<form method="post" id="login-form" class="login-form">'
-			+ '{{^presetJid}}<label for="username">{{_labelUsername}}</label><input type="text" id="username" name="username"/>{{/presetJid}}'
+			+ '{{#displayUsername}}<label for="username">{{_labelUsername}}</label><input type="text" id="username" name="username"/>{{/displayUsername}}'
 			+ '{{#presetJid}}<input type="hidden" id="username" name="username" value="{{presetJid}}"/>{{/presetJid}}'
-			+ '<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />'
+			+ '{{#displayPassword}}<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />{{/displayPassword}}'
 			+ '<input type="submit" class="button" value="{{_loginSubmit}}" /></form>'
 	};
 
