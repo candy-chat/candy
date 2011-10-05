@@ -3045,10 +3045,10 @@ Candy.View.Pane = (function(self, $) {
 				Candy.View.Pane.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
 					_labelUsername: $.i18n._('labelUsername'),
 					_labelPassword: $.i18n._('labelPassword'),
-					_loginSubmit  : $.i18n._('loginSubmit'),
+					_loginSubmit: $.i18n._('loginSubmit'),
 					displayPassword: !Candy.Core.isAnonymousConnection(),
 					displayUsername: Candy.Core.isAnonymousConnection() || !presetJid,
-					presetJid: presetJid ? presetJid : false,
+					presetJid: presetJid ? presetJid : false
 				}));
 
 				// register submit handler
@@ -3857,6 +3857,7 @@ Candy.View.Pane = (function(self, $) {
 					}
 				// user is in room but maybe the affiliation/role has changed
 				} else {
+					usercountDiff = 0;
 					userElem.replaceWith(html);
 					$('#user-' + roomId + '-' + userId).css({opacity: 1}).show();
 				}
