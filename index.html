@@ -96,6 +96,9 @@
 				Before you get started you need access to a <strong>Jabber server</strong> with HTTP-binding enabled. We provide guides for <a href="http://www.ejabberd.im/">ejabberd</a> and <a href="http://www.igniterealtime.org/projects/openfire/index.jsp">Openfire</a> to help you setting up and configuring your own server within minutes: <a href="https://github.com/amiadogroup/candy/wiki/Installing-a-Jabber-server">Installing a Jabber server</a>.
 			</p>
 			<p>
+				Please assure that you use the most <strong>recent jQuery version</strong>. Candy has been tested with jQuery 1.6.1.
+			</p>
+			<p>
 				To run the example you'll also need an <strong>HTTP server with proxy capabilities</strong> because it's not allowed to make cross-domain AJAX requests.<br />Candy is delivered with a sample <code>.htaccess</code> file for <a href="http://httpd.apache.org/">Apache HTTP server</a>. Please note that you need to have to following Apache modules enabled: mod_rewrite, mod_proxy and mod_proxy_http.	For more information about the configuration of different web servers take a look at the following guide: <a href="https://github.com/amiadogroup/candy/wiki/HTTP-Proxy-Configuration">HTTP Proxy Configuration</a>.
 			</p>
 			<h3>Setup</h3>
@@ -204,7 +207,7 @@ RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
 					<code>Candy.Core.<strong>attach(jid, sid, rid)</strong></code>
 				<dt>
 				<dd>
-					Attach to an established session (HTTP pre-binding). This method is useful to intialize sessions at server side. Jack Moffitt, creator of Strophe, has written a nice <a href="http://metajack.im/2009/12/14/fastest-xmpp-sessions-with-http-prebinding/">article about pre-binding</a>. 
+					Attach to an established session (HTTP pre-binding). This method is useful to intialize sessions at server side. Jack Moffitt, creator of Strophe, has written a nice <a href="http://metajack.im/2009/12/14/fastest-xmpp-sessions-with-http-prebinding/">article about pre-binding</a>.
 				</dd>
 			</dl>
 			<h3>Usage</h3>
@@ -348,6 +351,6 @@ Candy.Core.connect();</code>
 	</article>
 
 	<a href="http://github.com/amiadogroup/candy"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/e6bef7a091f5f3138b8cd40bc3e114258dd68ddf/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub"></a>
-	
+
 </body>
 </html>
