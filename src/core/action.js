@@ -105,6 +105,17 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('active', {name:'ignore'}).tree());
 		},
 
+		/** Function: GetJidIfAnonymous
+		 * On anonymous login, initially we don't know the jid and as a result, Candy.Core._user doesn't have a jid.
+		 * Check if user doesn't have a jid and get it if necessary from the connection.
+		 */
+		GetJidIfAnonymous: function() {
+			if (!Candy.Core.getUser().getJid()) {
+				Candy.Core.log("[Jabber] Anonymous login");
+				Candy.Core.getUser().data.jid = Candy.Core.getConnection().jid;
+			}
+		},
+
 		/** Class: Candy.Core.Action.Jabber.Room
 		 * Room-specific commands
 		 */

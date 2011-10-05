@@ -58,6 +58,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			switch(status) {
 				case Strophe.Status.CONNECTED:
 					Candy.Core.log('[Connection] Connected');
+					Candy.Core.Action.Jabber.GetJidIfAnonymous();
 					// fall through because the same things need to be done :)
 				case Strophe.Status.ATTACHED:
 					Candy.Core.log('[Connection] Attached');
@@ -429,7 +430,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				} else {
 					return true;
 				}
-				
+
 				// besides the delayed delivery (XEP-0203), there exists also XEP-0091 which is the legacy delayed delivery.
 				// the x[xmlns=jabber:x:delay] is the format in XEP-0091.
 				var delay = msg.children('delay') ? msg.children('delay') : msg.children('x[xmlns="' + Strophe.NS.DELAY +'"]'),

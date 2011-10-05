@@ -561,8 +561,8 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			hideCloseControl: function() {
 				$('#admin-message-cancel').hide().click(function() {});
-			},			
-			
+			},
+
 			/** Function: showLoginForm
 			 * Show the login form modal
 			 *
@@ -583,12 +583,11 @@ Candy.View.Pane = (function(self, $) {
 				// register submit handler
 				$('#login-form').submit(function(event) {
 					var username = $('#username').val(),
-						password = $('#password').val(),
-						jid;
+						password = $('#password').val();
 
 					if (!Candy.Core.isAnonymousConnection()) {
 						// guess the input and create a jid out of it
-						jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
+						var jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
 							username + '@' + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
 
 						if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
@@ -598,8 +597,7 @@ Candy.View.Pane = (function(self, $) {
 							Candy.Core.connect(jid, password);
 						}
 					} else { // anonymous login
-						jid = username + '@' + presetJid;
-						Candy.Core.connect(jid);
+						Candy.Core.connect(presetJid, null, username);
 					}
 					return false;
 				});
@@ -1514,7 +1512,7 @@ Candy.View.Pane = (function(self, $) {
 			if(!message) {
 				return;
 			}
-			
+
 			var html = Mustache.to_html(Candy.View.Template.Message.item, {
 				name: name,
 				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.displayName),

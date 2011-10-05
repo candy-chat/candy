@@ -191,6 +191,7 @@ Candy.Core = (function(self, Strophe, $) {
 	 * There are four different procedures to login:
 	 *   connect('JID', 'password') - Connect a registered user
 	 *   connect('domain') - Connect anonymously to the domain. The user should receive a random JID.
+	 *   connect('domain', null, 'nick') - Connect anonymously to the domain. The user should receive a random JID but with a nick set.
 	 *   connect('JID') - Show login form and prompt for password. JID input is hidden.
 	 *   connect() - Show login form and prompt for JID and password.
 	 *
@@ -199,19 +200,25 @@ Candy.Core = (function(self, Strophe, $) {
 	 *
 	 * Parameters:
 	 *   (String) jidOrHost - JID or Host
-	 *   (String) password - Password of the user
+	 *   (String) password  - Password of the user
+	 *   (String) nick      - Nick of the user. Set one if you want to anonymously connect but preset a nick. If jidOrHost is a domain
+	 *                        and this param is not set, Candy will prompt for a nick.
 	 */
-	self.connect = function(jidOrHost, password) {
+	self.connect = function(jidOrHost, password, nick) {
 		// Reset before every connection attempt to make sure reconnections work after authfail, alltabsclosed, ...
 		_connection.reset();
 		_registerEventHandlers();
 
 		_anonymousConnection = !_anonymousConnection ? jidOrHost && jidOrHost.indexOf("@") < 0 : true;
 
-		if((jidOrHost && password) || (jidOrHost && jidOrHost.indexOf("@") >= 0 && _anonymousConnection)) {
+		if(jidOrHost && password) {
 			// authentication
 			_connection.connect(jidOrHost + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
 			_user = new self.ChatUser(jidOrHost, Strophe.getNodeFromJid(jidOrHost));
+		} else if(jidOrHost && nick) {
+			// anonymous connect
+			_connection.connect(jidOrHost + '/' + Candy.about.name, null, Candy.Core.Event.Strophe.Connect);
+			_user = new self.ChatUser(null, nick); // set jid to null because we'll later receive it
 		} else if(jidOrHost) {
 			Candy.Core.Event.Login(jidOrHost);
 		} else {
@@ -1130,6 +1137,17 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('active', {name:'ignore'}).tree());
 		},
 
+		/** Function: GetJidIfAnonymous
+		 * On anonymous login, initially we don't know the jid and as a result, Candy.Core._user doesn't have a jid.
+		 * Check if user doesn't have a jid and get it if necessary from the connection.
+		 */
+		GetJidIfAnonymous: function() {
+			if (!Candy.Core.getUser().getJid()) {
+				Candy.Core.log("[Jabber] Anonymous login");
+				Candy.Core.getUser().data.jid = Candy.Core.getConnection().jid;
+			}
+		},
+
 		/** Class: Candy.Core.Action.Jabber.Room
 		 * Room-specific commands
 		 */
@@ -1672,6 +1690,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			switch(status) {
 				case Strophe.Status.CONNECTED:
 					Candy.Core.log('[Connection] Connected');
+					Candy.Core.Action.Jabber.GetJidIfAnonymous();
 					// fall through because the same things need to be done :)
 				case Strophe.Status.ATTACHED:
 					Candy.Core.log('[Connection] Attached');
@@ -2043,7 +2062,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				} else {
 					return true;
 				}
-				
+
 				// besides the delayed delivery (XEP-0203), there exists also XEP-0091 which is the legacy delayed delivery.
 				// the x[xmlns=jabber:x:delay] is the format in XEP-0091.
 				var delay = msg.children('delay') ? msg.children('delay') : msg.children('x[xmlns="' + Strophe.NS.DELAY +'"]'),
@@ -3013,8 +3032,8 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			hideCloseControl: function() {
 				$('#admin-message-cancel').hide().click(function() {});
-			},			
-			
+			},
+
 			/** Function: showLoginForm
 			 * Show the login form modal
 			 *
@@ -3035,12 +3054,11 @@ Candy.View.Pane = (function(self, $) {
 				// register submit handler
 				$('#login-form').submit(function(event) {
 					var username = $('#username').val(),
-						password = $('#password').val(),
-						jid;
+						password = $('#password').val();
 
 					if (!Candy.Core.isAnonymousConnection()) {
 						// guess the input and create a jid out of it
-						jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
+						var jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
 							username + '@' + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
 
 						if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
@@ -3050,8 +3068,7 @@ Candy.View.Pane = (function(self, $) {
 							Candy.Core.connect(jid, password);
 						}
 					} else { // anonymous login
-						jid = username + '@' + presetJid;
-						Candy.Core.connect(jid);
+						Candy.Core.connect(presetJid, null, username);
 					}
 					return false;
 				});
@@ -3966,7 +3983,7 @@ Candy.View.Pane = (function(self, $) {
 			if(!message) {
 				return;
 			}
-			
+
 			var html = Mustache.to_html(Candy.View.Template.Message.item, {
 				name: name,
 				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.displayName),
