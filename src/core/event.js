@@ -396,7 +396,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				var roomJid, message;
 				if(msg.children('subject').length > 0) {
 					roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
-					message = { name: Strophe.getNodeFromJid(roomJid), body: msg.children('subject').text(), type: 'subject' };
+					message = { name: Strophe.unescapeNode(Strophe.getNodeFromJid(roomJid)), body: msg.children('subject').text(), type: 'subject' };
 				// Error messsage
 				} else if(msg.attr('type') === 'error') {
 					var error = msg.children('error');
@@ -413,14 +413,14 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 							// if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
 							isNoConferenceRoomJid = !Candy.Core.getRoom(bareRoomJid),
 							name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(roomJid) : Strophe.getResourceFromJid(roomJid);
-						message = { name: name, body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
+						message = { name: Strophe.unescapeNode(name), body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
 					// Multi-user chat message
 					} else {
 						roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
 						var resource = Strophe.getResourceFromJid(msg.attr('from'));
 						// Message from a user
 						if(resource) {
-							message = { name: resource, body: msg.children('body').text(), type: msg.attr('type') };
+							message = { name: Strophe.unescapeNode(resource), body: msg.children('body').text(), type: msg.attr('type') };
 						// Message from server (XEP-0045#registrar-statuscodes)
 						} else {
 							message = { name: '', body: msg.children('body').text(), type: 'info' };
