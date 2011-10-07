@@ -172,7 +172,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				if(msg === '') {
 					return false;
 				}
-				Candy.Core.getConnection().muc.message(roomJid, undefined, msg, type);
+				Candy.Core.getConnection().muc.message(Candy.Util.escapeJid(roomJid), undefined, msg, type);
 				return true;
 			},
 
@@ -200,7 +200,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 					privacyList = currentUser.getPrivacyList('ignore');
 				if (privacyList.length > 0) {
 					$.each(privacyList, function(index, jid) {
-						iq.c('item', {type:'jid', value: jid, action: 'deny', order : index})
+						iq.c('item', {type:'jid', value: Candy.Util.escapeJid(jid), action: 'deny', order : index})
 							.c('message').up().up();
 					});
 				} else {
@@ -227,7 +227,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				 */
 				UserAction: function(roomJid, userJid, type, reason) {
 					var iqId,
-						itemObj = {nick: Strophe.getResourceFromJid(userJid)};
+						itemObj = {nick: Strophe.escapeNode(Strophe.getResourceFromJid(userJid))};
 					switch(type) {
 						case 'kick':
 							iqId = 'kick1';

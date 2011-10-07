@@ -29,24 +29,42 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 * - nick
 	 * - affiliation
 	 * - role
+	 * - privacyLists
+	 * - customData to be used by e.g. plugins
 	 */
 	this.data = {
 		jid: jid,
-		nick: nick,
+		nick: Strophe.unescapeNode(nick),
 		affiliation: affiliation,
 		role: role,
 		privacyLists: {},
 		customData: {}
 	};
-
+	
 	/** Function: getJid
-	 * Gets user jid
+	 * Gets an unescaped user jid
+	 *
+	 * See:
+	 *   <Candy.Util.unescapeJid>
 	 *
 	 * Returns:
 	 *   (String) - jid
 	 */
 	this.getJid = function() {
-		return this.data.jid;
+		return Candy.Util.unescapeJid(this.data.jid);
+	};
+	
+	/** Function: getEscapedJid
+	 * Escapes the user's jid (node & resource get escaped)
+	 *
+	 * See:
+	 *   <Candy.Util.escapeJid>
+	 *
+	 * Returns:
+	 *   (String) - escaped jid
+	 */
+	this.getEscapedJid = function() {
+		return Candy.Util.escapeJid(this.data.jid);
 	};
 
 	/** Function: getNick

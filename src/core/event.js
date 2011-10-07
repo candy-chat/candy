@@ -326,7 +326,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			 */
 			Presence: function(msg) {
 				Candy.Core.log('[Jabber:Room] Presence');
-				var from = msg.attr('from'),
+				var from = Candy.Util.unescapeJid(msg.attr('from')),
 					roomJid = Strophe.getBareJidFromJid(from),
 					presenceType = msg.attr('type');
 
@@ -395,8 +395,8 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				// Room subject
 				var roomJid, message;
 				if(msg.children('subject').length > 0) {
-					roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
-					message = { name: Strophe.unescapeNode(Strophe.getNodeFromJid(roomJid)), body: msg.children('subject').text(), type: 'subject' };
+					roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
+					message = { name: Strophe.getNodeFromJid(roomJid), body: msg.children('subject').text(), type: 'subject' };
 				// Error messsage
 				} else if(msg.attr('type') === 'error') {
 					var error = msg.children('error');
@@ -408,19 +408,19 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				} else if(msg.children('body').length > 0) {
 					// Private chat message
 					if(msg.attr('type') === 'chat') {
-						roomJid = msg.attr('from');
+						roomJid = Candy.Util.unescapeJid(msg.attr('from'));
 						var bareRoomJid = Strophe.getBareJidFromJid(roomJid),
 							// if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
 							isNoConferenceRoomJid = !Candy.Core.getRoom(bareRoomJid),
 							name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(roomJid) : Strophe.getResourceFromJid(roomJid);
-						message = { name: Strophe.unescapeNode(name), body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
+						message = { name: name, body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
 					// Multi-user chat message
 					} else {
-						roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
-						var resource = Strophe.getResourceFromJid(msg.attr('from'));
+						roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
+						var resource = Strophe.unescapeNode(Strophe.getResourceFromJid(msg.attr('from')));
 						// Message from a user
 						if(resource) {
-							message = { name: Strophe.unescapeNode(resource), body: msg.children('body').text(), type: msg.attr('type') };
+							message = { name: resource, body: msg.children('body').text(), type: msg.attr('type') };
 						// Message from server (XEP-0045#registrar-statuscodes)
 						} else {
 							message = { name: '', body: msg.children('body').text(), type: 'info' };
