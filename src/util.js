@@ -29,6 +29,56 @@ Candy.Util = (function(self, $){
 	self.jidToId = function(jid) {
 		return MD5.hexdigest(jid);
 	};
+	
+	/** Function: escapeJid
+	 * Escapes a jid (node & resource get escaped)
+	 *
+	 * See:
+	 *   XEP-0106
+	 *
+	 * Parameters:
+	 *   (String) jid - Jid
+	 *
+	 * Returns:
+	 *   (String) - escaped jid
+	 */
+	self.escapeJid = function(jid) {
+		var node = Strophe.escapeNode(Strophe.getNodeFromJid(jid)),
+			domain = Strophe.getDomainFromJid(jid),
+			resource = Strophe.getResourceFromJid(jid);
+			
+		jid = node + '@' + domain;
+		if (resource) {
+			jid += '/' + Strophe.escapeNode(resource);
+		}
+		
+		return jid;
+	};
+	
+	/** Function: unescapeJid
+	 * Unescapes a jid (node & resource get unescaped)
+	 *
+	 * See:
+	 *   XEP-0106
+	 *
+	 * Parameters:
+	 *   (String) jid - Jid
+	 *
+	 * Returns:
+	 *   (String) - unescaped Jid
+	 */
+	self.unescapeJid = function(jid) {
+		var node = Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
+			domain = Strophe.getDomainFromJid(jid),
+			resource = Strophe.getResourceFromJid(jid);
+			
+		jid = node + '@' + domain;
+		if (resource) {
+			jid += '/' + Strophe.unescapeNode(resource);
+		}
+		
+		return jid;
+	};
 
 	/** Function: crop
 	 * Crop a string with the specified length
