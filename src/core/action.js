@@ -106,19 +106,15 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		},
 
 		/** Function: GetJidIfAnonymous
-		 * On anonymous login, initially we don't know the jid and as a result, Candy.Core._user is not set.
-		 * Check if user is not set & set it if if necessary.
+		 * On anonymous login, initially we don't know the jid and as a result, Candy.Core._user doesn't have a jid.
+		 * Check if user doesn't have a jid and get it if necessary from the connection.
 		 */
 		GetJidIfAnonymous: function() {
-			if (!Candy.Core.getUser()) {
+			if (!Candy.Core.getUser().getJid()) {
 				Candy.Core.log("[Jabber] Anonymous login");
-				var connection = Candy.Core.getConnection(),
-					nick = connection.stream_id,
-					jid = connection.jid;
-				Candy.Core.setUser(new Candy.Core.ChatUser(jid, nick));
+				Candy.Core.getUser().data.jid = Candy.Core.getConnection().jid;
 			}
 		},
-
 
 		/** Class: Candy.Core.Action.Jabber.Room
 		 * Room-specific commands
@@ -176,7 +172,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				if(msg === '') {
 					return false;
 				}
-				Candy.Core.getConnection().muc.message(roomJid, undefined, msg, type);
+				Candy.Core.getConnection().muc.message(Candy.Util.escapeJid(roomJid), undefined, msg, type);
 				return true;
 			},
 
@@ -204,7 +200,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 					privacyList = currentUser.getPrivacyList('ignore');
 				if (privacyList.length > 0) {
 					$.each(privacyList, function(index, jid) {
-						iq.c('item', {type:'jid', value: jid, action: 'deny', order : index})
+						iq.c('item', {type:'jid', value: Candy.Util.escapeJid(jid), action: 'deny', order : index})
 							.c('message').up().up();
 					});
 				} else {
@@ -231,7 +227,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				 */
 				UserAction: function(roomJid, userJid, type, reason) {
 					var iqId,
-						itemObj = {nick: Strophe.getResourceFromJid(userJid)};
+						itemObj = {nick: Strophe.escapeNode(Strophe.getResourceFromJid(userJid))};
 					switch(type) {
 						case 'kick':
 							iqId = 'kick1';

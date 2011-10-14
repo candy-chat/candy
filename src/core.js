@@ -34,6 +34,10 @@ Candy.Core = (function(self, Strophe, $) {
 		 * Opened rooms, containing instances of Candy.Core.ChatRooms
 		 */
 		_rooms = {},
+		/** PrivateVariable: _anonymousConnection
+		 * Set in <Candy.Core.connect> when jidOrHost doesn't contain a @-char.
+		 */
+		_anonymousConnection = false,
 		/** PrivateVariable: _options
 		 * Options:
 		 *   (Boolean) debug - Debug (Default: false)
@@ -93,7 +97,7 @@ Candy.Core = (function(self, Strophe, $) {
 	self.init = function(service, options) {
 		_service = service;
 		// Apply options
-		$.extend(_options, options);
+		$.extend(true, _options, options);
 
 		// Enable debug logging
 		if(_options.debug) {
@@ -135,6 +139,7 @@ Candy.Core = (function(self, Strophe, $) {
 	 * There are four different procedures to login:
 	 *   connect('JID', 'password') - Connect a registered user
 	 *   connect('domain') - Connect anonymously to the domain. The user should receive a random JID.
+	 *   connect('domain', null, 'nick') - Connect anonymously to the domain. The user should receive a random JID but with a nick set.
 	 *   connect('JID') - Show login form and prompt for password. JID input is hidden.
 	 *   connect() - Show login form and prompt for JID and password.
 	 *
@@ -143,28 +148,37 @@ Candy.Core = (function(self, Strophe, $) {
 	 *
 	 * Parameters:
 	 *   (String) jidOrHost - JID or Host
-	 *   (String) password - Password of the user
+	 *   (String) password  - Password of the user
+	 *   (String) nick      - Nick of the user. Set one if you want to anonymously connect but preset a nick. If jidOrHost is a domain
+	 *                        and this param is not set, Candy will prompt for a nick.
 	 */
-	self.connect = function(jidOrHost, password) {
+	self.connect = function(jidOrHost, password, nick) {
 		// Reset before every connection attempt to make sure reconnections work after authfail, alltabsclosed, ...
 		_connection.reset();
 		_registerEventHandlers();
+
+		_anonymousConnection = !_anonymousConnection ? jidOrHost && jidOrHost.indexOf("@") < 0 : true;
+
 		if(jidOrHost && password) {
 			// authentication
-			_connection.connect(jidOrHost + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
+			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
 			_user = new self.ChatUser(jidOrHost, Strophe.getNodeFromJid(jidOrHost));
+		} else if(jidOrHost && nick) {
+			// anonymous connect
+			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, null, Candy.Core.Event.Strophe.Connect);
+			_user = new self.ChatUser(null, nick); // set jid to null because we'll later receive it
 		} else if(jidOrHost) {
-			if(jidOrHost.indexOf("@") < 0) {
-				// Not a JID, anonymous login
-				_connection.connect(jidOrHost, null, Candy.Core.Event.Strophe.Connect);
-			} else {
-				// Most likely a JID, display login modal
-				Candy.Core.Event.Login(jidOrHost);
-			}
+			Candy.Core.Event.Login(jidOrHost);
 		} else {
 			// display login modal
 			Candy.Core.Event.Login();
 		}
+	};
+	
+	_getEscapedJidFromJid = function(jid) {
+		var node = Strophe.getNodeFromJid(jid),
+			domain = Strophe.getDomainFromJid(jid);
+		return node ? Strophe.escapeNode(node) + '@' + domain : domain;
 	};
 
 	/** Function: attach
@@ -233,6 +247,16 @@ Candy.Core = (function(self, Strophe, $) {
 	 */
 	self.getRooms = function() {
 		return _rooms;
+	};
+
+	/** Function: isAnonymousConnection
+	 * Returns true if <Candy.Core.connect> was first called with a domain instead of a jid as the first param.
+	 *
+	 * Returns:
+	 *   (Boolean)
+	 */
+	self.isAnonymousConnection = function() {
+		return _anonymousConnection;
 	};
 
 	/** Function: getOptions
