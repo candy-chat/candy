@@ -29,7 +29,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.0.4-dev'
+		version: '1.0.4'
 	};
 
 	/** Function: init
@@ -228,9 +228,9 @@ Candy.Core = (function(self, Strophe, $) {
 	};
 	
 	_getEscapedJidFromJid = function(jid) {
-		var node = Strophe.escapeNode(Strophe.getNodeFromJid(jid)),
+		var node = Strophe.getNodeFromJid(jid),
 			domain = Strophe.getDomainFromJid(jid);
-		return node + '@' + domain;
+		return node ? Strophe.escapeNode(node) + '@' + domain : domain;
 	};
 
 	/** Function: attach
@@ -309,7 +309,7 @@ Candy.Core = (function(self, Strophe, $) {
 	 */
 	self.isAnonymousConnection = function() {
 		return _anonymousConnection;
-	}
+	};
 
 	/** Function: getOptions
 	 * Gets options
@@ -615,9 +615,9 @@ Candy.Util = (function(self, $){
 		var node = Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
 			domain = Strophe.getDomainFromJid(jid),
 			resource = Strophe.getResourceFromJid(jid);
-			
+		
 		jid = node + '@' + domain;
-		if (resource) {
+		if(resource) {
 			jid += '/' + Strophe.unescapeNode(resource);
 		}
 		
@@ -2055,17 +2055,18 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
 					room = Candy.Core.getRoom(roomJid);
 				}
-				// Room existed but user was not registered
-				if(room.getUser() === null) {
-					room.setUser(Candy.Core.getUser());
-				}
 
 				var roster = room.getRoster(),
 					action, user,
 					item = msg.find('item');
 				// User joined a room
 				if(presenceType !== 'unavailable') {
-					user = new Candy.Core.ChatUser(from, Strophe.getResourceFromJid(from), item.attr('affiliation'), item.attr('role'));
+					var nick = Strophe.getResourceFromJid(from);
+					user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
+					// Room existed but client (myself) is not yet registered
+					if(room.getUser() === null && Candy.Core.getUser().getNick() === nick) {
+						room.setUser(user);
+					}					
 					roster.add(user);
 					action = 'join';
 				// User left a room
@@ -2123,9 +2124,10 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					// Multi-user chat message
 					} else {
 						roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
-						var resource = Strophe.unescapeNode(Strophe.getResourceFromJid(msg.attr('from')));
+						var resource = Strophe.getResourceFromJid(msg.attr('from'));
 						// Message from a user
 						if(resource) {
+							resource = Strophe.unescapeNode(resource);
 							message = { name: resource, body: msg.children('body').text(), type: msg.attr('type') };
 						// Message from server (XEP-0045#registrar-statuscodes)
 						} else {

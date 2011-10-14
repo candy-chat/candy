@@ -176,9 +176,9 @@ Candy.Core = (function(self, Strophe, $) {
 	};
 	
 	_getEscapedJidFromJid = function(jid) {
-		var node = Strophe.escapeNode(Strophe.getNodeFromJid(jid)),
+		var node = Strophe.getNodeFromJid(jid),
 			domain = Strophe.getDomainFromJid(jid);
-		return node + '@' + domain;
+		return node ? Strophe.escapeNode(node) + '@' + domain : domain;
 	};
 
 	/** Function: attach
@@ -257,7 +257,7 @@ Candy.Core = (function(self, Strophe, $) {
 	 */
 	self.isAnonymousConnection = function() {
 		return _anonymousConnection;
-	}
+	};
 
 	/** Function: getOptions
 	 * Gets options

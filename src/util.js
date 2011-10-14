@@ -71,9 +71,9 @@ Candy.Util = (function(self, $){
 		var node = Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
 			domain = Strophe.getDomainFromJid(jid),
 			resource = Strophe.getResourceFromJid(jid);
-			
+		
 		jid = node + '@' + domain;
-		if (resource) {
+		if(resource) {
 			jid += '/' + Strophe.unescapeNode(resource);
 		}
 		
