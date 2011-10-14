@@ -29,7 +29,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.0.4'
+		version: '1.0.5'
 	};
 
 	/** Function: init
@@ -1570,7 +1570,10 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 *   (String) - jid
 	 */
 	this.getJid = function() {
-		return Candy.Util.unescapeJid(this.data.jid);
+		if(this.data.jid) {
+			return Candy.Util.unescapeJid(this.data.jid);
+		}
+		return;
 	};
 	
 	/** Function: getEscapedJid

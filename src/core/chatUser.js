@@ -51,7 +51,10 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 *   (String) - jid
 	 */
 	this.getJid = function() {
-		return Candy.Util.unescapeJid(this.data.jid);
+		if(this.data.jid) {
+			return Candy.Util.unescapeJid(this.data.jid);
+		}
+		return;
 	};
 	
 	/** Function: getEscapedJid
