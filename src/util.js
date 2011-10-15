@@ -132,11 +132,11 @@ Candy.Util = (function(self, $){
 	 */
 	self.getCookie = function(name) {
 	    if(document.cookie)	{
-			var regex = new RegExp(escape(name) + '=([^;]*)', 'gm'),
-				matches = regex.exec(document.cookie);
-			if(matches) {
-				return matches[1];
-			}
+				var regex = new RegExp(escape(name) + '=([^;]*)', 'gm'),
+					matches = regex.exec(document.cookie);
+					if(matches) {
+						return matches[1];
+					}
 	    }
 	};
 
@@ -147,7 +147,7 @@ Candy.Util = (function(self, $){
 	 *   (String) name - cookie name
 	 */
 	self.deleteCookie = function(name) {
-		document.cookie = name + '=;expires=Thu, 01-Jan-70 00:00:01 GMT';
+		document.cookie = name + '=;expires=Thu, 01-Jan-70 00:00:01 GMT;path=/';
 	};
 
 	/** Function: getPosLeftAccordingToWindowBounds
