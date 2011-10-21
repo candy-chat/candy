@@ -3907,7 +3907,6 @@ Candy.View.Pane = (function(self, $) {
 
 					// don't show if the user has recently changed the nickname.
 					var rosterUserId = 'user-' + roomId + '-' + userId;
-					console.log(roomId, userId);
 					if (!user.getOldNick() || !$('#' + rosterUserId)) {
 						self.Roster.joinAnimation(rosterUserId);
 						// only show other users joining & don't show if there's no message in the room.
