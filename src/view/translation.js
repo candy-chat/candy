@@ -64,8 +64,12 @@ Candy.View.Translation = {
 		'tooltipStatusmessage'	: 'Display status messages',
 		'tooltipAdministration'	: 'Room Administration',
 		'tooltipUsercount'		: 'Room Occupants',
+		
+		'enterRoomPassword' : 'This room is password protected. Please enter the correct password.',
+		'enterRoomPasswordSubmit' : 'Join room',
+		'passwordEnteredInvalid' : 'The password you entered is invalid. Please enter the correct password.',
 
-		'raptorMessageBlocked' : 'Please do not spam. You have been blocked for a short-time.'
+		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
 
 	'de' : {
@@ -120,7 +124,11 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Raum Administration',
 		'tooltipUsercount'		: 'Anzahl Benutzer im Raum',
 
-		'raptorMessageBlocked' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
+		'enterRoomPassword' : 'Dieser Raum ist durch ein Passwort geschützt. Bitte gib das korrekte Passwort ein.',
+		'enterRoomPasswordSubmit' : 'Raum betreten',
+		'passwordEnteredInvalid' : 'Das angegebene Passwort ist nicht korrekt. Bitte gib das korrekte Passwort ein.',
+
+		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},
 	'fr' : {
 		'status': 'Status: %s',
@@ -174,7 +182,7 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Administrer le salon',
 		'tooltipUsercount'		: 'Nombre d\'utilisateurs dans le salon',
 
-		'raptorMessageBlocked' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
+		'antiSpamMessage' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
 	},
 	'nl' : {
 		'status': 'Status: %s',
@@ -228,7 +236,7 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Instellingen',
 		'tooltipUsercount'		: 'Gebruikers',
 
-		'raptorMessageBlocked' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
+		'antiSpamMessage' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
 	},
 	'es': {
 		'status': 'Estado: %s',
@@ -282,6 +290,6 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Administración de la sala',
 		'tooltipUsercount'		: 'Usuarios en la sala',
 
-		'raptorMessageBlocked' : 'Por favor, no hagas spam. Has sido bloqueado temporalmente.'
+		'antiSpamMessage' : 'Por favor, no hagas spam. Has sido bloqueado temporalmente.'
 	}
 };

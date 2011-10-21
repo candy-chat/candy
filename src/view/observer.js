@@ -149,6 +149,33 @@ Candy.View.Observer = (function(self, $) {
 			}
 		}
 	};
+	
+	/** Class: Candy.View.Observer.PresenceError
+	 * Presence error events
+	 */
+	self.PresenceError = {
+		/** Function: update
+		 * Presence errors get handled in this method
+		 *
+		 * Parameters:
+		 *   (Candy.Core.Event) obj - Candy core event object
+		 *   (Object) args - {msg, type, roomJid, roomName}
+		 */
+		update: function(obj, args) {
+			switch(args.type) {
+				case 'not-authorized':
+					var message;
+					if (args.msg.children('x').children('password').length > 0) {
+						message = $.i18n._('passwordEnteredInvalid');
+					}
+					Candy.View.Pane.Chat.Modal.showEnterPasswordForm(args.roomJid, args.roomName, message);
+					break;
+				case 'conflict':
+					Candy.View.Pane.Chat.Modal.showNicknameConflictForm(args.roomJid, args.roomName);
+					break;
+			}
+		}
+	}
 
 	/** Class: Candy.View.Observer.Message
 	 * Message related events

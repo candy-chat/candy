@@ -129,10 +129,11 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *
 			 * Parameters:
 			 *   (String) roomJid - Room to join
+			 *   (String) password - [optional] Password for the room
 			 */
-			Join: function(roomJid) {
+			Join: function(roomJid, password) {
 				self.Jabber.Room.Disco(roomJid);
-				Candy.Core.getConnection().muc.join(roomJid, Candy.Core.getUser().getNick());
+				Candy.Core.getConnection().muc.join(roomJid, Candy.Core.getUser().getNick(), null, null, password);
 			},
 
 			/** Function: Leave
