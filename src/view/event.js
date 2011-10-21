@@ -54,7 +54,7 @@ Candy.View.Event = (function(self, $) {
 		 * Called when a new room gets added
 		 *
 		 * Parameters:
-		 *   (Object) args - {roomJid, element}
+		 *   (Object) args - {roomJid, type=chat|groupchat, element}
 		 */
 		onAdd: function(args) {
 			return;
@@ -158,13 +158,13 @@ Candy.View.Event = (function(self, $) {
 		 * Called before a new message will be shown.
 		 *
 		 * Parameters:
-		 *   (String) message - parsed message
+		 *   (Object) args - {roomJid, nick, message}
 		 *
 		 * Returns:
 		 *   (String) message
 		 */
-		beforeShow: function(message) {
-			return message;
+		beforeShow: function(args) {
+			return args.message;
 		},
 		
 		/** Function: onShow

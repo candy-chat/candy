@@ -37,7 +37,7 @@ Candy.View.Observer = (function(self, $) {
 					case Strophe.Status.AUTHENTICATING:
 						Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnecting'), false, true);
 						break;
-						
+
 					case Strophe.Status.ATTACHED:
 					case Strophe.Status.CONNECTED:
 						Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnected'));
@@ -52,7 +52,7 @@ Candy.View.Observer = (function(self, $) {
 						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'));
 						Candy.View.Event.Chat.onDisconnect();
 						break;
-						
+
 					case Strophe.Status.AUTHFAIL:
 						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusAuthfail'));
 						Candy.View.Event.Chat.onAuthfail();
@@ -93,7 +93,7 @@ Candy.View.Observer = (function(self, $) {
 				self.Presence.notifyPrivateChats(user, args.type);
 			// Client has been kicked or banned
 			} else if (args.type === 'kick' || args.type === 'ban') {
-				var actorName = Strophe.getNodeFromJid(args.actor),
+				var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : args.roomName,
 					actionLabel;
 				switch(args.type) {
 					case 'kick':
@@ -113,7 +113,7 @@ Candy.View.Observer = (function(self, $) {
 						Candy.View.Pane.Room.close(args.roomJid);
 						self.Presence.notifyPrivateChats(args.user, args.type);
 					});
-				}, 3500);
+				}, 5000);
 				Candy.View.Event.Room.onPresenceChange({ type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user });
 			// A user changed presence
 			} else {
@@ -130,6 +130,7 @@ Candy.View.Observer = (function(self, $) {
 				}
 			}
 		},
+
 		/** Function: notifyPrivateChats
 		 * Notify private user chats if existing
 		 *
@@ -162,7 +163,13 @@ Candy.View.Observer = (function(self, $) {
 		 */
 		update: function(obj, args) {
 			if(args.message.type === 'subject') {
+				if (!Candy.View.Pane.Chat.rooms[args.roomJid]) {
+					Candy.View.Pane.Room.init(args.roomJid, args.message.name);
+					Candy.View.Pane.Room.show(args.roomJid);
+				}
 				Candy.View.Pane.Room.setSubject(args.roomJid, args.message.body);
+			} else if(args.message.type === 'info') {
+				Candy.View.Pane.Chat.infoMessage(args.roomJid, args.message.body);
 			} else {
 				// Initialize room if it's a message for a new private user chat
 				if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[args.roomJid]) {

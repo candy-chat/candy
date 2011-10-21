@@ -27,11 +27,16 @@ Candy.View = (function(self, $) {
 		 *   (String) language - language to use
 		 *   (String) resources - path to resources directory (with trailing slash)
 		 *   (Object) messages - limit: clean up message pane when n is reached / remove: remove n messages after limit has been reached
+		 *   (Object) crop - crop if longer than defined: message.nickname=15, message.body=1000, roster.nickname=15
 		 */
 		_options = {
 			language: 'en',
 			resources: 'res/',
-			messages: { limit: 2000, remove: 500 }
+			messages: { limit: 2000, remove: 500 },
+			crop: {
+				message: { nickname: 15, body: 1000 },
+				roster: { nickname: 15 }
+			}
 		},
 
 		/** PrivateFunction: _setupTranslation
@@ -107,7 +112,7 @@ Candy.View = (function(self, $) {
 	 *   (Object) options - Options: see _options field (value passed here gets extended by the default value in _options field)
 	 */
 	self.init = function(container, options) {
-		$.extend(_options, options);
+		$.extend(true, _options, options);
 		_setupTranslation(_options.language);
 		
 		// Set path to emoticons

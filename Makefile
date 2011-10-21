@@ -26,9 +26,9 @@ CANDY_LIBS_FILES = $(LIBS_DIR)/strophejs/strophe.js $(LIBS_DIR)/strophejs-plugin
 CANDY_FILES_BUNDLE = $(CANDY_FILES:.js=.bundle)
 CANDY_LIBS_FILES_BUNDLE = $(CANDY_LIBS_FILES:.js=.libs-bundle)
 
-all: clean-bundle bundle min
+all: bundle min
 
-bundle: $(CANDY_FILES_BUNDLE)
+bundle: clean-bundle $(CANDY_FILES_BUNDLE)
 
 %.bundle: %.js
 	@@echo -n "Bundling" $< "..."
@@ -47,7 +47,9 @@ else
 	@@echo "** Please set YUI_COMPRESSOR to the path to the jar file."
 endif
 
-libs: $(CANDY_LIBS_FILES_BUNDLE) libs-min
+libs: libs-bundle libs-min
+
+libs-bundle: clean-libs $(CANDY_LIBS_FILES_BUNDLE)
 
 %.libs-bundle: %.js
 	@@echo -n "Bundling" $< "..."

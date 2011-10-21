@@ -141,8 +141,8 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		 */
 		Presence: function(msg) {
 			Candy.Core.log('[Jabber] Presence');
-			var x = $('x', msg);
-			if(x.attr('xmlns') && x.attr('xmlns').match(Strophe.NS.MUC)) {
+			msg = $(msg);
+			if(msg.children('x[xmlns^="' + Strophe.NS.MUC + '"]').length > 0) {
 				self.Jabber.Room.Presence(msg);
 			}
 			return true;
@@ -161,8 +161,9 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			Candy.Core.log('[Jabber] Bookmarks');
 			// Autojoin bookmarks (Openfire)
 			$('conference', msg).each(function() {
-				if($(this).attr('autojoin')) {
-					Candy.Core.Action.Jabber.Room.Join($(this).attr('jid'));
+				var item = $(this);
+				if(item.attr('autojoin')) {
+					Candy.Core.Action.Jabber.Room.Join(item.attr('jid'));
 				}
 			});
 			return true;
@@ -170,6 +171,8 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 
 		/** Function: PrivacyList
 		 * Acts on a privacy list event and sets up the current privacy list of this user.
+		 *
+		 * If no privacy list has been added yet, create the privacy list and listen again to this event.
 		 *
 		 * Parameters:
 		 *   (String) msg - Raw XML Message
@@ -180,12 +183,35 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		PrivacyList: function(msg) {
 			Candy.Core.log('[Jabber] PrivacyList');
 			var currentUser = Candy.Core.getUser();
-			$('list[name=ignore] item', msg).each(function() {
+
+			$('list[name="ignore"] item', msg).each(function() {
 				var item = $(this);
 				if (item.attr('action') === 'deny') {
 					currentUser.addToOrRemoveFromPrivacyList('ignore', item.attr('value'));
 				}
 			});
+			Candy.Core.Action.Jabber.SetIgnoreListActive();
+			return false;
+		},
+
+		/** Function: PrivacyListError
+		 * Acts when a privacy list error has been received.
+		 *
+		 * Currently only handles the case, when a privacy list doesn't exist yet and creates one.
+		 *
+		 * Parameters:
+		 *   (String) msg - Raw XML Message
+		 *
+		 * Returns:
+		 *   (Boolean) - false to disable the handler after first call.
+		 */
+		PrivacyListError: function(msg) {
+			Candy.Core.log('[Jabber] PrivacyListError');
+			// check if msg says that privacyList doesn't exist
+			if ($('error[code="404"][type="cancel"] item-not-found', msg)) {
+				Candy.Core.Action.Jabber.ResetIgnoreList();
+				Candy.Core.Action.Jabber.SetIgnoreListActive();
+			}
 			return false;
 		},
 
@@ -200,18 +226,19 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		 */
 		Message: function(msg) {
 			Candy.Core.log('[Jabber] Message');
-			var fromJid = $(msg).attr('from'),
-				type = $(msg).attr('type'),
-				toJid = $(msg).attr('to');
+			var msg = $(msg),
+				fromJid = msg.attr('from'),
+				type = msg.attr('type'),
+				toJid = msg.attr('to');
 			// Room message
-			if(fromJid !== Strophe.getDomainFromJid(fromJid) && (type === 'groupchat' || type === 'chat')) {
+			if(fromJid !== Strophe.getDomainFromJid(fromJid) && (type === 'groupchat' || type === 'chat' || type === 'error')) {
 				self.Jabber.Room.Message(msg);
 			// Admin message
 			} else if(!toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
-				self.notifyObservers(self.KEYS.CHAT, { type: (type || 'message'), message: $(msg).children('body').text() });
+				self.notifyObservers(self.KEYS.CHAT, { type: (type || 'message'), message: msg.children('body').text() });
 			// Server Message
 			} else if(toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
-				self.notifyObservers(self.KEYS.CHAT, { type: (type || 'message'), subject: $(msg).children('subject').text(), message: $(msg).children('body').text() });
+				self.notifyObservers(self.KEYS.CHAT, { type: (type || 'message'), subject: msg.children('subject').text(), message: msg.children('body').text() });
 			}
 			return true;
 		},
@@ -231,20 +258,21 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			 */
 			Leave: function(msg) {
 				Candy.Core.log('[Jabber:Room] Leave');
-				var from = $(msg).attr('from'),
+				var msg = $(msg),
+					from = msg.attr('from'),
 					roomJid = Strophe.getBareJidFromJid(from),
 					roomName = Candy.Core.getRoom(roomJid).getName(),
-					item = $(msg).find('item'),
+					item = msg.find('item'),
 					type = 'leave',
 					reason,
 					actor;
 
 				delete Candy.Core.getRooms()[roomJid];
 				// if user gets kicked, role is none and there's a status code 307
-				if (item.attr('role') === 'none') {
-					if($(msg).find('status').attr('code') === '307') {
+				if(item.attr('role') === 'none') {
+					if(msg.find('status').attr('code') === '307') {
 						type = 'kick';
-					} else if($(msg).find('status').attr('code') === '301') {
+					} else if(msg.find('status').attr('code') === '301') {
 						type = 'ban';
 					}
 					reason = item.find('reason').text();
@@ -268,14 +296,15 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			 */
 			Disco: function(msg) {
 				Candy.Core.log('[Jabber:Room] Disco');
-				var roomJid = Strophe.getBareJidFromJid($(msg).attr('from'));
+				var msg = $(msg),
+					roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
 
 				// Client joined a room
 				if(!Candy.Core.getRooms()[roomJid]) {
 					Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
 				}
 				// Room existed but room name was unknown
-				var roomName = $(msg).find('identity').attr('name'),
+				var roomName = msg.find('identity').attr('name'),
 					room = Candy.Core.getRoom(roomJid);
 				if(room.getName() === null) {
 					room.setName(roomName);
@@ -290,15 +319,14 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			 * Acts on various presence messages (room leaving, room joining, error presence) and notifies view.
 			 *
 			 * Parameters:
-			 *   (String) msg - Raw XML Message
+			 *   (Object) msg - jQuery object of XML message
 			 *
 			 * Returns:
 			 *   (Boolean) - true
 			 */
 			Presence: function(msg) {
 				Candy.Core.log('[Jabber:Room] Presence');
-				msg = $(msg);
-				var from = msg.attr('from'),
+				var from = Candy.Util.unescapeJid(msg.attr('from')),
 					roomJid = Strophe.getBareJidFromJid(from),
 					presenceType = msg.attr('type');
 
@@ -321,10 +349,6 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
 					room = Candy.Core.getRoom(roomJid);
 				}
-				// Room existed but user was not registered
-				if(room.getUser() === null) {
-					room.setUser(Candy.Core.getUser());
-				}
 
 				var roster = room.getRoster(),
 					action, user,
@@ -335,7 +359,12 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 						// user changed nick before
 						return false;
 					}
-					user = new Candy.Core.ChatUser(from, Strophe.getResourceFromJid(from), item.attr('affiliation'), item.attr('role'));
+					var nick = Strophe.getResourceFromJid(from);
+					user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
+					// Room existed but client (myself) is not yet registered
+					if(room.getUser() === null && Candy.Core.getUser().getNick() === nick) {
+						room.setUser(user);
+					}					
 					roster.add(user);
 					action = 'join';
 				// User left a room
@@ -371,7 +400,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			 * and notifies view.
 			 *
 			 * Parameters:
-			 *   (String) msg - Raw XML Message
+			 *   (String) msg - jQuery object of XML message
 			 *
 			 * Returns:
 			 *   (Boolean) - true
@@ -380,24 +409,47 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				Candy.Core.log('[Jabber:Room] Message');
 				// Room subject
 				var roomJid, message;
-				if($(msg).children('subject').length > 0) {
-					roomJid = Strophe.getBareJidFromJid($(msg).attr('from'));
-					message = { name: Strophe.getNodeFromJid(roomJid), body: $(msg).children('subject').text(), type: 'subject' };
-				// Private chat message
-				} else if($(msg).attr('type') === 'chat') {
-					roomJid = $(msg).attr('from');
-					var bareRoomJid = Strophe.getBareJidFromJid(roomJid),
-						// if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
-						isNoConferenceRoomJid = !Candy.Core.getRoom(bareRoomJid),
-						name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(roomJid) : Strophe.getResourceFromJid(roomJid);
-					message = { name: name, body: $('body', msg).text(), type: $(msg).attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
-				// Multi-user chat message
+				if(msg.children('subject').length > 0) {
+					roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
+					message = { name: Strophe.getNodeFromJid(roomJid), body: msg.children('subject').text(), type: 'subject' };
+				// Error messsage
+				} else if(msg.attr('type') === 'error') {
+					var error = msg.children('error');
+					if(error.attr('code') === '500' && error.children('text').length > 0) {
+						roomJid = msg.attr('from');
+						message = { type: 'info', body: error.children('text').text() };
+					}
+				// Chat message
+				} else if(msg.children('body').length > 0) {
+					// Private chat message
+					if(msg.attr('type') === 'chat') {
+						roomJid = Candy.Util.unescapeJid(msg.attr('from'));
+						var bareRoomJid = Strophe.getBareJidFromJid(roomJid),
+							// if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
+							isNoConferenceRoomJid = !Candy.Core.getRoom(bareRoomJid),
+							name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(roomJid) : Strophe.getResourceFromJid(roomJid);
+						message = { name: name, body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
+					// Multi-user chat message
+					} else {
+						roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
+						var resource = Strophe.getResourceFromJid(msg.attr('from'));
+						// Message from a user
+						if(resource) {
+							resource = Strophe.unescapeNode(resource);
+							message = { name: resource, body: msg.children('body').text(), type: msg.attr('type') };
+						// Message from server (XEP-0045#registrar-statuscodes)
+						} else {
+							message = { name: '', body: msg.children('body').text(), type: 'info' };
+						}
+					}
+				// Unhandled message
 				} else {
-					roomJid = Strophe.getBareJidFromJid($(msg).attr('from'));
-					message = { name: Strophe.getResourceFromJid($(msg).attr('from')), body: $('body', msg).text(), type: $(msg).attr('type') };
+					return true;
 				}
 
-				var delay = $('delay', msg),
+				// besides the delayed delivery (XEP-0203), there exists also XEP-0091 which is the legacy delayed delivery.
+				// the x[xmlns=jabber:x:delay] is the format in XEP-0091.
+				var delay = msg.children('delay') ? msg.children('delay') : msg.children('x[xmlns="' + Strophe.NS.DELAY +'"]'),
 					timestamp = delay !== undefined ? delay.attr('stamp') : null;
 
 				self.notifyObservers(self.KEYS.MESSAGE, {roomJid: roomJid, message: message, timestamp: timestamp } );

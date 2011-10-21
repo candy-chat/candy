@@ -34,6 +34,10 @@ Candy.Core = (function(self, Strophe, $) {
 		 * Opened rooms, containing instances of Candy.Core.ChatRooms
 		 */
 		_rooms = {},
+		/** PrivateVariable: _anonymousConnection
+		 * Set in <Candy.Core.connect> when jidOrHost doesn't contain a @-char.
+		 */
+		_anonymousConnection = false,
 		/** PrivateVariable: _options
 		 * Options:
 		 *   (Boolean) debug - Debug (Default: false)
@@ -66,6 +70,7 @@ Candy.Core = (function(self, Strophe, $) {
 			_addNamespace('PRIVATE', 'jabber:iq:private');
 			_addNamespace('BOOKMARKS', 'storage:bookmarks');
 			_addNamespace('PRIVACY', 'jabber:iq:privacy');
+			_addNamespace('DELAY', 'jabber:x:delay');
 		},
 
 		/** PrivateFunction: _registerEventHandlers
@@ -78,7 +83,8 @@ Candy.Core = (function(self, Strophe, $) {
 			_connection.addHandler(self.Event.Jabber.Message, null, 'message');
 			_connection.addHandler(self.Event.Jabber.Bookmarks, Strophe.NS.PRIVATE, 'iq');
 			_connection.addHandler(self.Event.Jabber.Room.Disco, Strophe.NS.DISCO_INFO, 'iq');
-			_connection.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq');
+			_connection.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq', 'result');
+			_connection.addHandler(self.Event.Jabber.PrivacyListError, Strophe.NS.PRIVACY, 'iq', 'error');
 		};
 
 	/** Function: init
@@ -91,7 +97,7 @@ Candy.Core = (function(self, Strophe, $) {
 	self.init = function(service, options) {
 		_service = service;
 		// Apply options
-		$.extend(_options, options);
+		$.extend(true, _options, options);
 
 		// Enable debug logging
 		if(_options.debug) {
@@ -106,13 +112,13 @@ Candy.Core = (function(self, Strophe, $) {
 			};
 			self.log('[Init] Debugging enabled');
 		}
-				
+
 		_addNamespaces();
 		// Connect to BOSH service
 		_connection = new Strophe.Connection(_service);
 		_connection.rawInput = self.rawInput.bind(self);
 		_connection.rawOutput = self.rawOutput.bind(self);
-		
+
 		// Window unload handler... works on all browsers but Opera. There is NO workaround.
 		// Opera clients getting disconnected 1-2 minutes delayed.
 		window.onbeforeunload = self.onWindowUnload;
@@ -133,36 +139,46 @@ Candy.Core = (function(self, Strophe, $) {
 	 * There are four different procedures to login:
 	 *   connect('JID', 'password') - Connect a registered user
 	 *   connect('domain') - Connect anonymously to the domain. The user should receive a random JID.
+	 *   connect('domain', null, 'nick') - Connect anonymously to the domain. The user should receive a random JID but with a nick set.
 	 *   connect('JID') - Show login form and prompt for password. JID input is hidden.
 	 *   connect() - Show login form and prompt for JID and password.
-	 * 
+	 *
 	 * See:
 	 *   <Candy.Core.attach()> for attaching an already established session.
 	 *
 	 * Parameters:
 	 *   (String) jidOrHost - JID or Host
-	 *   (String) password - Password of the user
+	 *   (String) password  - Password of the user
+	 *   (String) nick      - Nick of the user. Set one if you want to anonymously connect but preset a nick. If jidOrHost is a domain
+	 *                        and this param is not set, Candy will prompt for a nick.
 	 */
-	self.connect = function(jidOrHost, password) {
+	self.connect = function(jidOrHost, password, nick) {
 		// Reset before every connection attempt to make sure reconnections work after authfail, alltabsclosed, ...
 		_connection.reset();
 		_registerEventHandlers();
+
+		_anonymousConnection = !_anonymousConnection ? jidOrHost && jidOrHost.indexOf("@") < 0 : true;
+
 		if(jidOrHost && password) {
 			// authentication
-			_connection.connect(jidOrHost + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
+			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
 			_user = new self.ChatUser(jidOrHost, Strophe.getNodeFromJid(jidOrHost));
+		} else if(jidOrHost && nick) {
+			// anonymous connect
+			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, null, Candy.Core.Event.Strophe.Connect);
+			_user = new self.ChatUser(null, nick); // set jid to null because we'll later receive it
 		} else if(jidOrHost) {
-			if(jidOrHost.indexOf("@") < 0) {
-				// Not a JID, anonymous login
-				_connection.connect(jidOrHost, null, Candy.Core.Event.Strophe.Connect);
-			} else {
-				// Most likely a JID, display login modal
-				Candy.Core.Event.Login(jidOrHost);
-			}
+			Candy.Core.Event.Login(jidOrHost);
 		} else {
 			// display login modal
 			Candy.Core.Event.Login();
 		}
+	};
+	
+	_getEscapedJidFromJid = function(jid) {
+		var node = Strophe.getNodeFromJid(jid),
+			domain = Strophe.getDomainFromJid(jid);
+		return node ? Strophe.escapeNode(node) + '@' + domain : domain;
 	};
 
 	/** Function: attach
@@ -178,7 +194,7 @@ Candy.Core = (function(self, Strophe, $) {
 	self.attach = function(jid, sid, rid) {
 		_user = new self.ChatUser(jid, Strophe.getNodeFromJid(jid));
 		_registerEventHandlers();
-		_connection.attach(Strophe.getBareJidFromJid(jid) + '/' + Candy.about.name, sid, rid, Candy.Core.Event.Strophe.Connect);
+		_connection.attach(jid, sid, rid, Candy.Core.Event.Strophe.Connect);
 	};
 
 	/** Function: disconnect
@@ -231,6 +247,16 @@ Candy.Core = (function(self, Strophe, $) {
 	 */
 	self.getRooms = function() {
 		return _rooms;
+	};
+
+	/** Function: isAnonymousConnection
+	 * Returns true if <Candy.Core.connect> was first called with a domain instead of a jid as the first param.
+	 *
+	 * Returns:
+	 *   (Boolean)
+	 */
+	self.isAnonymousConnection = function() {
+		return _anonymousConnection;
 	};
 
 	/** Function: getOptions

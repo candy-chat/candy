@@ -561,8 +561,8 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			hideCloseControl: function() {
 				$('#admin-message-cancel').hide().click(function() {});
-			},			
-			
+			},
+
 			/** Function: showLoginForm
 			 * Show the login form modal
 			 *
@@ -574,23 +574,30 @@ Candy.View.Pane = (function(self, $) {
 				Candy.View.Pane.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
 					_labelUsername: $.i18n._('labelUsername'),
 					_labelPassword: $.i18n._('labelPassword'),
-					_loginSubmit  : $.i18n._('loginSubmit'),
-					presetJid : (presetJid ? presetJid : false)
+					_loginSubmit: $.i18n._('loginSubmit'),
+					displayPassword: !Candy.Core.isAnonymousConnection(),
+					displayUsername: Candy.Core.isAnonymousConnection() || !presetJid,
+					presetJid: presetJid ? presetJid : false
 				}));
 
 				// register submit handler
 				$('#login-form').submit(function(event) {
 					var username = $('#username').val(),
-						password = $('#password').val(),
+						password = $('#password').val();
+
+					if (!Candy.Core.isAnonymousConnection()) {
 						// guess the input and create a jid out of it
-						jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
+						var jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
 							username + '@' + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
-						
-					if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
-						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('loginInvalid'));
-					} else {
-						//Candy.View.Pane.Chat.Modal.hide();
-						Candy.Core.connect(jid, password);
+
+						if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
+							Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('loginInvalid'));
+						} else {
+							//Candy.View.Pane.Chat.Modal.hide();
+							Candy.Core.connect(jid, password);
+						}
+					} else { // anonymous login
+						Candy.Core.connect(presetJid, null, username);
 					}
 					return false;
 				});
@@ -942,7 +949,7 @@ Candy.View.Pane = (function(self, $) {
 			self.Chat.addTab(roomJid, roomName, roomType);
 			self.Room.getPane(roomJid, '.message-form').submit(self.Message.submit);
 
-			Candy.View.Event.Room.onAdd({'roomJid': roomJid, 'element' : self.Room.getPane(roomJid)});
+			Candy.View.Event.Room.onAdd({'roomJid': roomJid, 'type': roomType, 'element': self.Room.getPane(roomJid)});
 
 			return roomId;
 		},
@@ -1268,6 +1275,9 @@ Candy.View.Pane = (function(self, $) {
 		 *                            (e.g. when user clicks itself on another user to open a private chat)
 		 *   (Boolean) isNoConferenceRoomJid - true if a 3rd-party client sends a direct message to this user (not via the room)
 		 *										then the username is the node and not the resource. This param addresses this case.
+		 *
+		 * Calls:
+		 *   - <Candy.View.Event.Room.onAdd>
 		 */
 		open: function(roomJid, roomName, switchToRoom, isNoConferenceRoomJid) {
 			var user = isNoConferenceRoomJid ? Candy.Core.getUser() : self.Room.getUser(Strophe.getBareJidFromJid(roomJid));
@@ -1289,6 +1299,8 @@ Candy.View.Pane = (function(self, $) {
 			if(isNoConferenceRoomJid) {
 				self.Chat.infoMessage(roomJid, $.i18n._('presenceUnknownWarningSubject'), $.i18n._('presenceUnknownWarning'));
 			}
+
+			Candy.View.Event.Room.onAdd({'roomJid': roomJid, type: 'chat', 'element': self.Room.getPane(roomJid)});
 		},
 
 		/** Function: setStatus
@@ -1403,7 +1415,7 @@ Candy.View.Pane = (function(self, $) {
 						userId : userId,
 						userJid: user.getJid(),
 						nick: user.getNick(),
-						displayNick: Candy.Util.crop(user.getNick(), 15),
+						displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.displayNick),
 						role: user.getRole(),
 						affiliation: user.getAffiliation(),
 						me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
@@ -1420,8 +1432,9 @@ Candy.View.Pane = (function(self, $) {
 						// insert alphabetically
 						var userSortCompare = user.getNick().toUpperCase();
 						rosterPane.children().each(function() {
-							if($(this).attr('data-nick').toUpperCase() > userSortCompare) {
-								$(this).before(html);
+							var elem = $(this);
+							if(elem.attr('data-nick').toUpperCase() > userSortCompare) {
+								elem.before(html);
 								userInserted = true;
 								return false;
 							}
@@ -1449,6 +1462,7 @@ Candy.View.Pane = (function(self, $) {
 					}
 				// user is in room but maybe the affiliation/role has changed
 				} else {
+					usercountDiff = 0;
 					userElem.replaceWith(html);
 					$('#user-' + roomId + '-' + userId).css({opacity: 1}).show();
 				}
@@ -1514,7 +1528,8 @@ Candy.View.Pane = (function(self, $) {
 		 * Click handler for opening a private room
 		 */
 		userClick: function() {
-			self.PrivateRoom.open($(this).attr('data-jid'), $(this).attr('data-nick'), true);
+			var elem = $(this);
+			self.PrivateRoom.open(elem.attr('data-jid'), elem.attr('data-nick'), true);
 		},
 
 		/** Function: joinAnimation
@@ -1601,10 +1616,14 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		show: function(roomJid, name, message, timestamp) {
 			message = Candy.Util.Parser.all(message.substring(0, 1000));
-			message = Candy.View.Event.Message.beforeShow(message);
+			message = Candy.View.Event.Message.beforeShow({'roomJid': roomJid, 'nick': name, 'message': message});
+			if(!message) {
+				return;
+			}
+
 			var html = Mustache.to_html(Candy.View.Template.Message.item, {
 				name: name,
-				displayName: Candy.Util.crop(name, 10),
+				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.displayName),
 				message: message,
 				time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
 			});

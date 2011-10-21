@@ -29,7 +29,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.0.1'
+		version: '1.0.6'
 	};
 
 	/** Function: init
@@ -86,6 +86,10 @@ Candy.Core = (function(self, Strophe, $) {
 		 * Opened rooms, containing instances of Candy.Core.ChatRooms
 		 */
 		_rooms = {},
+		/** PrivateVariable: _anonymousConnection
+		 * Set in <Candy.Core.connect> when jidOrHost doesn't contain a @-char.
+		 */
+		_anonymousConnection = false,
 		/** PrivateVariable: _options
 		 * Options:
 		 *   (Boolean) debug - Debug (Default: false)
@@ -118,6 +122,7 @@ Candy.Core = (function(self, Strophe, $) {
 			_addNamespace('PRIVATE', 'jabber:iq:private');
 			_addNamespace('BOOKMARKS', 'storage:bookmarks');
 			_addNamespace('PRIVACY', 'jabber:iq:privacy');
+			_addNamespace('DELAY', 'jabber:x:delay');
 		},
 
 		/** PrivateFunction: _registerEventHandlers
@@ -130,7 +135,8 @@ Candy.Core = (function(self, Strophe, $) {
 			_connection.addHandler(self.Event.Jabber.Message, null, 'message');
 			_connection.addHandler(self.Event.Jabber.Bookmarks, Strophe.NS.PRIVATE, 'iq');
 			_connection.addHandler(self.Event.Jabber.Room.Disco, Strophe.NS.DISCO_INFO, 'iq');
-			_connection.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq');
+			_connection.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq', 'result');
+			_connection.addHandler(self.Event.Jabber.PrivacyListError, Strophe.NS.PRIVACY, 'iq', 'error');
 		};
 
 	/** Function: init
@@ -143,7 +149,7 @@ Candy.Core = (function(self, Strophe, $) {
 	self.init = function(service, options) {
 		_service = service;
 		// Apply options
-		$.extend(_options, options);
+		$.extend(true, _options, options);
 
 		// Enable debug logging
 		if(_options.debug) {
@@ -158,13 +164,13 @@ Candy.Core = (function(self, Strophe, $) {
 			};
 			self.log('[Init] Debugging enabled');
 		}
-				
+
 		_addNamespaces();
 		// Connect to BOSH service
 		_connection = new Strophe.Connection(_service);
 		_connection.rawInput = self.rawInput.bind(self);
 		_connection.rawOutput = self.rawOutput.bind(self);
-		
+
 		// Window unload handler... works on all browsers but Opera. There is NO workaround.
 		// Opera clients getting disconnected 1-2 minutes delayed.
 		window.onbeforeunload = self.onWindowUnload;
@@ -185,36 +191,46 @@ Candy.Core = (function(self, Strophe, $) {
 	 * There are four different procedures to login:
 	 *   connect('JID', 'password') - Connect a registered user
 	 *   connect('domain') - Connect anonymously to the domain. The user should receive a random JID.
+	 *   connect('domain', null, 'nick') - Connect anonymously to the domain. The user should receive a random JID but with a nick set.
 	 *   connect('JID') - Show login form and prompt for password. JID input is hidden.
 	 *   connect() - Show login form and prompt for JID and password.
-	 * 
+	 *
 	 * See:
 	 *   <Candy.Core.attach()> for attaching an already established session.
 	 *
 	 * Parameters:
 	 *   (String) jidOrHost - JID or Host
-	 *   (String) password - Password of the user
+	 *   (String) password  - Password of the user
+	 *   (String) nick      - Nick of the user. Set one if you want to anonymously connect but preset a nick. If jidOrHost is a domain
+	 *                        and this param is not set, Candy will prompt for a nick.
 	 */
-	self.connect = function(jidOrHost, password) {
+	self.connect = function(jidOrHost, password, nick) {
 		// Reset before every connection attempt to make sure reconnections work after authfail, alltabsclosed, ...
 		_connection.reset();
 		_registerEventHandlers();
+
+		_anonymousConnection = !_anonymousConnection ? jidOrHost && jidOrHost.indexOf("@") < 0 : true;
+
 		if(jidOrHost && password) {
 			// authentication
-			_connection.connect(jidOrHost + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
+			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
 			_user = new self.ChatUser(jidOrHost, Strophe.getNodeFromJid(jidOrHost));
+		} else if(jidOrHost && nick) {
+			// anonymous connect
+			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, null, Candy.Core.Event.Strophe.Connect);
+			_user = new self.ChatUser(null, nick); // set jid to null because we'll later receive it
 		} else if(jidOrHost) {
-			if(jidOrHost.indexOf("@") < 0) {
-				// Not a JID, anonymous login
-				_connection.connect(jidOrHost, null, Candy.Core.Event.Strophe.Connect);
-			} else {
-				// Most likely a JID, display login modal
-				Candy.Core.Event.Login(jidOrHost);
-			}
+			Candy.Core.Event.Login(jidOrHost);
 		} else {
 			// display login modal
 			Candy.Core.Event.Login();
 		}
+	};
+	
+	_getEscapedJidFromJid = function(jid) {
+		var node = Strophe.getNodeFromJid(jid),
+			domain = Strophe.getDomainFromJid(jid);
+		return node ? Strophe.escapeNode(node) + '@' + domain : domain;
 	};
 
 	/** Function: attach
@@ -230,7 +246,7 @@ Candy.Core = (function(self, Strophe, $) {
 	self.attach = function(jid, sid, rid) {
 		_user = new self.ChatUser(jid, Strophe.getNodeFromJid(jid));
 		_registerEventHandlers();
-		_connection.attach(Strophe.getBareJidFromJid(jid) + '/' + Candy.about.name, sid, rid, Candy.Core.Event.Strophe.Connect);
+		_connection.attach(jid, sid, rid, Candy.Core.Event.Strophe.Connect);
 	};
 
 	/** Function: disconnect
@@ -283,6 +299,16 @@ Candy.Core = (function(self, Strophe, $) {
 	 */
 	self.getRooms = function() {
 		return _rooms;
+	};
+
+	/** Function: isAnonymousConnection
+	 * Returns true if <Candy.Core.connect> was first called with a domain instead of a jid as the first param.
+	 *
+	 * Returns:
+	 *   (Boolean)
+	 */
+	self.isAnonymousConnection = function() {
+		return _anonymousConnection;
 	};
 
 	/** Function: getOptions
@@ -378,11 +404,16 @@ Candy.View = (function(self, $) {
 		 *   (String) language - language to use
 		 *   (String) resources - path to resources directory (with trailing slash)
 		 *   (Object) messages - limit: clean up message pane when n is reached / remove: remove n messages after limit has been reached
+		 *   (Object) crop - crop if longer than defined: message.nickname=15, message.body=1000, roster.nickname=15
 		 */
 		_options = {
 			language: 'en',
 			resources: 'res/',
-			messages: { limit: 2000, remove: 500 }
+			messages: { limit: 2000, remove: 500 },
+			crop: {
+				message: { nickname: 15, body: 1000 },
+				roster: { nickname: 15 }
+			}
 		},
 
 		/** PrivateFunction: _setupTranslation
@@ -458,7 +489,7 @@ Candy.View = (function(self, $) {
 	 *   (Object) options - Options: see _options field (value passed here gets extended by the default value in _options field)
 	 */
 	self.init = function(container, options) {
-		$.extend(_options, options);
+		$.extend(true, _options, options);
 		_setupTranslation(_options.language);
 		
 		// Set path to emoticons
@@ -542,6 +573,56 @@ Candy.Util = (function(self, $){
 	self.jidToId = function(jid) {
 		return MD5.hexdigest(jid);
 	};
+	
+	/** Function: escapeJid
+	 * Escapes a jid (node & resource get escaped)
+	 *
+	 * See:
+	 *   XEP-0106
+	 *
+	 * Parameters:
+	 *   (String) jid - Jid
+	 *
+	 * Returns:
+	 *   (String) - escaped jid
+	 */
+	self.escapeJid = function(jid) {
+		var node = Strophe.escapeNode(Strophe.getNodeFromJid(jid)),
+			domain = Strophe.getDomainFromJid(jid),
+			resource = Strophe.getResourceFromJid(jid);
+			
+		jid = node + '@' + domain;
+		if (resource) {
+			jid += '/' + Strophe.escapeNode(resource);
+		}
+		
+		return jid;
+	};
+	
+	/** Function: unescapeJid
+	 * Unescapes a jid (node & resource get unescaped)
+	 *
+	 * See:
+	 *   XEP-0106
+	 *
+	 * Parameters:
+	 *   (String) jid - Jid
+	 *
+	 * Returns:
+	 *   (String) - unescaped Jid
+	 */
+	self.unescapeJid = function(jid) {
+		var node = Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
+			domain = Strophe.getDomainFromJid(jid),
+			resource = Strophe.getResourceFromJid(jid);
+		
+		jid = node + '@' + domain;
+		if(resource) {
+			jid += '/' + Strophe.unescapeNode(resource);
+		}
+		
+		return jid;
+	};
 
 	/** Function: crop
 	 * Crop a string with the specified length
@@ -552,7 +633,7 @@ Candy.Util = (function(self, $){
 	 */
 	self.crop = function(str, len) {
 		if (str.length > len) {
-			str = str.substr(0, len) + '...';
+			str = str.substr(0, len - 3) + '...';
 		}
 		return str;
 	};
@@ -568,7 +649,7 @@ Candy.Util = (function(self, $){
 	self.setCookie = function(name, value, lifetime_days) {
 		var exp = new Date();
 		exp.setDate(new Date().getDate() + lifetime_days);
-		document.cookie = name + '=' + value + ';expires=' + exp.toUTCString() + 'path=/';
+		document.cookie = name + '=' + value + ';expires=' + exp.toUTCString() + ';path=/';
 	};
 
 	/** Function: cookieExists
@@ -595,11 +676,11 @@ Candy.Util = (function(self, $){
 	 */
 	self.getCookie = function(name) {
 	    if(document.cookie)	{
-			var regex = new RegExp(escape(name) + '=([^;]*)', 'gm'),
-				matches = regex.exec(document.cookie);
-			if(matches) {
-				return matches[1];
-			}
+				var regex = new RegExp(escape(name) + '=([^;]*)', 'gm'),
+					matches = regex.exec(document.cookie);
+					if(matches) {
+						return matches[1];
+					}
 	    }
 	};
 
@@ -610,7 +691,7 @@ Candy.Util = (function(self, $){
 	 *   (String) name - cookie name
 	 */
 	self.deleteCookie = function(name) {
-		document.cookie = name + '=;expires=Thu, 01-Jan-70 00:00:01 GMT';
+		document.cookie = name + '=;expires=Thu, 01-Jan-70 00:00:01 GMT;path=/';
 	};
 
 	/** Function: getPosLeftAccordingToWindowBounds
@@ -724,7 +805,10 @@ Candy.Util = (function(self, $){
 						minutesOffset = -minutesOffset;
 					}
 				}
-				return new Date(+struct[1], +struct[2] - 1, +struct[3], +struct[4], +struct[5] + minutesOffset, +struct[6], +struct[7].substr(0, 3));
+				return new Date(+struct[1], +struct[2] - 1, +struct[3], +struct[4], +struct[5] + minutesOffset, +struct[6], struct[7] ? +struct[7].substr(0, 3) : 0);
+			} else {
+				// XEP-0091 date
+				timestamp = Date.parse(date.replace(/^(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') + 'Z');
 			}
         }
         return new Date(timestamp);
@@ -1099,8 +1183,14 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		ResetIgnoreList: function() {
 			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set1'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).c('item', {'action': 'allow', 'order': '0'}).tree());
-			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set2'})
-				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('active', {name:'ignore'}).tree());
+		},
+
+		/** Function: RemoveIgnoreList
+		 * Remove an existing ignore list.
+		 */
+		RemoveIgnoreList: function() {
+			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'remove1'})
+				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).tree());
 		},
 
 		/** Function: GetIgnoreList
@@ -1109,24 +1199,26 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		GetIgnoreList: function() {
 			Candy.Core.getConnection().send($iq({type: 'get', from: Candy.Core.getUser().getJid(), id: 'get1'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).tree());
+		},
+
+		/** Function: SetIgnoreListActive
+		 * Set ignore privacy list active
+		 */
+		SetIgnoreListActive: function() {
 			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set2'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('active', {name:'ignore'}).tree());
 		},
 
 		/** Function: GetJidIfAnonymous
-		 * On anonymous login, initially we don't know the jid and as a result, Candy.Core._user is not set.
-		 * Check if user is not set & set it if if necessary.
+		 * On anonymous login, initially we don't know the jid and as a result, Candy.Core._user doesn't have a jid.
+		 * Check if user doesn't have a jid and get it if necessary from the connection.
 		 */
 		GetJidIfAnonymous: function() {
-			if (!Candy.Core.getUser()) {
+			if (!Candy.Core.getUser().getJid()) {
 				Candy.Core.log("[Jabber] Anonymous login");
-				var connection = Candy.Core.getConnection(),
-					nick = connection.stream_id,
-					jid = connection.jid;
-				Candy.Core.setUser(new Candy.Core.ChatUser(jid, nick));
+				Candy.Core.getUser().data.jid = Candy.Core.getConnection().jid;
 			}
 		},
-
 
 		/** Class: Candy.Core.Action.Jabber.Room
 		 * Room-specific commands
@@ -1154,7 +1246,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *   (String) roomJid - Room to leave
 			 */
 			Leave: function(roomJid) {
-				Candy.Core.getConnection().muc.leave(roomJid, Candy.Core.getRoom(roomJid).getUser().getNick(), Candy.Core.Event.Jabber.Room.Leave);
+				Candy.Core.getConnection().muc.leave(roomJid, Candy.Core.getRoom(roomJid).getUser().getNick(), function() {});
 			},
 
 			/** Function: Disco
@@ -1184,7 +1276,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				if(msg === '') {
 					return false;
 				}
-				Candy.Core.getConnection().muc.message(roomJid, undefined, msg, type);
+				Candy.Core.getConnection().muc.message(Candy.Util.escapeJid(roomJid), undefined, msg, type);
 				return true;
 			},
 
@@ -1212,7 +1304,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 					privacyList = currentUser.getPrivacyList('ignore');
 				if (privacyList.length > 0) {
 					$.each(privacyList, function(index, jid) {
-						iq.c('item', {type:'jid', value: jid, action: 'deny', order : index})
+						iq.c('item', {type:'jid', value: Candy.Util.escapeJid(jid), action: 'deny', order : index})
 							.c('message').up().up();
 					});
 				} else {
@@ -1238,20 +1330,21 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				 *   (Boolean) - true if sent successfully, false if type is not one of "kick" or "ban".
 				 */
 				UserAction: function(roomJid, userJid, type, reason) {
-					var iqId, qRole;
+					var iqId,
+						itemObj = {nick: Strophe.escapeNode(Strophe.getResourceFromJid(userJid))};
 					switch(type) {
 						case 'kick':
 							iqId = 'kick1';
-							qRole = 'none';
+							itemObj.role = 'none';
 							break;
 						case 'ban':
 							iqId = 'ban1';
-							qRole = 'outcast';
+							itemObj.affiliation = 'outcast';
 							break;
 						default:
 							return false;
 					}
-					Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), to: roomJid, id: iqId}).c('query', {xmlns: Strophe.NS.MUC_ADMIN }).c('item', {nick: Strophe.getResourceFromJid(userJid), role: qRole}).c('reason').t(reason).tree());
+					Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), to: roomJid, id: iqId}).c('query', {xmlns: Strophe.NS.MUC_ADMIN }).c('item', itemObj).c('reason').t(reason).tree());
 					return true;
 				},
 
@@ -1471,25 +1564,46 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 * - nick
 	 * - affiliation
 	 * - role
+	 * - privacyLists
+	 * - customData to be used by e.g. plugins
 	 */
 	this.data = {
 		jid: jid,
-		nick: nick,
+		nick: Strophe.unescapeNode(nick),
 		affiliation: affiliation,
 		role: role,
 		privacyLists: {},
 		customData: {},
 		oldNick: undefined
 	};
-
+	
 	/** Function: getJid
-	 * Gets user jid
+	 * Gets an unescaped user jid
+	 *
+	 * See:
+	 *   <Candy.Util.unescapeJid>
 	 *
 	 * Returns:
 	 *   (String) - jid
 	 */
 	this.getJid = function() {
-		return this.data.jid;
+		if(this.data.jid) {
+			return Candy.Util.unescapeJid(this.data.jid);
+		}
+		return;
+	};
+	
+	/** Function: getEscapedJid
+	 * Escapes the user's jid (node & resource get escaped)
+	 *
+	 * See:
+	 *   <Candy.Util.escapeJid>
+	 *
+	 * Returns:
+	 *   (String) - escaped jid
+	 */
+	this.getEscapedJid = function() {
+		return Candy.Util.escapeJid(this.data.jid);
 	};
 	
 	/** Function: setJid
@@ -1509,7 +1623,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 *   (String) - nick
 	 */
 	this.getNick = function() {
-		return this.data.nick;
+		return Strophe.unescapeNode(this.data.nick);
 	};
 	
 	/** Function: setNick
@@ -1817,8 +1931,8 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		 */
 		Presence: function(msg) {
 			Candy.Core.log('[Jabber] Presence');
-			var x = $('x', msg);
-			if(x.attr('xmlns') && x.attr('xmlns').match(Strophe.NS.MUC)) {
+			msg = $(msg);
+			if(msg.children('x[xmlns^="' + Strophe.NS.MUC + '"]').length > 0) {
 				self.Jabber.Room.Presence(msg);
 			}
 			return true;
@@ -1837,8 +1951,9 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			Candy.Core.log('[Jabber] Bookmarks');
 			// Autojoin bookmarks (Openfire)
 			$('conference', msg).each(function() {
-				if($(this).attr('autojoin')) {
-					Candy.Core.Action.Jabber.Room.Join($(this).attr('jid'));
+				var item = $(this);
+				if(item.attr('autojoin')) {
+					Candy.Core.Action.Jabber.Room.Join(item.attr('jid'));
 				}
 			});
 			return true;
@@ -1846,6 +1961,8 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 
 		/** Function: PrivacyList
 		 * Acts on a privacy list event and sets up the current privacy list of this user.
+		 *
+		 * If no privacy list has been added yet, create the privacy list and listen again to this event.
 		 *
 		 * Parameters:
 		 *   (String) msg - Raw XML Message
@@ -1856,12 +1973,35 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		PrivacyList: function(msg) {
 			Candy.Core.log('[Jabber] PrivacyList');
 			var currentUser = Candy.Core.getUser();
-			$('list[name=ignore] item', msg).each(function() {
+
+			$('list[name="ignore"] item', msg).each(function() {
 				var item = $(this);
 				if (item.attr('action') === 'deny') {
 					currentUser.addToOrRemoveFromPrivacyList('ignore', item.attr('value'));
 				}
 			});
+			Candy.Core.Action.Jabber.SetIgnoreListActive();
+			return false;
+		},
+
+		/** Function: PrivacyListError
+		 * Acts when a privacy list error has been received.
+		 *
+		 * Currently only handles the case, when a privacy list doesn't exist yet and creates one.
+		 *
+		 * Parameters:
+		 *   (String) msg - Raw XML Message
+		 *
+		 * Returns:
+		 *   (Boolean) - false to disable the handler after first call.
+		 */
+		PrivacyListError: function(msg) {
+			Candy.Core.log('[Jabber] PrivacyListError');
+			// check if msg says that privacyList doesn't exist
+			if ($('error[code="404"][type="cancel"] item-not-found', msg)) {
+				Candy.Core.Action.Jabber.ResetIgnoreList();
+				Candy.Core.Action.Jabber.SetIgnoreListActive();
+			}
 			return false;
 		},
 
@@ -1876,18 +2016,19 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		 */
 		Message: function(msg) {
 			Candy.Core.log('[Jabber] Message');
-			var fromJid = $(msg).attr('from'),
-				type = $(msg).attr('type'),
-				toJid = $(msg).attr('to');
+			var msg = $(msg),
+				fromJid = msg.attr('from'),
+				type = msg.attr('type'),
+				toJid = msg.attr('to');
 			// Room message
-			if(fromJid !== Strophe.getDomainFromJid(fromJid) && (type === 'groupchat' || type === 'chat')) {
+			if(fromJid !== Strophe.getDomainFromJid(fromJid) && (type === 'groupchat' || type === 'chat' || type === 'error')) {
 				self.Jabber.Room.Message(msg);
 			// Admin message
 			} else if(!toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
-				self.notifyObservers(self.KEYS.CHAT, { type: (type || 'message'), message: $(msg).children('body').text() });
+				self.notifyObservers(self.KEYS.CHAT, { type: (type || 'message'), message: msg.children('body').text() });
 			// Server Message
 			} else if(toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
-				self.notifyObservers(self.KEYS.CHAT, { type: (type || 'message'), subject: $(msg).children('subject').text(), message: $(msg).children('body').text() });
+				self.notifyObservers(self.KEYS.CHAT, { type: (type || 'message'), subject: msg.children('subject').text(), message: msg.children('body').text() });
 			}
 			return true;
 		},
@@ -1907,20 +2048,21 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			 */
 			Leave: function(msg) {
 				Candy.Core.log('[Jabber:Room] Leave');
-				var from = $(msg).attr('from'),
+				var msg = $(msg),
+					from = msg.attr('from'),
 					roomJid = Strophe.getBareJidFromJid(from),
 					roomName = Candy.Core.getRoom(roomJid).getName(),
-					item = $(msg).find('item'),
+					item = msg.find('item'),
 					type = 'leave',
 					reason,
 					actor;
 
 				delete Candy.Core.getRooms()[roomJid];
 				// if user gets kicked, role is none and there's a status code 307
-				if (item.attr('role') === 'none') {
-					if($(msg).find('status').attr('code') === '307') {
+				if(item.attr('role') === 'none') {
+					if(msg.find('status').attr('code') === '307') {
 						type = 'kick';
-					} else if($(msg).find('status').attr('code') === '301') {
+					} else if(msg.find('status').attr('code') === '301') {
 						type = 'ban';
 					}
 					reason = item.find('reason').text();
@@ -1944,14 +2086,15 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			 */
 			Disco: function(msg) {
 				Candy.Core.log('[Jabber:Room] Disco');
-				var roomJid = Strophe.getBareJidFromJid($(msg).attr('from'));
+				var msg = $(msg),
+					roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
 
 				// Client joined a room
 				if(!Candy.Core.getRooms()[roomJid]) {
 					Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
 				}
 				// Room existed but room name was unknown
-				var roomName = $(msg).find('identity').attr('name'),
+				var roomName = msg.find('identity').attr('name'),
 					room = Candy.Core.getRoom(roomJid);
 				if(room.getName() === null) {
 					room.setName(roomName);
@@ -1966,15 +2109,14 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			 * Acts on various presence messages (room leaving, room joining, error presence) and notifies view.
 			 *
 			 * Parameters:
-			 *   (String) msg - Raw XML Message
+			 *   (Object) msg - jQuery object of XML message
 			 *
 			 * Returns:
 			 *   (Boolean) - true
 			 */
 			Presence: function(msg) {
 				Candy.Core.log('[Jabber:Room] Presence');
-				msg = $(msg);
-				var from = msg.attr('from'),
+				var from = Candy.Util.unescapeJid(msg.attr('from')),
 					roomJid = Strophe.getBareJidFromJid(from),
 					presenceType = msg.attr('type');
 
@@ -1997,10 +2139,6 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
 					room = Candy.Core.getRoom(roomJid);
 				}
-				// Room existed but user was not registered
-				if(room.getUser() === null) {
-					room.setUser(Candy.Core.getUser());
-				}
 
 				var roster = room.getRoster(),
 					action, user,
@@ -2011,7 +2149,12 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 						// user changed nick before
 						return false;
 					}
-					user = new Candy.Core.ChatUser(from, Strophe.getResourceFromJid(from), item.attr('affiliation'), item.attr('role'));
+					var nick = Strophe.getResourceFromJid(from);
+					user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
+					// Room existed but client (myself) is not yet registered
+					if(room.getUser() === null && Candy.Core.getUser().getNick() === nick) {
+						room.setUser(user);
+					}					
 					roster.add(user);
 					action = 'join';
 				// User left a room
@@ -2047,7 +2190,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			 * and notifies view.
 			 *
 			 * Parameters:
-			 *   (String) msg - Raw XML Message
+			 *   (String) msg - jQuery object of XML message
 			 *
 			 * Returns:
 			 *   (Boolean) - true
@@ -2056,24 +2199,47 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				Candy.Core.log('[Jabber:Room] Message');
 				// Room subject
 				var roomJid, message;
-				if($(msg).children('subject').length > 0) {
-					roomJid = Strophe.getBareJidFromJid($(msg).attr('from'));
-					message = { name: Strophe.getNodeFromJid(roomJid), body: $(msg).children('subject').text(), type: 'subject' };
-				// Private chat message
-				} else if($(msg).attr('type') === 'chat') {
-					roomJid = $(msg).attr('from');
-					var bareRoomJid = Strophe.getBareJidFromJid(roomJid),
-						// if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
-						isNoConferenceRoomJid = !Candy.Core.getRoom(bareRoomJid),
-						name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(roomJid) : Strophe.getResourceFromJid(roomJid);
-					message = { name: name, body: $('body', msg).text(), type: $(msg).attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
-				// Multi-user chat message
+				if(msg.children('subject').length > 0) {
+					roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
+					message = { name: Strophe.getNodeFromJid(roomJid), body: msg.children('subject').text(), type: 'subject' };
+				// Error messsage
+				} else if(msg.attr('type') === 'error') {
+					var error = msg.children('error');
+					if(error.attr('code') === '500' && error.children('text').length > 0) {
+						roomJid = msg.attr('from');
+						message = { type: 'info', body: error.children('text').text() };
+					}
+				// Chat message
+				} else if(msg.children('body').length > 0) {
+					// Private chat message
+					if(msg.attr('type') === 'chat') {
+						roomJid = Candy.Util.unescapeJid(msg.attr('from'));
+						var bareRoomJid = Strophe.getBareJidFromJid(roomJid),
+							// if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
+							isNoConferenceRoomJid = !Candy.Core.getRoom(bareRoomJid),
+							name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(roomJid) : Strophe.getResourceFromJid(roomJid);
+						message = { name: name, body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
+					// Multi-user chat message
+					} else {
+						roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
+						var resource = Strophe.getResourceFromJid(msg.attr('from'));
+						// Message from a user
+						if(resource) {
+							resource = Strophe.unescapeNode(resource);
+							message = { name: resource, body: msg.children('body').text(), type: msg.attr('type') };
+						// Message from server (XEP-0045#registrar-statuscodes)
+						} else {
+							message = { name: '', body: msg.children('body').text(), type: 'info' };
+						}
+					}
+				// Unhandled message
 				} else {
-					roomJid = Strophe.getBareJidFromJid($(msg).attr('from'));
-					message = { name: Strophe.getResourceFromJid($(msg).attr('from')), body: $('body', msg).text(), type: $(msg).attr('type') };
+					return true;
 				}
 
-				var delay = $('delay', msg),
+				// besides the delayed delivery (XEP-0203), there exists also XEP-0091 which is the legacy delayed delivery.
+				// the x[xmlns=jabber:x:delay] is the format in XEP-0091.
+				var delay = msg.children('delay') ? msg.children('delay') : msg.children('x[xmlns="' + Strophe.NS.DELAY +'"]'),
 					timestamp = delay !== undefined ? delay.attr('stamp') : null;
 
 				self.notifyObservers(self.KEYS.MESSAGE, {roomJid: roomJid, message: message, timestamp: timestamp } );
@@ -2140,7 +2306,7 @@ Candy.View.Event = (function(self, $) {
 		 * Called when a new room gets added
 		 *
 		 * Parameters:
-		 *   (Object) args - {roomJid, element}
+		 *   (Object) args - {roomJid, type=chat|groupchat, element}
 		 */
 		onAdd: function(args) {
 			return;
@@ -2244,13 +2410,13 @@ Candy.View.Event = (function(self, $) {
 		 * Called before a new message will be shown.
 		 *
 		 * Parameters:
-		 *   (String) message - parsed message
+		 *   (Object) args - {roomJid, nick, message}
 		 *
 		 * Returns:
 		 *   (String) message
 		 */
-		beforeShow: function(message) {
-			return message;
+		beforeShow: function(args) {
+			return args.message;
 		},
 		
 		/** Function: onShow
@@ -2317,7 +2483,7 @@ Candy.View.Observer = (function(self, $) {
 					case Strophe.Status.AUTHENTICATING:
 						Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnecting'), false, true);
 						break;
-						
+
 					case Strophe.Status.ATTACHED:
 					case Strophe.Status.CONNECTED:
 						Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnected'));
@@ -2332,7 +2498,7 @@ Candy.View.Observer = (function(self, $) {
 						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'));
 						Candy.View.Event.Chat.onDisconnect();
 						break;
-						
+
 					case Strophe.Status.AUTHFAIL:
 						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusAuthfail'));
 						Candy.View.Event.Chat.onAuthfail();
@@ -2373,7 +2539,7 @@ Candy.View.Observer = (function(self, $) {
 				self.Presence.notifyPrivateChats(user, args.type);
 			// Client has been kicked or banned
 			} else if (args.type === 'kick' || args.type === 'ban') {
-				var actorName = Strophe.getNodeFromJid(args.actor),
+				var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : args.roomName,
 					actionLabel;
 				switch(args.type) {
 					case 'kick':
@@ -2393,7 +2559,7 @@ Candy.View.Observer = (function(self, $) {
 						Candy.View.Pane.Room.close(args.roomJid);
 						self.Presence.notifyPrivateChats(args.user, args.type);
 					});
-				}, 3500);
+				}, 5000);
 				Candy.View.Event.Room.onPresenceChange({ type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user });
 			// A user changed presence
 			} else {
@@ -2410,6 +2576,7 @@ Candy.View.Observer = (function(self, $) {
 				}
 			}
 		},
+
 		/** Function: notifyPrivateChats
 		 * Notify private user chats if existing
 		 *
@@ -2442,7 +2609,13 @@ Candy.View.Observer = (function(self, $) {
 		 */
 		update: function(obj, args) {
 			if(args.message.type === 'subject') {
+				if (!Candy.View.Pane.Chat.rooms[args.roomJid]) {
+					Candy.View.Pane.Room.init(args.roomJid, args.message.name);
+					Candy.View.Pane.Room.show(args.roomJid);
+				}
 				Candy.View.Pane.Room.setSubject(args.roomJid, args.message.body);
+			} else if(args.message.type === 'info') {
+				Candy.View.Pane.Chat.infoMessage(args.roomJid, args.message.body);
 			} else {
 				// Initialize room if it's a message for a new private user chat
 				if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
@@ -3033,8 +3206,8 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			hideCloseControl: function() {
 				$('#admin-message-cancel').hide().click(function() {});
-			},			
-			
+			},
+
 			/** Function: showLoginForm
 			 * Show the login form modal
 			 *
@@ -3046,23 +3219,30 @@ Candy.View.Pane = (function(self, $) {
 				Candy.View.Pane.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
 					_labelUsername: $.i18n._('labelUsername'),
 					_labelPassword: $.i18n._('labelPassword'),
-					_loginSubmit  : $.i18n._('loginSubmit'),
-					presetJid : (presetJid ? presetJid : false)
+					_loginSubmit: $.i18n._('loginSubmit'),
+					displayPassword: !Candy.Core.isAnonymousConnection(),
+					displayUsername: Candy.Core.isAnonymousConnection() || !presetJid,
+					presetJid: presetJid ? presetJid : false
 				}));
 
 				// register submit handler
 				$('#login-form').submit(function(event) {
 					var username = $('#username').val(),
-						password = $('#password').val(),
+						password = $('#password').val();
+
+					if (!Candy.Core.isAnonymousConnection()) {
 						// guess the input and create a jid out of it
-						jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
+						var jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
 							username + '@' + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
-						
-					if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
-						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('loginInvalid'));
-					} else {
-						//Candy.View.Pane.Chat.Modal.hide();
-						Candy.Core.connect(jid, password);
+
+						if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
+							Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('loginInvalid'));
+						} else {
+							//Candy.View.Pane.Chat.Modal.hide();
+							Candy.Core.connect(jid, password);
+						}
+					} else { // anonymous login
+						Candy.Core.connect(presetJid, null, username);
 					}
 					return false;
 				});
@@ -3414,7 +3594,7 @@ Candy.View.Pane = (function(self, $) {
 			self.Chat.addTab(roomJid, roomName, roomType);
 			self.Room.getPane(roomJid, '.message-form').submit(self.Message.submit);
 
-			Candy.View.Event.Room.onAdd({'roomJid': roomJid, 'element' : self.Room.getPane(roomJid)});
+			Candy.View.Event.Room.onAdd({'roomJid': roomJid, 'type': roomType, 'element': self.Room.getPane(roomJid)});
 
 			return roomId;
 		},
@@ -3740,6 +3920,9 @@ Candy.View.Pane = (function(self, $) {
 		 *                            (e.g. when user clicks itself on another user to open a private chat)
 		 *   (Boolean) isNoConferenceRoomJid - true if a 3rd-party client sends a direct message to this user (not via the room)
 		 *										then the username is the node and not the resource. This param addresses this case.
+		 *
+		 * Calls:
+		 *   - <Candy.View.Event.Room.onAdd>
 		 */
 		open: function(roomJid, roomName, switchToRoom, isNoConferenceRoomJid) {
 			var user = isNoConferenceRoomJid ? Candy.Core.getUser() : self.Room.getUser(Strophe.getBareJidFromJid(roomJid));
@@ -3761,6 +3944,8 @@ Candy.View.Pane = (function(self, $) {
 			if(isNoConferenceRoomJid) {
 				self.Chat.infoMessage(roomJid, $.i18n._('presenceUnknownWarningSubject'), $.i18n._('presenceUnknownWarning'));
 			}
+
+			Candy.View.Event.Room.onAdd({'roomJid': roomJid, type: 'chat', 'element': self.Room.getPane(roomJid)});
 		},
 
 		/** Function: setStatus
@@ -3875,7 +4060,7 @@ Candy.View.Pane = (function(self, $) {
 						userId : userId,
 						userJid: user.getJid(),
 						nick: user.getNick(),
-						displayNick: Candy.Util.crop(user.getNick(), 15),
+						displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.displayNick),
 						role: user.getRole(),
 						affiliation: user.getAffiliation(),
 						me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
@@ -3892,8 +4077,9 @@ Candy.View.Pane = (function(self, $) {
 						// insert alphabetically
 						var userSortCompare = user.getNick().toUpperCase();
 						rosterPane.children().each(function() {
-							if($(this).attr('data-nick').toUpperCase() > userSortCompare) {
-								$(this).before(html);
+							var elem = $(this);
+							if(elem.attr('data-nick').toUpperCase() > userSortCompare) {
+								elem.before(html);
 								userInserted = true;
 								return false;
 							}
@@ -3921,6 +4107,7 @@ Candy.View.Pane = (function(self, $) {
 					}
 				// user is in room but maybe the affiliation/role has changed
 				} else {
+					usercountDiff = 0;
 					userElem.replaceWith(html);
 					$('#user-' + roomId + '-' + userId).css({opacity: 1}).show();
 				}
@@ -3986,7 +4173,8 @@ Candy.View.Pane = (function(self, $) {
 		 * Click handler for opening a private room
 		 */
 		userClick: function() {
-			self.PrivateRoom.open($(this).attr('data-jid'), $(this).attr('data-nick'), true);
+			var elem = $(this);
+			self.PrivateRoom.open(elem.attr('data-jid'), elem.attr('data-nick'), true);
 		},
 
 		/** Function: joinAnimation
@@ -4073,10 +4261,14 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		show: function(roomJid, name, message, timestamp) {
 			message = Candy.Util.Parser.all(message.substring(0, 1000));
-			message = Candy.View.Event.Message.beforeShow(message);
+			message = Candy.View.Event.Message.beforeShow({'roomJid': roomJid, 'nick': name, 'message': message});
+			if(!message) {
+				return;
+			}
+
 			var html = Mustache.to_html(Candy.View.Template.Message.item, {
 				name: name,
-				displayName: Candy.Util.crop(name, 10),
+				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.displayName),
 				message: message,
 				time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
 			});
@@ -4107,7 +4299,8 @@ Candy.View.Pane = (function(self, $) {
 	};
 
 	return self;
-}(Candy.View.Pane || {}, jQuery));/** File: template.js
+}(Candy.View.Pane || {}, jQuery));
+/** File: template.js
  * Candy - Chats are not dead yet.
  *
  * Authors:
@@ -4170,9 +4363,9 @@ Candy.View.Template = (function(self){
 
 	self.Login = {
 		form: '<form method="post" id="login-form" class="login-form">'
-			+ '{{^presetJid}}<label for="username">{{_labelUsername}}</label><input type="text" id="username" name="username"/>{{/presetJid}}'
+			+ '{{#displayUsername}}<label for="username">{{_labelUsername}}</label><input type="text" id="username" name="username"/>{{/displayUsername}}'
 			+ '{{#presetJid}}<input type="hidden" id="username" name="username" value="{{presetJid}}"/>{{/presetJid}}'
-			+ '<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />'
+			+ '{{#displayPassword}}<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />{{/displayPassword}}'
 			+ '<input type="submit" class="button" value="{{_loginSubmit}}" /></form>'
 	};
 
@@ -4355,5 +4548,113 @@ Candy.View.Translation = {
 		'tooltipUsercount'		: 'Nombre d\'utilisateurs dans le salon',
 
 		'raptorMessageBlocked' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
+	},
+	'nl' : {
+		'status': 'Status: %s',
+		'statusConnecting': 'Verbinding maken...',
+		'statusConnected' : 'Verbinding is gereed',
+		'statusDisconnecting': 'Verbinding verbreken...',
+		'statusDisconnected' : 'Verbinding is verbroken',
+		'statusAuthfail': 'Authenticatie is mislukt',
+
+		'roomSubject'  : 'Onderwerp:',
+		'messageSubmit': 'Verstuur',
+
+		'labelUsername': 'Gebruikersnaam:',
+		'labelPassword': 'Wachtwoord:',
+		'loginSubmit'  : 'Inloggen',
+		'loginInvalid'  : 'JID is onjuist',
+
+		'reason'				: 'Reden:',
+		'subject'				: 'Onderwerp:',
+		'reasonWas'				: 'De reden was: %s.',
+		'kickActionLabel'		: 'Verwijderen',
+		'youHaveBeenKickedBy'   : 'Je bent verwijderd van %s door %s',
+		'banActionLabel'		: 'Blokkeren',
+		'youHaveBeenBannedBy'   : 'Je bent geblokkeerd van %s door %s',
+
+		'privateActionLabel' : 'Prive gesprek',
+		'ignoreActionLabel'  : 'Negeren',
+		'unignoreActionLabel' : 'Niet negeren',
+
+		'setSubjectActionLabel': 'Onderwerp wijzigen',
+
+		'administratorMessageSubject' : 'Beheerder',
+
+		'userJoinedRoom'           : '%s komt de chat binnen.',
+		'userLeftRoom'             : '%s heeft de chat verlaten.',
+		'userHasBeenKickedFromRoom': '%s is verwijderd.',
+		'userHasBeenBannedFromRoom': '%s is geblokkeerd.',
+
+		'presenceUnknownWarningSubject': 'Mededeling:',
+		'presenceUnknownWarning'       : 'Deze gebruiker is waarschijnlijk offline, we kunnen zijn/haar aanwezigheid niet vaststellen.',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'Moderator',
+		'tooltipIgnored'		: 'Je negeert deze gebruiker',
+		'tooltipEmoticons'		: 'Emotie-iconen',
+		'tooltipSound'			: 'Speel een geluid af bij nieuwe privé berichten.',
+		'tooltipAutoscroll'		: 'Automatisch scrollen',
+		'tooltipStatusmessage'	: 'Statusberichten weergeven',
+		'tooltipAdministration'	: 'Instellingen',
+		'tooltipUsercount'		: 'Gebruikers',
+
+		'raptorMessageBlocked' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
+	},
+	'es': {
+		'status': 'Estado: %s',
+		'statusConnecting': 'Conectando...',
+		'statusConnected' : 'Conectado',
+		'statusDisconnecting': 'Desconectando...',
+		'statusDisconnected' : 'Desconectado',
+		'statusAuthfail': 'Falló la autenticación',
+
+		'roomSubject'  : 'Asunto:',
+		'messageSubmit': 'Enviar',
+
+		'labelUsername': 'Usuario:',
+		'labelPassword': 'Clave:',
+		'loginSubmit'  : 'Entrar',
+		'loginInvalid'  : 'JID no válido',
+
+		'reason'				: 'Razón:',
+		'subject'				: 'Asunto:',
+		'reasonWas'				: 'La razón fue: %s.',
+		'kickActionLabel'		: 'Expulsar',
+		'youHaveBeenKickedBy'   : 'Has sido expulsado de %s por %s',
+		'banActionLabel'		: 'Prohibir',
+		'youHaveBeenBannedBy'   : 'Has sido expulsado permanentemente de %s por %s',
+
+		'privateActionLabel' : 'Chat privado',
+		'ignoreActionLabel'  : 'Ignorar',
+		'unignoreActionLabel' : 'No ignorar',
+
+		'setSubjectActionLabel': 'Cambiar asunto',
+
+		'administratorMessageSubject' : 'Administrador',
+
+		'userJoinedRoom'           : '%s se ha unido a la sala.',
+		'userLeftRoom'             : '%s ha dejado la sala.',
+		'userHasBeenKickedFromRoom': '%s ha sido expulsado de la sala.',
+		'userHasBeenBannedFromRoom': '%s ha sido expulsado permanentemente de la sala.',
+
+		'presenceUnknownWarningSubject': 'Atención:',
+		'presenceUnknownWarning'       : 'Éste usuario podría estar desconectado..',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'Moderador',
+		'tooltipIgnored'		: 'Ignoras a éste usuario',
+		'tooltipEmoticons'		: 'Emoticonos',
+		'tooltipSound'			: 'Reproducir un sonido para nuevos mensajes privados',
+		'tooltipAutoscroll'		: 'Desplazamiento automático',
+		'tooltipStatusmessage'	: 'Mostrar mensajes de estado',
+		'tooltipAdministration'	: 'Administración de la sala',
+		'tooltipUsercount'		: 'Usuarios en la sala',
+
+		'raptorMessageBlocked' : 'Por favor, no hagas spam. Has sido bloqueado temporalmente.'
 	}
 };
