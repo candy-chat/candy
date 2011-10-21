@@ -3185,6 +3185,7 @@ Candy.View.Pane = (function(self, $) {
 					displayUsername: Candy.Core.isAnonymousConnection() || !presetJid,
 					presetJid: presetJid ? presetJid : false
 				}));
+				$('#login-form').children()[0].focus();
 
 				// register submit handler
 				$('#login-form').submit(function(event) {
@@ -3224,6 +3225,7 @@ Candy.View.Pane = (function(self, $) {
 					_label: (message ? message : $.i18n._('enterRoomPassword', [roomName])),
 					_joinSubmit: $.i18n._('enterRoomPasswordSubmit'),
 				}));
+				$('#password').focus();
 				
 				// register submit handler
 				$('#enter-password-form').submit(function() {
@@ -3249,6 +3251,7 @@ Candy.View.Pane = (function(self, $) {
 					_label: $.i18n._('nicknameConflict'),
 					_changeNicknameSubmit: $.i18n._('nicknameConflictSubmit'),
 				}));
+				$('#nickname').focus();
 				
 				// register submit handler
 				$('#nickname-conflict-form').submit(function() {
