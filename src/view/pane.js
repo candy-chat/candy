@@ -654,6 +654,32 @@ Candy.View.Pane = (function(self, $) {
 					});
 					return false;
 				});
+			},
+			
+			/** Function: showMembersOnlyError
+			 * When a room is only for members, display an error
+			 *
+			 * TODO: What should be done in this case?
+			 *
+			 * Parameters:
+			 *   (String) roomName - Room name
+			 */
+			showMembersOnlyError: function(roomName) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.displayError, {
+					_error: $.i18n._('membersOnly', [roomName])
+				}));
+			},
+			
+			/** Function: showMaxOccupantsReachedError
+			 * Show an error if the limit of occupants has been reached
+			 *
+			 * Parameters:
+			 *   (String) roomName - Room name
+			 */
+			showMaxOccupantsReachedError: function(roomName) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.displayError, {
+					_error: $.i18n._('maxOccupantsReached', [roomName])
+				}));
 			}
 		},
 

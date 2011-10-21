@@ -71,6 +71,9 @@ Candy.View.Translation = {
 		
 		'nicknameConflict': 'The nickname you chose is already in use. Please choose a new one.',
 		'nicknameConflictSubmit': 'Change nickname',
+		
+		'membersOnly': 'The room "%s" is only for members. If you want to join the room, please ask a moderator for access first.',
+		'maxOccupantsReached': 'The room "%s" has reached it\'s occupants limit. You\'ll have to wait until you can join it.',
 
 		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
@@ -133,6 +136,9 @@ Candy.View.Translation = {
 		
 		'nicknameConflict': 'Der Nickname wird bereits verwendet. Bitte wähle einen neuen aus.',
 		'nicknameConflictSubmit': 'Nickname ändern',
+		
+		'membersOnly': 'Der Raum "%s" ist nur für Mitglieder zugänglich. Wenn du den Raum trotzdem betreten willst, musst du zuerst einen Moderator fragen.',
+		'maxOccupantsReached': 'Der Raum "%s" hat das Limit an Benutzern erreicht. Du musst warten, bis der Raum wieder betretbar ist.',
 
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},

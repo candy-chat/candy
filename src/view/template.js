@@ -76,6 +76,7 @@ Candy.View.Template = (function(self){
 			+ '<form method="post" id="nickname-conflict-form" class="nickname-conflict-form">'
 			+ '<label for="nickname">{{_labelNickname}}</label><input type="text" id="nickname" name="nickname" />'
 			+ '<input type="submit" class="button" value="{{_changeNicknameSubmit}}" /></form>',
+		displayError: '<strong>{{_error}}</strong>'
 	};
 
 	return self;

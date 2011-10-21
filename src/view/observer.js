@@ -173,6 +173,12 @@ Candy.View.Observer = (function(self, $) {
 				case 'conflict':
 					Candy.View.Pane.Chat.Modal.showNicknameConflictForm(args.roomJid);
 					break;
+				case 'registration-required':
+					Candy.View.Pane.Chat.Modal.showMembersOnlyError(args.roomName);
+					break;
+				case 'service-unavailable':
+					Candy.View.Pane.Chat.Modal.showMaxOccupantsReachedError(args.roomName);
+					break;
 			}
 		}
 	}
