@@ -495,6 +495,7 @@ Candy.View.Pane = (function(self, $) {
 				} else {
 					self.Chat.Modal.hideSpinner();
 				}
+				$('#chat-modal').stop(false, true);
 				$('#chat-modal-body').html(html);
 				$('#chat-modal').fadeIn('fast');
 				$('#chat-modal-overlay').show();
@@ -508,7 +509,7 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			hide: function(callback) {
 				$('#chat-modal').fadeOut('fast', function() {
-					$('#chat-modal-body').text('');
+					$('#chat-modal-body').text('');	
 					$('#chat-modal-overlay').hide();
 				});
 				// restore initial esc handling
@@ -571,7 +572,7 @@ Candy.View.Pane = (function(self, $) {
 			 *	(String) presetJid - optional user jid. if set, the user will only be prompted for password.
 			 */
 			showLoginForm: function(message, presetJid) {
-				Candy.View.Pane.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
+				self.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
 					_labelUsername: $.i18n._('labelUsername'),
 					_labelPassword: $.i18n._('labelPassword'),
 					_loginSubmit: $.i18n._('loginSubmit'),
