@@ -615,7 +615,7 @@ Candy.View.Pane = (function(self, $) {
 				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.enterPasswordForm, {
 					roomName: roomName,
 					_labelPassword: $.i18n._('labelPassword'),
-					_label: (message ? message : $.i18n._('enterRoomPassword')),
+					_label: (message ? message : $.i18n._('enterRoomPassword', [roomName])),
 					_joinSubmit: $.i18n._('enterRoomPasswordSubmit'),
 				}));
 				
@@ -623,8 +623,9 @@ Candy.View.Pane = (function(self, $) {
 				$('#enter-password-form').submit(function() {
 					var password = $('#password').val();
 					
-					self.Chat.Modal.hide();
-					Candy.Core.Action.Jabber.Room.Join(roomJid, password);
+					self.Chat.Modal.hide(function() {
+						Candy.Core.Action.Jabber.Room.Join(roomJid, password);
+					});
 					return false;
 				});
 			},
@@ -635,10 +636,24 @@ Candy.View.Pane = (function(self, $) {
 			 *
 			 * Parameters:
 			 *   (String) roomJid - Room jid to join
-			 *   (String) roomName - Room name
 			 */
-			showNicknameConflictForm: function(roomJid, roomName) {
+			showNicknameConflictForm: function(roomJid) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.nicknameConflictForm, {
+					_labelNickname: $.i18n._('labelUsername'),
+					_label: $.i18n._('nicknameConflict'),
+					_changeNicknameSubmit: $.i18n._('nicknameConflictSubmit'),
+				}));
 				
+				// register submit handler
+				$('#nickname-conflict-form').submit(function() {
+					var nickname = $('#nickname').val();
+
+					self.Chat.Modal.hide(function() {
+						Candy.Core.getUser().data.nick = nickname;
+						Candy.Core.Action.Jabber.Room.Join(roomJid);
+					});
+					return false;
+				});
 			}
 		},
 

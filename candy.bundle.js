@@ -2539,12 +2539,12 @@ Candy.View.Observer = (function(self, $) {
 				case 'not-authorized':
 					var message;
 					if (args.msg.children('x').children('password').length > 0) {
-						message = $.i18n._('passwordEnteredInvalid');
+						message = $.i18n._('passwordEnteredInvalid', [args.roomName]);
 					}
 					Candy.View.Pane.Chat.Modal.showEnterPasswordForm(args.roomJid, args.roomName, message);
 					break;
 				case 'conflict':
-					Candy.View.Pane.Chat.Modal.showNicknameConflictForm(args.roomJid, args.roomName);
+					Candy.View.Pane.Chat.Modal.showNicknameConflictForm(args.roomJid);
 					break;
 			}
 		}
@@ -3214,7 +3214,7 @@ Candy.View.Pane = (function(self, $) {
 				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.enterPasswordForm, {
 					roomName: roomName,
 					_labelPassword: $.i18n._('labelPassword'),
-					_label: (message ? message : $.i18n._('enterRoomPassword')),
+					_label: (message ? message : $.i18n._('enterRoomPassword', [roomName])),
 					_joinSubmit: $.i18n._('enterRoomPasswordSubmit'),
 				}));
 				
@@ -3222,8 +3222,9 @@ Candy.View.Pane = (function(self, $) {
 				$('#enter-password-form').submit(function() {
 					var password = $('#password').val();
 					
-					self.Chat.Modal.hide();
-					Candy.Core.Action.Jabber.Room.Join(roomJid, password);
+					self.Chat.Modal.hide(function() {
+						Candy.Core.Action.Jabber.Room.Join(roomJid, password);
+					});
 					return false;
 				});
 			},
@@ -3234,10 +3235,24 @@ Candy.View.Pane = (function(self, $) {
 			 *
 			 * Parameters:
 			 *   (String) roomJid - Room jid to join
-			 *   (String) roomName - Room name
 			 */
-			showNicknameConflictForm: function(roomJid, roomName) {
+			showNicknameConflictForm: function(roomJid) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.nicknameConflictForm, {
+					_labelNickname: $.i18n._('labelUsername'),
+					_label: $.i18n._('nicknameConflict'),
+					_changeNicknameSubmit: $.i18n._('nicknameConflictSubmit'),
+				}));
 				
+				// register submit handler
+				$('#nickname-conflict-form').submit(function() {
+					var nickname = $('#nickname').val();
+
+					self.Chat.Modal.hide(function() {
+						Candy.Core.getUser().data.nick = nickname;
+						Candy.Core.Action.Jabber.Room.Join(roomJid);
+					});
+					return false;
+				});
 			}
 		},
 
@@ -4258,7 +4273,11 @@ Candy.View.Template = (function(self){
 		enterPasswordForm: '<strong>{{_label}}</strong>'
 			+ '<form method="post" id="enter-password-form" class="enter-password-form">'
 			+ '<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />'
-			+ '<input type="submit" class="button" value="{{_joinSubmit}}" /></form>'
+			+ '<input type="submit" class="button" value="{{_joinSubmit}}" /></form>',
+		nicknameConflictForm: '<strong>{{_label}}</strong>'
+			+ '<form method="post" id="nickname-conflict-form" class="nickname-conflict-form">'
+			+ '<label for="nickname">{{_labelNickname}}</label><input type="text" id="nickname" name="nickname" />'
+			+ '<input type="submit" class="button" value="{{_changeNicknameSubmit}}" /></form>',
 	};
 
 	return self;
@@ -4330,9 +4349,12 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Room Administration',
 		'tooltipUsercount'		: 'Room Occupants',
 		
-		'enterRoomPassword' : 'This room is password protected. Please enter the correct password.',
+		'enterRoomPassword' : 'The room "%s" is password protected. Please enter the correct password.',
 		'enterRoomPasswordSubmit' : 'Join room',
-		'passwordEnteredInvalid' : 'The password you entered is invalid. Please enter the correct password.',
+		'passwordEnteredInvalid' : 'The password you entered for the room "%s" is invalid. Please enter the correct password.',
+		
+		'nicknameConflict': 'The nickname you chose is already in use. Please choose a new one.',
+		'nicknameConflictSubmit': 'Change nickname',
 
 		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
@@ -4389,9 +4411,12 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Raum Administration',
 		'tooltipUsercount'		: 'Anzahl Benutzer im Raum',
 
-		'enterRoomPassword' : 'Dieser Raum ist durch ein Passwort geschützt. Bitte gib das korrekte Passwort ein.',
+		'enterRoomPassword' : 'Raum "%s" ist durch ein Passwort geschützt. Bitte gib das korrekte Passwort ein.',
 		'enterRoomPasswordSubmit' : 'Raum betreten',
-		'passwordEnteredInvalid' : 'Das angegebene Passwort ist nicht korrekt. Bitte gib das korrekte Passwort ein.',
+		'passwordEnteredInvalid' : 'Das angegebene Passwort für Raum "%s" ist nicht korrekt. Bitte gib das korrekte Passwort ein.',
+		
+		'nicknameConflict': 'Der Nickname wird bereits verwendet. Bitte wähle einen neuen aus.',
+		'nicknameConflictSubmit': 'Nickname ändern',
 
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},

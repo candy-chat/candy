@@ -166,12 +166,12 @@ Candy.View.Observer = (function(self, $) {
 				case 'not-authorized':
 					var message;
 					if (args.msg.children('x').children('password').length > 0) {
-						message = $.i18n._('passwordEnteredInvalid');
+						message = $.i18n._('passwordEnteredInvalid', [args.roomName]);
 					}
 					Candy.View.Pane.Chat.Modal.showEnterPasswordForm(args.roomJid, args.roomName, message);
 					break;
 				case 'conflict':
-					Candy.View.Pane.Chat.Modal.showNicknameConflictForm(args.roomJid, args.roomName);
+					Candy.View.Pane.Chat.Modal.showNicknameConflictForm(args.roomJid);
 					break;
 			}
 		}

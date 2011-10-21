@@ -71,7 +71,11 @@ Candy.View.Template = (function(self){
 		enterPasswordForm: '<strong>{{_label}}</strong>'
 			+ '<form method="post" id="enter-password-form" class="enter-password-form">'
 			+ '<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />'
-			+ '<input type="submit" class="button" value="{{_joinSubmit}}" /></form>'
+			+ '<input type="submit" class="button" value="{{_joinSubmit}}" /></form>',
+		nicknameConflictForm: '<strong>{{_label}}</strong>'
+			+ '<form method="post" id="nickname-conflict-form" class="nickname-conflict-form">'
+			+ '<label for="nickname">{{_labelNickname}}</label><input type="text" id="nickname" name="nickname" />'
+			+ '<input type="submit" class="button" value="{{_changeNicknameSubmit}}" /></form>',
 	};
 
 	return self;

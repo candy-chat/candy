@@ -564,6 +564,7 @@ ul {
 	clear: both;
 	position: relative;
 	top: 10px;
+	width: auto;
 }
 
 #chat-modal .close {

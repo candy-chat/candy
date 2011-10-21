@@ -65,9 +65,12 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Room Administration',
 		'tooltipUsercount'		: 'Room Occupants',
 		
-		'enterRoomPassword' : 'This room is password protected. Please enter the correct password.',
+		'enterRoomPassword' : 'The room "%s" is password protected. Please enter the correct password.',
 		'enterRoomPasswordSubmit' : 'Join room',
-		'passwordEnteredInvalid' : 'The password you entered is invalid. Please enter the correct password.',
+		'passwordEnteredInvalid' : 'The password you entered for the room "%s" is invalid. Please enter the correct password.',
+		
+		'nicknameConflict': 'The nickname you chose is already in use. Please choose a new one.',
+		'nicknameConflictSubmit': 'Change nickname',
 
 		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
@@ -124,9 +127,12 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Raum Administration',
 		'tooltipUsercount'		: 'Anzahl Benutzer im Raum',
 
-		'enterRoomPassword' : 'Dieser Raum ist durch ein Passwort geschützt. Bitte gib das korrekte Passwort ein.',
+		'enterRoomPassword' : 'Raum "%s" ist durch ein Passwort geschützt. Bitte gib das korrekte Passwort ein.',
 		'enterRoomPasswordSubmit' : 'Raum betreten',
-		'passwordEnteredInvalid' : 'Das angegebene Passwort ist nicht korrekt. Bitte gib das korrekte Passwort ein.',
+		'passwordEnteredInvalid' : 'Das angegebene Passwort für Raum "%s" ist nicht korrekt. Bitte gib das korrekte Passwort ein.',
+		
+		'nicknameConflict': 'Der Nickname wird bereits verwendet. Bitte wähle einen neuen aus.',
+		'nicknameConflictSubmit': 'Nickname ändern',
 
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},
