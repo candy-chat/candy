@@ -260,8 +260,14 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				Candy.Core.log('[Jabber:Room] Leave');
 				var msg = $(msg),
 					from = msg.attr('from'),
-					roomJid = Strophe.getBareJidFromJid(from),
-					roomName = Candy.Core.getRoom(roomJid).getName(),
+					roomJid = Strophe.getBareJidFromJid(from);
+
+				// if room is not joined yet, ignore.
+				if (!Candy.Core.getRoom(roomJid)) {
+					return false;
+				}
+
+				var roomName = Candy.Core.getRoom(roomJid).getName(),
 					item = msg.find('item'),
 					type = 'leave',
 					reason,
@@ -360,7 +366,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					// Room existed but client (myself) is not yet registered
 					if(room.getUser() === null && Candy.Core.getUser().getNick() === nick) {
 						room.setUser(user);
-					}					
+					}
 					roster.add(user);
 					action = 'join';
 				// User left a room
