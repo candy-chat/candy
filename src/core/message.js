@@ -21,12 +21,12 @@ Candy.Core.Message = function(text, type) {
 	 * contains message text
 	 */
 	this._text = text;
-        
+	
         /** String: _type
 	 * type of message
 	 */
 	this._type = type;
-
+	
 	/** Function: setText
 	 * Set the message's text
 	 *
@@ -36,7 +36,7 @@ Candy.Core.Message = function(text, type) {
 	this.setText = function(text) {
 		this._text = text;
 	};
-
+	
 	/** Function: getText
 	 * Get message text
 	 *
@@ -46,5 +46,5 @@ Candy.Core.Message = function(text, type) {
 	this.getText = function() {
 		return this._text;
 	};
-
+	
 };
