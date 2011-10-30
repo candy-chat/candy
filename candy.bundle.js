@@ -4082,12 +4082,18 @@ Candy.View.Pane = (function(self, $) {
 			$(Candy.Core.Message).triggerHandler('beforeshow', [evtData]);
 			message = evtData.message;
 			
-			var html = Mustache.to_html(Candy.View.Template.Message.item, {
+			var renderEvtData = {
+			    template: Candy.View.Template.Message.item,
+			    templateData: {
 				name: name,
 				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.nickname),
 				message: message,
 				time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
-			});
+			    }
+			};
+			$(Candy.Core.Message).triggerHandler('beforerender', [renderEvtData]);
+
+			var html = Mustache.to_html(renderEvtData.template, evtrenderEvtDataData.templateData);
 			self.Room.appendToMessagePane(roomJid, html);
 			var elem = self.Room.getPane(roomJid, '.message-pane').children().last();
 			// click on username opens private chat
