@@ -1543,8 +1543,9 @@ Candy.View.Pane = (function(self, $) {
 			 * with the class instance... what are your thoughs?
 			 * var messageObj = new Candy.Core.Message(message, roomType);
 			 * */
-
-			$(Candy.Core.Message).triggerHandler('beforesend', [message]);
+			var evtData = {message: message};
+			$(Candy.Core.Message).triggerHandler('beforesend', [evtData]);
+			message = evtData.message;
 
 			Candy.Core.Action.Jabber.Room.Message(Candy.View.getCurrent().roomJid, message, roomType);
 			// Private user chat. Jabber won't notify the user who has sent the message. Just show it as the user hits the button...
@@ -1570,9 +1571,11 @@ Candy.View.Pane = (function(self, $) {
 
 			message = Candy.View.Event.Message.beforeShow(message);
 
-			/* new event system call */                        
-			$(Candy.Core.Message).triggerHandler('beforeshow', [message]);
-
+			/* new event system call */
+			var evtData = {message: message};
+			$(Candy.Core.Message).triggerHandler('beforeshow', [evtData]);
+			message = evtData.message;
+			
 			var html = Mustache.to_html(Candy.View.Template.Message.item, {
 				name: name,
 				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.nickname),
