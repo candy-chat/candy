@@ -1587,7 +1587,7 @@ Candy.View.Pane = (function(self, $) {
 			};
 			$(Candy.Core.Message).triggerHandler('beforerender', [renderEvtData]);
 
-			var html = Mustache.to_html(renderEvtData.template, evtrenderEvtDataData.templateData);
+			var html = Mustache.to_html(renderEvtData.template, renderEvtData.templateData);
 			self.Room.appendToMessagePane(roomJid, html);
 			var elem = self.Room.getPane(roomJid, '.message-pane').children().last();
 			// click on username opens private chat
