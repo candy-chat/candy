@@ -619,7 +619,7 @@ Candy.View.Pane = (function(self, $) {
 					_labelPassword: $.i18n._('labelPassword'),
 					_label: (message ? message : $.i18n._('enterRoomPassword', [roomName])),
 					_joinSubmit: $.i18n._('enterRoomPasswordSubmit'),
-				}));
+				}), true);
 				$('#password').focus();
 				
 				// register submit handler
@@ -644,7 +644,7 @@ Candy.View.Pane = (function(self, $) {
 				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.nicknameConflictForm, {
 					_labelNickname: $.i18n._('labelUsername'),
 					_label: $.i18n._('nicknameConflict'),
-					_changeNicknameSubmit: $.i18n._('nicknameConflictSubmit'),
+					_loginSubmit: $.i18n._('loginSubmit'),
 				}));
 				$('#nickname').focus();
 				
@@ -660,30 +660,17 @@ Candy.View.Pane = (function(self, $) {
 				});
 			},
 			
-			/** Function: showMembersOnlyError
-			 * When a room is only for members, display an error
-			 *
-			 * TODO: What should be done in this case?
+			/** Function: showError
+			 * Show modal containing error message
 			 *
 			 * Parameters:
-			 *   (String) roomName - Room name
+			 *   (String) message - key of translation to display
+			 *   (Array) replacements - array containing replacements for translation (%s)
 			 */
-			showMembersOnlyError: function(roomName) {
+			showError: function(message, replacements) {
 				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.displayError, {
-					_error: $.i18n._('membersOnly', [roomName])
-				}));
-			},
-			
-			/** Function: showMaxOccupantsReachedError
-			 * Show an error if the limit of occupants has been reached
-			 *
-			 * Parameters:
-			 *   (String) roomName - Room name
-			 */
-			showMaxOccupantsReachedError: function(roomName) {
-				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.displayError, {
-					_error: $.i18n._('maxOccupantsReached', [roomName])
-				}));
+					_error: $.i18n._(message, replacements)
+				}), true);
 			}
 		},
 

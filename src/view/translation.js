@@ -65,15 +65,14 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Room Administration',
 		'tooltipUsercount'		: 'Room Occupants',
 		
-		'enterRoomPassword' : 'The room "%s" is password protected. Please enter the correct password.',
+		'enterRoomPassword' : 'Room "%s" is password protected.',
 		'enterRoomPasswordSubmit' : 'Join room',
-		'passwordEnteredInvalid' : 'The password you entered for the room "%s" is invalid. Please enter the correct password.',
+		'passwordEnteredInvalid' : 'Invalid password for room "%s".',
 		
-		'nicknameConflict': 'The nickname you chose is already in use. Please choose a new one.',
-		'nicknameConflictSubmit': 'Change nickname',
+		'nicknameConflict': 'Username already in use. Please choose another one.',
 		
-		'membersOnly': 'The room "%s" is only for members. If you want to join the room, please ask a moderator for access first.',
-		'maxOccupantsReached': 'The room "%s" has reached it\'s occupants limit. You\'ll have to wait until you can join it.',
+		'errorMembersOnly': 'You can\'t join room "%s": Insufficient rights.',
+		'errorMaxOccupantsReached': 'You can\'t join room "%s": Too many occupants.',
 
 		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
@@ -130,15 +129,14 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Raum Administration',
 		'tooltipUsercount'		: 'Anzahl Benutzer im Raum',
 
-		'enterRoomPassword' : 'Raum "%s" ist durch ein Passwort geschützt. Bitte gib das korrekte Passwort ein.',
+		'enterRoomPassword' : 'Raum "%s" ist durch ein Passwort geschützt.',
 		'enterRoomPasswordSubmit' : 'Raum betreten',
-		'passwordEnteredInvalid' : 'Das angegebene Passwort für Raum "%s" ist nicht korrekt. Bitte gib das korrekte Passwort ein.',
+		'passwordEnteredInvalid' : 'Inkorrektes Passwort für Raum "%s".',
 		
-		'nicknameConflict': 'Der Nickname wird bereits verwendet. Bitte wähle einen neuen aus.',
-		'nicknameConflictSubmit': 'Nickname ändern',
+		'nicknameConflict': 'Der Benutzername wird bereits verwendet. Bitte wähle einen anderen.',
 		
-		'membersOnly': 'Der Raum "%s" ist nur für Mitglieder zugänglich. Wenn du den Raum trotzdem betreten willst, musst du zuerst einen Moderator fragen.',
-		'maxOccupantsReached': 'Der Raum "%s" hat das Limit an Benutzern erreicht. Du musst warten, bis der Raum wieder betretbar ist.',
+		'errorMembersOnly': 'Du kannst den Raum "%s" nicht betreten: Ungenügende Rechte.',
+		'errorMaxOccupantsReached': 'Du kannst den Raum "%s" nicht betreten: Benutzerlimit erreicht.',
 
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},

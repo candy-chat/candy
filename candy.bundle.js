@@ -2547,10 +2547,10 @@ Candy.View.Observer = (function(self, $) {
 					Candy.View.Pane.Chat.Modal.showNicknameConflictForm(args.roomJid);
 					break;
 				case 'registration-required':
-					Candy.View.Pane.Chat.Modal.showMembersOnlyError(args.roomName);
+					Candy.View.Pane.Chat.Modal.showError('errorMembersOnly', [args.roomName]);
 					break;
 				case 'service-unavailable':
-					Candy.View.Pane.Chat.Modal.showMaxOccupantsReachedError(args.roomName);
+					Candy.View.Pane.Chat.Modal.showError('errorMaxOccupantsReached', [args.roomName]);
 					break;
 			}
 		}
@@ -3224,7 +3224,7 @@ Candy.View.Pane = (function(self, $) {
 					_labelPassword: $.i18n._('labelPassword'),
 					_label: (message ? message : $.i18n._('enterRoomPassword', [roomName])),
 					_joinSubmit: $.i18n._('enterRoomPasswordSubmit'),
-				}));
+				}), true);
 				$('#password').focus();
 				
 				// register submit handler
@@ -3249,7 +3249,7 @@ Candy.View.Pane = (function(self, $) {
 				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.nicknameConflictForm, {
 					_labelNickname: $.i18n._('labelUsername'),
 					_label: $.i18n._('nicknameConflict'),
-					_changeNicknameSubmit: $.i18n._('nicknameConflictSubmit'),
+					_loginSubmit: $.i18n._('loginSubmit'),
 				}));
 				$('#nickname').focus();
 				
@@ -3265,30 +3265,17 @@ Candy.View.Pane = (function(self, $) {
 				});
 			},
 			
-			/** Function: showMembersOnlyError
-			 * When a room is only for members, display an error
-			 *
-			 * TODO: What should be done in this case?
+			/** Function: showError
+			 * Show modal containing error message
 			 *
 			 * Parameters:
-			 *   (String) roomName - Room name
+			 *   (String) message - key of translation to display
+			 *   (Array) replacements - array containing replacements for translation (%s)
 			 */
-			showMembersOnlyError: function(roomName) {
+			showError: function(message, replacements) {
 				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.displayError, {
-					_error: $.i18n._('membersOnly', [roomName])
-				}));
-			},
-			
-			/** Function: showMaxOccupantsReachedError
-			 * Show an error if the limit of occupants has been reached
-			 *
-			 * Parameters:
-			 *   (String) roomName - Room name
-			 */
-			showMaxOccupantsReachedError: function(roomName) {
-				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.displayError, {
-					_error: $.i18n._('maxOccupantsReached', [roomName])
-				}));
+					_error: $.i18n._(message, replacements)
+				}), true);
 			}
 		},
 
@@ -4313,7 +4300,7 @@ Candy.View.Template = (function(self){
 		nicknameConflictForm: '<strong>{{_label}}</strong>'
 			+ '<form method="post" id="nickname-conflict-form" class="nickname-conflict-form">'
 			+ '<label for="nickname">{{_labelNickname}}</label><input type="text" id="nickname" name="nickname" />'
-			+ '<input type="submit" class="button" value="{{_changeNicknameSubmit}}" /></form>',
+			+ '<input type="submit" class="button" value="{{_loginSubmit}}" /></form>',
 		displayError: '<strong>{{_error}}</strong>'
 	};
 
@@ -4386,15 +4373,14 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Room Administration',
 		'tooltipUsercount'		: 'Room Occupants',
 		
-		'enterRoomPassword' : 'The room "%s" is password protected. Please enter the correct password.',
+		'enterRoomPassword' : 'Room "%s" is password protected.',
 		'enterRoomPasswordSubmit' : 'Join room',
-		'passwordEnteredInvalid' : 'The password you entered for the room "%s" is invalid. Please enter the correct password.',
+		'passwordEnteredInvalid' : 'Invalid password for room "%s".',
 		
-		'nicknameConflict': 'The nickname you chose is already in use. Please choose a new one.',
-		'nicknameConflictSubmit': 'Change nickname',
+		'nicknameConflict': 'Username already in use. Please choose another one.',
 		
-		'membersOnly': 'The room "%s" is only for members. If you want to join the room, please ask a moderator for access first.',
-		'maxOccupantsReached': 'The room "%s" has reached it\'s occupants limit. You\'ll have to wait until you can join it.',
+		'errorMembersOnly': 'You can\'t join room "%s": Insufficient rights.',
+		'errorMaxOccupantsReached': 'You can\'t join room "%s": Too many occupants.',
 
 		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
@@ -4451,15 +4437,14 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Raum Administration',
 		'tooltipUsercount'		: 'Anzahl Benutzer im Raum',
 
-		'enterRoomPassword' : 'Raum "%s" ist durch ein Passwort geschützt. Bitte gib das korrekte Passwort ein.',
+		'enterRoomPassword' : 'Raum "%s" ist durch ein Passwort geschützt.',
 		'enterRoomPasswordSubmit' : 'Raum betreten',
-		'passwordEnteredInvalid' : 'Das angegebene Passwort für Raum "%s" ist nicht korrekt. Bitte gib das korrekte Passwort ein.',
+		'passwordEnteredInvalid' : 'Inkorrektes Passwort für Raum "%s".',
 		
-		'nicknameConflict': 'Der Nickname wird bereits verwendet. Bitte wähle einen neuen aus.',
-		'nicknameConflictSubmit': 'Nickname ändern',
+		'nicknameConflict': 'Der Benutzername wird bereits verwendet. Bitte wähle einen anderen.',
 		
-		'membersOnly': 'Der Raum "%s" ist nur für Mitglieder zugänglich. Wenn du den Raum trotzdem betreten willst, musst du zuerst einen Moderator fragen.',
-		'maxOccupantsReached': 'Der Raum "%s" hat das Limit an Benutzern erreicht. Du musst warten, bis der Raum wieder betretbar ist.',
+		'errorMembersOnly': 'Du kannst den Raum "%s" nicht betreten: Ungenügende Rechte.',
+		'errorMaxOccupantsReached': 'Du kannst den Raum "%s" nicht betreten: Benutzerlimit erreicht.',
 
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},
