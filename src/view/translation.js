@@ -246,6 +246,15 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Instellingen',
 		'tooltipUsercount'		: 'Gebruikers',
 
+		'enterRoomPassword' : 'De Chatroom "%s" is met een wachtwoord beveiligd.',
+		'enterRoomPasswordSubmit' : 'Ga naar Chatroom',
+		'passwordEnteredInvalid' : 'Het wachtwoord voor de Chatroom "%s" is onjuist.',
+
+		'nicknameConflict': 'De gebruikersnaam is reeds in gebruik. Probeer a.u.b. een andere gebruikersnaam.',
+
+		'errorMembersOnly': 'Je kunt niet deelnemen aan de Chatroom "%s": Je hebt onvoldoende rechten.',
+		'errorMaxOccupantsReached': 'Je kunt niet deelnemen aan de Chatroom "%s": Het maximum aantal gebruikers is bereikt.',
+
 		'antiSpamMessage' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
 	},
 	'es': {
