@@ -29,7 +29,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.0.6'
+		version: '1.0.7-dev'
 	};
 
 	/** Function: init
@@ -435,6 +435,7 @@ Candy.View = (function(self, $) {
 		_registerObservers = function() {
 			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.CHAT, self.Observer.Chat);
 			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.PRESENCE, self.Observer.Presence);
+			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.PRESENCE_ERROR, self.Observer.PresenceError);
 			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.MESSAGE, self.Observer.Message);
 			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.LOGIN, self.Observer.Login);
 		},
@@ -1217,10 +1218,11 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *
 			 * Parameters:
 			 *   (String) roomJid - Room to join
+			 *   (String) password - [optional] Password for the room
 			 */
-			Join: function(roomJid) {
+			Join: function(roomJid, password) {
 				self.Jabber.Room.Disco(roomJid);
-				Candy.Core.getConnection().muc.join(roomJid, Candy.Core.getUser().getNick());
+				Candy.Core.getConnection().muc.join(roomJid, Candy.Core.getUser().getNick(), null, null, password);
 			},
 
 			/** Function: Leave
@@ -1750,7 +1752,8 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		CHAT: 1,
 		PRESENCE: 2,
 		MESSAGE: 3,
-		LOGIN: 4
+		LOGIN: 4,
+		PRESENCE_ERROR: 5
 	};
 
 	/** Class: Candy.Core.Event.Strophe
@@ -1852,7 +1855,11 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			Candy.Core.log('[Jabber] Presence');
 			msg = $(msg);
 			if(msg.children('x[xmlns^="' + Strophe.NS.MUC + '"]').length > 0) {
-				self.Jabber.Room.Presence(msg);
+				if (msg.attr('type') === 'error') {
+					self.Jabber.Room.PresenceError(msg);
+				} else {
+					self.Jabber.Room.Presence(msg);
+				}
 			}
 			return true;
 		},
@@ -2050,13 +2057,6 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					self.Jabber.Room.Leave(msg);
 					return true;
 				}
-				// Presence error: Remove room from array to prevent error when disconnecting
-				// @todo maybe more handling needed here.
-				if (presenceType === 'error') {
-					Candy.Core.log('[Jabber:Room] Presence Error');
-					delete Candy.Core.getRooms()[roomJid];
-					return true;
-				}
 
 				// Client joined a room
 				var room = Candy.Core.getRoom(roomJid);
@@ -2094,6 +2094,28 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 
 				self.notifyObservers(self.KEYS.PRESENCE, {'roomJid': roomJid, 'roomName': room.getName(), 'user': user, 'action': action, 'currentUser': Candy.Core.getUser() } );
 				return true;
+			},
+			
+			/** Function: PresenceError
+			 * Acts when a presence of type error has been retrieved.
+			 *
+			 * Parameters:
+			 *   (Object) msg - jQuery object of XML message
+			 *
+			 * Returns:
+			 *   (Boolean) - true
+			 */
+			PresenceError: function(msg) {
+				Candy.Core.log('[Jabber:Room] Presence Error');
+				var from = Candy.Util.unescapeJid(msg.attr('from')),
+					roomJid = Strophe.getBareJidFromJid(from),
+					room = Candy.Core.getRooms()[roomJid],
+					roomName = room.getName();
+					
+				// Presence error: Remove room from array to prevent error when disconnecting
+				delete room;
+				
+				self.notifyObservers(self.KEYS.PRESENCE_ERROR, {'msg' : msg, 'type': msg.children('error').children()[0].tagName.toLowerCase(), 'roomJid': roomJid, 'roomName': roomName});
 			},
 
 			/** Function: Message
@@ -2506,6 +2528,39 @@ Candy.View.Observer = (function(self, $) {
 			}
 		}
 	};
+	
+	/** Class: Candy.View.Observer.PresenceError
+	 * Presence error events
+	 */
+	self.PresenceError = {
+		/** Function: update
+		 * Presence errors get handled in this method
+		 *
+		 * Parameters:
+		 *   (Candy.Core.Event) obj - Candy core event object
+		 *   (Object) args - {msg, type, roomJid, roomName}
+		 */
+		update: function(obj, args) {
+			switch(args.type) {
+				case 'not-authorized':
+					var message;
+					if (args.msg.children('x').children('password').length > 0) {
+						message = $.i18n._('passwordEnteredInvalid', [args.roomName]);
+					}
+					Candy.View.Pane.Chat.Modal.showEnterPasswordForm(args.roomJid, args.roomName, message);
+					break;
+				case 'conflict':
+					Candy.View.Pane.Chat.Modal.showNicknameConflictForm(args.roomJid);
+					break;
+				case 'registration-required':
+					Candy.View.Pane.Chat.Modal.showError('errorMembersOnly', [args.roomName]);
+					break;
+				case 'service-unavailable':
+					Candy.View.Pane.Chat.Modal.showError('errorMaxOccupantsReached', [args.roomName]);
+					break;
+			}
+		}
+	}
 
 	/** Class: Candy.View.Observer.Message
 	 * Message related events
@@ -3051,6 +3106,7 @@ Candy.View.Pane = (function(self, $) {
 				} else {
 					self.Chat.Modal.hideSpinner();
 				}
+				$('#chat-modal').stop(false, true);
 				$('#chat-modal-body').html(html);
 				$('#chat-modal').fadeIn('fast');
 				$('#chat-modal-overlay').show();
@@ -3064,7 +3120,7 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			hide: function(callback) {
 				$('#chat-modal').fadeOut('fast', function() {
-					$('#chat-modal-body').text('');
+					$('#chat-modal-body').text('');	
 					$('#chat-modal-overlay').hide();
 				});
 				// restore initial esc handling
@@ -3127,7 +3183,7 @@ Candy.View.Pane = (function(self, $) {
 			 *	(String) presetJid - optional user jid. if set, the user will only be prompted for password.
 			 */
 			showLoginForm: function(message, presetJid) {
-				Candy.View.Pane.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
+				self.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
 					_labelUsername: $.i18n._('labelUsername'),
 					_labelPassword: $.i18n._('labelPassword'),
 					_loginSubmit: $.i18n._('loginSubmit'),
@@ -3135,6 +3191,7 @@ Candy.View.Pane = (function(self, $) {
 					displayUsername: Candy.Core.isAnonymousConnection() || !presetJid,
 					presetJid: presetJid ? presetJid : false
 				}));
+				$('#login-form').children()[0].focus();
 
 				// register submit handler
 				$('#login-form').submit(function(event) {
@@ -3157,6 +3214,74 @@ Candy.View.Pane = (function(self, $) {
 					}
 					return false;
 				});
+			},
+			
+			/** Function: showEnterPasswordForm
+			 * Shows a form for entering room password
+			 *
+			 * Parameters:
+			 *   (String) roomJid - Room jid to join
+			 *   (String) roomName - Room name
+			 *   (String) message - [optional] Message to show as the label
+			 */
+			showEnterPasswordForm: function(roomJid, roomName, message) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.enterPasswordForm, {
+					roomName: roomName,
+					_labelPassword: $.i18n._('labelPassword'),
+					_label: (message ? message : $.i18n._('enterRoomPassword', [roomName])),
+					_joinSubmit: $.i18n._('enterRoomPasswordSubmit'),
+				}), true);
+				$('#password').focus();
+				
+				// register submit handler
+				$('#enter-password-form').submit(function() {
+					var password = $('#password').val();
+					
+					self.Chat.Modal.hide(function() {
+						Candy.Core.Action.Jabber.Room.Join(roomJid, password);
+					});
+					return false;
+				});
+			},
+			
+			/** Function: showNicknameConflictForm
+			 * Shows a form indicating that the nickname is already taken and
+			 * for chosing a new nickname
+			 *
+			 * Parameters:
+			 *   (String) roomJid - Room jid to join
+			 */
+			showNicknameConflictForm: function(roomJid) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.nicknameConflictForm, {
+					_labelNickname: $.i18n._('labelUsername'),
+					_label: $.i18n._('nicknameConflict'),
+					_loginSubmit: $.i18n._('loginSubmit'),
+				}));
+				$('#nickname').focus();
+				
+				// register submit handler
+				$('#nickname-conflict-form').submit(function() {
+					var nickname = $('#nickname').val();
+
+					self.Chat.Modal.hide(function() {
+						Candy.Core.getUser().data.nick = nickname;
+						Candy.Core.Action.Jabber.Room.Join(roomJid);
+					});
+					return false;
+				});
+			},
+			
+			/** Function: showError
+			 * Show modal containing error message
+			 *
+			 * Parameters:
+			 *   (String) message - key of translation to display
+			 *   (Array) replacements - array containing replacements for translation (%s)
+			 */
+			showError: function(message, replacements) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.displayError, {
+					_error: $.i18n._(message, replacements)
+				}), true);
 			}
 		},
 
@@ -4172,6 +4297,18 @@ Candy.View.Template = (function(self){
 			+ '{{#displayPassword}}<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />{{/displayPassword}}'
 			+ '<input type="submit" class="button" value="{{_loginSubmit}}" /></form>'
 	};
+	
+	self.PresenceError = {
+		enterPasswordForm: '<strong>{{_label}}</strong>'
+			+ '<form method="post" id="enter-password-form" class="enter-password-form">'
+			+ '<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />'
+			+ '<input type="submit" class="button" value="{{_joinSubmit}}" /></form>',
+		nicknameConflictForm: '<strong>{{_label}}</strong>'
+			+ '<form method="post" id="nickname-conflict-form" class="nickname-conflict-form">'
+			+ '<label for="nickname">{{_labelNickname}}</label><input type="text" id="nickname" name="nickname" />'
+			+ '<input type="submit" class="button" value="{{_loginSubmit}}" /></form>',
+		displayError: '<strong>{{_error}}</strong>'
+	};
 
 	return self;
 }(Candy.View.Template || {}));
@@ -4241,8 +4378,17 @@ Candy.View.Translation = {
 		'tooltipStatusmessage'	: 'Display status messages',
 		'tooltipAdministration'	: 'Room Administration',
 		'tooltipUsercount'		: 'Room Occupants',
+		
+		'enterRoomPassword' : 'Room "%s" is password protected.',
+		'enterRoomPasswordSubmit' : 'Join room',
+		'passwordEnteredInvalid' : 'Invalid password for room "%s".',
+		
+		'nicknameConflict': 'Username already in use. Please choose another one.',
+		
+		'errorMembersOnly': 'You can\'t join room "%s": Insufficient rights.',
+		'errorMaxOccupantsReached': 'You can\'t join room "%s": Too many occupants.',
 
-		'raptorMessageBlocked' : 'Please do not spam. You have been blocked for a short-time.'
+		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
 
 	'de' : {
@@ -4297,7 +4443,16 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Raum Administration',
 		'tooltipUsercount'		: 'Anzahl Benutzer im Raum',
 
-		'raptorMessageBlocked' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
+		'enterRoomPassword' : 'Raum "%s" ist durch ein Passwort geschützt.',
+		'enterRoomPasswordSubmit' : 'Raum betreten',
+		'passwordEnteredInvalid' : 'Inkorrektes Passwort für Raum "%s".',
+		
+		'nicknameConflict': 'Der Benutzername wird bereits verwendet. Bitte wähle einen anderen.',
+		
+		'errorMembersOnly': 'Du kannst den Raum "%s" nicht betreten: Ungenügende Rechte.',
+		'errorMaxOccupantsReached': 'Du kannst den Raum "%s" nicht betreten: Benutzerlimit erreicht.',
+
+		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},
 	'fr' : {
 		'status': 'Status: %s',
@@ -4351,7 +4506,7 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Administrer le salon',
 		'tooltipUsercount'		: 'Nombre d\'utilisateurs dans le salon',
 
-		'raptorMessageBlocked' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
+		'antiSpamMessage' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
 	},
 	'nl' : {
 		'status': 'Status: %s',
@@ -4405,7 +4560,7 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Instellingen',
 		'tooltipUsercount'		: 'Gebruikers',
 
-		'raptorMessageBlocked' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
+		'antiSpamMessage' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
 	},
 	'es': {
 		'status': 'Estado: %s',
@@ -4459,6 +4614,6 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Administración de la sala',
 		'tooltipUsercount'		: 'Usuarios en la sala',
 
-		'raptorMessageBlocked' : 'Por favor, no hagas spam. Has sido bloqueado temporalmente.'
+		'antiSpamMessage' : 'Por favor, no hagas spam. Has sido bloqueado temporalmente.'
 	}
 };
