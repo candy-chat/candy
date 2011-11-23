@@ -76,7 +76,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
-
+	
 	'de' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinden...',
@@ -140,6 +140,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},
+	
 	'fr' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Connecter...',
@@ -194,6 +195,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
 	},
+	
 	'nl' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinding maken...',
@@ -257,6 +259,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
 	},
+	
 	'es': {
 		'status': 'Estado: %s',
 		'statusConnecting': 'Conectando...',
@@ -309,70 +312,79 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Administración de la sala',
 		'tooltipUsercount'		: 'Usuarios en la sala',
 
+		'enterRoomPassword' : 'La sala "%s" está protegida mediante contraseña.',
+		'enterRoomPasswordSubmit' : 'Unirse a la sala',
+		'passwordEnteredInvalid' : 'Contraseña incorrecta para la sala "%s".',
+
+		'nicknameConflict': 'El nombre de usuario ya está siendo utilizado. Por favor elija otro.',
+
+		'errorMembersOnly': 'No se puede unir a la sala "%s": no tiene privilegios suficientes.',
+		'errorMaxOccupantsReached': 'No se puede unir a la sala "%s": demasiados participantes.',
+
 		'antiSpamMessage' : 'Por favor, no hagas spam. Has sido bloqueado temporalmente.'
 	},
 
 	'cn': {
-		    'status': '状态: %s',
-	        'statusConnecting': '连接中...',
-	        'statusConnected': '已连接',
-	        'statusDisconnecting': '断开连接中...',
-	        'statusDisconnected': '已断开连接',
-	        'statusAuthfail': '认证失败',
+		'status': '状态: %s',
+		'statusConnecting': '连接中...',
+		'statusConnected': '已连接',
+		'statusDisconnecting': '断开连接中...',
+		'statusDisconnected': '已断开连接',
+		'statusAuthfail': '认证失败',
 
-	        'roomSubject': '主题:',
-	        'messageSubmit': '发送',
+		'roomSubject': '主题:',
+		'messageSubmit': '发送',
 
-	        'labelUsername': '用户名:',
-	        'labelPassword': '密码:',
-	        'loginSubmit': '登录',
-	        'loginInvalid': '用户名不合法',
+		'labelUsername': '用户名:',
+		'labelPassword': '密码:',
+		'loginSubmit': '登录',
+		'loginInvalid': '用户名不合法',
 
-	        'reason': '原因:',
-	        'subject': '主题:',
-	        'reasonWas': '原因是: %s.',
-	        'kickActionLabel': '踢除',
-	        'youHaveBeenKickedBy': '你在 %s 被管理者 %s 请出房间',
-	        'banActionLabel': '禁言',
-	        'youHaveBeenBannedBy': '你在 %s 被管理者 %s 禁言',
+		'reason': '原因:',
+		'subject': '主题:',
+		'reasonWas': '原因是: %s.',
+		'kickActionLabel': '踢除',
+		'youHaveBeenKickedBy': '你在 %s 被管理者 %s 请出房间',
+		'banActionLabel': '禁言',
+		'youHaveBeenBannedBy': '你在 %s 被管理者 %s 禁言',
 
-	        'privateActionLabel': '单独对话',
-	        'ignoreActionLabel': '忽略',
-	        'unignoreActionLabel': '不忽略',
+		'privateActionLabel': '单独对话',
+		'ignoreActionLabel': '忽略',
+		'unignoreActionLabel': '不忽略',
 
-	        'setSubjectActionLabel': '变更主题',
+		'setSubjectActionLabel': '变更主题',
 
-	        'administratorMessageSubject': '管理员',
+		'administratorMessageSubject': '管理员',
 
-	        'userJoinedRoom': '%s 加入房间',
-	        'userLeftRoom': '%s 离开房间',
-	        'userHasBeenKickedFromRoom': '%s 被请出这个房间',
-	        'userHasBeenBannedFromRoom': '%s 被管理者禁言',
+		'userJoinedRoom': '%s 加入房间',
+		'userLeftRoom': '%s 离开房间',
+		'userHasBeenKickedFromRoom': '%s 被请出这个房间',
+		'userHasBeenBannedFromRoom': '%s 被管理者禁言',
 
-	        'presenceUnknownWarningSubject': '注意:',
-	        'presenceUnknownWarning': '这个会员可能已经下线，不能追踪到他的连接信息',
+		'presenceUnknownWarningSubject': '注意:',
+		'presenceUnknownWarning': '这个会员可能已经下线，不能追踪到他的连接信息',
 
-	        'dateFormat': 'dd.mm.yyyy',
-	        'timeFormat': 'HH:MM:ss',
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
 
-	        'tooltipRole': '管理',
-	        'tooltipIgnored': '你忽略了这个会员',
-	        'tooltipEmoticons': '表情',
-	        'tooltipSound': '新消息发音',
-	        'tooltipAutoscroll': '滚动条',
-	        'tooltipStatusmessage': '禁用状态消息',
-	        'tooltipAdministration': '房间管理',
-	        'tooltipUsercount': '房间占有者',
+		'tooltipRole': '管理',
+		'tooltipIgnored': '你忽略了这个会员',
+		'tooltipEmoticons': '表情',
+		'tooltipSound': '新消息发音',
+		'tooltipAutoscroll': '滚动条',
+		'tooltipStatusmessage': '禁用状态消息',
+		'tooltipAdministration': '房间管理',
+		'tooltipUsercount': '房间占有者',
 
-	        'enterRoomPassword': '登录房间 "%s" 需要密码.',
-	        'enterRoomPasswordSubmit': '加入房间',
-	        'passwordEnteredInvalid': '登录房间 "%s" 的密码不正确',
+		'enterRoomPassword': '登录房间 "%s" 需要密码.',
+		'enterRoomPasswordSubmit': '加入房间',
+		'passwordEnteredInvalid': '登录房间 "%s" 的密码不正确',
 
-	        'nicknameConflict': '用户名已经存在，请另选一个',
+		'nicknameConflict': '用户名已经存在，请另选一个',
 
-	        'errorMembersOnly': '您的权限不够，不能登录房间 "%s" ',
-	        'errorMaxOccupantsReached': '房间 "%s" 的人数已达上限，您不能登录',
+		'errorMembersOnly': '您的权限不够，不能登录房间 "%s" ',
+		'errorMaxOccupantsReached': '房间 "%s" 的人数已达上限，您不能登录',
 
-	        'antiSpamMessage': '因为您在短时间内发送过多的消息 服务器要阻止您一小段时间。'
+		'raptorMessageBlocked': '因为您在短时间内发送过多的消息 服务器要阻止您一小段时间。'
 	}
 };
