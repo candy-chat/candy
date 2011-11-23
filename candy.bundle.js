@@ -29,7 +29,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.0.8'
+		version: '1.0.9-dev'
 	};
 
 	/** Function: init
@@ -4705,6 +4705,6 @@ Candy.View.Translation = {
 	        'errorMembersOnly': '您的权限不够，不能登录房间 "%s" ',
 	        'errorMaxOccupantsReached': '房间 "%s" 的人数已达上限，您不能登录',
 
-	        'raptorMessageBlocked': '因为您在短时间内发送过多的消息 服务器要阻止您一小段时间。'
+	        'antiSpamMessage': '因为您在短时间内发送过多的消息 服务器要阻止您一小段时间。'
 	}
 };
