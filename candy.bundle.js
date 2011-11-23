@@ -29,7 +29,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.0.7-dev'
+		version: '1.0.7'
 	};
 
 	/** Function: init
@@ -129,14 +129,13 @@ Candy.Core = (function(self, Strophe, $) {
 		 * Adds listening handlers to the connection.
 		 */
 		_registerEventHandlers = function() {
-			// Strophe handlers
-			_connection.addHandler(self.Event.Jabber.Version, Strophe.NS.VERSION, 'iq');
-			_connection.addHandler(self.Event.Jabber.Presence, null, 'presence');
-			_connection.addHandler(self.Event.Jabber.Message, null, 'message');
-			_connection.addHandler(self.Event.Jabber.Bookmarks, Strophe.NS.PRIVATE, 'iq');
-			_connection.addHandler(self.Event.Jabber.Room.Disco, Strophe.NS.DISCO_INFO, 'iq');
-			_connection.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq', 'result');
-			_connection.addHandler(self.Event.Jabber.PrivacyListError, Strophe.NS.PRIVACY, 'iq', 'error');
+			self.addHandler(self.Event.Jabber.Version, Strophe.NS.VERSION, 'iq');
+			self.addHandler(self.Event.Jabber.Presence, null, 'presence');
+			self.addHandler(self.Event.Jabber.Message, null, 'message');
+			self.addHandler(self.Event.Jabber.Bookmarks, Strophe.NS.PRIVATE, 'iq');
+			self.addHandler(self.Event.Jabber.Room.Disco, Strophe.NS.DISCO_INFO, 'iq');
+			self.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq', 'result');
+			self.addHandler(self.Event.Jabber.PrivacyListError, Strophe.NS.PRIVACY, 'iq', 'error');
 		};
 
 	/** Function: init
@@ -259,6 +258,25 @@ Candy.Core = (function(self, Strophe, $) {
 			});
 			_connection.disconnect();
 		}
+	};
+	
+	/** Function: addHandler
+	 * Wrapper for Strophe.Connection.addHandler() to add a stanza handler for the connection.
+	 *
+	 * Parameters:
+	 *   (Function) handler - The user callback.
+	 *   (String) ns - The namespace to match.
+	 *   (String) name - The stanza name to match.
+	 *   (String) type - The stanza type attribute to match.
+	 *   (String) id - The stanza id attribute to match.
+	 *   (String) from - The stanza from attribute to match.
+	 *   (String) options - The handler options
+	 *
+	 * Returns:
+	 *   A reference to the handler that can be used to remove it.
+	 */
+	self.addHandler = function(handler, ns, name, type, id, from, options) {
+		return _connection.addHandler(handler, ns, name, type, id, from, options);
 	};
 
 	/** Function: getUser
