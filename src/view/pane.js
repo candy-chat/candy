@@ -633,7 +633,7 @@ Candy.View.Pane = (function(self, $) {
 				});
 			},
 			
-			/** Function: showNicknameConflictFormForm
+			/** Function: showNicknameConflictForm
 			 * Shows a form indicating that the nickname is already taken and
 			 * for chosing a new nickname
 			 *
