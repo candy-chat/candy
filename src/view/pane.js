@@ -618,7 +618,7 @@ Candy.View.Pane = (function(self, $) {
 					roomName: roomName,
 					_labelPassword: $.i18n._('labelPassword'),
 					_label: (message ? message : $.i18n._('enterRoomPassword', [roomName])),
-					_joinSubmit: $.i18n._('enterRoomPasswordSubmit'),
+					_joinSubmit: $.i18n._('enterRoomPasswordSubmit')
 				}), true);
 				$('#password').focus();
 				
@@ -633,7 +633,7 @@ Candy.View.Pane = (function(self, $) {
 				});
 			},
 			
-			/** Function: showNicknameConflictForm
+			/** Function: showNicknameConflictFormForm
 			 * Shows a form indicating that the nickname is already taken and
 			 * for chosing a new nickname
 			 *
@@ -644,7 +644,7 @@ Candy.View.Pane = (function(self, $) {
 				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.nicknameConflictForm, {
 					_labelNickname: $.i18n._('labelUsername'),
 					_label: $.i18n._('nicknameConflict'),
-					_loginSubmit: $.i18n._('loginSubmit'),
+					_loginSubmit: $.i18n._('loginSubmit')
 				}));
 				$('#nickname').focus();
 				
