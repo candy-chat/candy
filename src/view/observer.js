@@ -49,7 +49,8 @@ Candy.View.Observer = (function(self, $) {
 						break;
 
 					case Strophe.Status.DISCONNECTED:
-						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'));
+						var presetJid = Candy.Core.isAnonymousConnection() ? Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : null;
+						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'), presetJid);
 						Candy.View.Event.Chat.onDisconnect();
 						break;
 
