@@ -2491,14 +2491,20 @@ Candy.View.Observer = (function(self, $) {
 				self.Presence.notifyPrivateChats(user, args.type);
 			// Client has been kicked or banned
 			} else if (args.type === 'kick' || args.type === 'ban') {
-				var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : args.roomName,
-					actionLabel;
+				var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : null,
+					actionLabel,
+					translationParams = [args.roomName];
+
+				if (actorName) {
+					translationParams.push(actorName);
+				}
+
 				switch(args.type) {
 					case 'kick':
-						actionLabel = $.i18n._('youHaveBeenKickedBy', [args.roomName, actorName]);
+						actionLabel = $.i18n._((actorName ? 'youHaveBeenKickedBy' : 'youHaveBeenKicked'), translationParams);
 						break;
 					case 'ban':
-						actionLabel = $.i18n._('youHaveBeenBannedBy', [args.roomName, actorName]);
+						actionLabel = $.i18n._((actorName ? 'youHaveBeenBannedBy' : 'youHaveBeenBanned'), translationParams);
 						break;
 				}
 				Candy.View.Pane.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.adminMessageReason, {
@@ -4366,9 +4372,11 @@ Candy.View.Translation = {
 		'subject'				: 'Subject:',
 		'reasonWas'				: 'Reason was: %s.',
 		'kickActionLabel'		: 'Kick',
-		'youHaveBeenKickedBy'   : 'You have been kicked from %s by %s',
+		'youHaveBeenKickedBy'   : 'You have been kicked from %2$s by %1$s',
+		'youHaveBeenKicked'     : 'You have been kicked from %s',
 		'banActionLabel'		: 'Ban',
-		'youHaveBeenBannedBy'   : 'You have been banned from %s by %s',
+		'youHaveBeenBannedBy'   : 'You have been banned from %1$s by %2$s',
+		'youHaveBeenBanned'     : 'You have been banned from %s',
 
 		'privateActionLabel' : 'Private chat',
 		'ignoreActionLabel'  : 'Ignore',
@@ -4430,9 +4438,11 @@ Candy.View.Translation = {
 		'subject'				: 'Titel:',
 		'reasonWas'				: 'Begründung: %s.',
 		'kickActionLabel'		: 'Kick',
-		'youHaveBeenKickedBy'   : 'Du wurdest soeben aus dem Raum %s gekickt (%s)',
+		'youHaveBeenKickedBy'   : 'Du wurdest soeben aus dem Raum %1$s gekickt (%2$s)',
+		'youHaveBeenKicked'     : 'Du wurdest soeben aus dem Raum %s gekickt',
 		'banActionLabel'		: 'Ban',
-		'youHaveBeenBannedBy'   : 'Du wurdest soeben aus dem Raum %s verbannt (%s)',
+		'youHaveBeenBannedBy'   : 'Du wurdest soeben aus dem Raum %1$s verbannt (%2$s)',
+		'youHaveBeenBanned'     : 'Du wurdest soeben aus dem Raum %s verbannt',
 
 		'privateActionLabel' : 'Privater Chat',
 		'ignoreActionLabel'  : 'Ignorieren',
@@ -4494,9 +4504,11 @@ Candy.View.Translation = {
 		'subject'				: 'Titre:',
 		'reasonWas'				: 'Justification: %s.',
 		'kickActionLabel'		: 'Kick',
-		'youHaveBeenKickedBy'   : 'Tu as été expulsé (%s)',
+		'youHaveBeenKickedBy'   : 'Tu as été expulsé de le salon %1$s (%2$s)',
+		'youHaveBeenKicked'     : 'Tu as été expulsé de le salon %s',
 		'banActionLabel'		: 'Ban',
-		'youHaveBeenBannedBy'   : 'Tu as été banni (%s)',
+		'youHaveBeenBannedBy'   : 'Tu as été banni de le salon %1$s (%2$s)',
+		'youHaveBeenBanned'     : 'Tu as été banni de le salon %s',
 
 		'privateActionLabel' : 'Chat privé',
 		'ignoreActionLabel'  : 'Ignorer',
@@ -4526,6 +4538,15 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Administrer le salon',
 		'tooltipUsercount'		: 'Nombre d\'utilisateurs dans le salon',
 
+		'enterRoomPassword' : 'Le salon "%s" est protégé par un mot de passe.',
+		'enterRoomPasswordSubmit' : 'Entrer dans le salon',
+		'passwordEnteredInvalid' : 'Le mot de passe four le salon "%s" est invalide.',
+
+		'nicknameConflict': 'Le nom d\'utilisateur est déjà utilisé. Choisi un autre.',
+
+		'errorMembersOnly': 'Tu ne peut pas entrer de le salon "%s": droits insuffisants.',
+		'errorMaxOccupantsReached': 'Tu ne peut pas entrer de le salon "%s": Limite d\'utilisateur atteint.',
+
 		'antiSpamMessage' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
 	},
 	
@@ -4549,9 +4570,11 @@ Candy.View.Translation = {
 		'subject'				: 'Onderwerp:',
 		'reasonWas'				: 'De reden was: %s.',
 		'kickActionLabel'		: 'Verwijderen',
-		'youHaveBeenKickedBy'   : 'Je bent verwijderd van %s door %s',
+		'youHaveBeenKickedBy'   : 'Je bent verwijderd van %1$s door %2$s',
+		'youHaveBeenKicked'     : 'Je bent verwijderd van %s',
 		'banActionLabel'		: 'Blokkeren',
-		'youHaveBeenBannedBy'   : 'Je bent geblokkeerd van %s door %s',
+		'youHaveBeenBannedBy'   : 'Je bent geblokkeerd van %1$s door %2$s',
+		'youHaveBeenBanned'     : 'Je bent geblokkeerd van %s',
 
 		'privateActionLabel' : 'Prive gesprek',
 		'ignoreActionLabel'  : 'Negeren',
@@ -4613,9 +4636,11 @@ Candy.View.Translation = {
 		'subject'				: 'Asunto:',
 		'reasonWas'				: 'La razón fue: %s.',
 		'kickActionLabel'		: 'Expulsar',
-		'youHaveBeenKickedBy'   : 'Has sido expulsado de %s por %s',
+		'youHaveBeenKickedBy'   : 'Has sido expulsado de %1$s por %2$s',
+		'youHaveBeenKicked'     : 'Has sido expulsado de %s',
 		'banActionLabel'		: 'Prohibir',
-		'youHaveBeenBannedBy'   : 'Has sido expulsado permanentemente de %s por %s',
+		'youHaveBeenBannedBy'   : 'Has sido expulsado permanentemente de %1$s por %2$s',
+		'youHaveBeenBanned'     : 'Has sido expulsado permanentemente de %s',
 
 		'privateActionLabel' : 'Chat privado',
 		'ignoreActionLabel'  : 'Ignorar',
@@ -4677,9 +4702,9 @@ Candy.View.Translation = {
 		'subject': '主题:',
 		'reasonWas': '原因是: %s.',
 		'kickActionLabel': '踢除',
-		'youHaveBeenKickedBy': '你在 %s 被管理者 %s 请出房间',
+		'youHaveBeenKickedBy': '你在 %1$s 被管理者 %2$s 请出房间',
 		'banActionLabel': '禁言',
-		'youHaveBeenBannedBy': '你在 %s 被管理者 %s 禁言',
+		'youHaveBeenBannedBy': '你在 %1$s 被管理者 %2$s 禁言',
 
 		'privateActionLabel': '单独对话',
 		'ignoreActionLabel': '忽略',
@@ -4718,6 +4743,70 @@ Candy.View.Translation = {
 		'errorMembersOnly': '您的权限不够，不能登录房间 "%s" ',
 		'errorMaxOccupantsReached': '房间 "%s" 的人数已达上限，您不能登录',
 
-		'raptorMessageBlocked': '因为您在短时间内发送过多的消息 服务器要阻止您一小段时间。'
+		'antiSpamMessage': '因为您在短时间内发送过多的消息 服务器要阻止您一小段时间。'
+	},
+	
+	'ja' : {
+		'status'        : 'ステータス: %s',
+		'statusConnecting'  : '接続中…',
+		'statusConnected'   : '接続されました',
+		'statusDisconnecting'   : 'ディスコネクト中…',
+		'statusDisconnected'    : 'ディスコネクトされました',
+		'statusAuthfail'    : '認証に失敗しました',
+
+		'roomSubject'       : 'トピック：',
+		'messageSubmit'     : '送信',
+
+		'labelUsername'     : 'ユーザーネーム：',
+		'labelPassword'     : 'パスワード：',
+		'loginSubmit'       : 'ログイン',
+		'loginInvalid'      : 'ユーザーネームが正しくありません',
+
+		'reason'        : '理由：',
+		'subject'       : 'トピック：',
+		'reasonWas'     : '理由: %s。',
+		'kickActionLabel'   : 'キック',
+		'youHaveBeenKickedBy'   : 'あなたは%2$sにより%1$sからキックされました。',
+		'banActionLabel'    : 'アカウントバン',
+		'youHaveBeenBannedBy'   : 'あなたは%2$sにより%1$sからアカウントバンされました。',
+
+		'privateActionLabel'    : 'プライベートメッセージ',
+		'ignoreActionLabel' : '無視する',
+		'unignoreActionLabel'   : '無視をやめる',
+
+		'setSubjectActionLabel'     : 'トピックを変える',
+
+		'administratorMessageSubject'   : '管理者',
+
+		'userJoinedRoom'        : '%sは入室しました。',
+		'userLeftRoom'          : '%sは退室しました。',
+		'userHasBeenKickedFromRoom' : '%sは部屋からキックされました。',
+		'userHasBeenBannedFromRoom' : '%sは部屋からアカウントバンされました。',
+
+		'presenceUnknownWarningSubject' : '忠告：',
+		'presenceUnknownWarning'    : 'このユーザーのステータスは不明です。',
+
+		'dateFormat'        : 'dd.mm.yyyy',
+		'timeFormat'        : 'HH:MM:ss',
+
+		'tooltipRole'       : 'モデレーター',
+		'tooltipIgnored'    : 'このユーザーを無視設定にしている',
+		'tooltipEmoticons'  : '絵文字',
+		'tooltipSound'      : '新しいメッセージが届くたびに音を鳴らす',
+		'tooltipAutoscroll' : 'オートスクロール',
+		'tooltipStatusmessage'  : 'ステータスメッセージを表示',
+		'tooltipAdministration' : '部屋の管理',
+		'tooltipUsercount'  : 'この部屋の参加者の数',
+
+		'enterRoomPassword'     : '"%s"の部屋に入るにはパスワードが必要です。',
+		'enterRoomPasswordSubmit'   : '部屋に入る',
+		'passwordEnteredInvalid'    : '"%s"のパスワードと異なるパスワードを入力しました。',
+
+		'nicknameConflict'  : 'このユーザーネームはすでに利用されているため、別のユーザーネームを選んでください。',
+
+		'errorMembersOnly'      : '"%s"の部屋に入ることができません: 利用権限を満たしていません。',
+		'errorMaxOccupantsReached'  : '"%s"の部屋に入ることができません: 参加者の数はすでに上限に達しました。',
+
+		'antiSpamMessage'   : 'スパムなどの行為はやめてください。あなたは一時的にブロックされました。'
 	}
 };

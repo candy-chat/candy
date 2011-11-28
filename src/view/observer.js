@@ -94,14 +94,20 @@ Candy.View.Observer = (function(self, $) {
 				self.Presence.notifyPrivateChats(user, args.type);
 			// Client has been kicked or banned
 			} else if (args.type === 'kick' || args.type === 'ban') {
-				var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : args.roomName,
-					actionLabel;
+				var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : null,
+					actionLabel,
+					translationParams = [args.roomName];
+
+				if (actorName) {
+					translationParams.push(actorName);
+				}
+
 				switch(args.type) {
 					case 'kick':
-						actionLabel = $.i18n._('youHaveBeenKickedBy', [args.roomName, actorName]);
+						actionLabel = $.i18n._((actorName ? 'youHaveBeenKickedBy' : 'youHaveBeenKicked'), translationParams);
 						break;
 					case 'ban':
-						actionLabel = $.i18n._('youHaveBeenBannedBy', [args.roomName, actorName]);
+						actionLabel = $.i18n._((actorName ? 'youHaveBeenBannedBy' : 'youHaveBeenBanned'), translationParams);
 						break;
 				}
 				Candy.View.Pane.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.adminMessageReason, {

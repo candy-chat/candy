@@ -4248,7 +4248,7 @@ var Mustache = function() {
  * Licensed under the MIT license:
  *   http://www.opensource.org/licenses/mit-license.php
  *
- * Version: 0.9.1 (201012171436)
+ * Version: 0.9.2 (201111281039)
  */
  (function($) {
 /**
@@ -4355,21 +4355,44 @@ $.i18n = {
 	printf: function(S, L) {
 		if (!L) return S;
 
-		var nS = "";
+		var nS = "",
+			search = /%(\d+)\$s/g;
+		// replace %n1$ where n is a number
+		while (result = search.exec(S)) {
+			var index = parseInt(result[1], 10) -1;
+			S = S.replace('%' + result[1] + '\$s', (L[index]));
+			L.splice(index, 1);
+		}
 		var tS = S.split("%s");
-
-		for(var i=0; i<L.length; i++) {
-			if (tS[i].lastIndexOf('%') == tS[i].length-1 && i != L.length-1)
-				tS[i] += "s"+tS.splice(i+1,1)[0];
-			nS += tS[i] + L[i];
+		if (tS.length > 1) {
+			for(var i = 0; i < L.length; i++) {
+				if (tS[i].lastIndexOf('%') == tS[i].length-1 && i != L.length-1)
+					tS[i] += "s"+tS.splice(i+1,1)[0];
+				nS += tS[i] + L[i];
+			}
 		}
 		return nS + tS[tS.length-1];
 	}
 
 };
 
+/*
+ * _t
+ * Allows you to translate a jQuery selector
+ *
+ * eg $('h1')._t('some text')
+ * 
+ * @param string str : The string to translate 
+ * @param property_list params : params for using printf() on the string
+ * @return element : chained and translated element(s)
+*/
+$.fn._t = function(str, params) {
+  return $(this).text($.i18n._(str, params));
+};
 
-})(jQuery);/*
+
+})(jQuery);
+/*
  * Date Format 1.2.3
  * (c) 2007-2009 Steven Levithan <stevenlevithan.com>
  * MIT license
