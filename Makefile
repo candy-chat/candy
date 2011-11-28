@@ -6,8 +6,8 @@
 # (c) 2011 Amiado Group AG
 #
 # Authors:
-#   - Patrick Stadler <patrick.stadler@amiadogroup.com>
-#   - Michael Weibel <michael.weibel@amiadogroup.com>
+#   - Patrick Stadler <patrick.stadler@gmail.com>
+#   - Michael Weibel <michael.weibel@gmail.com>
 #
 
 SHELL=/bin/bash

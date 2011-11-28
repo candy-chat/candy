@@ -2,8 +2,8 @@
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -54,8 +54,8 @@ var Candy = (function(self, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -397,8 +397,8 @@ Candy.Core = (function(self, Strophe, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -565,8 +565,8 @@ Candy.View = (function(self, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1109,8 +1109,8 @@ Candy.Util.Observable = (function(self) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1372,8 +1372,8 @@ Candy.Core.Action = (function(self, Strophe, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1478,8 +1478,8 @@ Candy.Core.ChatRoom = function(roomJid) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1541,8 +1541,8 @@ Candy.Core.ChatRoster = function () {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1731,8 +1731,8 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -2205,8 +2205,8 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -2399,8 +2399,8 @@ Candy.View.Event = (function(self, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -2638,8 +2638,8 @@ Candy.View.Observer = (function(self, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -4258,8 +4258,8 @@ Candy.View.Pane = (function(self, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -4341,8 +4341,8 @@ Candy.View.Template = (function(self){
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
