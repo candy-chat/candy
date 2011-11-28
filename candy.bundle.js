@@ -4767,8 +4767,10 @@ Candy.View.Translation = {
 		'reasonWas'     : '理由: %s。',
 		'kickActionLabel'   : 'キック',
 		'youHaveBeenKickedBy'   : 'あなたは%2$sにより%1$sからキックされました。',
+		'youHaveBeenKicked'     : 'あなたは%sからキックされました。',
 		'banActionLabel'    : 'アカウントバン',
 		'youHaveBeenBannedBy'   : 'あなたは%2$sにより%1$sからアカウントバンされました。',
+		'youHaveBeenBanned'     : 'あなたは%sからアカウントバンされました。',
 
 		'privateActionLabel'    : 'プライベートメッセージ',
 		'ignoreActionLabel' : '無視する',
