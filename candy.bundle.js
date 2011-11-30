@@ -2,8 +2,8 @@
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -29,7 +29,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.0.8'
+		version: '1.0.9-dev'
 	};
 
 	/** Function: init
@@ -54,8 +54,8 @@ var Candy = (function(self, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -397,8 +397,8 @@ Candy.Core = (function(self, Strophe, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -565,8 +565,8 @@ Candy.View = (function(self, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1109,8 +1109,8 @@ Candy.Util.Observable = (function(self) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1372,8 +1372,8 @@ Candy.Core.Action = (function(self, Strophe, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1478,8 +1478,8 @@ Candy.Core.ChatRoom = function(roomJid) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1541,8 +1541,8 @@ Candy.Core.ChatRoster = function () {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1731,8 +1731,8 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -2205,8 +2205,8 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -2399,8 +2399,8 @@ Candy.View.Event = (function(self, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -2446,7 +2446,8 @@ Candy.View.Observer = (function(self, $) {
 						break;
 
 					case Strophe.Status.DISCONNECTED:
-						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'));
+						var presetJid = Candy.Core.isAnonymousConnection() ? Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : null;
+						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'), presetJid);
 						Candy.View.Event.Chat.onDisconnect();
 						break;
 
@@ -2490,14 +2491,20 @@ Candy.View.Observer = (function(self, $) {
 				self.Presence.notifyPrivateChats(user, args.type);
 			// Client has been kicked or banned
 			} else if (args.type === 'kick' || args.type === 'ban') {
-				var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : args.roomName,
-					actionLabel;
+				var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : null,
+					actionLabel,
+					translationParams = [args.roomName];
+
+				if (actorName) {
+					translationParams.push(actorName);
+				}
+
 				switch(args.type) {
 					case 'kick':
-						actionLabel = $.i18n._('youHaveBeenKickedBy', [args.roomName, actorName]);
+						actionLabel = $.i18n._((actorName ? 'youHaveBeenKickedBy' : 'youHaveBeenKicked'), translationParams);
 						break;
 					case 'ban':
-						actionLabel = $.i18n._('youHaveBeenBannedBy', [args.roomName, actorName]);
+						actionLabel = $.i18n._((actorName ? 'youHaveBeenBannedBy' : 'youHaveBeenBanned'), translationParams);
 						break;
 				}
 				Candy.View.Pane.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.adminMessageReason, {
@@ -2631,8 +2638,8 @@ Candy.View.Observer = (function(self, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -3247,7 +3254,7 @@ Candy.View.Pane = (function(self, $) {
 					roomName: roomName,
 					_labelPassword: $.i18n._('labelPassword'),
 					_label: (message ? message : $.i18n._('enterRoomPassword', [roomName])),
-					_joinSubmit: $.i18n._('enterRoomPasswordSubmit'),
+					_joinSubmit: $.i18n._('enterRoomPasswordSubmit')
 				}), true);
 				$('#password').focus();
 				
@@ -3273,7 +3280,7 @@ Candy.View.Pane = (function(self, $) {
 				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.nicknameConflictForm, {
 					_labelNickname: $.i18n._('labelUsername'),
 					_label: $.i18n._('nicknameConflict'),
-					_loginSubmit: $.i18n._('loginSubmit'),
+					_loginSubmit: $.i18n._('loginSubmit')
 				}));
 				$('#nickname').focus();
 				
@@ -4251,8 +4258,8 @@ Candy.View.Pane = (function(self, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -4334,8 +4341,8 @@ Candy.View.Template = (function(self){
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -4365,9 +4372,11 @@ Candy.View.Translation = {
 		'subject'				: 'Subject:',
 		'reasonWas'				: 'Reason was: %s.',
 		'kickActionLabel'		: 'Kick',
-		'youHaveBeenKickedBy'   : 'You have been kicked from %s by %s',
+		'youHaveBeenKickedBy'   : 'You have been kicked from %2$s by %1$s',
+		'youHaveBeenKicked'     : 'You have been kicked from %s',
 		'banActionLabel'		: 'Ban',
-		'youHaveBeenBannedBy'   : 'You have been banned from %s by %s',
+		'youHaveBeenBannedBy'   : 'You have been banned from %1$s by %2$s',
+		'youHaveBeenBanned'     : 'You have been banned from %s',
 
 		'privateActionLabel' : 'Private chat',
 		'ignoreActionLabel'  : 'Ignore',
@@ -4408,7 +4417,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
-
+	
 	'de' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinden...',
@@ -4429,9 +4438,11 @@ Candy.View.Translation = {
 		'subject'				: 'Titel:',
 		'reasonWas'				: 'Begründung: %s.',
 		'kickActionLabel'		: 'Kick',
-		'youHaveBeenKickedBy'   : 'Du wurdest soeben aus dem Raum %s gekickt (%s)',
+		'youHaveBeenKickedBy'   : 'Du wurdest soeben aus dem Raum %1$s gekickt (%2$s)',
+		'youHaveBeenKicked'     : 'Du wurdest soeben aus dem Raum %s gekickt',
 		'banActionLabel'		: 'Ban',
-		'youHaveBeenBannedBy'   : 'Du wurdest soeben aus dem Raum %s verbannt (%s)',
+		'youHaveBeenBannedBy'   : 'Du wurdest soeben aus dem Raum %1$s verbannt (%2$s)',
+		'youHaveBeenBanned'     : 'Du wurdest soeben aus dem Raum %s verbannt',
 
 		'privateActionLabel' : 'Privater Chat',
 		'ignoreActionLabel'  : 'Ignorieren',
@@ -4472,6 +4483,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},
+	
 	'fr' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Connecter...',
@@ -4492,9 +4504,11 @@ Candy.View.Translation = {
 		'subject'				: 'Titre:',
 		'reasonWas'				: 'Justification: %s.',
 		'kickActionLabel'		: 'Kick',
-		'youHaveBeenKickedBy'   : 'Tu as été expulsé (%s)',
+		'youHaveBeenKickedBy'   : 'Tu as été expulsé de le salon %1$s (%2$s)',
+		'youHaveBeenKicked'     : 'Tu as été expulsé de le salon %s',
 		'banActionLabel'		: 'Ban',
-		'youHaveBeenBannedBy'   : 'Tu as été banni (%s)',
+		'youHaveBeenBannedBy'   : 'Tu as été banni de le salon %1$s (%2$s)',
+		'youHaveBeenBanned'     : 'Tu as été banni de le salon %s',
 
 		'privateActionLabel' : 'Chat privé',
 		'ignoreActionLabel'  : 'Ignorer',
@@ -4524,8 +4538,18 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Administrer le salon',
 		'tooltipUsercount'		: 'Nombre d\'utilisateurs dans le salon',
 
+		'enterRoomPassword' : 'Le salon "%s" est protégé par un mot de passe.',
+		'enterRoomPasswordSubmit' : 'Entrer dans le salon',
+		'passwordEnteredInvalid' : 'Le mot de passe four le salon "%s" est invalide.',
+
+		'nicknameConflict': 'Le nom d\'utilisateur est déjà utilisé. Choisi un autre.',
+
+		'errorMembersOnly': 'Tu ne peut pas entrer de le salon "%s": droits insuffisants.',
+		'errorMaxOccupantsReached': 'Tu ne peut pas entrer de le salon "%s": Limite d\'utilisateur atteint.',
+
 		'antiSpamMessage' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
 	},
+	
 	'nl' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinding maken...',
@@ -4546,9 +4570,11 @@ Candy.View.Translation = {
 		'subject'				: 'Onderwerp:',
 		'reasonWas'				: 'De reden was: %s.',
 		'kickActionLabel'		: 'Verwijderen',
-		'youHaveBeenKickedBy'   : 'Je bent verwijderd van %s door %s',
+		'youHaveBeenKickedBy'   : 'Je bent verwijderd van %1$s door %2$s',
+		'youHaveBeenKicked'     : 'Je bent verwijderd van %s',
 		'banActionLabel'		: 'Blokkeren',
-		'youHaveBeenBannedBy'   : 'Je bent geblokkeerd van %s door %s',
+		'youHaveBeenBannedBy'   : 'Je bent geblokkeerd van %1$s door %2$s',
+		'youHaveBeenBanned'     : 'Je bent geblokkeerd van %s',
 
 		'privateActionLabel' : 'Prive gesprek',
 		'ignoreActionLabel'  : 'Negeren',
@@ -4589,6 +4615,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
 	},
+	
 	'es': {
 		'status': 'Estado: %s',
 		'statusConnecting': 'Conectando...',
@@ -4609,9 +4636,11 @@ Candy.View.Translation = {
 		'subject'				: 'Asunto:',
 		'reasonWas'				: 'La razón fue: %s.',
 		'kickActionLabel'		: 'Expulsar',
-		'youHaveBeenKickedBy'   : 'Has sido expulsado de %s por %s',
+		'youHaveBeenKickedBy'   : 'Has sido expulsado de %1$s por %2$s',
+		'youHaveBeenKicked'     : 'Has sido expulsado de %s',
 		'banActionLabel'		: 'Prohibir',
-		'youHaveBeenBannedBy'   : 'Has sido expulsado permanentemente de %s por %s',
+		'youHaveBeenBannedBy'   : 'Has sido expulsado permanentemente de %1$s por %2$s',
+		'youHaveBeenBanned'     : 'Has sido expulsado permanentemente de %s',
 
 		'privateActionLabel' : 'Chat privado',
 		'ignoreActionLabel'  : 'Ignorar',
@@ -4641,70 +4670,145 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Administración de la sala',
 		'tooltipUsercount'		: 'Usuarios en la sala',
 
+		'enterRoomPassword' : 'La sala "%s" está protegida mediante contraseña.',
+		'enterRoomPasswordSubmit' : 'Unirse a la sala',
+		'passwordEnteredInvalid' : 'Contraseña incorrecta para la sala "%s".',
+
+		'nicknameConflict': 'El nombre de usuario ya está siendo utilizado. Por favor elija otro.',
+
+		'errorMembersOnly': 'No se puede unir a la sala "%s": no tiene privilegios suficientes.',
+		'errorMaxOccupantsReached': 'No se puede unir a la sala "%s": demasiados participantes.',
+
 		'antiSpamMessage' : 'Por favor, no hagas spam. Has sido bloqueado temporalmente.'
 	},
 
 	'cn': {
-		    'status': '状态: %s',
-	        'statusConnecting': '连接中...',
-	        'statusConnected': '已连接',
-	        'statusDisconnecting': '断开连接中...',
-	        'statusDisconnected': '已断开连接',
-	        'statusAuthfail': '认证失败',
+		'status': '状态: %s',
+		'statusConnecting': '连接中...',
+		'statusConnected': '已连接',
+		'statusDisconnecting': '断开连接中...',
+		'statusDisconnected': '已断开连接',
+		'statusAuthfail': '认证失败',
 
-	        'roomSubject': '主题:',
-	        'messageSubmit': '发送',
+		'roomSubject': '主题:',
+		'messageSubmit': '发送',
 
-	        'labelUsername': '用户名:',
-	        'labelPassword': '密码:',
-	        'loginSubmit': '登录',
-	        'loginInvalid': '用户名不合法',
+		'labelUsername': '用户名:',
+		'labelPassword': '密码:',
+		'loginSubmit': '登录',
+		'loginInvalid': '用户名不合法',
 
-	        'reason': '原因:',
-	        'subject': '主题:',
-	        'reasonWas': '原因是: %s.',
-	        'kickActionLabel': '踢除',
-	        'youHaveBeenKickedBy': '你在 %s 被管理者 %s 请出房间',
-	        'banActionLabel': '禁言',
-	        'youHaveBeenBannedBy': '你在 %s 被管理者 %s 禁言',
+		'reason': '原因:',
+		'subject': '主题:',
+		'reasonWas': '原因是: %s.',
+		'kickActionLabel': '踢除',
+		'youHaveBeenKickedBy': '你在 %1$s 被管理者 %2$s 请出房间',
+		'banActionLabel': '禁言',
+		'youHaveBeenBannedBy': '你在 %1$s 被管理者 %2$s 禁言',
 
-	        'privateActionLabel': '单独对话',
-	        'ignoreActionLabel': '忽略',
-	        'unignoreActionLabel': '不忽略',
+		'privateActionLabel': '单独对话',
+		'ignoreActionLabel': '忽略',
+		'unignoreActionLabel': '不忽略',
 
-	        'setSubjectActionLabel': '变更主题',
+		'setSubjectActionLabel': '变更主题',
 
-	        'administratorMessageSubject': '管理员',
+		'administratorMessageSubject': '管理员',
 
-	        'userJoinedRoom': '%s 加入房间',
-	        'userLeftRoom': '%s 离开房间',
-	        'userHasBeenKickedFromRoom': '%s 被请出这个房间',
-	        'userHasBeenBannedFromRoom': '%s 被管理者禁言',
+		'userJoinedRoom': '%s 加入房间',
+		'userLeftRoom': '%s 离开房间',
+		'userHasBeenKickedFromRoom': '%s 被请出这个房间',
+		'userHasBeenBannedFromRoom': '%s 被管理者禁言',
 
-	        'presenceUnknownWarningSubject': '注意:',
-	        'presenceUnknownWarning': '这个会员可能已经下线，不能追踪到他的连接信息',
+		'presenceUnknownWarningSubject': '注意:',
+		'presenceUnknownWarning': '这个会员可能已经下线，不能追踪到他的连接信息',
 
-	        'dateFormat': 'dd.mm.yyyy',
-	        'timeFormat': 'HH:MM:ss',
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
 
-	        'tooltipRole': '管理',
-	        'tooltipIgnored': '你忽略了这个会员',
-	        'tooltipEmoticons': '表情',
-	        'tooltipSound': '新消息发音',
-	        'tooltipAutoscroll': '滚动条',
-	        'tooltipStatusmessage': '禁用状态消息',
-	        'tooltipAdministration': '房间管理',
-	        'tooltipUsercount': '房间占有者',
+		'tooltipRole': '管理',
+		'tooltipIgnored': '你忽略了这个会员',
+		'tooltipEmoticons': '表情',
+		'tooltipSound': '新消息发音',
+		'tooltipAutoscroll': '滚动条',
+		'tooltipStatusmessage': '禁用状态消息',
+		'tooltipAdministration': '房间管理',
+		'tooltipUsercount': '房间占有者',
 
-	        'enterRoomPassword': '登录房间 "%s" 需要密码.',
-	        'enterRoomPasswordSubmit': '加入房间',
-	        'passwordEnteredInvalid': '登录房间 "%s" 的密码不正确',
+		'enterRoomPassword': '登录房间 "%s" 需要密码.',
+		'enterRoomPasswordSubmit': '加入房间',
+		'passwordEnteredInvalid': '登录房间 "%s" 的密码不正确',
 
-	        'nicknameConflict': '用户名已经存在，请另选一个',
+		'nicknameConflict': '用户名已经存在，请另选一个',
 
-	        'errorMembersOnly': '您的权限不够，不能登录房间 "%s" ',
-	        'errorMaxOccupantsReached': '房间 "%s" 的人数已达上限，您不能登录',
+		'errorMembersOnly': '您的权限不够，不能登录房间 "%s" ',
+		'errorMaxOccupantsReached': '房间 "%s" 的人数已达上限，您不能登录',
 
-	        'raptorMessageBlocked': '因为您在短时间内发送过多的消息 服务器要阻止您一小段时间。'
+		'antiSpamMessage': '因为您在短时间内发送过多的消息 服务器要阻止您一小段时间。'
+	},
+	
+	'ja' : {
+		'status'        : 'ステータス: %s',
+		'statusConnecting'  : '接続中…',
+		'statusConnected'   : '接続されました',
+		'statusDisconnecting'   : 'ディスコネクト中…',
+		'statusDisconnected'    : 'ディスコネクトされました',
+		'statusAuthfail'    : '認証に失敗しました',
+
+		'roomSubject'       : 'トピック：',
+		'messageSubmit'     : '送信',
+
+		'labelUsername'     : 'ユーザーネーム：',
+		'labelPassword'     : 'パスワード：',
+		'loginSubmit'       : 'ログイン',
+		'loginInvalid'      : 'ユーザーネームが正しくありません',
+
+		'reason'        : '理由：',
+		'subject'       : 'トピック：',
+		'reasonWas'     : '理由: %s。',
+		'kickActionLabel'   : 'キック',
+		'youHaveBeenKickedBy'   : 'あなたは%2$sにより%1$sからキックされました。',
+		'youHaveBeenKicked'     : 'あなたは%sからキックされました。',
+		'banActionLabel'    : 'アカウントバン',
+		'youHaveBeenBannedBy'   : 'あなたは%2$sにより%1$sからアカウントバンされました。',
+		'youHaveBeenBanned'     : 'あなたは%sからアカウントバンされました。',
+
+		'privateActionLabel'    : 'プライベートメッセージ',
+		'ignoreActionLabel' : '無視する',
+		'unignoreActionLabel'   : '無視をやめる',
+
+		'setSubjectActionLabel'     : 'トピックを変える',
+
+		'administratorMessageSubject'   : '管理者',
+
+		'userJoinedRoom'        : '%sは入室しました。',
+		'userLeftRoom'          : '%sは退室しました。',
+		'userHasBeenKickedFromRoom' : '%sは部屋からキックされました。',
+		'userHasBeenBannedFromRoom' : '%sは部屋からアカウントバンされました。',
+
+		'presenceUnknownWarningSubject' : '忠告：',
+		'presenceUnknownWarning'    : 'このユーザーのステータスは不明です。',
+
+		'dateFormat'        : 'dd.mm.yyyy',
+		'timeFormat'        : 'HH:MM:ss',
+
+		'tooltipRole'       : 'モデレーター',
+		'tooltipIgnored'    : 'このユーザーを無視設定にしている',
+		'tooltipEmoticons'  : '絵文字',
+		'tooltipSound'      : '新しいメッセージが届くたびに音を鳴らす',
+		'tooltipAutoscroll' : 'オートスクロール',
+		'tooltipStatusmessage'  : 'ステータスメッセージを表示',
+		'tooltipAdministration' : '部屋の管理',
+		'tooltipUsercount'  : 'この部屋の参加者の数',
+
+		'enterRoomPassword'     : '"%s"の部屋に入るにはパスワードが必要です。',
+		'enterRoomPasswordSubmit'   : '部屋に入る',
+		'passwordEnteredInvalid'    : '"%s"のパスワードと異なるパスワードを入力しました。',
+
+		'nicknameConflict'  : 'このユーザーネームはすでに利用されているため、別のユーザーネームを選んでください。',
+
+		'errorMembersOnly'      : '"%s"の部屋に入ることができません: 利用権限を満たしていません。',
+		'errorMaxOccupantsReached'  : '"%s"の部屋に入ることができません: 参加者の数はすでに上限に達しました。',
+
+		'antiSpamMessage'   : 'スパムなどの行為はやめてください。あなたは一時的にブロックされました。'
 	}
 };

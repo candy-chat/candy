@@ -2,8 +2,8 @@
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -618,7 +618,7 @@ Candy.View.Pane = (function(self, $) {
 					roomName: roomName,
 					_labelPassword: $.i18n._('labelPassword'),
 					_label: (message ? message : $.i18n._('enterRoomPassword', [roomName])),
-					_joinSubmit: $.i18n._('enterRoomPasswordSubmit'),
+					_joinSubmit: $.i18n._('enterRoomPasswordSubmit')
 				}), true);
 				$('#password').focus();
 				
@@ -644,7 +644,7 @@ Candy.View.Pane = (function(self, $) {
 				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.nicknameConflictForm, {
 					_labelNickname: $.i18n._('labelUsername'),
 					_label: $.i18n._('nicknameConflict'),
-					_loginSubmit: $.i18n._('loginSubmit'),
+					_loginSubmit: $.i18n._('loginSubmit')
 				}));
 				$('#nickname').focus();
 				
