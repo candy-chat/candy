@@ -44,7 +44,7 @@ Candy.View.Observer = (function(self, $) {
 						Candy.View.Pane.Chat.Modal.hide();
 
 						/* new event system call */
-						$(Candy.Core).triggerHandler('connect');
+						$(Candy.View.Observer).triggerHandler('connect');
 						break;
 
 					case Strophe.Status.DISCONNECTING:
@@ -56,7 +56,7 @@ Candy.View.Observer = (function(self, $) {
 						Candy.View.Event.Chat.onDisconnect();
 
 						/* new event system call */
-						$(Candy.Core).triggerHandler('disconnect');
+						$(Candy.View.Observer).triggerHandler('disconnect');
 
 						break;
 						
@@ -65,7 +65,7 @@ Candy.View.Observer = (function(self, $) {
 						Candy.View.Event.Chat.onAuthfail();
 
 						/* new event system call */
-						$(Candy.Core).triggerHandler('authfail');
+						$(Candy.View.Observer).triggerHandler('authfail');
 
 						break;
 
@@ -130,7 +130,7 @@ Candy.View.Observer = (function(self, $) {
 				Candy.View.Event.Room.onPresenceChange(evtData);
 
 				/* new event system call */
-				$(Candy.Core.ChatRoom).triggerHandler('presencechange', [evtData]);
+				$(Candy.View.Observer.Chat).triggerHandler('presencechange', [evtData]);
 
 			// A user changed presence
 			} else {
