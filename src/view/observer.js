@@ -44,7 +44,7 @@ Candy.View.Observer = (function(self, $) {
 						Candy.View.Pane.Chat.Modal.hide();
 
 						/* new event system call */
-						$(Candy.View.Observer).triggerHandler('connect');
+						$(Candy.View.Observer.Chat).triggerHandler('connect');
 						break;
 
 					case Strophe.Status.DISCONNECTING:
@@ -56,7 +56,7 @@ Candy.View.Observer = (function(self, $) {
 						Candy.View.Event.Chat.onDisconnect();
 
 						/* new event system call */
-						$(Candy.View.Observer).triggerHandler('disconnect');
+						$(Candy.View.Observer.Chat).triggerHandler('disconnect');
 
 						break;
 						
@@ -65,7 +65,7 @@ Candy.View.Observer = (function(self, $) {
 						Candy.View.Event.Chat.onAuthfail();
 
 						/* new event system call */
-						$(Candy.View.Observer).triggerHandler('authfail');
+						$(Candy.View.Observer.Chat).triggerHandler('authfail');
 
 						break;
 
