@@ -3207,7 +3207,7 @@ Candy.View.Pane = (function(self, $) {
 				extramenulinks = Candy.View.Event.Roster.onContextMenu(evtData);
 				evtData.menulinks = $.extend(this.initialMenuLinks(elem), extramenulinks);
 
-				/* new event system call, here handlers will modify evtData.menulinks */                        
+				/* new event system call, here handlers will modify evtData.menulinks */
 				$(Candy.View.Pane.Chat.Context).triggerHandler('contextmenu', [evtData]);
 
 				menulinks = evtData.menulinks;
@@ -3521,12 +3521,12 @@ Candy.View.Pane = (function(self, $) {
 			}
 			delete self.Chat.rooms[roomJid];
 
-                        var evtData = {'roomJid' : roomJid};
+			var evtData = {'roomJid' : roomJid};
 
 			Candy.View.Event.Room.onClose(evtData);
-                        
-                        /* new event system call */
-                        $(Candy.View.Pane.Room).triggerHandler('close', [evtData]);
+
+			/* new event system call */
+			$(Candy.View.Pane.Room).triggerHandler('close', [evtData]);
 		},
 
 		/** Function: appendToMessagePane
@@ -3918,7 +3918,7 @@ Candy.View.Pane = (function(self, $) {
 
 			// a user left the room
 			} else if(action === 'leave') {
-			    
+
 				evtData.type = 'leave';
 				$(Candy.View.Pane.Roster).triggerHandler('onbeforeupdate', [evtData]);
 
@@ -4047,13 +4047,13 @@ Candy.View.Pane = (function(self, $) {
 			message = evtData.message;
 			
 			var renderEvtData = {
-			    template: Candy.View.Template.Message.item,
-			    templateData: {
-				name: name,
-				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.nickname),
-				message: message,
-				time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
-			    }
+				template: Candy.View.Template.Message.item,
+				templateData: {
+					name: name,
+					displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.nickname),
+					message: message,
+					time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
+				}
 			};
 			$(Candy.View.Pane.Message).triggerHandler('beforerender', [renderEvtData]);
 
