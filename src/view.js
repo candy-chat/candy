@@ -2,8 +2,8 @@
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -58,6 +58,7 @@ Candy.View = (function(self, $) {
 		_registerObservers = function() {
 			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.CHAT, self.Observer.Chat);
 			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.PRESENCE, self.Observer.Presence);
+			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.PRESENCE_ERROR, self.Observer.PresenceError);
 			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.MESSAGE, self.Observer.Message);
 			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.LOGIN, self.Observer.Login);
 		},
@@ -112,7 +113,7 @@ Candy.View = (function(self, $) {
 	 *   (Object) options - Options: see _options field (value passed here gets extended by the default value in _options field)
 	 */
 	self.init = function(container, options) {
-		$.extend(_options, options);
+		$.extend(true, _options, options);
 		_setupTranslation(_options.language);
 		
 		// Set path to emoticons

@@ -3,6 +3,8 @@ Candy — a JavaScript-based multi-user chat client
 
 Visit the official project page: http://amiadogroup.github.com/candy
 
+[![Still Maintained](http://stillmaintained.com/amiadogroup/candy.png)](http://stillmaintained.com/amiadogroup/candy)
+
 Features
 --------
 - Focused on real-time multi-user chatting
@@ -16,3 +18,8 @@ Features
 Plugins
 -------
 If you wish to add new functionality (to your candy installation) or contribute plugins, take a look at our [plugin repository](http://github.com/amiadogroup/candy-plugins).
+
+Support & Community
+-------------------
+Take a look at our [FAQ](https://github.com/amiadogroup/candy/wiki/Frequently-Asked-Questions). If it doesn't solve your questions, your welcome to join our [Mailinglist on Google Groups](http://groups.google.com/group/candy-chat).
+You don't need to have a Gmail account for it. 

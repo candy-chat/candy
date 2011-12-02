@@ -2,8 +2,8 @@
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -29,24 +29,45 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 * - nick
 	 * - affiliation
 	 * - role
+	 * - privacyLists
+	 * - customData to be used by e.g. plugins
 	 */
 	this.data = {
 		jid: jid,
-		nick: nick,
+		nick: Strophe.unescapeNode(nick),
 		affiliation: affiliation,
 		role: role,
 		privacyLists: {},
 		customData: {}
 	};
-
+	
 	/** Function: getJid
-	 * Gets user jid
+	 * Gets an unescaped user jid
+	 *
+	 * See:
+	 *   <Candy.Util.unescapeJid>
 	 *
 	 * Returns:
 	 *   (String) - jid
 	 */
 	this.getJid = function() {
-		return this.data.jid;
+		if(this.data.jid) {
+			return Candy.Util.unescapeJid(this.data.jid);
+		}
+		return;
+	};
+	
+	/** Function: getEscapedJid
+	 * Escapes the user's jid (node & resource get escaped)
+	 *
+	 * See:
+	 *   <Candy.Util.escapeJid>
+	 *
+	 * Returns:
+	 *   (String) - escaped jid
+	 */
+	this.getEscapedJid = function() {
+		return Candy.Util.escapeJid(this.data.jid);
 	};
 
 	/** Function: getNick
@@ -56,7 +77,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 *   (String) - nick
 	 */
 	this.getNick = function() {
-		return this.data.nick;
+		return Strophe.unescapeNode(this.data.nick);
 	};
 
 	/** Function: getRole

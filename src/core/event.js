@@ -2,8 +2,8 @@
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -41,7 +41,8 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		CHAT: 1,
 		PRESENCE: 2,
 		MESSAGE: 3,
-		LOGIN: 4
+		LOGIN: 4,
+		PRESENCE_ERROR: 5
 	};
 
 	/** Class: Candy.Core.Event.Strophe
@@ -143,7 +144,11 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			Candy.Core.log('[Jabber] Presence');
 			msg = $(msg);
 			if(msg.children('x[xmlns^="' + Strophe.NS.MUC + '"]').length > 0) {
-				self.Jabber.Room.Presence(msg);
+				if (msg.attr('type') === 'error') {
+					self.Jabber.Room.PresenceError(msg);
+				} else {
+					self.Jabber.Room.Presence(msg);
+				}
 			}
 			return true;
 		},
@@ -260,8 +265,14 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				Candy.Core.log('[Jabber:Room] Leave');
 				var msg = $(msg),
 					from = msg.attr('from'),
-					roomJid = Strophe.getBareJidFromJid(from),
-					roomName = Candy.Core.getRoom(roomJid).getName(),
+					roomJid = Strophe.getBareJidFromJid(from);
+
+				// if room is not joined yet, ignore.
+				if (!Candy.Core.getRoom(roomJid)) {
+					return false;
+				}
+
+				var roomName = Candy.Core.getRoom(roomJid).getName(),
 					item = msg.find('item'),
 					type = 'leave',
 					reason,
@@ -326,20 +337,13 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			 */
 			Presence: function(msg) {
 				Candy.Core.log('[Jabber:Room] Presence');
-				var from = msg.attr('from'),
+				var from = Candy.Util.unescapeJid(msg.attr('from')),
 					roomJid = Strophe.getBareJidFromJid(from),
 					presenceType = msg.attr('type');
 
 				// Client left a room
 				if(Strophe.getResourceFromJid(from) === Candy.Core.getUser().getNick() && presenceType === 'unavailable') {
 					self.Jabber.Room.Leave(msg);
-					return true;
-				}
-				// Presence error: Remove room from array to prevent error when disconnecting
-				// @todo maybe more handling needed here.
-				if (presenceType === 'error') {
-					Candy.Core.log('[Jabber:Room] Presence Error');
-					delete Candy.Core.getRooms()[roomJid];
 					return true;
 				}
 
@@ -349,17 +353,18 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
 					room = Candy.Core.getRoom(roomJid);
 				}
-				// Room existed but user was not registered
-				if(room.getUser() === null) {
-					room.setUser(Candy.Core.getUser());
-				}
 
 				var roster = room.getRoster(),
 					action, user,
 					item = msg.find('item');
 				// User joined a room
 				if(presenceType !== 'unavailable') {
-					user = new Candy.Core.ChatUser(from, Strophe.getResourceFromJid(from), item.attr('affiliation'), item.attr('role'));
+					var nick = Strophe.getResourceFromJid(from);
+					user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
+					// Room existed but client (myself) is not yet registered
+					if(room.getUser() === null && Candy.Core.getUser().getNick() === nick) {
+						room.setUser(user);
+					}
 					roster.add(user);
 					action = 'join';
 				// User left a room
@@ -379,6 +384,28 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				self.notifyObservers(self.KEYS.PRESENCE, {'roomJid': roomJid, 'roomName': room.getName(), 'user': user, 'action': action, 'currentUser': Candy.Core.getUser() } );
 				return true;
 			},
+			
+			/** Function: PresenceError
+			 * Acts when a presence of type error has been retrieved.
+			 *
+			 * Parameters:
+			 *   (Object) msg - jQuery object of XML message
+			 *
+			 * Returns:
+			 *   (Boolean) - true
+			 */
+			PresenceError: function(msg) {
+				Candy.Core.log('[Jabber:Room] Presence Error');
+				var from = Candy.Util.unescapeJid(msg.attr('from')),
+					roomJid = Strophe.getBareJidFromJid(from),
+					room = Candy.Core.getRooms()[roomJid],
+					roomName = room.getName();
+					
+				// Presence error: Remove room from array to prevent error when disconnecting
+				delete room;
+				
+				self.notifyObservers(self.KEYS.PRESENCE_ERROR, {'msg' : msg, 'type': msg.children('error').children()[0].tagName.toLowerCase(), 'roomJid': roomJid, 'roomName': roomName});
+			},
 
 			/** Function: Message
 			 * Acts on various message events (subject changed, private chat message, multi-user chat message)
@@ -395,29 +422,43 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				// Room subject
 				var roomJid, message;
 				if(msg.children('subject').length > 0) {
-					roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
+					roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
 					message = { name: Strophe.getNodeFromJid(roomJid), body: msg.children('subject').text(), type: 'subject' };
 				// Error messsage
 				} else if(msg.attr('type') === 'error') {
 					var error = msg.children('error');
 					if(error.attr('code') === '500' && error.children('text').length > 0) {
 						roomJid = msg.attr('from');
-						message = { type: 'error', body: error.children('text').text() };
+						message = { type: 'info', body: error.children('text').text() };
 					}
-				// Private chat message
-				} else if(msg.attr('type') === 'chat') {
-					roomJid = msg.attr('from');
-					var bareRoomJid = Strophe.getBareJidFromJid(roomJid),
-						// if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
-						isNoConferenceRoomJid = !Candy.Core.getRoom(bareRoomJid),
-						name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(roomJid) : Strophe.getResourceFromJid(roomJid);
-					message = { name: name, body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
-				// Multi-user chat message
+				// Chat message
+				} else if(msg.children('body').length > 0) {
+					// Private chat message
+					if(msg.attr('type') === 'chat') {
+						roomJid = Candy.Util.unescapeJid(msg.attr('from'));
+						var bareRoomJid = Strophe.getBareJidFromJid(roomJid),
+							// if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
+							isNoConferenceRoomJid = !Candy.Core.getRoom(bareRoomJid),
+							name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(roomJid) : Strophe.getResourceFromJid(roomJid);
+						message = { name: name, body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
+					// Multi-user chat message
+					} else {
+						roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
+						var resource = Strophe.getResourceFromJid(msg.attr('from'));
+						// Message from a user
+						if(resource) {
+							resource = Strophe.unescapeNode(resource);
+							message = { name: resource, body: msg.children('body').text(), type: msg.attr('type') };
+						// Message from server (XEP-0045#registrar-statuscodes)
+						} else {
+							message = { name: '', body: msg.children('body').text(), type: 'info' };
+						}
+					}
+				// Unhandled message
 				} else {
-					roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
-					message = { name: Strophe.getResourceFromJid(msg.attr('from')), body: msg.children('body').text(), type: msg.attr('type') };
+					return true;
 				}
-				
+
 				// besides the delayed delivery (XEP-0203), there exists also XEP-0091 which is the legacy delayed delivery.
 				// the x[xmlns=jabber:x:delay] is the format in XEP-0091.
 				var delay = msg.children('delay') ? msg.children('delay') : msg.children('x[xmlns="' + Strophe.NS.DELAY +'"]'),

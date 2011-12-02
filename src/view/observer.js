@@ -2,8 +2,8 @@
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -37,7 +37,7 @@ Candy.View.Observer = (function(self, $) {
 					case Strophe.Status.AUTHENTICATING:
 						Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnecting'), false, true);
 						break;
-						
+
 					case Strophe.Status.ATTACHED:
 					case Strophe.Status.CONNECTED:
 						Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnected'));
@@ -52,14 +52,15 @@ Candy.View.Observer = (function(self, $) {
 						break;
 
 					case Strophe.Status.DISCONNECTED:
-						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'));
+						var presetJid = Candy.Core.isAnonymousConnection() ? Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : null;
+						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'), presetJid);
 						Candy.View.Event.Chat.onDisconnect();
 
 						/* new event system call */
 						$(Candy.View.Observer.Chat).triggerHandler('disconnect');
 
 						break;
-						
+
 					case Strophe.Status.AUTHFAIL:
 						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusAuthfail'));
 						Candy.View.Event.Chat.onAuthfail();
@@ -104,14 +105,20 @@ Candy.View.Observer = (function(self, $) {
 				self.Presence.notifyPrivateChats(user, args.type);
 			// Client has been kicked or banned
 			} else if (args.type === 'kick' || args.type === 'ban') {
-				var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : args.roomName,
-					actionLabel;
+				var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : null,
+					actionLabel,
+					translationParams = [args.roomName];
+
+				if (actorName) {
+					translationParams.push(actorName);
+				}
+
 				switch(args.type) {
 					case 'kick':
-						actionLabel = $.i18n._('youHaveBeenKickedBy', [args.roomName, actorName]);
+						actionLabel = $.i18n._((actorName ? 'youHaveBeenKickedBy' : 'youHaveBeenKicked'), translationParams);
 						break;
 					case 'ban':
-						actionLabel = $.i18n._('youHaveBeenBannedBy', [args.roomName, actorName]);
+						actionLabel = $.i18n._((actorName ? 'youHaveBeenBannedBy' : 'youHaveBeenBanned'), translationParams);
 						break;
 				}
 				Candy.View.Pane.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.adminMessageReason, {
@@ -147,7 +154,7 @@ Candy.View.Observer = (function(self, $) {
 				}
 			}
 		},
-		
+
 		/** Function: notifyPrivateChats
 		 * Notify private user chats if existing
 		 *
@@ -166,6 +173,39 @@ Candy.View.Observer = (function(self, $) {
 			}
 		}
 	};
+	
+	/** Class: Candy.View.Observer.PresenceError
+	 * Presence error events
+	 */
+	self.PresenceError = {
+		/** Function: update
+		 * Presence errors get handled in this method
+		 *
+		 * Parameters:
+		 *   (Candy.Core.Event) obj - Candy core event object
+		 *   (Object) args - {msg, type, roomJid, roomName}
+		 */
+		update: function(obj, args) {
+			switch(args.type) {
+				case 'not-authorized':
+					var message;
+					if (args.msg.children('x').children('password').length > 0) {
+						message = $.i18n._('passwordEnteredInvalid', [args.roomName]);
+					}
+					Candy.View.Pane.Chat.Modal.showEnterPasswordForm(args.roomJid, args.roomName, message);
+					break;
+				case 'conflict':
+					Candy.View.Pane.Chat.Modal.showNicknameConflictForm(args.roomJid);
+					break;
+				case 'registration-required':
+					Candy.View.Pane.Chat.Modal.showError('errorMembersOnly', [args.roomName]);
+					break;
+				case 'service-unavailable':
+					Candy.View.Pane.Chat.Modal.showError('errorMaxOccupantsReached', [args.roomName]);
+					break;
+			}
+		}
+	}
 
 	/** Class: Candy.View.Observer.Message
 	 * Message related events
@@ -180,8 +220,12 @@ Candy.View.Observer = (function(self, $) {
 		 */
 		update: function(obj, args) {
 			if(args.message.type === 'subject') {
+				if (!Candy.View.Pane.Chat.rooms[args.roomJid]) {
+					Candy.View.Pane.Room.init(args.roomJid, args.message.name);
+					Candy.View.Pane.Room.show(args.roomJid);
+				}
 				Candy.View.Pane.Room.setSubject(args.roomJid, args.message.body);
-			} else if(args.message.type === 'error') {
+			} else if(args.message.type === 'info') {
 				Candy.View.Pane.Chat.infoMessage(args.roomJid, args.message.body);
 			} else {
 				// Initialize room if it's a message for a new private user chat

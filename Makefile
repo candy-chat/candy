@@ -6,8 +6,8 @@
 # (c) 2011 Amiado Group AG
 #
 # Authors:
-#   - Patrick Stadler <patrick.stadler@amiadogroup.com>
-#   - Michael Weibel <michael.weibel@amiadogroup.com>
+#   - Patrick Stadler <patrick.stadler@gmail.com>
+#   - Michael Weibel <michael.weibel@gmail.com>
 #
 
 SHELL=/bin/bash
@@ -26,7 +26,7 @@ CANDY_LIBS_FILES = $(LIBS_DIR)/strophejs/strophe.js $(LIBS_DIR)/strophejs-plugin
 CANDY_FILES_BUNDLE = $(CANDY_FILES:.js=.bundle)
 CANDY_LIBS_FILES_BUNDLE = $(CANDY_LIBS_FILES:.js=.libs-bundle)
 
-all: bundle min libs libs-min
+all: bundle min
 
 bundle: clean-bundle $(CANDY_FILES_BUNDLE)
 
@@ -47,7 +47,9 @@ else
 	@@echo "** Please set YUI_COMPRESSOR to the path to the jar file."
 endif
 
-libs: clean-libs $(CANDY_LIBS_FILES_BUNDLE)
+libs: libs-bundle libs-min
+
+libs-bundle: clean-libs $(CANDY_LIBS_FILES_BUNDLE)
 
 %.libs-bundle: %.js
 	@@echo -n "Bundling" $< "..."

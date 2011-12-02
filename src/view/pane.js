@@ -2,8 +2,8 @@
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -500,6 +500,7 @@ Candy.View.Pane = (function(self, $) {
 				} else {
 					self.Chat.Modal.hideSpinner();
 				}
+				$('#chat-modal').stop(false, true);
 				$('#chat-modal-body').html(html);
 				$('#chat-modal').fadeIn('fast');
 				$('#chat-modal-overlay').show();
@@ -513,7 +514,7 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			hide: function(callback) {
 				$('#chat-modal').fadeOut('fast', function() {
-					$('#chat-modal-body').text('');
+					$('#chat-modal-body').text('');	
 					$('#chat-modal-overlay').hide();
 				});
 				// restore initial esc handling
@@ -566,8 +567,8 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			hideCloseControl: function() {
 				$('#admin-message-cancel').hide().click(function() {});
-			},			
-			
+			},
+
 			/** Function: showLoginForm
 			 * Show the login form modal
 			 *
@@ -576,29 +577,105 @@ Candy.View.Pane = (function(self, $) {
 			 *	(String) presetJid - optional user jid. if set, the user will only be prompted for password.
 			 */
 			showLoginForm: function(message, presetJid) {
-				Candy.View.Pane.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
+				self.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
 					_labelUsername: $.i18n._('labelUsername'),
 					_labelPassword: $.i18n._('labelPassword'),
-					_loginSubmit  : $.i18n._('loginSubmit'),
-					presetJid : (presetJid ? presetJid : false)
+					_loginSubmit: $.i18n._('loginSubmit'),
+					displayPassword: !Candy.Core.isAnonymousConnection(),
+					displayUsername: Candy.Core.isAnonymousConnection() || !presetJid,
+					presetJid: presetJid ? presetJid : false
 				}));
+				$('#login-form').children()[0].focus();
 
 				// register submit handler
 				$('#login-form').submit(function(event) {
 					var username = $('#username').val(),
-						password = $('#password').val(),
+						password = $('#password').val();
+
+					if (!Candy.Core.isAnonymousConnection()) {
 						// guess the input and create a jid out of it
-						jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
+						var jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
 							username + '@' + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
-						
-					if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
-						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('loginInvalid'));
-					} else {
-						//Candy.View.Pane.Chat.Modal.hide();
-						Candy.Core.connect(jid, password);
+
+						if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
+							Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('loginInvalid'));
+						} else {
+							//Candy.View.Pane.Chat.Modal.hide();
+							Candy.Core.connect(jid, password);
+						}
+					} else { // anonymous login
+						Candy.Core.connect(presetJid, null, username);
 					}
 					return false;
 				});
+			},
+			
+			/** Function: showEnterPasswordForm
+			 * Shows a form for entering room password
+			 *
+			 * Parameters:
+			 *   (String) roomJid - Room jid to join
+			 *   (String) roomName - Room name
+			 *   (String) message - [optional] Message to show as the label
+			 */
+			showEnterPasswordForm: function(roomJid, roomName, message) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.enterPasswordForm, {
+					roomName: roomName,
+					_labelPassword: $.i18n._('labelPassword'),
+					_label: (message ? message : $.i18n._('enterRoomPassword', [roomName])),
+					_joinSubmit: $.i18n._('enterRoomPasswordSubmit')
+				}), true);
+				$('#password').focus();
+				
+				// register submit handler
+				$('#enter-password-form').submit(function() {
+					var password = $('#password').val();
+					
+					self.Chat.Modal.hide(function() {
+						Candy.Core.Action.Jabber.Room.Join(roomJid, password);
+					});
+					return false;
+				});
+			},
+			
+			/** Function: showNicknameConflictForm
+			 * Shows a form indicating that the nickname is already taken and
+			 * for chosing a new nickname
+			 *
+			 * Parameters:
+			 *   (String) roomJid - Room jid to join
+			 */
+			showNicknameConflictForm: function(roomJid) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.nicknameConflictForm, {
+					_labelNickname: $.i18n._('labelUsername'),
+					_label: $.i18n._('nicknameConflict'),
+					_loginSubmit: $.i18n._('loginSubmit')
+				}));
+				$('#nickname').focus();
+				
+				// register submit handler
+				$('#nickname-conflict-form').submit(function() {
+					var nickname = $('#nickname').val();
+
+					self.Chat.Modal.hide(function() {
+						Candy.Core.getUser().data.nick = nickname;
+						Candy.Core.Action.Jabber.Room.Join(roomJid);
+					});
+					return false;
+				});
+			},
+			
+			/** Function: showError
+			 * Show modal containing error message
+			 *
+			 * Parameters:
+			 *   (String) message - key of translation to display
+			 *   (Array) replacements - array containing replacements for translation (%s)
+			 */
+			showError: function(message, replacements) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.displayError, {
+					_error: $.i18n._(message, replacements)
+				}), true);
 			}
 		},
 
@@ -947,8 +1024,7 @@ Candy.View.Pane = (function(self, $) {
 				roomJid: roomJid,
 				roomType: roomType,
 				form: {
-					_messageSubmit: $.i18n._('messageSubmit'),
-					_maxLength: Candy.View.getOptions().crop.message.body
+					_messageSubmit: $.i18n._('messageSubmit')
 				},
 				roster: {
 					_userOnline: $.i18n._('userOnline')
@@ -1437,6 +1513,7 @@ Candy.View.Pane = (function(self, $) {
 					}
 				// user is in room but maybe the affiliation/role has changed
 				} else {
+					usercountDiff = 0;
 					userElem.replaceWith(html);
 					$('#user-' + roomId + '-' + userId).css({opacity: 1}).show();
 				}
@@ -1582,12 +1659,16 @@ Candy.View.Pane = (function(self, $) {
 		show: function(roomJid, name, message, timestamp) {
 			message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
 
-			message = Candy.View.Event.Message.beforeShow(message);
+			var evtData = {'roomJid': roomJid, 'nick': name, 'message': message};
+			evtData.message = Candy.View.Event.Message.beforeShow(evtData);
 
 			/* new event system call */
-			var evtData = {message: message};
 			$(Candy.View.Pane.Message).triggerHandler('beforeshow', [evtData]);
 			message = evtData.message;
+			
+			if(!message) {
+				return;
+			}
 			
 			var renderEvtData = {
 				template: Candy.View.Template.Message.item,

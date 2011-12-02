@@ -2,8 +2,8 @@
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -28,6 +28,56 @@ Candy.Util = (function(self, $){
 	 */
 	self.jidToId = function(jid) {
 		return MD5.hexdigest(jid);
+	};
+	
+	/** Function: escapeJid
+	 * Escapes a jid (node & resource get escaped)
+	 *
+	 * See:
+	 *   XEP-0106
+	 *
+	 * Parameters:
+	 *   (String) jid - Jid
+	 *
+	 * Returns:
+	 *   (String) - escaped jid
+	 */
+	self.escapeJid = function(jid) {
+		var node = Strophe.escapeNode(Strophe.getNodeFromJid(jid)),
+			domain = Strophe.getDomainFromJid(jid),
+			resource = Strophe.getResourceFromJid(jid);
+			
+		jid = node + '@' + domain;
+		if (resource) {
+			jid += '/' + Strophe.escapeNode(resource);
+		}
+		
+		return jid;
+	};
+	
+	/** Function: unescapeJid
+	 * Unescapes a jid (node & resource get unescaped)
+	 *
+	 * See:
+	 *   XEP-0106
+	 *
+	 * Parameters:
+	 *   (String) jid - Jid
+	 *
+	 * Returns:
+	 *   (String) - unescaped Jid
+	 */
+	self.unescapeJid = function(jid) {
+		var node = Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
+			domain = Strophe.getDomainFromJid(jid),
+			resource = Strophe.getResourceFromJid(jid);
+		
+		jid = node + '@' + domain;
+		if(resource) {
+			jid += '/' + Strophe.unescapeNode(resource);
+		}
+		
+		return jid;
 	};
 
 	/** Function: crop
@@ -55,7 +105,7 @@ Candy.Util = (function(self, $){
 	self.setCookie = function(name, value, lifetime_days) {
 		var exp = new Date();
 		exp.setDate(new Date().getDate() + lifetime_days);
-		document.cookie = name + '=' + value + ';expires=' + exp.toUTCString() + 'path=/';
+		document.cookie = name + '=' + value + ';expires=' + exp.toUTCString() + ';path=/';
 	};
 
 	/** Function: cookieExists
@@ -82,11 +132,11 @@ Candy.Util = (function(self, $){
 	 */
 	self.getCookie = function(name) {
 	    if(document.cookie)	{
-			var regex = new RegExp(escape(name) + '=([^;]*)', 'gm'),
-				matches = regex.exec(document.cookie);
-			if(matches) {
-				return matches[1];
-			}
+				var regex = new RegExp(escape(name) + '=([^;]*)', 'gm'),
+					matches = regex.exec(document.cookie);
+					if(matches) {
+						return matches[1];
+					}
 	    }
 	};
 
@@ -97,7 +147,7 @@ Candy.Util = (function(self, $){
 	 *   (String) name - cookie name
 	 */
 	self.deleteCookie = function(name) {
-		document.cookie = name + '=;expires=Thu, 01-Jan-70 00:00:01 GMT';
+		document.cookie = name + '=;expires=Thu, 01-Jan-70 00:00:01 GMT;path=/';
 	};
 
 	/** Function: getPosLeftAccordingToWindowBounds
