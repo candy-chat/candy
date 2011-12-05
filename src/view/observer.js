@@ -42,6 +42,9 @@ Candy.View.Observer = (function(self, $) {
 					case Strophe.Status.CONNECTED:
 						Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnected'));
 						Candy.View.Pane.Chat.Modal.hide();
+
+						/* new event system call */
+						$(Candy.View.Observer.Chat).triggerHandler('connect');
 						break;
 
 					case Strophe.Status.DISCONNECTING:
@@ -52,11 +55,19 @@ Candy.View.Observer = (function(self, $) {
 						var presetJid = Candy.Core.isAnonymousConnection() ? Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : null;
 						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'), presetJid);
 						Candy.View.Event.Chat.onDisconnect();
+
+						/* new event system call */
+						$(Candy.View.Observer.Chat).triggerHandler('disconnect');
+
 						break;
 
 					case Strophe.Status.AUTHFAIL:
 						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusAuthfail'));
 						Candy.View.Event.Chat.onAuthfail();
+
+						/* new event system call */
+						$(Candy.View.Observer.Chat).triggerHandler('authfail');
+
 						break;
 
 					default:
@@ -121,7 +132,13 @@ Candy.View.Observer = (function(self, $) {
 						self.Presence.notifyPrivateChats(args.user, args.type);
 					});
 				}, 5000);
-				Candy.View.Event.Room.onPresenceChange({ type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user });
+
+				var evtData = { type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user };
+				Candy.View.Event.Room.onPresenceChange(evtData);
+
+				/* new event system call */
+				$(Candy.View.Observer.Chat).triggerHandler('presencechange', [evtData]);
+
 			// A user changed presence
 			} else {
 				// Initialize room if not yet existing
