@@ -2,8 +2,8 @@
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -65,6 +65,18 @@ Candy.View.Template = (function(self){
 			+ '{{#presetJid}}<input type="hidden" id="username" name="username" value="{{presetJid}}"/>{{/presetJid}}'
 			+ '{{#displayPassword}}<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />{{/displayPassword}}'
 			+ '<input type="submit" class="button" value="{{_loginSubmit}}" /></form>'
+	};
+	
+	self.PresenceError = {
+		enterPasswordForm: '<strong>{{_label}}</strong>'
+			+ '<form method="post" id="enter-password-form" class="enter-password-form">'
+			+ '<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />'
+			+ '<input type="submit" class="button" value="{{_joinSubmit}}" /></form>',
+		nicknameConflictForm: '<strong>{{_label}}</strong>'
+			+ '<form method="post" id="nickname-conflict-form" class="nickname-conflict-form">'
+			+ '<label for="nickname">{{_labelNickname}}</label><input type="text" id="nickname" name="nickname" />'
+			+ '<input type="submit" class="button" value="{{_loginSubmit}}" /></form>',
+		displayError: '<strong>{{_error}}</strong>'
 	};
 
 	return self;

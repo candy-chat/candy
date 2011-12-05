@@ -2,8 +2,8 @@
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -495,6 +495,7 @@ Candy.View.Pane = (function(self, $) {
 				} else {
 					self.Chat.Modal.hideSpinner();
 				}
+				$('#chat-modal').stop(false, true);
 				$('#chat-modal-body').html(html);
 				$('#chat-modal').fadeIn('fast');
 				$('#chat-modal-overlay').show();
@@ -508,7 +509,7 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			hide: function(callback) {
 				$('#chat-modal').fadeOut('fast', function() {
-					$('#chat-modal-body').text('');
+					$('#chat-modal-body').text('');	
 					$('#chat-modal-overlay').hide();
 				});
 				// restore initial esc handling
@@ -571,7 +572,7 @@ Candy.View.Pane = (function(self, $) {
 			 *	(String) presetJid - optional user jid. if set, the user will only be prompted for password.
 			 */
 			showLoginForm: function(message, presetJid) {
-				Candy.View.Pane.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
+				self.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
 					_labelUsername: $.i18n._('labelUsername'),
 					_labelPassword: $.i18n._('labelPassword'),
 					_loginSubmit: $.i18n._('loginSubmit'),
@@ -579,6 +580,7 @@ Candy.View.Pane = (function(self, $) {
 					displayUsername: Candy.Core.isAnonymousConnection() || !presetJid,
 					presetJid: presetJid ? presetJid : false
 				}));
+				$('#login-form').children()[0].focus();
 
 				// register submit handler
 				$('#login-form').submit(function(event) {
@@ -601,6 +603,74 @@ Candy.View.Pane = (function(self, $) {
 					}
 					return false;
 				});
+			},
+			
+			/** Function: showEnterPasswordForm
+			 * Shows a form for entering room password
+			 *
+			 * Parameters:
+			 *   (String) roomJid - Room jid to join
+			 *   (String) roomName - Room name
+			 *   (String) message - [optional] Message to show as the label
+			 */
+			showEnterPasswordForm: function(roomJid, roomName, message) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.enterPasswordForm, {
+					roomName: roomName,
+					_labelPassword: $.i18n._('labelPassword'),
+					_label: (message ? message : $.i18n._('enterRoomPassword', [roomName])),
+					_joinSubmit: $.i18n._('enterRoomPasswordSubmit')
+				}), true);
+				$('#password').focus();
+				
+				// register submit handler
+				$('#enter-password-form').submit(function() {
+					var password = $('#password').val();
+					
+					self.Chat.Modal.hide(function() {
+						Candy.Core.Action.Jabber.Room.Join(roomJid, password);
+					});
+					return false;
+				});
+			},
+			
+			/** Function: showNicknameConflictForm
+			 * Shows a form indicating that the nickname is already taken and
+			 * for chosing a new nickname
+			 *
+			 * Parameters:
+			 *   (String) roomJid - Room jid to join
+			 */
+			showNicknameConflictForm: function(roomJid) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.nicknameConflictForm, {
+					_labelNickname: $.i18n._('labelUsername'),
+					_label: $.i18n._('nicknameConflict'),
+					_loginSubmit: $.i18n._('loginSubmit')
+				}));
+				$('#nickname').focus();
+				
+				// register submit handler
+				$('#nickname-conflict-form').submit(function() {
+					var nickname = $('#nickname').val();
+
+					self.Chat.Modal.hide(function() {
+						Candy.Core.getUser().data.nick = nickname;
+						Candy.Core.Action.Jabber.Room.Join(roomJid);
+					});
+					return false;
+				});
+			},
+			
+			/** Function: showError
+			 * Show modal containing error message
+			 *
+			 * Parameters:
+			 *   (String) message - key of translation to display
+			 *   (Array) replacements - array containing replacements for translation (%s)
+			 */
+			showError: function(message, replacements) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.displayError, {
+					_error: $.i18n._(message, replacements)
+				}), true);
 			}
 		},
 
@@ -1415,7 +1485,7 @@ Candy.View.Pane = (function(self, $) {
 						userId : userId,
 						userJid: user.getJid(),
 						nick: user.getNick(),
-						displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.displayNick),
+						displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.nickname),
 						role: user.getRole(),
 						affiliation: user.getAffiliation(),
 						me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
@@ -1591,7 +1661,7 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		submit: function(event) {
 			var roomType = Candy.View.Pane.Chat.rooms[Candy.View.getCurrent().roomJid].type,
-				message = $(this).children('.field').val().substring(0, 1000);
+				message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body);
 
 			message = Candy.View.Event.Message.beforeSend(message);
 
@@ -1615,7 +1685,7 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) timestamp - [optional] Timestamp of the message, if not present, current date.
 		 */
 		show: function(roomJid, name, message, timestamp) {
-			message = Candy.Util.Parser.all(message.substring(0, 1000));
+			message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
 			message = Candy.View.Event.Message.beforeShow({'roomJid': roomJid, 'nick': name, 'message': message});
 			if(!message) {
 				return;
@@ -1623,7 +1693,7 @@ Candy.View.Pane = (function(self, $) {
 
 			var html = Mustache.to_html(Candy.View.Template.Message.item, {
 				name: name,
-				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.displayName),
+				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.nickname),
 				message: message,
 				time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
 			});

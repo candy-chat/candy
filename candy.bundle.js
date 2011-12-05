@@ -2,8 +2,8 @@
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -29,7 +29,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.0.6'
+		version: '1.0.10-dev'
 	};
 
 	/** Function: init
@@ -54,8 +54,8 @@ var Candy = (function(self, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -129,14 +129,13 @@ Candy.Core = (function(self, Strophe, $) {
 		 * Adds listening handlers to the connection.
 		 */
 		_registerEventHandlers = function() {
-			// Strophe handlers
-			_connection.addHandler(self.Event.Jabber.Version, Strophe.NS.VERSION, 'iq');
-			_connection.addHandler(self.Event.Jabber.Presence, null, 'presence');
-			_connection.addHandler(self.Event.Jabber.Message, null, 'message');
-			_connection.addHandler(self.Event.Jabber.Bookmarks, Strophe.NS.PRIVATE, 'iq');
-			_connection.addHandler(self.Event.Jabber.Room.Disco, Strophe.NS.DISCO_INFO, 'iq');
-			_connection.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq', 'result');
-			_connection.addHandler(self.Event.Jabber.PrivacyListError, Strophe.NS.PRIVACY, 'iq', 'error');
+			self.addHandler(self.Event.Jabber.Version, Strophe.NS.VERSION, 'iq');
+			self.addHandler(self.Event.Jabber.Presence, null, 'presence');
+			self.addHandler(self.Event.Jabber.Message, null, 'message');
+			self.addHandler(self.Event.Jabber.Bookmarks, Strophe.NS.PRIVATE, 'iq');
+			self.addHandler(self.Event.Jabber.Room.Disco, Strophe.NS.DISCO_INFO, 'iq');
+			self.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq', 'result');
+			self.addHandler(self.Event.Jabber.PrivacyListError, Strophe.NS.PRIVACY, 'iq', 'error');
 		};
 
 	/** Function: init
@@ -260,6 +259,25 @@ Candy.Core = (function(self, Strophe, $) {
 			_connection.disconnect();
 		}
 	};
+	
+	/** Function: addHandler
+	 * Wrapper for Strophe.Connection.addHandler() to add a stanza handler for the connection.
+	 *
+	 * Parameters:
+	 *   (Function) handler - The user callback.
+	 *   (String) ns - The namespace to match.
+	 *   (String) name - The stanza name to match.
+	 *   (String) type - The stanza type attribute to match.
+	 *   (String) id - The stanza id attribute to match.
+	 *   (String) from - The stanza from attribute to match.
+	 *   (String) options - The handler options
+	 *
+	 * Returns:
+	 *   A reference to the handler that can be used to remove it.
+	 */
+	self.addHandler = function(handler, ns, name, type, id, from, options) {
+		return _connection.addHandler(handler, ns, name, type, id, from, options);
+	};
 
 	/** Function: getUser
 	 * Gets current user
@@ -379,8 +397,8 @@ Candy.Core = (function(self, Strophe, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -435,6 +453,7 @@ Candy.View = (function(self, $) {
 		_registerObservers = function() {
 			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.CHAT, self.Observer.Chat);
 			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.PRESENCE, self.Observer.Presence);
+			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.PRESENCE_ERROR, self.Observer.PresenceError);
 			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.MESSAGE, self.Observer.Message);
 			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.LOGIN, self.Observer.Login);
 		},
@@ -546,8 +565,8 @@ Candy.View = (function(self, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1090,8 +1109,8 @@ Candy.Util.Observable = (function(self) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1233,10 +1252,11 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *
 			 * Parameters:
 			 *   (String) roomJid - Room to join
+			 *   (String) password - [optional] Password for the room
 			 */
-			Join: function(roomJid) {
+			Join: function(roomJid, password) {
 				self.Jabber.Room.Disco(roomJid);
-				Candy.Core.getConnection().muc.join(roomJid, Candy.Core.getUser().getNick());
+				Candy.Core.getConnection().muc.join(roomJid, Candy.Core.getUser().getNick(), null, null, password);
 			},
 
 			/** Function: Leave
@@ -1368,8 +1388,8 @@ Candy.Core.Action = (function(self, Strophe, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1474,8 +1494,8 @@ Candy.Core.ChatRoom = function(roomJid) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1537,8 +1557,8 @@ Candy.Core.ChatRoster = function () {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1792,8 +1812,8 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -1831,7 +1851,8 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		CHAT: 1,
 		PRESENCE: 2,
 		MESSAGE: 3,
-		LOGIN: 4
+		LOGIN: 4,
+		PRESENCE_ERROR: 5
 	};
 
 	/** Class: Candy.Core.Event.Strophe
@@ -1933,7 +1954,11 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			Candy.Core.log('[Jabber] Presence');
 			msg = $(msg);
 			if(msg.children('x[xmlns^="' + Strophe.NS.MUC + '"]').length > 0) {
-				self.Jabber.Room.Presence(msg);
+				if (msg.attr('type') === 'error') {
+					self.Jabber.Room.PresenceError(msg);
+				} else {
+					self.Jabber.Room.Presence(msg);
+				}
 			}
 			return true;
 		},
@@ -2050,8 +2075,14 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				Candy.Core.log('[Jabber:Room] Leave');
 				var msg = $(msg),
 					from = msg.attr('from'),
-					roomJid = Strophe.getBareJidFromJid(from),
-					roomName = Candy.Core.getRoom(roomJid).getName(),
+					roomJid = Strophe.getBareJidFromJid(from);
+
+				// if room is not joined yet, ignore.
+				if (!Candy.Core.getRoom(roomJid)) {
+					return false;
+				}
+
+				var roomName = Candy.Core.getRoom(roomJid).getName(),
 					item = msg.find('item'),
 					type = 'leave',
 					reason,
@@ -2125,13 +2156,6 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					self.Jabber.Room.Leave(msg);
 					return true;
 				}
-				// Presence error: Remove room from array to prevent error when disconnecting
-				// @todo maybe more handling needed here.
-				if (presenceType === 'error') {
-					Candy.Core.log('[Jabber:Room] Presence Error');
-					delete Candy.Core.getRooms()[roomJid];
-					return true;
-				}
 
 				// Client joined a room
 				var room = Candy.Core.getRoom(roomJid);
@@ -2154,7 +2178,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					// Room existed but client (myself) is not yet registered
 					if(room.getUser() === null && Candy.Core.getUser().getNick() === nick) {
 						room.setUser(user);
-					}					
+					}
 					roster.add(user);
 					action = 'join';
 				// User left a room
@@ -2183,6 +2207,28 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 
 				self.notifyObservers(self.KEYS.PRESENCE, {'roomJid': roomJid, 'roomName': room.getName(), 'user': user, 'action': action, 'currentUser': Candy.Core.getUser() } );
 				return true;
+			},
+			
+			/** Function: PresenceError
+			 * Acts when a presence of type error has been retrieved.
+			 *
+			 * Parameters:
+			 *   (Object) msg - jQuery object of XML message
+			 *
+			 * Returns:
+			 *   (Boolean) - true
+			 */
+			PresenceError: function(msg) {
+				Candy.Core.log('[Jabber:Room] Presence Error');
+				var from = Candy.Util.unescapeJid(msg.attr('from')),
+					roomJid = Strophe.getBareJidFromJid(from),
+					room = Candy.Core.getRooms()[roomJid],
+					roomName = room.getName();
+					
+				// Presence error: Remove room from array to prevent error when disconnecting
+				delete room;
+				
+				self.notifyObservers(self.KEYS.PRESENCE_ERROR, {'msg' : msg, 'type': msg.children('error').children()[0].tagName.toLowerCase(), 'roomJid': roomJid, 'roomName': roomName});
 			},
 
 			/** Function: Message
@@ -2254,8 +2300,8 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -2448,8 +2494,8 @@ Candy.View.Event = (function(self, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -2495,7 +2541,8 @@ Candy.View.Observer = (function(self, $) {
 						break;
 
 					case Strophe.Status.DISCONNECTED:
-						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'));
+						var presetJid = Candy.Core.isAnonymousConnection() ? Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : null;
+						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'), presetJid);
 						Candy.View.Event.Chat.onDisconnect();
 						break;
 
@@ -2539,14 +2586,20 @@ Candy.View.Observer = (function(self, $) {
 				self.Presence.notifyPrivateChats(user, args.type);
 			// Client has been kicked or banned
 			} else if (args.type === 'kick' || args.type === 'ban') {
-				var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : args.roomName,
-					actionLabel;
+				var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : null,
+					actionLabel,
+					translationParams = [args.roomName];
+
+				if (actorName) {
+					translationParams.push(actorName);
+				}
+
 				switch(args.type) {
 					case 'kick':
-						actionLabel = $.i18n._('youHaveBeenKickedBy', [args.roomName, actorName]);
+						actionLabel = $.i18n._((actorName ? 'youHaveBeenKickedBy' : 'youHaveBeenKicked'), translationParams);
 						break;
 					case 'ban':
-						actionLabel = $.i18n._('youHaveBeenBannedBy', [args.roomName, actorName]);
+						actionLabel = $.i18n._((actorName ? 'youHaveBeenBannedBy' : 'youHaveBeenBanned'), translationParams);
 						break;
 				}
 				Candy.View.Pane.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.adminMessageReason, {
@@ -2595,6 +2648,39 @@ Candy.View.Observer = (function(self, $) {
 			}
 		}
 	};
+	
+	/** Class: Candy.View.Observer.PresenceError
+	 * Presence error events
+	 */
+	self.PresenceError = {
+		/** Function: update
+		 * Presence errors get handled in this method
+		 *
+		 * Parameters:
+		 *   (Candy.Core.Event) obj - Candy core event object
+		 *   (Object) args - {msg, type, roomJid, roomName}
+		 */
+		update: function(obj, args) {
+			switch(args.type) {
+				case 'not-authorized':
+					var message;
+					if (args.msg.children('x').children('password').length > 0) {
+						message = $.i18n._('passwordEnteredInvalid', [args.roomName]);
+					}
+					Candy.View.Pane.Chat.Modal.showEnterPasswordForm(args.roomJid, args.roomName, message);
+					break;
+				case 'conflict':
+					Candy.View.Pane.Chat.Modal.showNicknameConflictForm(args.roomJid);
+					break;
+				case 'registration-required':
+					Candy.View.Pane.Chat.Modal.showError('errorMembersOnly', [args.roomName]);
+					break;
+				case 'service-unavailable':
+					Candy.View.Pane.Chat.Modal.showError('errorMaxOccupantsReached', [args.roomName]);
+					break;
+			}
+		}
+	}
 
 	/** Class: Candy.View.Observer.Message
 	 * Message related events
@@ -2647,8 +2733,8 @@ Candy.View.Observer = (function(self, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -3140,6 +3226,7 @@ Candy.View.Pane = (function(self, $) {
 				} else {
 					self.Chat.Modal.hideSpinner();
 				}
+				$('#chat-modal').stop(false, true);
 				$('#chat-modal-body').html(html);
 				$('#chat-modal').fadeIn('fast');
 				$('#chat-modal-overlay').show();
@@ -3153,7 +3240,7 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			hide: function(callback) {
 				$('#chat-modal').fadeOut('fast', function() {
-					$('#chat-modal-body').text('');
+					$('#chat-modal-body').text('');	
 					$('#chat-modal-overlay').hide();
 				});
 				// restore initial esc handling
@@ -3216,7 +3303,7 @@ Candy.View.Pane = (function(self, $) {
 			 *	(String) presetJid - optional user jid. if set, the user will only be prompted for password.
 			 */
 			showLoginForm: function(message, presetJid) {
-				Candy.View.Pane.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
+				self.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
 					_labelUsername: $.i18n._('labelUsername'),
 					_labelPassword: $.i18n._('labelPassword'),
 					_loginSubmit: $.i18n._('loginSubmit'),
@@ -3224,6 +3311,7 @@ Candy.View.Pane = (function(self, $) {
 					displayUsername: Candy.Core.isAnonymousConnection() || !presetJid,
 					presetJid: presetJid ? presetJid : false
 				}));
+				$('#login-form').children()[0].focus();
 
 				// register submit handler
 				$('#login-form').submit(function(event) {
@@ -3246,6 +3334,74 @@ Candy.View.Pane = (function(self, $) {
 					}
 					return false;
 				});
+			},
+			
+			/** Function: showEnterPasswordForm
+			 * Shows a form for entering room password
+			 *
+			 * Parameters:
+			 *   (String) roomJid - Room jid to join
+			 *   (String) roomName - Room name
+			 *   (String) message - [optional] Message to show as the label
+			 */
+			showEnterPasswordForm: function(roomJid, roomName, message) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.enterPasswordForm, {
+					roomName: roomName,
+					_labelPassword: $.i18n._('labelPassword'),
+					_label: (message ? message : $.i18n._('enterRoomPassword', [roomName])),
+					_joinSubmit: $.i18n._('enterRoomPasswordSubmit')
+				}), true);
+				$('#password').focus();
+				
+				// register submit handler
+				$('#enter-password-form').submit(function() {
+					var password = $('#password').val();
+					
+					self.Chat.Modal.hide(function() {
+						Candy.Core.Action.Jabber.Room.Join(roomJid, password);
+					});
+					return false;
+				});
+			},
+			
+			/** Function: showNicknameConflictForm
+			 * Shows a form indicating that the nickname is already taken and
+			 * for chosing a new nickname
+			 *
+			 * Parameters:
+			 *   (String) roomJid - Room jid to join
+			 */
+			showNicknameConflictForm: function(roomJid) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.nicknameConflictForm, {
+					_labelNickname: $.i18n._('labelUsername'),
+					_label: $.i18n._('nicknameConflict'),
+					_loginSubmit: $.i18n._('loginSubmit')
+				}));
+				$('#nickname').focus();
+				
+				// register submit handler
+				$('#nickname-conflict-form').submit(function() {
+					var nickname = $('#nickname').val();
+
+					self.Chat.Modal.hide(function() {
+						Candy.Core.getUser().data.nick = nickname;
+						Candy.Core.Action.Jabber.Room.Join(roomJid);
+					});
+					return false;
+				});
+			},
+			
+			/** Function: showError
+			 * Show modal containing error message
+			 *
+			 * Parameters:
+			 *   (String) message - key of translation to display
+			 *   (Array) replacements - array containing replacements for translation (%s)
+			 */
+			showError: function(message, replacements) {
+				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.displayError, {
+					_error: $.i18n._(message, replacements)
+				}), true);
 			}
 		},
 
@@ -4060,7 +4216,7 @@ Candy.View.Pane = (function(self, $) {
 						userId : userId,
 						userJid: user.getJid(),
 						nick: user.getNick(),
-						displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.displayNick),
+						displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.nickname),
 						role: user.getRole(),
 						affiliation: user.getAffiliation(),
 						me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
@@ -4236,7 +4392,7 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		submit: function(event) {
 			var roomType = Candy.View.Pane.Chat.rooms[Candy.View.getCurrent().roomJid].type,
-				message = $(this).children('.field').val().substring(0, 1000);
+				message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body);
 
 			message = Candy.View.Event.Message.beforeSend(message);
 
@@ -4260,7 +4416,7 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) timestamp - [optional] Timestamp of the message, if not present, current date.
 		 */
 		show: function(roomJid, name, message, timestamp) {
-			message = Candy.Util.Parser.all(message.substring(0, 1000));
+			message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
 			message = Candy.View.Event.Message.beforeShow({'roomJid': roomJid, 'nick': name, 'message': message});
 			if(!message) {
 				return;
@@ -4268,7 +4424,7 @@ Candy.View.Pane = (function(self, $) {
 
 			var html = Mustache.to_html(Candy.View.Template.Message.item, {
 				name: name,
-				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.displayName),
+				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.nickname),
 				message: message,
 				time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
 			});
@@ -4304,8 +4460,8 @@ Candy.View.Pane = (function(self, $) {
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -4368,6 +4524,18 @@ Candy.View.Template = (function(self){
 			+ '{{#displayPassword}}<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />{{/displayPassword}}'
 			+ '<input type="submit" class="button" value="{{_loginSubmit}}" /></form>'
 	};
+	
+	self.PresenceError = {
+		enterPasswordForm: '<strong>{{_label}}</strong>'
+			+ '<form method="post" id="enter-password-form" class="enter-password-form">'
+			+ '<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />'
+			+ '<input type="submit" class="button" value="{{_joinSubmit}}" /></form>',
+		nicknameConflictForm: '<strong>{{_label}}</strong>'
+			+ '<form method="post" id="nickname-conflict-form" class="nickname-conflict-form">'
+			+ '<label for="nickname">{{_labelNickname}}</label><input type="text" id="nickname" name="nickname" />'
+			+ '<input type="submit" class="button" value="{{_loginSubmit}}" /></form>',
+		displayError: '<strong>{{_error}}</strong>'
+	};
 
 	return self;
 }(Candy.View.Template || {}));
@@ -4375,8 +4543,8 @@ Candy.View.Template = (function(self){
  * Candy - Chats are not dead yet.
  *
  * Authors:
- *   - Patrick Stadler <patrick.stadler@amiadogroup.com>
- *   - Michael Weibel <michael.weibel@amiadogroup.com>
+ *   - Patrick Stadler <patrick.stadler@gmail.com>
+ *   - Michael Weibel <michael.weibel@gmail.com>
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
@@ -4406,9 +4574,11 @@ Candy.View.Translation = {
 		'subject'				: 'Subject:',
 		'reasonWas'				: 'Reason was: %s.',
 		'kickActionLabel'		: 'Kick',
-		'youHaveBeenKickedBy'   : 'You have been kicked from %s by %s',
+		'youHaveBeenKickedBy'   : 'You have been kicked from %2$s by %1$s',
+		'youHaveBeenKicked'     : 'You have been kicked from %s',
 		'banActionLabel'		: 'Ban',
-		'youHaveBeenBannedBy'   : 'You have been banned from %s by %s',
+		'youHaveBeenBannedBy'   : 'You have been banned from %1$s by %2$s',
+		'youHaveBeenBanned'     : 'You have been banned from %s',
 
 		'privateActionLabel' : 'Private chat',
 		'ignoreActionLabel'  : 'Ignore',
@@ -4438,9 +4608,18 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Room Administration',
 		'tooltipUsercount'		: 'Room Occupants',
 
-		'raptorMessageBlocked' : 'Please do not spam. You have been blocked for a short-time.'
-	},
+		'enterRoomPassword' : 'Room "%s" is password protected.',
+		'enterRoomPasswordSubmit' : 'Join room',
+		'passwordEnteredInvalid' : 'Invalid password for room "%s".',
 
+		'nicknameConflict': 'Username already in use. Please choose another one.',
+
+		'errorMembersOnly': 'You can\'t join room "%s": Insufficient rights.',
+		'errorMaxOccupantsReached': 'You can\'t join room "%s": Too many occupants.',
+
+		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
+	},
+	
 	'de' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinden...',
@@ -4461,9 +4640,11 @@ Candy.View.Translation = {
 		'subject'				: 'Titel:',
 		'reasonWas'				: 'Begründung: %s.',
 		'kickActionLabel'		: 'Kick',
-		'youHaveBeenKickedBy'   : 'Du wurdest soeben aus dem Raum %s gekickt (%s)',
+		'youHaveBeenKickedBy'   : 'Du wurdest soeben aus dem Raum %1$s gekickt (%2$s)',
+		'youHaveBeenKicked'     : 'Du wurdest soeben aus dem Raum %s gekickt',
 		'banActionLabel'		: 'Ban',
-		'youHaveBeenBannedBy'   : 'Du wurdest soeben aus dem Raum %s verbannt (%s)',
+		'youHaveBeenBannedBy'   : 'Du wurdest soeben aus dem Raum %1$s verbannt (%2$s)',
+		'youHaveBeenBanned'     : 'Du wurdest soeben aus dem Raum %s verbannt',
 
 		'privateActionLabel' : 'Privater Chat',
 		'ignoreActionLabel'  : 'Ignorieren',
@@ -4493,8 +4674,18 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Raum Administration',
 		'tooltipUsercount'		: 'Anzahl Benutzer im Raum',
 
-		'raptorMessageBlocked' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
+		'enterRoomPassword' : 'Raum "%s" ist durch ein Passwort geschützt.',
+		'enterRoomPasswordSubmit' : 'Raum betreten',
+		'passwordEnteredInvalid' : 'Inkorrektes Passwort für Raum "%s".',
+
+		'nicknameConflict': 'Der Benutzername wird bereits verwendet. Bitte wähle einen anderen.',
+
+		'errorMembersOnly': 'Du kannst den Raum "%s" nicht betreten: Ungenügende Rechte.',
+		'errorMaxOccupantsReached': 'Du kannst den Raum "%s" nicht betreten: Benutzerlimit erreicht.',
+
+		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},
+	
 	'fr' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Connecter...',
@@ -4515,9 +4706,11 @@ Candy.View.Translation = {
 		'subject'				: 'Titre:',
 		'reasonWas'				: 'Justification: %s.',
 		'kickActionLabel'		: 'Kick',
-		'youHaveBeenKickedBy'   : 'Tu as été expulsé (%s)',
+		'youHaveBeenKickedBy'   : 'Tu as été expulsé de le salon %1$s (%2$s)',
+		'youHaveBeenKicked'     : 'Tu as été expulsé de le salon %s',
 		'banActionLabel'		: 'Ban',
-		'youHaveBeenBannedBy'   : 'Tu as été banni (%s)',
+		'youHaveBeenBannedBy'   : 'Tu as été banni de le salon %1$s (%2$s)',
+		'youHaveBeenBanned'     : 'Tu as été banni de le salon %s',
 
 		'privateActionLabel' : 'Chat privé',
 		'ignoreActionLabel'  : 'Ignorer',
@@ -4547,8 +4740,18 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Administrer le salon',
 		'tooltipUsercount'		: 'Nombre d\'utilisateurs dans le salon',
 
-		'raptorMessageBlocked' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
+		'enterRoomPassword' : 'Le salon "%s" est protégé par un mot de passe.',
+		'enterRoomPasswordSubmit' : 'Entrer dans le salon',
+		'passwordEnteredInvalid' : 'Le mot de passe four le salon "%s" est invalide.',
+
+		'nicknameConflict': 'Le nom d\'utilisateur est déjà utilisé. Choisi un autre.',
+
+		'errorMembersOnly': 'Tu ne peut pas entrer de le salon "%s": droits insuffisants.',
+		'errorMaxOccupantsReached': 'Tu ne peut pas entrer de le salon "%s": Limite d\'utilisateur atteint.',
+
+		'antiSpamMessage' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
 	},
+	
 	'nl' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinding maken...',
@@ -4569,9 +4772,11 @@ Candy.View.Translation = {
 		'subject'				: 'Onderwerp:',
 		'reasonWas'				: 'De reden was: %s.',
 		'kickActionLabel'		: 'Verwijderen',
-		'youHaveBeenKickedBy'   : 'Je bent verwijderd van %s door %s',
+		'youHaveBeenKickedBy'   : 'Je bent verwijderd van %1$s door %2$s',
+		'youHaveBeenKicked'     : 'Je bent verwijderd van %s',
 		'banActionLabel'		: 'Blokkeren',
-		'youHaveBeenBannedBy'   : 'Je bent geblokkeerd van %s door %s',
+		'youHaveBeenBannedBy'   : 'Je bent geblokkeerd van %1$s door %2$s',
+		'youHaveBeenBanned'     : 'Je bent geblokkeerd van %s',
 
 		'privateActionLabel' : 'Prive gesprek',
 		'ignoreActionLabel'  : 'Negeren',
@@ -4601,8 +4806,18 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Instellingen',
 		'tooltipUsercount'		: 'Gebruikers',
 
-		'raptorMessageBlocked' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
+		'enterRoomPassword' : 'De Chatroom "%s" is met een wachtwoord beveiligd.',
+		'enterRoomPasswordSubmit' : 'Ga naar Chatroom',
+		'passwordEnteredInvalid' : 'Het wachtwoord voor de Chatroom "%s" is onjuist.',
+
+		'nicknameConflict': 'De gebruikersnaam is reeds in gebruik. Probeer a.u.b. een andere gebruikersnaam.',
+
+		'errorMembersOnly': 'Je kunt niet deelnemen aan de Chatroom "%s": Je hebt onvoldoende rechten.',
+		'errorMaxOccupantsReached': 'Je kunt niet deelnemen aan de Chatroom "%s": Het maximum aantal gebruikers is bereikt.',
+
+		'antiSpamMessage' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
 	},
+	
 	'es': {
 		'status': 'Estado: %s',
 		'statusConnecting': 'Conectando...',
@@ -4623,9 +4838,11 @@ Candy.View.Translation = {
 		'subject'				: 'Asunto:',
 		'reasonWas'				: 'La razón fue: %s.',
 		'kickActionLabel'		: 'Expulsar',
-		'youHaveBeenKickedBy'   : 'Has sido expulsado de %s por %s',
+		'youHaveBeenKickedBy'   : 'Has sido expulsado de %1$s por %2$s',
+		'youHaveBeenKicked'     : 'Has sido expulsado de %s',
 		'banActionLabel'		: 'Prohibir',
-		'youHaveBeenBannedBy'   : 'Has sido expulsado permanentemente de %s por %s',
+		'youHaveBeenBannedBy'   : 'Has sido expulsado permanentemente de %1$s por %2$s',
+		'youHaveBeenBanned'     : 'Has sido expulsado permanentemente de %s',
 
 		'privateActionLabel' : 'Chat privado',
 		'ignoreActionLabel'  : 'Ignorar',
@@ -4655,6 +4872,145 @@ Candy.View.Translation = {
 		'tooltipAdministration'	: 'Administración de la sala',
 		'tooltipUsercount'		: 'Usuarios en la sala',
 
-		'raptorMessageBlocked' : 'Por favor, no hagas spam. Has sido bloqueado temporalmente.'
+		'enterRoomPassword' : 'La sala "%s" está protegida mediante contraseña.',
+		'enterRoomPasswordSubmit' : 'Unirse a la sala',
+		'passwordEnteredInvalid' : 'Contraseña incorrecta para la sala "%s".',
+
+		'nicknameConflict': 'El nombre de usuario ya está siendo utilizado. Por favor elija otro.',
+
+		'errorMembersOnly': 'No se puede unir a la sala "%s": no tiene privilegios suficientes.',
+		'errorMaxOccupantsReached': 'No se puede unir a la sala "%s": demasiados participantes.',
+
+		'antiSpamMessage' : 'Por favor, no hagas spam. Has sido bloqueado temporalmente.'
+	},
+
+	'cn': {
+		'status': '状态: %s',
+		'statusConnecting': '连接中...',
+		'statusConnected': '已连接',
+		'statusDisconnecting': '断开连接中...',
+		'statusDisconnected': '已断开连接',
+		'statusAuthfail': '认证失败',
+
+		'roomSubject': '主题:',
+		'messageSubmit': '发送',
+
+		'labelUsername': '用户名:',
+		'labelPassword': '密码:',
+		'loginSubmit': '登录',
+		'loginInvalid': '用户名不合法',
+
+		'reason': '原因:',
+		'subject': '主题:',
+		'reasonWas': '原因是: %s.',
+		'kickActionLabel': '踢除',
+		'youHaveBeenKickedBy': '你在 %1$s 被管理者 %2$s 请出房间',
+		'banActionLabel': '禁言',
+		'youHaveBeenBannedBy': '你在 %1$s 被管理者 %2$s 禁言',
+
+		'privateActionLabel': '单独对话',
+		'ignoreActionLabel': '忽略',
+		'unignoreActionLabel': '不忽略',
+
+		'setSubjectActionLabel': '变更主题',
+
+		'administratorMessageSubject': '管理员',
+
+		'userJoinedRoom': '%s 加入房间',
+		'userLeftRoom': '%s 离开房间',
+		'userHasBeenKickedFromRoom': '%s 被请出这个房间',
+		'userHasBeenBannedFromRoom': '%s 被管理者禁言',
+
+		'presenceUnknownWarningSubject': '注意:',
+		'presenceUnknownWarning': '这个会员可能已经下线，不能追踪到他的连接信息',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole': '管理',
+		'tooltipIgnored': '你忽略了这个会员',
+		'tooltipEmoticons': '表情',
+		'tooltipSound': '新消息发音',
+		'tooltipAutoscroll': '滚动条',
+		'tooltipStatusmessage': '禁用状态消息',
+		'tooltipAdministration': '房间管理',
+		'tooltipUsercount': '房间占有者',
+
+		'enterRoomPassword': '登录房间 "%s" 需要密码.',
+		'enterRoomPasswordSubmit': '加入房间',
+		'passwordEnteredInvalid': '登录房间 "%s" 的密码不正确',
+
+		'nicknameConflict': '用户名已经存在，请另选一个',
+
+		'errorMembersOnly': '您的权限不够，不能登录房间 "%s" ',
+		'errorMaxOccupantsReached': '房间 "%s" 的人数已达上限，您不能登录',
+
+		'antiSpamMessage': '因为您在短时间内发送过多的消息 服务器要阻止您一小段时间。'
+	},
+	
+	'ja' : {
+		'status'        : 'ステータス: %s',
+		'statusConnecting'  : '接続中…',
+		'statusConnected'   : '接続されました',
+		'statusDisconnecting'   : 'ディスコネクト中…',
+		'statusDisconnected'    : 'ディスコネクトされました',
+		'statusAuthfail'    : '認証に失敗しました',
+
+		'roomSubject'       : 'トピック：',
+		'messageSubmit'     : '送信',
+
+		'labelUsername'     : 'ユーザーネーム：',
+		'labelPassword'     : 'パスワード：',
+		'loginSubmit'       : 'ログイン',
+		'loginInvalid'      : 'ユーザーネームが正しくありません',
+
+		'reason'        : '理由：',
+		'subject'       : 'トピック：',
+		'reasonWas'     : '理由: %s。',
+		'kickActionLabel'   : 'キック',
+		'youHaveBeenKickedBy'   : 'あなたは%2$sにより%1$sからキックされました。',
+		'youHaveBeenKicked'     : 'あなたは%sからキックされました。',
+		'banActionLabel'    : 'アカウントバン',
+		'youHaveBeenBannedBy'   : 'あなたは%2$sにより%1$sからアカウントバンされました。',
+		'youHaveBeenBanned'     : 'あなたは%sからアカウントバンされました。',
+
+		'privateActionLabel'    : 'プライベートメッセージ',
+		'ignoreActionLabel' : '無視する',
+		'unignoreActionLabel'   : '無視をやめる',
+
+		'setSubjectActionLabel'     : 'トピックを変える',
+
+		'administratorMessageSubject'   : '管理者',
+
+		'userJoinedRoom'        : '%sは入室しました。',
+		'userLeftRoom'          : '%sは退室しました。',
+		'userHasBeenKickedFromRoom' : '%sは部屋からキックされました。',
+		'userHasBeenBannedFromRoom' : '%sは部屋からアカウントバンされました。',
+
+		'presenceUnknownWarningSubject' : '忠告：',
+		'presenceUnknownWarning'    : 'このユーザーのステータスは不明です。',
+
+		'dateFormat'        : 'dd.mm.yyyy',
+		'timeFormat'        : 'HH:MM:ss',
+
+		'tooltipRole'       : 'モデレーター',
+		'tooltipIgnored'    : 'このユーザーを無視設定にしている',
+		'tooltipEmoticons'  : '絵文字',
+		'tooltipSound'      : '新しいメッセージが届くたびに音を鳴らす',
+		'tooltipAutoscroll' : 'オートスクロール',
+		'tooltipStatusmessage'  : 'ステータスメッセージを表示',
+		'tooltipAdministration' : '部屋の管理',
+		'tooltipUsercount'  : 'この部屋の参加者の数',
+
+		'enterRoomPassword'     : '"%s"の部屋に入るにはパスワードが必要です。',
+		'enterRoomPasswordSubmit'   : '部屋に入る',
+		'passwordEnteredInvalid'    : '"%s"のパスワードと異なるパスワードを入力しました。',
+
+		'nicknameConflict'  : 'このユーザーネームはすでに利用されているため、別のユーザーネームを選んでください。',
+
+		'errorMembersOnly'      : '"%s"の部屋に入ることができません: 利用権限を満たしていません。',
+		'errorMaxOccupantsReached'  : '"%s"の部屋に入ることができません: 参加者の数はすでに上限に達しました。',
+
+		'antiSpamMessage'   : 'スパムなどの行為はやめてください。あなたは一時的にブロックされました。'
 	}
 };
