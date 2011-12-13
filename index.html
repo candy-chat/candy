@@ -14,11 +14,11 @@
 	<article>
 		<header>
 			<div id="download">
-				<a href="http://github.com/amiadogroup/candy/tarball/master" class="button">
+				<a href="http://github.com/candy-chat/candy/tarball/master" class="button">
 					Download candy.tar.gz
 					<small>v1.0.9 &mdash; <time datetime="2011-11-30">November 30th, 2011</time></small>
 				</a>
-				<span>Released under the <a href="http://github.com/amiadogroup/candy/blob/master/LICENSE">MIT Licence</a></span>
+				<span>Released under the <a href="http://github.com/candy-chat/candy/blob/master/LICENSE">MIT Licence</a></span>
 			</div>
 			<h1>Candy</h1>
 		 	<em>&mdash; a JavaScript-based multi-user chat client</em>
@@ -93,21 +93,21 @@
 			<h2>Setup &amp; Usage</h2>
 			<h3>Prerequisites</h3>
 			<p>
-				Before you get started you need access to a <strong>Jabber server</strong> with HTTP-binding enabled. We provide guides for <a href="http://www.ejabberd.im/">ejabberd</a> and <a href="http://www.igniterealtime.org/projects/openfire/index.jsp">Openfire</a> to help you setting up and configuring your own server within minutes: <a href="https://github.com/amiadogroup/candy/wiki/Installing-a-Jabber-server">Installing a Jabber server</a>.
+				Before you get started you need access to a <strong>Jabber server</strong> with HTTP-binding enabled. We provide guides for <a href="http://www.ejabberd.im/">ejabberd</a> and <a href="http://www.igniterealtime.org/projects/openfire/index.jsp">Openfire</a> to help you setting up and configuring your own server within minutes: <a href="https://github.com/candy-chat/candy/wiki/Installing-a-Jabber-server">Installing a Jabber server</a>.
 			</p>
 			<p>
 				Please assure that you use the most <strong>recent jQuery version</strong>. Candy has been tested with jQuery 1.6.1.
 			</p>
 			<p>
-				To run the example you'll also need an <strong>HTTP server with proxy capabilities</strong> because it's not allowed to make cross-domain AJAX requests.<br />Candy is delivered with a sample <code>.htaccess</code> file for <a href="http://httpd.apache.org/">Apache HTTP server</a>. Please note that you need to have to following Apache modules enabled: mod_rewrite, mod_proxy and mod_proxy_http.	For more information about the configuration of different web servers take a look at the following guide: <a href="https://github.com/amiadogroup/candy/wiki/HTTP-Proxy-Configuration">HTTP Proxy Configuration</a>.
+				To run the example you'll also need an <strong>HTTP server with proxy capabilities</strong> because it's not allowed to make cross-domain AJAX requests.<br />Candy is delivered with a sample <code>.htaccess</code> file for <a href="http://httpd.apache.org/">Apache HTTP server</a>. Please note that you need to have to following Apache modules enabled: mod_rewrite, mod_proxy and mod_proxy_http.	For more information about the configuration of different web servers take a look at the following guide: <a href="https://github.com/candy-chat/candy/wiki/HTTP-Proxy-Configuration">HTTP Proxy Configuration</a>.
 			</p>
 			<h3>Setup</h3>
 			<p>
-				<a href="http://github.com/amiadogroup/candy/tarball/master" class="download-arrow">Download Candy</a> and extract it in your web directory.<br />
+				<a href="http://github.com/candy-chat/candy/tarball/master" class="download-arrow">Download Candy</a> and extract it in your web directory.<br />
 			</p>
 			<h4>Getting Started</h4>
 			<p>
-				If you're using Apache copy <code>example/htaccess</code> to <code>example/.htaccess</code> and change the rewrite rule to point to your HTTP-Bind service. For other web servers check out the <a href="https://github.com/amiadogroup/candy/wiki/HTTP-Proxy-Configuration">HTTP Proxy Configuration</a> guide.
+				If you're using Apache copy <code>example/htaccess</code> to <code>example/.htaccess</code> and change the rewrite rule to point to your HTTP-Bind service. For other web servers check out the <a href="https://github.com/candy-chat/candy/wiki/HTTP-Proxy-Configuration">HTTP Proxy Configuration</a> guide.
 			</p>
 			<p>Sample .htaccess file, assuming your Jabber host is running the HTTP-Bind service at <code>yourhost.com/http-bind/</code> on port 5280:</p>
 			<code>AddDefaultCharset UTF-8
@@ -122,7 +122,7 @@ RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
 			</p>
 			<h3 id="configuration">Configuration</h3>
 			<p>
-				Configuring Candy is pretty simple. Take a look at the <a href="https://github.com/amiadogroup/candy/blob/master/example/index.html">example/index.html</a> file to get an idea how to load the libraries and to initialize Candy.
+				Configuring Candy is pretty simple. Take a look at the <a href="https://github.com/candy-chat/candy/blob/master/example/index.html">example/index.html</a> file to get an idea how to load the libraries and to initialize Candy.
 			</p>
 			<p>
 				 You can configure Candy by passing an object containing following options to <code>Candy.init</code>:
@@ -232,7 +232,7 @@ RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
 			<h3>Getting Help</h3>
 			<ul>
 				<li>
-					Check out the official <a href="http://github.com/amiadogroup/candy/wiki">wiki pages</a> and <a href="http://github.com/amiadogroup/candy/issues">issue tracker</a> on GitHub.
+					Check out the official <a href="http://github.com/candy-chat/candy/wiki">wiki pages</a> and <a href="http://github.com/candy-chat/candy/issues">issue tracker</a> on GitHub.
 				</li>
 				<li>
 					There's also a <a href="http://groups.google.com/group/candy-chat">mailing list</a> on Google Groups.
@@ -262,10 +262,10 @@ RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
 			</p>
 			<h3>Plugins</h3>
 			<p>
-				There's an <mark>official plugin repository</mark> called <a href="http://github.com/amiadogroup/candy-plugins">candy-plugins</a>. We would like to see the number of plugins grow. Just fork it, write your own plugin and push it back into the main respository.
+				There's an <mark>official plugin repository</mark> called <a href="http://github.com/candy-chat/candy-plugins">candy-plugins</a>. We would like to see the number of plugins grow. Just fork it, write your own plugin and push it back into the main respository.
 			</p>
 			<p>
-				<a href="http://github.com/amiadogroup/candy-plugins/tarball/master" class="download-arrow">Download Candy Plugins</a> and extract it in your web directory.
+				<a href="http://github.com/candy-chat/candy-plugins/tarball/master" class="download-arrow">Download Candy Plugins</a> and extract it in your web directory.
 			</p>
 			<h4>The <i>Colors</i> Plugin &mdash; An Example</h4>
 			<p>
@@ -292,14 +292,14 @@ Candy.Core.connect();</code>
 			</p>
 			<h3>Event Hooks</h3>
 			<p>
-				Candy provides easy accessible hooks that will be called before or after a specific event happens. Just overwrite the default handlers in order to extend the basic functionality with your custom code. <a href="http://amiadogroup.github.com/candy/docs/files/candy-bundle-js.html#Candy.View.Event">All available event hooks are listed in the API documentation.</a>
+				Candy provides easy accessible hooks that will be called before or after a specific event happens. Just overwrite the default handlers in order to extend the basic functionality with your custom code. <a href="http://candy-chat.github.com/candy/docs/files/candy-bundle-js.html#Candy.View.Event">All available event hooks are listed in the API documentation.</a>
 			</p>
 		</section>
 
 		<section id="api">
 			<h2>API Documentation</h2>
 			<p>
-				<a href="http://amiadogroup.github.com/candy/docs/">The API documentation of the latest version can be found here.</a>
+				<a href="http://candy-chat.github.com/candy/docs/">The API documentation of the latest version can be found here.</a>
 			</p>
 		</section>
 
@@ -357,7 +357,7 @@ Candy.Core.connect();</code>
 		</section>
 	</article>
 
-	<a href="http://github.com/amiadogroup/candy"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/e6bef7a091f5f3138b8cd40bc3e114258dd68ddf/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub"></a>
+	<a href="http://github.com/candy-chat/candy"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/e6bef7a091f5f3138b8cd40bc3e114258dd68ddf/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub"></a>
 
 </body>
 </html>
