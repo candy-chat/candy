@@ -3768,7 +3768,7 @@ Candy.View.Pane = (function(self, $) {
 			if(self.Window.autoscroll) {
 				var options = Candy.View.getOptions().messages;
 				if(self.Chat.rooms[roomJid].messageCount > options.limit) {
-					self.Room.getPane(roomJid, '.message-pane').children().slice(0, options.remove*2).remove();
+					self.Room.getPane(roomJid, '.message-pane').children().slice(0, options.remove).remove();
 					self.Chat.rooms[roomJid].messageCount -= options.remove;
 				}
 			}
@@ -4282,8 +4282,8 @@ Candy.View.Template = (function(self){
 		tabs: '<ul id="chat-tabs"></ul>',
 		tab: '<li class="roomtype-{{roomType}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}"><a href="#" class="label">{{#privateUserChat}}@{{/privateUserChat}}{{name}}</a><a href="#" class="transition"></a><a href="#" class="close">\u00D7</a><small class="unread"></small></li>',
 		modal: '<div id="chat-modal"><a id="admin-message-cancel" class="close" href="#">\u00D7</a><span id="chat-modal-body"></span><img src="{{resourcesPath}}img/modal-spinner.gif" id="chat-modal-spinner" /></div><div id="chat-modal-overlay"></div>',
-		adminMessage: '<dt>{{time}}</dt><dd class="adminmessage"><span class="label">{{sender}}</span>{{subject}} {{message}}</dd>',
-		infoMessage: '<dt>{{time}}</dt><dd class="infomessage">{{subject}} {{message}}</dd>',
+		adminMessage: '<li><small>{{time}}</small><div class="adminmessage"><span class="label">{{sender}}</span>{{subject}} {{message}}</div></li>',
+		infoMessage: '<li><small>{{time}}</small><div class="infomessage">{{subject}} {{message}}</div></li>',
 		toolbar: '<ul id="chat-toolbar"><li id="emoticons-icon" data-tooltip="{{tooltipEmoticons}}"></li><li id="chat-sound-control" class="checked" data-tooltip="{{tooltipSound}}">{{> soundcontrol}}</li><li id="chat-autoscroll-control" class="checked" data-tooltip="{{tooltipAutoscroll}}"></li><li class="checked" id="chat-statusmessage-control" data-tooltip="{{tooltipStatusmessage}}"></li><li class="context" data-tooltip="{{tooltipAdministration}}"></li><li class="usercount" data-tooltip="{{tooltipUsercount}}"><span id="chat-usercount"></span></li></ul>',
 		soundcontrol:	'<script type="text/javascript">var audioplayerListener = new Object(); audioplayerListener.onInit = function() { };'
 						+ '</script><object id="chat-sound-player" type="application/x-shockwave-flash" data="{{resourcesPath}}audioplayer.swf"'
@@ -4301,7 +4301,7 @@ Candy.View.Template = (function(self){
 
 	self.Room = {
 		pane: '<div class="room-pane roomtype-{{roomType}}" id="chat-room-{{roomId}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">{{> roster}}{{> messages}}{{> form}}</div>',
-		subject: '<dt>{{time}}</dt><dd class="subject"><span class="label">{{roomName}}</span>{{_roomSubject}} {{subject}}</dd>',
+		subject: '<li><small>{{time}}</small><div class="subject"><span class="label">{{roomName}}</span>{{_roomSubject}} {{subject}}</div></li>',
 		form: '<div class="message-form-wrapper"></div><form method="post" class="message-form"><input name="message" class="field" type="text" autocomplete="off" maxlength="1000" /><input type="submit" class="submit" name="submit" value="{{_messageSubmit}}" /></form>'
 	};
 
@@ -4311,8 +4311,8 @@ Candy.View.Template = (function(self){
 	};
 
 	self.Message = {
-		pane: '<div class="message-pane-wrapper"><dl class="message-pane"></dl></div>',
-		item: '<dt>{{time}}</dt><dd><span class="label"><a href="#" class="name">{{displayName}}</a></span>{{{message}}}</dd>'
+		pane: '<div class="message-pane-wrapper"><ul class="message-pane"></ul></div>',
+		item: '<li><small>{{time}}</small><div><span class="label"><a href="#" class="name">{{displayName}}</a></span>{{{message}}}</div></li>'
 	};
 
 	self.Login = {

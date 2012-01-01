@@ -1132,7 +1132,7 @@ Candy.View.Pane = (function(self, $) {
 			if(self.Window.autoscroll) {
 				var options = Candy.View.getOptions().messages;
 				if(self.Chat.rooms[roomJid].messageCount > options.limit) {
-					self.Room.getPane(roomJid, '.message-pane').children().slice(0, options.remove*2).remove();
+					self.Room.getPane(roomJid, '.message-pane').children().slice(0, options.remove).remove();
 					self.Chat.rooms[roomJid].messageCount -= options.remove;
 				}
 			}
