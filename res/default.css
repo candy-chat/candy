@@ -72,7 +72,7 @@ ul {
 	background: url(img/tab-transitions.png) repeat-y left;
 }
 
-#chat-tabs .close {
+#chat-tabs a.close {
 	background-color: transparent;
 	position: absolute;
 	top: 0;
@@ -116,9 +116,10 @@ ul {
 	width: 200px;
 	height: 24px;
 	padding-top: 7px;
-	border-top: 1px solid black;
 	background-color: #444;
 	display: none;
+	border-top: 1px solid black;
+	box-shadow: 0 1px 0 0 #555 inset;
 }
 
 #chat-toolbar li {
@@ -199,6 +200,8 @@ ul {
 	width: 200px;
 	margin: 30px 0 32px 0;
 	background-color: #333;
+	border-top: 1px solid black;
+	box-shadow: inset 0 1px 0 0 #444;
 }
 
 .roster-pane .user {
@@ -214,11 +217,6 @@ ul {
 	box-shadow: 0 1px 0 0 #444;
 }
 
-.roster-pane:first-child {
-	border-top: 1px solid black;
-	box-shadow: inset 0 1px 0 0 #444;
-}
-	
 .roster-pane .user:hover {
 	background-color: #222;
 }
@@ -241,6 +239,7 @@ ul {
 	width: 110px;
 	overflow: hidden;
 	white-space: nowrap;
+	text-shadow: 1px 1px black;
 }
 
 .roster-pane li {
@@ -312,18 +311,30 @@ ul {
 }
 
 .message-pane li {
+	cursor: default;
 	border-bottom: 1px solid #ccc;
 	box-shadow: 0 1px 0 0 white;
 }
 
 .message-pane small {
-	line-height: 28px;
-	display: block;
+	display: none;
 	width: 55px;
-	float: left;
 	color: #888;
 	font-size: 10px;
-	text-align: right;
+	position: absolute;
+	background-color: #f7f7f7;
+	text-align: center;
+	line-height: 20px;
+	margin: 4px 0;
+	right: 10px;
+}
+
+.message-pane li:hover {
+	background-color: #f7f7f7;
+}
+
+.message-pane li:hover small {
+	display: block;
 }
 
 .message-pane li>div {
@@ -338,13 +349,22 @@ ul {
 	font-weight: bold;
 	white-space: nowrap;
 	display: block;
-	margin-left: -125px;
-	width: 120px;
+	margin-left: -130px;
+	width: 110px;
 	float: left;
 	overflow: hidden;
+	text-align: right;
+	color: black;
 }
 
-.message-pane .subject {
+.message-pane .spacer {
+	color: #aaa;
+	font-weight: bold;
+	margin-left: -14px;
+	float: left;
+}
+
+.message-pane .subject, .message-pane .subject .label {
 	color: #a00;
 	font-weight: bold;
 }
@@ -357,14 +377,13 @@ ul {
 .message-pane .infomessage {
 	color: #888;
 	font-style: italic;
-	padding-left: 5px;
 }
 
 .message-pane div>a {
 	color: #a00;
 }
 
-.message-pane div>a:hover {
+.message-pane a:hover {
 	text-decoration: underline;
 }
 
