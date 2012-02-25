@@ -53,7 +53,7 @@ ul {
 #chat-tabs a {
 	padding: 4px 50px 4px 10px;
 	display: inline-block;
-	color: #bbb;
+	color: #ccc;
 	height: 20px;
 }
 
@@ -182,9 +182,10 @@ ul {
 .usercount span {
 	display: inline-block;
 	padding: 1px 3px;
-	background-color: #ccc;
+	background-color: #666;
 	font-weight: bold;
 	border-radius: 3px;
+	color: #ccc;
 }
 
 .room-pane {
@@ -286,7 +287,7 @@ ul {
 }
 
 .roster-pane li.context:hover {
-	background-color: #ccc;
+	background-color: #888;
 	border-radius: 4px;
 }
 
@@ -303,7 +304,7 @@ ul {
 	margin: 30px 200px 32px 0;
 	background-color: #eee;
 	font-size: 13px;
-	padding: 0 10px 10px 10px;
+	padding: 0 5px 10px 5px;
 }
 
 .message-pane {
@@ -318,7 +319,6 @@ ul {
 
 .message-pane small {
 	display: none;
-	width: 55px;
 	color: #a00;
 	font-size: 10px;
 	position: absolute;
@@ -326,7 +326,8 @@ ul {
 	text-align: center;
 	line-height: 20px;
 	margin: 4px 0;
-	right: 10px;
+	padding: 0 5px;
+	right: 5px;
 }
 
 .message-pane li:hover {
@@ -537,17 +538,19 @@ ul {
 	background: url(img/modal-bg.png);
 	width: 300px;
 	padding: 20px 5px;
-	color: white;
+	color: #ccc;
 	font-size: 16px;
 	position: fixed;
 	left: 50%;
 	top: 50%;
-	margin-left: -155px;
+	margin-left: -160px;
 	margin-top: -45px;
 	text-align: center;
 	display: none;
 	z-index: 100;
+	border: 5px solid #666;
 	border-radius: 5px;
+	box-shadow: 0 0 5px black;
 }
 
 #chat-modal-overlay {
@@ -588,6 +591,14 @@ ul {
 	width: 150px;
 }
 
+#chat-modal input[type='text'] {
+	background-color: #333;
+	border: 0 none;
+	padding: 4px;
+	font-size: 14px;
+	color: #ddd;
+}
+
 #chat-modal label {
 	 text-align: right;
 	 padding-right: 1em;
@@ -611,7 +622,7 @@ ul {
 	display: none;
 	padding: 0 5px;
 	margin: -17px 3px 0 0;
-	color: white;
+	color: #aaa;
 	border-radius: 3px;
 }
 
