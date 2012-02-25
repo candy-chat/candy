@@ -397,8 +397,10 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			onPlaySound: function() {
 				var chatSoundPlayer = document.getElementById('chat-sound-player');
-				chatSoundPlayer.SetVariable('method:stop', '');
-				chatSoundPlayer.SetVariable('method:play', '');
+				try {
+					chatSoundPlayer.SetVariable('method:stop', '');
+					chatSoundPlayer.SetVariable('method:play', '');
+				} catch (e) {}
 			},
 
 			/** Function: onSoundControlClick
