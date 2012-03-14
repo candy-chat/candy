@@ -427,7 +427,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				// Error messsage
 				} else if(msg.attr('type') === 'error') {
 					var error = msg.children('error');
-					if(error.attr('code') === '500' && error.children('text').length > 0) {
+					if(error.children('text').length > 0) {
 						roomJid = msg.attr('from');
 						message = { type: 'info', body: error.children('text').text() };
 					}
