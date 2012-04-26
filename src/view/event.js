@@ -12,6 +12,9 @@
 /** Class: Candy.View.Event
  * Empty hooks to capture events and inject custom code.
  *
+ * Deprecated:
+ *   Don't use this anymore. Bind on the triggered events on Candy.View.*
+ *
  * Parameters:
  *   (Candy.View.Event) self - itself
  *   (jQuery) $ - jQuery

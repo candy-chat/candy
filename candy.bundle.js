@@ -451,11 +451,12 @@ Candy.View = (function(self, $) {
 		 * Register observers. Candy core will now notify the View on changes.
 		 */
 		_registerObservers = function() {
-			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.CHAT, self.Observer.Chat);
-			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.PRESENCE, self.Observer.Presence);
-			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.PRESENCE_ERROR, self.Observer.PresenceError);
-			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.MESSAGE, self.Observer.Message);
-			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.LOGIN, self.Observer.Login);
+		    $(Candy.Core.Event).on('candy:core.chat.connection', self.Observer.Chat.Connection);
+		    $(Candy.Core.Event).on('candy:core.chat.message', self.Observer.Chat.Message);
+		    $(Candy.Core.Event).on('candy:core.login', self.Observer.Login);
+		    $(Candy.Core.Event).on('candy:core.presence', self.Observer.Presence.update);
+		    $(Candy.Core.Event).on('candy:core.presence.error', self.Observer.PresenceError);
+		    $(Candy.Core.Event).on('candy:core.message', self.Observer.Message);
 		},
 
 		/** PrivateFunction: _registerWindowHandlers
@@ -1039,72 +1040,6 @@ Candy.Util = (function(self, $){
 
 	return self;
 }(Candy.Util || {}, jQuery));
-
-
-/** Class: Candy.Util.Observable
- * A class can be extended with the observable to be able to notify observers
- */
-Candy.Util.Observable = (function(self) {
-	/** PrivateObject: _observers
-	 * List of observers
-	 */
-	var _observers = {};
-
-	/** Function: addObserver
-	 * Add an observer to the observer list
-	 *
-	 * Parameters:
-	 *   (String) key - The key the observer listens to
-	 *   (Callback) obj - The observer callback
-	 */
-	self.addObserver = function(key, obj) {
-		if (_observers[key] === undefined) {
-			_observers[key] = [];
-		}
-		_observers[key].push(obj);
-	};
-
-	/** Function: deleteObserver
-	 * Delete observer from list
-	 *
-	 * Parameters:
-	 *   (String) key - Key in which the observer lies
-	 *   (Callback) obj - The observer callback to be deleted
-	 */
-	self.deleteObserver = function(key, obj) {
-		delete _observers[key][obj];
-	};
-
-	/** Function: clearObservers
-	 * Deletes all observers in list
-	 *
-	 * Parameters:
-	 *   (String) key - If defined, remove observers of this key, otherwise remove all including all keys.
-	 */
-	self.clearObservers = function(key) {
-		if (key !== undefined) {
-			_observers[key] = [];
-		} else {
-			_observers = {};
-		}
-	};
-
-	/** Function: notifyObservers
-	 * Notify all of its observers of a certain event.
-	 *
-	 * Parameters:
-	 *   (String) key - Key to notify
-	 *   (Object) arg - An argument passed to the update-method of the observers
-	 */
-	self.notifyObservers = function(key, arg) {
-		var observer = _observers[key], i;
-		for(i = observer.length-1; i >= 0; i--) {
-			observer[i].update(self, arg);
-		}
-	};
-
-	return self;
-}(Candy.Util.Observable || {}));
 /** File: action.js
  * Candy - Chats are not dead yet.
  *
@@ -1736,6 +1671,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
+ *   (c) 2012 Michael Weibel & Patrick Stadler. All rights reserved
  */
 
 /** Class: Candy.Core.Event
@@ -1745,35 +1681,8 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
  *   (Candy.Core.Event) self - itself
  *   (Strophe) Strophe - Strophe
  *   (jQuery) $ - jQuery
- *   (Candy.Util.Observable) observable - Observable to mixin
  */
-Candy.Core.Event = (function(self, Strophe, $, observable) {
-	/**
-	 * Mixin observable
-	 */
-	var i;
-	for (i in observable) {
-		if (observable.hasOwnProperty(i)) {
-			self[i] = observable[i];
-		}
-	}
-
-	/** Enum: KEYS
-	 * Observer keys
-	 *
-	 * CHAT - Chat events
-	 * PRESENCE - Presence events
-	 * MESSAGE - Message events
-	 * LOGIN - Login event
-	 */
-	self.KEYS = {
-		CHAT: 1,
-		PRESENCE: 2,
-		MESSAGE: 3,
-		LOGIN: 4,
-		PRESENCE_ERROR: 5
-	};
-
+Candy.Core.Event = (function(self, Strophe, $) {
 	/** Class: Candy.Core.Event.Strophe
 	 * Strophe-related events
 	 */
@@ -1827,7 +1736,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					break;
 			}
 
-			self.notifyObservers(self.KEYS.CHAT, { type: 'connection', status: status } );
+			$(self).triggerHandler('candy:core.chat.connection', { status: status } );
 		}
 	};
 
@@ -1838,7 +1747,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 	 *   (String) presetJid - Preset user JID
 	 */
 	self.Login = function(presetJid) {
-		self.notifyObservers(self.KEYS.LOGIN, { presetJid: presetJid } );
+	    $(self).triggerHandler('candy:core.login', { presetJid: presetJid } );
 	};
 
 	/** Class: Candy.Core.Event.Jabber
@@ -1969,10 +1878,10 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				self.Jabber.Room.Message(msg);
 			// Admin message
 			} else if(!toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
-				self.notifyObservers(self.KEYS.CHAT, { type: (type || 'message'), message: msg.children('body').text() });
+				$(self).triggerHandler('candy:core.chat.message', { type: (type || 'message'), message: msg.children('body').text() });
 			// Server Message
 			} else if(toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
-				self.notifyObservers(self.KEYS.CHAT, { type: (type || 'message'), subject: msg.children('subject').text(), message: msg.children('body').text() });
+				$(self).triggerHandler('candy:core.chat.message', { type: (type || 'message'), subject: msg.children('subject').text(), message: msg.children('body').text() });
 			}
 			return true;
 		},
@@ -2021,7 +1930,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 
 				var user = new Candy.Core.ChatUser(from, Strophe.getResourceFromJid(from), item.attr('affiliation'), item.attr('role'));
 
-				self.notifyObservers(self.KEYS.PRESENCE, { 'roomJid': roomJid, 'roomName': roomName, 'type': type, 'reason': reason, 'actor': actor, 'user': user } );
+				$(self).triggerHandler('candy:core.presence', { 'roomJid': roomJid, 'roomName': roomName, 'type': type, 'reason': reason, 'actor': actor, 'user': user } );
 				return true;
 			},
 
@@ -2110,7 +2019,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					roster.remove(from);
 				}
 
-				self.notifyObservers(self.KEYS.PRESENCE, {'roomJid': roomJid, 'roomName': room.getName(), 'user': user, 'action': action, 'currentUser': Candy.Core.getUser() } );
+				$(self).triggerHandler('candy:core.presence', {'roomJid': roomJid, 'roomName': room.getName(), 'user': user, 'action': action, 'currentUser': Candy.Core.getUser() } );
 				return true;
 			},
 			
@@ -2133,7 +2042,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				// Presence error: Remove room from array to prevent error when disconnecting
 				delete room;
 				
-				self.notifyObservers(self.KEYS.PRESENCE_ERROR, {'msg' : msg, 'type': msg.children('error').children()[0].tagName.toLowerCase(), 'roomJid': roomJid, 'roomName': roomName});
+				$(self).triggerHandler('candy:core.presence.error', {'msg' : msg, 'type': msg.children('error').children()[0].tagName.toLowerCase(), 'roomJid': roomJid, 'roomName': roomName});
 			},
 
 			/** Function: Message
@@ -2193,14 +2102,14 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				var delay = msg.children('delay') ? msg.children('delay') : msg.children('x[xmlns="' + Strophe.NS.DELAY +'"]'),
 					timestamp = delay !== undefined ? delay.attr('stamp') : null;
 
-				self.notifyObservers(self.KEYS.MESSAGE, {roomJid: roomJid, message: message, timestamp: timestamp } );
+				$(self).triggerHandler('candy:core.message', {roomJid: roomJid, message: message, timestamp: timestamp } );
 				return true;
 			}
 		}
 	};
 
 	return self;
-}(Candy.Core.Event || {}, Strophe, jQuery, Candy.Util.Observable));
+}(Candy.Core.Event || {}, Strophe, jQuery));
 /** File: event.js
  * Candy - Chats are not dead yet.
  *
@@ -2214,6 +2123,9 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 
 /** Class: Candy.View.Event
  * Empty hooks to capture events and inject custom code.
+ *
+ * Deprecated:
+ *   Don't use this anymore. Bind on the triggered events on Candy.View.*
  *
  * Parameters:
  *   (Candy.View.Event) self - itself
@@ -2418,60 +2330,57 @@ Candy.View.Observer = (function(self, $) {
 	 * Chat events
 	 */
 	self.Chat = {
-		/** Function: update
+		/** Function: Connection
 		 * The update method gets called whenever an event to which "Chat" is subscribed.
 		 *
-		 * Currently listens for connection status updates & admin messages / motd
+		 * Currently listens for connection status updates
 		 *
 		 * Parameters:
-		 *   (Candy.Core.Event) obj - Candy core event object
-		 *   (Object) args - {type, connection or message & subject}
+		 *   (jQuery.Event) event - jQuery Event object
+		 *   (Object) args - {status (Strophe.Status.*)}
 		 */
-		update: function(obj, args) {
-			if(args.type === 'connection') {
-				switch(args.status) {
-					case Strophe.Status.CONNECTING:
-					case Strophe.Status.AUTHENTICATING:
-						Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnecting'), false, true);
-						break;
+		Connection: function(event, args) {
+			switch(args.status) {
+				case Strophe.Status.CONNECTING:
+				case Strophe.Status.AUTHENTICATING:
+					Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnecting'), false, true);
+					break;
+				case Strophe.Status.ATTACHED:
+				case Strophe.Status.CONNECTED:
+					Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnected'));
+					Candy.View.Pane.Chat.Modal.hide();
+					break;
 
-					case Strophe.Status.ATTACHED:
-					case Strophe.Status.CONNECTED:
-						Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnected'));
-						Candy.View.Pane.Chat.Modal.hide();
+				case Strophe.Status.DISCONNECTING:
+					Candy.View.Pane.Chat.Modal.show($.i18n._('statusDisconnecting'), false, true);
+					break;
 
-						/* new event system call */
-						$(Candy.View.Observer.Chat).triggerHandler('connect');
-						break;
+				case Strophe.Status.DISCONNECTED:
+					var presetJid = Candy.Core.isAnonymousConnection() ? Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : null;
+					Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'), presetJid);
+					Candy.View.Event.Chat.onDisconnect();
+					break;
 
-					case Strophe.Status.DISCONNECTING:
-						Candy.View.Pane.Chat.Modal.show($.i18n._('statusDisconnecting'), false, true);
-						break;
+				case Strophe.Status.AUTHFAIL:
+					Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusAuthfail'));
+					Candy.View.Event.Chat.onAuthfail();
+					break;
 
-					case Strophe.Status.DISCONNECTED:
-						var presetJid = Candy.Core.isAnonymousConnection() ? Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : null;
-						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'), presetJid);
-						Candy.View.Event.Chat.onDisconnect();
-
-						/* new event system call */
-						$(Candy.View.Observer.Chat).triggerHandler('disconnect');
-
-						break;
-
-					case Strophe.Status.AUTHFAIL:
-						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusAuthfail'));
-						Candy.View.Event.Chat.onAuthfail();
-
-						/* new event system call */
-						$(Candy.View.Observer.Chat).triggerHandler('authfail');
-
-						break;
-
-					default:
-						Candy.View.Pane.Chat.Modal.show($.i18n._('status', args.status));
-						break;
-				}
-			} else if(args.type === 'message') {
+				default:
+					Candy.View.Pane.Chat.Modal.show($.i18n._('status', args.status));
+					break;
+			}
+		},
+		
+		/** Function: Message
+		 * Dispatches admin and info messages
+		 *
+		 * Parameters:
+		 *   (jQuery.Event) event - jQuery Event object
+		 *   (Object) args - {type (message/chat/groupchat), subject (if type = message), message}
+		 */
+		Message: function(event, args) {
+			if(args.type === 'message') {
 				Candy.View.Pane.Chat.adminMessage((args.subject || ''), args.message);
 			} else if(args.type === 'chat' || args.type === 'groupchat') {
 				// use onInfoMessage as infos from the server shouldn't be hidden by the infoMessage switch.
@@ -2488,13 +2397,13 @@ Candy.View.Observer = (function(self, $) {
 		 * Every presence update gets dispatched from this method.
 		 *
 		 * Parameters:
-		 *   (Candy.Core.Event) obj - Candy core event object
+		 *   (jQuery.Event) event - jQuery.Event object
 		 *   (Object) args - Arguments differ on each type
 		 *
 		 * Uses:
 		 *   - <notifyPrivateChats>
 		 */
-		update: function(obj, args) {
+		update: function(event, args) {
 			// Client left
 			if(args.type === 'leave') {
 				var user = Candy.View.Pane.Room.getUser(args.roomJid);
@@ -2572,82 +2481,67 @@ Candy.View.Observer = (function(self, $) {
 	};
 	
 	/** Class: Candy.View.Observer.PresenceError
-	 * Presence error events
+	 * Presence errors get handled in this method
+	 *
+	 * Parameters:
+	 *   (jQuery.Event) event - jQuery.Event object
+	 *   (Object) args - {msg, type, roomJid, roomName}
 	 */
-	self.PresenceError = {
-		/** Function: update
-		 * Presence errors get handled in this method
-		 *
-		 * Parameters:
-		 *   (Candy.Core.Event) obj - Candy core event object
-		 *   (Object) args - {msg, type, roomJid, roomName}
-		 */
-		update: function(obj, args) {
-			switch(args.type) {
-				case 'not-authorized':
-					var message;
-					if (args.msg.children('x').children('password').length > 0) {
-						message = $.i18n._('passwordEnteredInvalid', [args.roomName]);
-					}
-					Candy.View.Pane.Chat.Modal.showEnterPasswordForm(args.roomJid, args.roomName, message);
-					break;
-				case 'conflict':
-					Candy.View.Pane.Chat.Modal.showNicknameConflictForm(args.roomJid);
-					break;
-				case 'registration-required':
-					Candy.View.Pane.Chat.Modal.showError('errorMembersOnly', [args.roomName]);
-					break;
-				case 'service-unavailable':
-					Candy.View.Pane.Chat.Modal.showError('errorMaxOccupantsReached', [args.roomName]);
-					break;
-			}
+	self.PresenceError = function(obj, args) {
+		switch(args.type) {
+			case 'not-authorized':
+				var message;
+				if (args.msg.children('x').children('password').length > 0) {
+					message = $.i18n._('passwordEnteredInvalid', [args.roomName]);
+				}
+				Candy.View.Pane.Chat.Modal.showEnterPasswordForm(args.roomJid, args.roomName, message);
+				break;
+			case 'conflict':
+				Candy.View.Pane.Chat.Modal.showNicknameConflictForm(args.roomJid);
+				break;
+			case 'registration-required':
+				Candy.View.Pane.Chat.Modal.showError('errorMembersOnly', [args.roomName]);
+				break;
+			case 'service-unavailable':
+				Candy.View.Pane.Chat.Modal.showError('errorMaxOccupantsReached', [args.roomName]);
+				break;
 		}
-	}
+	};
 
 	/** Class: Candy.View.Observer.Message
-	 * Message related events
+	 * Messages received get dispatched from this method.
+	 *
+	 * Parameters:
+	 *   (jQuery.Event) event - jQuery Event object
+	 *   (Object) args - {message, roomJid}
 	 */
-	self.Message = {
-		/** Function: update
-		 * Messages received get dispatched from this method.
-		 *
-		 * Parameters:
-		 *   (Candy.Core.Event) obj - Candy core event object
-		 *   (Object) args - {message, roomJid}
-		 */
-		update: function(obj, args) {
-			if(args.message.type === 'subject') {
-				if (!Candy.View.Pane.Chat.rooms[args.roomJid]) {
-					Candy.View.Pane.Room.init(args.roomJid, args.message.name);
-					Candy.View.Pane.Room.show(args.roomJid);
-				}
-				Candy.View.Pane.Room.setSubject(args.roomJid, args.message.body);
-			} else if(args.message.type === 'info') {
-				Candy.View.Pane.Chat.infoMessage(args.roomJid, args.message.body);
-			} else {
-				// Initialize room if it's a message for a new private user chat
-				if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
-					Candy.View.Pane.PrivateRoom.open(args.roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
-				}
-				Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.timestamp);
+	self.Message = function(event, args) {
+		if(args.message.type === 'subject') {
+			if (!Candy.View.Pane.Chat.rooms[args.roomJid]) {
+				Candy.View.Pane.Room.init(args.roomJid, args.message.name);
+				Candy.View.Pane.Room.show(args.roomJid);
 			}
+			Candy.View.Pane.Room.setSubject(args.roomJid, args.message.body);
+		} else if(args.message.type === 'info') {
+			Candy.View.Pane.Chat.infoMessage(args.roomJid, args.message.body);
+		} else {
+			// Initialize room if it's a message for a new private user chat
+			if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
+				Candy.View.Pane.PrivateRoom.open(args.roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
+			}
+			Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.timestamp);
 		}
 	};
 
 	/** Class: Candy.View.Observer.Login
-	 * Handles when display login window should appear
+	 * The login event gets dispatched to this method
+	 *
+	 * Parameters:
+	 *   (jQuery.Event) event - jQuery Event object
+	 *   (Object) args - {presetJid}
 	 */
-	self.Login = {
-		/** Function: update
-		 * The login event gets dispatched to this method
-		 *
-		 * Parameters:
-		 *   (Candy.Core.Event) obj - Candy core event object
-		 *   (Object) args - {presetJid}
-		 */
-		update: function(obj, args) {
-			Candy.View.Pane.Chat.Modal.showLoginForm(null, args.presetJid);
-		}
+	self.Login = function(event, args) {
+		Candy.View.Pane.Chat.Modal.showLoginForm(null, args.presetJid);
 	};
 
 	return self;
@@ -2961,6 +2855,9 @@ Candy.View.Pane = (function(self, $) {
 		/** Function: adminMessage
 		 * Display admin message
 		 *
+		 * Triggers:
+		 *   candy:view.chat.admin-message using {subject, message}
+		 *
 		 * Parameters:
 		 *   (String) subject - Admin message subject
 		 *   (String) message - Message to be displayed
@@ -2980,10 +2877,11 @@ Candy.View.Pane = (function(self, $) {
 
 				var evtData = {'subject' : subject, 'message' : message};
 
+				// deprecated
 				Candy.View.Event.Chat.onAdminMessage(evtData);
 
 				/* new event system call */
-				$(Candy.View.Pane.Chat).triggerHandler('adminmessage', [evtData]);
+				$(self).triggerHandler('candy:view.chat.admin-message', evtData);
 			}
 		},
 
@@ -3402,8 +3300,8 @@ Candy.View.Pane = (function(self, $) {
 			 *   <Candy.Util.getPosLeftAccordingToWindowBounds> for positioning
 			 *   <Candy.Util.getPosTopAccordingToWindowBounds> for positioning
 			 *
-			 * Calls:
-			 *   <Candy.View.Event.Roster.afterContextMenu> after showing the context menu
+			 * Triggers:
+			 *   candy:view.roster.after:contextmenu using {roomJid, user, elements}
 			 *
 			 * Parameters:
 			 *   (Element) elem - On which element it should be shown
@@ -3458,17 +3356,18 @@ Candy.View.Pane = (function(self, $) {
 
 					var evtData = {'roomJid' : roomJid, 'user' : user, 'element': menu};
 
+					// deprecated
 					Candy.View.Event.Roster.afterContextMenu(evtData);
 
 					/* new event system call */                        
-					$(Candy.View.Pane.Chat.Context).triggerHandler('aftercontextmenu', [evtData]);
+					$(self).triggerHandler('candy:view.roster.after:contextmenu', evtData);
 
 					return true;
 				}
 			},
 
 			/** Function: getMenuLinks
-			 * Extends <initialMenuLinks> with <Candy.View.Event.Roster.onContextMenu> links and returns those.
+			 * Extends <initialMenuLinks> with menu links gathered from candy:view.roster.contextmenu
 			 *
 			 * Returns:
 			 *   (Object) - object containing the extended menulinks.
@@ -3477,11 +3376,13 @@ Candy.View.Pane = (function(self, $) {
 				var menulinks, extramenulinks, id;
 
 				var evtData = {'roomJid' : roomJid, 'user' : user, 'elem': elem};
+				// deprecated
 				extramenulinks = Candy.View.Event.Roster.onContextMenu(evtData);
+				
 				evtData.menulinks = $.extend(this.initialMenuLinks(elem), extramenulinks);
 
 				/* new event system call, here handlers will modify evtData.menulinks */
-				$(Candy.View.Pane.Chat.Context).triggerHandler('contextmenu', [evtData]);
+				$(self).triggerHandler('candy:view.roster.contextmenu', evtData);
 
 				menulinks = evtData.menulinks;
 
@@ -3656,8 +3557,8 @@ Candy.View.Pane = (function(self, $) {
 		 *   - <Candy.View.Pane.Chat.addTab>
 		 *   - <getPane>
 		 *
-		 * Calls:
-		 *   - <Candy.View.Event.Room.onAdd>
+		 * Triggers:
+		 *   candy:view.room.after:add using {roomJid, type, element}
 		 *
 		 * Returns:
 		 *   (String) - the room id of the element created.
@@ -3692,16 +3593,21 @@ Candy.View.Pane = (function(self, $) {
 
 			var evtData = {'roomJid': roomJid, 'type': roomType, 'element': self.Room.getPane(roomJid)};
 
+			// deprecated
 			Candy.View.Event.Room.onAdd(evtData);
 
 			/* new event system call */
-			$(Candy.View.Pane.Room).triggerHandler('add', [evtData]);
+			$(self).triggerHandler('candy:view.room.after:add', evtData);
 
 			return roomId;
 		},
 
 		/** Function: show
 		 * Show a specific room and hides the other rooms (if there are any)
+		 *
+		 * Triggers:
+		 *   - candy:view.room.after:show using {roomJid, element}
+		 *   - candy:view.room.after:hide using {roomJid, element}
 		 *
 		 * Parameters:
 		 *   (String) roomJid - room jid to show
@@ -3721,25 +3627,30 @@ Candy.View.Pane = (function(self, $) {
 
 					var evtData = {'roomJid': roomJid, 'element' : elem};
 
+					// deprecated
 					Candy.View.Event.Room.onShow(evtData);
 
 					/* new event system call */
-					$(Candy.View.Pane.Room).triggerHandler('show', [evtData]);
+					$(self).triggerHandler('candy:view.room.after:show', evtData);
 
 				} else {
 					elem.hide();
 
 					var evtData = {'roomJid': roomJid, 'element' : elem};
+					// deprecated
 					Candy.View.Event.Room.onHide(evtData);
 
 					/* new event system call */
-					$(Candy.View.Pane.Room).triggerHandler('hide', [evtData]);
+					$(self).triggerHandler('candy:view.room.after:hide', evtData);
 				}
 			});
 		},
 
 		/** Function: setSubject
 		 * Called when someone changes the subject in the channel
+		 *
+		 * Triggers:
+		 *   candy:view.room.after:subject-change using {roomJid, element, subject}
 		 *
 		 * Parameters:
 		 *   (String) roomJid - Room Jid
@@ -3757,17 +3668,20 @@ Candy.View.Pane = (function(self, $) {
 
 			var evtData = {'roomJid': roomJid, 'element' : self.Room.getPane(roomJid), 'subject' : subject};
 
+			// deprecated
 			Candy.View.Event.Room.onSubjectChange(evtData);
 
 			/* new event system call */
-			$(Candy.View.Pane.Room).triggerHandler('subjectchange', [evtData]);
-
+			$(self).triggerHandler('candy:view.room.after:subject-change', evtData);
 		},
 
 		/** Function: close
 		 * Close a room and remove everything in the DOM belonging to this room.
 		 *
 		 * NOTICE: There's a rendering bug in Opera when all rooms have been closed. (Take a look in the source for a more detailed description)
+		 *
+		 * Triggers:
+		 *   candy:view.room.after:close using {roomJid}
 		 *
 		 * Parameters:
 		 *   (String) roomJid - Room to close
@@ -3795,10 +3709,11 @@ Candy.View.Pane = (function(self, $) {
 
 			var evtData = {'roomJid' : roomJid};
 
+			// deprecated
 			Candy.View.Event.Room.onClose(evtData);
 
 			/* new event system call */
-			$(Candy.View.Pane.Room).triggerHandler('close', [evtData]);
+			$(self).triggerHandler('candy:view.room.after:close', evtData);
 		},
 
 		/** Function: appendToMessagePane
@@ -4029,8 +3944,8 @@ Candy.View.Pane = (function(self, $) {
 		 *   (Boolean) isNoConferenceRoomJid - true if a 3rd-party client sends a direct message to this user (not via the room)
 		 *										then the username is the node and not the resource. This param addresses this case.
 		 *
-		 * Calls:
-		 *   - <Candy.View.Event.Room.onAdd>
+		 * Triggers:
+		 *   candy:view.room.after:add using {roomJid, type, element}
 		 */
 		open: function(roomJid, roomName, switchToRoom, isNoConferenceRoomJid) {
 			var user = isNoConferenceRoomJid ? Candy.Core.getUser() : self.Room.getUser(Strophe.getBareJidFromJid(roomJid));
@@ -4058,10 +3973,11 @@ Candy.View.Pane = (function(self, $) {
 
 			var evtData = {'roomJid': roomJid, type: 'chat', 'element': self.Room.getPane(roomJid)};
 
+			// deprecated
 			Candy.View.Event.Room.onAdd(evtData);
 
 			/* new event system call */
-			$(Candy.View.Pane.Room).triggerHandler('add', [evtData]);
+			$(self).triggerHandler('candy:view.room.after:add', evtData);
 		},
 
 		/** Function: setStatus
@@ -4099,6 +4015,10 @@ Candy.View.Pane = (function(self, $) {
 		 *
 		 * TODO: Refactoring, this method has too much LOC.
 		 *
+		 * Triggers:
+		 *   - candy:view.roster.before:update using {roomJid, user, action, element}
+		 *   - candy:view.roster.after:update using {roomJid, user, action, element}
+		 *
 		 * Parameters:
 		 *   (String) roomJid - Room JID in which the update happens
 		 *   (Candy.Core.ChatUser) user - User on which the update happens
@@ -4108,9 +4028,12 @@ Candy.View.Pane = (function(self, $) {
 		update: function(roomJid, user, action, currentUser) {
 			var roomId = self.Chat.rooms[roomJid].id,
 				userId = Candy.Util.jidToId(user.getJid()),
-				usercountDiff = -1;
+				usercountDiff = -1,
+				userElem = $('#user-' + roomId + '-' + userId);
 				
 			var evtData = {'roomJid': roomJid, type: null, 'user': user};
+
+			$(self).trigger('candy:view.roster.before:update', {'roomJid' : roomJid, 'user' : user, 'action': action, 'element': userElem});
 
 			// a user joined the room
 			if(action === 'join') {
@@ -4126,11 +4049,7 @@ Candy.View.Pane = (function(self, $) {
 						me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
 						tooltipRole: $.i18n._('tooltipRole'),
 						tooltipIgnored: $.i18n._('tooltipIgnored')
-					}),
-					userElem = $('#user-' + roomId + '-' + userId);
-					
-				evtData.type = 'join';
-				$(Candy.View.Pane.Roster).triggerHandler('beforeupdate', [evtData]);
+					});
 
 				if(userElem.length < 1) {
 					var userInserted = false,
@@ -4191,10 +4110,6 @@ Candy.View.Pane = (function(self, $) {
 
 			// a user left the room
 			} else if(action === 'leave') {
-
-				evtData.type = 'leave';
-				$(Candy.View.Pane.Roster).triggerHandler('onbeforeupdate', [evtData]);
-
 				self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
 				// always show leave message in private room, even if status messages have been disabled
 				if (self.Chat.rooms[roomJid].type === 'chat') {
@@ -4204,18 +4119,10 @@ Candy.View.Pane = (function(self, $) {
 				}
 			// user has been kicked
 			} else if(action === 'kick') {
-
-				evtData.type = 'kick';
-				$(Candy.View.Pane.Roster).triggerHandler('onbeforeupdate', [evtData]);
-
 				self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
 				self.Chat.onInfoMessage(roomJid, $.i18n._('userHasBeenKickedFromRoom', [user.getNick()]));
 			// user has been banned
 			} else if(action === 'ban') {
-
-				evtData.type = 'ban';
-				$(Candy.View.Pane.Roster).triggerHandler('onbeforeupdate', [evtData]);
-
 				self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
 				self.Chat.onInfoMessage(roomJid, $.i18n._('userHasBeenBannedFromRoom', [user.getNick()]));
 			}
@@ -4229,10 +4136,11 @@ Candy.View.Pane = (function(self, $) {
 
 			var evtData = {'roomJid' : roomJid, 'user' : user, 'action': action, 'element': $('#user-' + roomId + '-' + userId)};
 
+			// deprecated
 			Candy.View.Event.Roster.onUpdate(evtData);
 
 			/* new event system call */
-			$(Candy.View.Pane.Roster).triggerHandler('update', [evtData]);
+			$(self).triggerHandler('candy:view.roster.after:update', evtData);
 		},
 
 		/** Function: userClick
@@ -4276,6 +4184,9 @@ Candy.View.Pane = (function(self, $) {
 		 * on submit handler for message field sends the message to the server and if it's a private chat, shows the message
 		 * immediately because the server doesn't send back those message.
 		 *
+		 * Triggers:
+		 *   candy:view.message.before:send using {message}
+		 *
 		 * Parameters:
 		 *   (Event) event - Triggered event
 		 */
@@ -4283,11 +4194,12 @@ Candy.View.Pane = (function(self, $) {
 			var roomType = Candy.View.Pane.Chat.rooms[Candy.View.getCurrent().roomJid].type,
 				message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body);
 
+			// deprecated
 			message = Candy.View.Event.Message.beforeSend(message);
 
 			/* new event system call */
 			var evtData = {message: message};
-			$(Candy.View.Pane.Message).triggerHandler('beforesend', [evtData]);
+			$(self).triggerHandler('candy:view.message.before:send', evtData);
 			message = evtData.message;
 
 			Candy.Core.Action.Jabber.Room.Message(Candy.View.getCurrent().roomJid, message, roomType);
@@ -4313,10 +4225,11 @@ Candy.View.Pane = (function(self, $) {
 			message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
 
 			var evtData = {'roomJid': roomJid, 'nick': name, 'message': message};
+			// deprecated
 			evtData.message = Candy.View.Event.Message.beforeShow(evtData);
 
 			/* new event system call */
-			$(Candy.View.Pane.Message).triggerHandler('beforeshow', [evtData]);
+			$(self).triggerHandler('candy:view.message.before:show', evtData);
 			message = evtData.message;
 			
 			if(!message) {
@@ -4332,7 +4245,8 @@ Candy.View.Pane = (function(self, $) {
 					time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
 				}
 			};
-			$(Candy.View.Pane.Message).triggerHandler('beforerender', [renderEvtData]);
+			
+			$(self).triggerHandler('candy:view.message.before:render', renderEvtData);
 
 			var html = Mustache.to_html(renderEvtData.template, renderEvtData.templateData);
 			self.Room.appendToMessagePane(roomJid, html);
@@ -4359,10 +4273,11 @@ Candy.View.Pane = (function(self, $) {
 
 			var evtData = {'roomJid': roomJid, 'element': elem, 'nick': name, 'message': message};
 
+			// deprecated
 			Candy.View.Event.Message.onShow(evtData);
 
 			/* new event system call */
-			$(Candy.View.Pane.Message).triggerHandler('show', [evtData]);
+			$(self).triggerHandler('candy:view.message.after:show', evtData);
 		}
 	};
 
