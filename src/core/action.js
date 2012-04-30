@@ -44,9 +44,16 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 *
 		 * Parameters:
 		 *   (Object) attr - Optional attributes
+		 *   (Strophe.Builder) el - Optional element to include in presence stanza
 		 */
-		Presence: function(attr) {
-			Candy.Core.getConnection().send($pres(attr).tree());
+		Presence: function(attr, el) {
+			var pres = $pres(attr).c('priority').t(Candy.Core.getOptions().presencePriority.toString())
+				.up().c('c', Candy.Core.getConnection().caps.generateCapsAttrs())
+				.up();
+			if(el) {
+				pres.node.appendChild(el.node);
+			}
+			Candy.Core.getConnection().send(pres.tree());
 		},
 
 		/** Function: Services
@@ -134,6 +141,15 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			Join: function(roomJid, password) {
 				self.Jabber.Room.Disco(roomJid);
 				Candy.Core.getConnection().muc.join(roomJid, Candy.Core.getUser().getNick(), null, null, password);
+				var conn = Candy.Core.getConnection(),
+					room_nick = conn.muc.test_append_nick(roomJid, Candy.Core.getUser().getNick()),
+					pres = $pres({ from: conn.jid, to: room_nick })
+						.c('x', {xmlns: Strophe.NS.MUC});
+				if (password != null) {
+					pres.c('password').t(password);
+				}
+				pres.up().c('c', conn.caps.generateCapsAttrs());
+				conn.send(pres.tree());
 			},
 
 			/** Function: Leave
