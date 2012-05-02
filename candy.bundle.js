@@ -1219,6 +1219,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * When Candy.Core.getOptions().autojoin is true, request autojoin bookmarks (OpenFire)
 		 *
 		 * Otherwise, if Candy.Core.getOptions().autojoin is an array, join each channel specified.
+		 * Channel can be in jid:password format to pass room password if needed.
 		 */
 		Autojoin: function() {
 			// Request bookmarks
@@ -1227,7 +1228,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			// Join defined rooms
 			} else if($.isArray(Candy.Core.getOptions().autojoin)) {
 				$.each(Candy.Core.getOptions().autojoin, function() {
-					self.Jabber.Room.Join(this.valueOf());
+					self.Jabber.Room.Join.apply(null, this.valueOf().split(':',2));
 				});
 			}
 		},
