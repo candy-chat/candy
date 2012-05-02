@@ -3,7 +3,7 @@
 	url = git://github.com/mweibel/jquery-i18n.git
 [submodule "libs/strophejs"]
 	path = libs/strophejs
-	url = git://github.com/amiadogroup/strophejs.git
+	url = git://github.com/candy-chat/strophejs.git
 [submodule "libs/strophejs-plugins"]
 	path = libs/strophejs-plugins
 	url = git://github.com/metajack/strophejs-plugins.git

@@ -157,9 +157,7 @@ Candy.Core = (function(self, Strophe, $) {
 					if(typeof window.console !== undefined && typeof window.console.log !== undefined) {
 						console.log(str);
 					}
-				} catch(e) {
-					//console.error(e);
-				}
+				} catch(e) {}
 			};
 			self.log('[Init] Debugging enabled');
 		}
@@ -2065,7 +2063,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				// Error messsage
 				} else if(msg.attr('type') === 'error') {
 					var error = msg.children('error');
-					if(error.attr('code') === '500' && error.children('text').length > 0) {
+					if(error.children('text').length > 0) {
 						roomJid = msg.attr('from');
 						message = { type: 'info', body: error.children('text').text() };
 					}
@@ -2953,8 +2951,10 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			onPlaySound: function() {
 				var chatSoundPlayer = document.getElementById('chat-sound-player');
-				chatSoundPlayer.SetVariable('method:stop', '');
-				chatSoundPlayer.SetVariable('method:play', '');
+				try {
+					chatSoundPlayer.SetVariable('method:stop', '');
+					chatSoundPlayer.SetVariable('method:play', '');
+				} catch (e) {}
 			},
 
 			/** Function: onSoundControlClick
@@ -4446,7 +4446,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
-	
+
 	'de' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinden...',
@@ -4512,7 +4512,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},
-	
+
 	'fr' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Connecter...',
@@ -4578,7 +4578,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
 	},
-	
+
 	'nl' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinding maken...',
@@ -4644,7 +4644,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
 	},
-	
+
 	'es': {
 		'status': 'Estado: %s',
 		'statusConnecting': 'Conectando...',
@@ -4774,7 +4774,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage': '因为您在短时间内发送过多的消息 服务器要阻止您一小段时间。'
 	},
-	
+
 	'ja' : {
 		'status'        : 'ステータス: %s',
 		'statusConnecting'  : '接続中…',
@@ -4839,5 +4839,71 @@ Candy.View.Translation = {
 		'errorMaxOccupantsReached'  : '"%s"の部屋に入ることができません: 参加者の数はすでに上限に達しました。',
 
 		'antiSpamMessage'   : 'スパムなどの行為はやめてください。あなたは一時的にブロックされました。'
+	},
+
+	'sv' : {
+		'status': 'Status: %s',
+		'statusConnecting': 'Ansluter...',
+		'statusConnected' : 'Ansluten',
+		'statusDisconnecting': 'Kopplar från...',
+		'statusDisconnected' : 'Frånkopplad',
+		'statusAuthfail': 'Autentisering misslyckades',
+
+		'roomSubject'  : 'Ämne:',
+		'messageSubmit': 'Skicka',
+
+		'labelUsername': 'Användarnamn:',
+		'labelPassword': 'Lösenord:',
+		'loginSubmit'  : 'Logga in',
+		'loginInvalid'  : 'Ogiltigt JID',
+
+		'reason'                : 'Anledning:',
+		'subject'               : 'Ämne:',
+		'reasonWas'             : 'Anledningen var: %s.',
+		'kickActionLabel'       : 'Sparka ut',
+		'youHaveBeenKickedBy'   : 'Du har blivit utsparkad från %2$s av %1$s',
+		'youHaveBeenKicked'     : 'Du har blivit utsparkad från %s',
+		'banActionLabel'        : 'Bannlys',
+		'youHaveBeenBannedBy'   : 'Du har blivit bannlyst från %1$s av %2$s',
+		'youHaveBeenBanned'     : 'Du har blivit bannlyst från %s',
+
+		'privateActionLabel' : 'Privat chatt',
+		'ignoreActionLabel'  : 'Blockera',
+		'unignoreActionLabel' : 'Avblockera',
+
+		'setSubjectActionLabel': 'Ändra ämne',
+
+		'administratorMessageSubject' : 'Administratör',
+
+		'userJoinedRoom'           : '%s kom in i rummet.',
+		'userLeftRoom'             : '%s har lämnat rummet.',
+		'userHasBeenKickedFromRoom': '%s har blivit utsparkad ur rummet.',
+		'userHasBeenBannedFromRoom': '%s har blivit bannlyst från rummet.',
+
+		'presenceUnknownWarningSubject': 'Notera:',
+		'presenceUnknownWarning'       : 'Denna användare kan vara offline. Vi kan inte följa dennes närvaro.',
+
+		'dateFormat': 'yyyy-mm-dd',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'           : 'Moderator',
+		'tooltipIgnored'        : 'Du blockerar denna användare',
+		'tooltipEmoticons'      : 'Smilies',
+		'tooltipSound'          : 'Spela upp ett ljud vid nytt privat meddelande',
+		'tooltipAutoscroll'     : 'Autoskrolla',
+		'tooltipStatusmessage'  : 'Visa statusmeddelanden',
+		'tooltipAdministration' : 'Rumadministrering',
+		'tooltipUsercount'      : 'Antal användare i rummet',
+
+		'enterRoomPassword' : 'Rummet "%s" är lösenordsskyddat.',
+		'enterRoomPasswordSubmit' : 'Anslut till rum',
+		'passwordEnteredInvalid' : 'Ogiltigt lösenord för rummet "%s".',
+
+		'nicknameConflict': 'Upptaget användarnamn. Var god välj ett annat.',
+
+		'errorMembersOnly': 'Du kan inte ansluta till rummet "%s": Otillräckliga rättigheter.',
+		'errorMaxOccupantsReached': 'Du kan inte ansluta till rummet "%s": Rummet är fullt.',
+
+		'antiSpamMessage' : 'Var god avstå från att spamma. Du har blivit blockerad för en kort stund.'
 	}
 };

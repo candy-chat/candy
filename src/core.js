@@ -105,9 +105,7 @@ Candy.Core = (function(self, Strophe, $) {
 					if(typeof window.console !== undefined && typeof window.console.log !== undefined) {
 						console.log(str);
 					}
-				} catch(e) {
-					//console.error(e);
-				}
+				} catch(e) {}
 			};
 			self.log('[Init] Debugging enabled');
 		}
