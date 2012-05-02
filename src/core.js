@@ -182,7 +182,11 @@ Candy.Core = (function(self, Strophe, $) {
 		if(jidOrHost && password) {
 			// authentication
 			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
-			_user = new self.ChatUser(jidOrHost, Strophe.getNodeFromJid(jidOrHost));
+            if (nick) {
+			  _user = new self.ChatUser(jidOrHost, nick);
+            } else {
+			  _user = new self.ChatUser(jidOrHost, Strophe.getNodeFromJid(jidOrHost));
+            }
 		} else if(jidOrHost && nick) {
 			// anonymous connect
 			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, null, Candy.Core.Event.Strophe.Connect);
