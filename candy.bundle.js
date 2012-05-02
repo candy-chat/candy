@@ -4033,7 +4033,7 @@ Candy.View.Pane = (function(self, $) {
 				
 			var evtData = {'roomJid': roomJid, type: null, 'user': user};
 
-			$(self).trigger('candy:view.roster.before:update', {'roomJid' : roomJid, 'user' : user, 'action': action, 'element': userElem});
+			$(self).triggerHandler('candy:view.roster.before:update', {'roomJid' : roomJid, 'user' : user, 'action': action, 'element': userElem});
 
 			// a user joined the room
 			if(action === 'join') {
