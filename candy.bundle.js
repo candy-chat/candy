@@ -237,7 +237,11 @@ Candy.Core = (function(self, Strophe, $) {
 		if(jidOrHost && password) {
 			// authentication
 			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
-			_user = new self.ChatUser(jidOrHost, Strophe.getNodeFromJid(jidOrHost));
+			if (nick) {
+				_user = new self.ChatUser(jidOrHost, nick);
+			} else {
+				_user = new self.ChatUser(jidOrHost, Strophe.getNodeFromJid(jidOrHost));
+			}
 		} else if(jidOrHost && nick) {
 			// anonymous connect
 			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, null, Candy.Core.Event.Strophe.Connect);
@@ -1215,6 +1219,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * When Candy.Core.getOptions().autojoin is true, request autojoin bookmarks (OpenFire)
 		 *
 		 * Otherwise, if Candy.Core.getOptions().autojoin is an array, join each channel specified.
+		 * Channel can be in jid:password format to pass room password if needed.
 		 */
 		Autojoin: function() {
 			// Request bookmarks
@@ -1223,7 +1228,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			// Join defined rooms
 			} else if($.isArray(Candy.Core.getOptions().autojoin)) {
 				$.each(Candy.Core.getOptions().autojoin, function() {
-					self.Jabber.Room.Join(this.valueOf());
+					self.Jabber.Room.Join.apply(null, this.valueOf().split(':',2));
 				});
 			}
 		},
@@ -4479,7 +4484,6 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
-
 	'de' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinden...',
@@ -4545,7 +4549,6 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},
-
 	'fr' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Connecter...',
@@ -4611,7 +4614,6 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
 	},
-
 	'nl' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinding maken...',
@@ -4677,7 +4679,6 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
 	},
-
 	'es': {
 		'status': 'Estado: %s',
 		'statusConnecting': 'Conectando...',
@@ -4743,7 +4744,6 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Por favor, no hagas spam. Has sido bloqueado temporalmente.'
 	},
-
 	'cn': {
 		'status': '状态: %s',
 		'statusConnecting': '连接中...',
@@ -4807,7 +4807,6 @@ Candy.View.Translation = {
 
 		'antiSpamMessage': '因为您在短时间内发送过多的消息 服务器要阻止您一小段时间。'
 	},
-
 	'ja' : {
 		'status'        : 'ステータス: %s',
 		'statusConnecting'  : '接続中…',
@@ -4873,7 +4872,6 @@ Candy.View.Translation = {
 
 		'antiSpamMessage'   : 'スパムなどの行為はやめてください。あなたは一時的にブロックされました。'
 	},
-
 	'sv' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Ansluter...',
@@ -4938,5 +4936,70 @@ Candy.View.Translation = {
 		'errorMaxOccupantsReached': 'Du kan inte ansluta till rummet "%s": Rummet är fullt.',
 
 		'antiSpamMessage' : 'Var god avstå från att spamma. Du har blivit blockerad för en kort stund.'
+	},
+	'it' : {
+		'status': 'Stato: %s',
+		'statusConnecting': 'Connessione...',
+		'statusConnected' : 'Connessone',
+		'statusDisconnecting': 'Disconnessione...',
+		'statusDisconnected' : 'Disconnesso',
+		'statusAuthfail': 'Autenticazione fallita',
+
+		'roomSubject'  : 'Oggetto:',
+		'messageSubmit': 'Invia',
+
+		'labelUsername': 'Nome utente:',
+		'labelPassword': 'Password:',
+		'loginSubmit'  : 'Login',
+		'loginInvalid'  : 'JID non valido',
+
+		'reason'                : 'Ragione:',
+		'subject'               : 'Oggetto:',
+		'reasonWas'             : 'Ragione precedente: %s.',
+		'kickActionLabel'       : 'Espelli',
+		'youHaveBeenKickedBy'   : 'Sei stato espulso da %2$s da %1$s',
+		'youHaveBeenKicked'     : 'Sei stato espulso da %s',
+		'banActionLabel'        : 'Escluso',
+		'youHaveBeenBannedBy'   : 'Sei stato escludo da %1$s da %2$s',
+		'youHaveBeenBanned'     : 'Sei stato escludo da %s',
+
+		'privateActionLabel' : 'Stanza privata',
+		'ignoreActionLabel'  : 'Ignora',
+		'unignoreActionLabel' : 'Non ignorare',
+
+		'setSubjectActionLabel': 'Cambia oggetto',
+
+		'administratorMessageSubject' : 'Amministratore',
+
+		'userJoinedRoom'           : '%s si è unito alla stanza.',
+		'userLeftRoom'             : '%s ha lasciato la stanza.',
+		'userHasBeenKickedFromRoom': '%s è stato espulso dalla stanza.',
+		'userHasBeenBannedFromRoom': '%s è stato escluso dalla stanza.',
+
+		'presenceUnknownWarningSubject': 'Nota:',
+		'presenceUnknownWarning'       : 'Questo utente potrebbe essere offline. Non possiamo tracciare la sua presenza.',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'           : 'Moderatore',
+		'tooltipIgnored'        : 'Stai ignorando questo utente',
+		'tooltipEmoticons'      : 'Emoticons',
+		'tooltipSound'          : 'Riproduci un suono quando arrivano messaggi privati',
+		'tooltipAutoscroll'     : 'Autoscroll',
+		'tooltipStatusmessage'  : 'Mostra messaggi di stato',
+		'tooltipAdministration' : 'Amministrazione stanza',
+		'tooltipUsercount'      : 'Partecipanti alla stanza',
+
+		'enterRoomPassword' : 'La stanza "%s" è protetta da password.',
+		'enterRoomPasswordSubmit' : 'Unisciti alla stanza',
+		'passwordEnteredInvalid' : 'Password non valida per la stanza "%s".',
+
+		'nicknameConflict': 'Nome utente già in uso. Scegline un altro.',
+
+		'errorMembersOnly': 'Non puoi unirti alla stanza "%s": Permessi insufficienti.',
+		'errorMaxOccupantsReached': 'Non puoi unirti alla stanza "%s": Troppi participanti.',
+
+		'antiSpamMessage' : 'Per favore non scrivere messaggi pubblicitari. Sei stato bloccato per un po\' di tempo.'
 	}
 };
