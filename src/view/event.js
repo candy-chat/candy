@@ -150,46 +150,145 @@ Candy.View.Event = (function(self, $) {
 		}
 	};
 
-	/** Class: Candy.View.Event.Message
-	 * Message-related events
-	 */
-	self.Message = {
-		/** Function: beforeShow
-		 * Called before a new message will be shown.
-		 *
-		 * Parameters:
-		 *   (Object) args - {roomJid, nick, message}
-		 *
-		 * Returns:
-		 *   (String) message
-		 */
-		beforeShow: function(args) {
-			return args.message;
-		},
-		
-		/** Function: onShow
-		 * Called after a new message has been shown
-		 *
-		 * Parameters:
-		 *   (Object) args - {roomJid, element, nick, message}
-		 */
-		onShow: function(args) {
-			return;
-		},
-		
-		/** Function: beforeSend
-		 * Called before a message get sent
-		 *
-		 * Parameters:
-		 *   (String) message
-		 *
-		 * Returns:
-		 *   (String) message
-		 */
-		beforeSend: function(message) {
-			return message;
-		}
-	};
+    /** Class: Candy.View.Event.Message
+     * Message-related events
+     */
+    self.Message = {
+        /** Array: beforeShowListeners
+         * A collection of listeners that will be called in order when beforeShow is called
+         */
+        _beforeShowListeners: [],
+
+        /** Array: onShowListeners
+         * A collection of listeners that will be called in order when onShow is called
+         */
+        _onShowListeners: [],
+
+        /** Array: beforeSendListeners
+         * A collection of listeners that will be called in order when beforeSend is called
+         */
+        _beforeSendListeners: [],
+
+        /** Function: registerBeforeShowListener
+         * Register a listener to be called before show
+         *
+         * Parameters:
+         *   (Function) listener - args: {roomJid, nick, message}
+         *
+         * Returns:
+         *   (Integer) index
+         */
+        registerBeforeShowListener: function(listener) {
+            self.Message._beforeShowListeners.push(listener);
+
+            return self.Message._beforeShowListeners.length - 1;
+        },
+
+        /** Function: registerOnShowListener
+         * Register a listener to be called on show
+         *
+         * Parameters:
+         *   (Function) listener - args: {roomJid, element, nick, message}
+         *
+         * Returns:
+         *   (Integer) index
+         */
+        registerOnShowListener: function(listener) {
+            self.Message._onShowListeners.push(listener);
+
+            return self.Message._onShowListeners.length - 1;
+        },
+
+        /** Function: registerBeforeSendListener
+         * Register a listener to be called before send
+         *
+         * Parameters:
+         *   (Function) listener - args: {message}
+         *
+         * Returns:
+         *   (Integer) index
+         */
+        registerBeforeSendListener: function(listener) {
+            self.Message._beforeSendListeners.push(listener);
+
+            return self.Message._beforeSendListeners.length - 1;
+        },
+
+        /** Function: unregisterBeforeShowListener
+         * Unregister a listener
+         *
+         * Parameters:
+         *   (Integer) index - index of listener to remove
+         */
+        unregisterBeforeShowListener: function(index) {
+            self.Message._beforeShowListeners.splice(index, 1);
+        },
+
+        /** Function: unregisterOnShowListener
+         * Unregister a listener
+         *
+         * Parameters:
+         *   (Integer) index - index of listener to remove
+         */
+        unregisterOnShowListener: function(index) {
+            self.Message._onShowListeners.splice(index, 1);
+        },
+
+        /** Function: unregisterBeforeSendListener
+         * Unregister a listener
+         *
+         * Parameters:
+         *   (Integer) index - index of listener to remove
+         */
+        unregisterBeforeSendListener: function(index) {
+            self.Message._beforeSendListeners.splice(index, 1);
+        },
+
+        /** Function: beforeShow
+         * Called before a new message will be shown.
+         *
+         * Parameters:
+         *   (Object) args - {roomJid, nick, message}
+         *
+         * Returns:
+         *   (String) message
+         */
+        beforeShow: function(args) {
+            $.each(Candy.View.Event.Message._beforeShowListeners, function(index, item) {
+                args.message = item(args);
+            });
+            return args.message;
+        },
+
+        /** Function: onShow
+         * Called after a new message has been shown
+         *
+         * Parameters:
+         *   (Object) args - {roomJid, element, nick, message}
+         */
+        onShow: function(args) {
+            $.each(Candy.View.Event.Message._onShowListeners, function(index, item) {
+                args = item(args);
+            });
+            return;
+        },
+
+        /** Function: beforeSend
+         * Called before a message get sent
+         *
+         * Parameters:
+         *   (String) message
+         *
+         * Returns:
+         *   (String) message
+         */
+        beforeSend: function(message) {
+            $.each(Candy.View.Event.Message._beforeSendListeners, function(index, item) {
+                message = item(message);
+            });
+            return message;
+        }
+    };
 
 	return self;
 }(Candy.View.Event || {}, jQuery));
