@@ -368,10 +368,10 @@ Candy.View.Pane = (function(self, $) {
 		 * Chat toolbar for things like emoticons toolbar, room management etc.
 		 */
 		Toolbar: {
-            /** Boolean: supportsHTML5Audio
-             * Flag whether the browser supports the audio tag
-             */
-            supportsHTML5Audio: null,
+			/** Boolean: supportsHTML5Audio
+			 * Flag whether the browser supports the audio tag
+			 */
+			supportsHTML5Audio: null,
 
 			/** Function: show
 			 * Show toolbar.
@@ -400,26 +400,26 @@ Candy.View.Pane = (function(self, $) {
 			 * Don't call this method directly. Call `playSound()` instead.
 			 * `playSound()` will only call this method if sound is enabled.
 			 */
-			onPlaySound: function() {
-                // check for support if uninitialized
-                if (self.Chat.Toolbar.supportsHTML5Audio === null) {
-                    // detection taken from http://diveintohtml5.com/everything.html
-                    var a = document.createElement('audio');
-                    self.Chat.Toolbar.supportsHTML5Audio = !!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, ''));
-                }
+            onPlaySound: function() {
+				// check for support if uninitialized
+				if (self.Chat.Toolbar.supportsHTML5Audio === null) {
+					// detection taken from http://diveintohtml5.com/everything.html
+					var a = document.createElement('audio');
+					self.Chat.Toolbar.supportsHTML5Audio = !!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, ''));
+				}
 
-                // use HTML5 if it's supported
-                if (self.Chat.Toolbar.supportsHTML5Audio) {
-                    try {
-                        new Audio(Candy.View.getOptions().resources + 'notify.mp3').play();
-                    } catch (e) {}
-                } else {
-                    var chatSoundPlayer = document.getElementById('chat-sound-player');
-                    try {
-                        chatSoundPlayer.SetVariable('method:stop', '');
-                        chatSoundPlayer.SetVariable('method:play', '');
-                    } catch (e) {}
-                }
+				// use HTML5 if it's supported
+				if (self.Chat.Toolbar.supportsHTML5Audio) {
+					try {
+						new Audio(Candy.View.getOptions().resources + 'notify.mp3').play();
+					} catch (e) {}
+				} else {
+					var chatSoundPlayer = document.getElementById('chat-sound-player');
+					try {
+						chatSoundPlayer.SetVariable('method:stop', '');
+						chatSoundPlayer.SetVariable('method:play', '');
+					} catch (e) {}
+				}
 			},
 
 			/** Function: onSoundControlClick
