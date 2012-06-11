@@ -2451,7 +2451,7 @@ Candy.View.Observer = (function(self, $) {
 				Candy.View.Event.Room.onPresenceChange(evtData);
 
 				/* new event system call */
-				$(Candy.View.Observer.Chat).triggerHandler('presencechange', [evtData]);
+				$(Candy.View.Observer.Chat).triggerHandler('candy:view.presence.afterChange', [evtData]);
 
 			// A user changed presence
 			} else {
