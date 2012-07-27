@@ -2246,7 +2246,7 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 						// Message from server (XEP-0045#registrar-statuscodes)
 						} else {
 							// we are not yet present in the room, let's just drop this message (issue #105)
-							if(!Candy.Core.getRoom(msg.attr('from'))) {
+							if(!Candy.View.Pane.Chat.rooms[msg.attr('from')]) {
 								return true;
 							}
 							message = { name: '', body: msg.children('body').text(), type: 'info' };
