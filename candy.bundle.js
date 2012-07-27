@@ -2589,7 +2589,7 @@ Candy.View.Observer = (function(self, $) {
 				}, 5000);
 				Candy.View.Event.Room.onPresenceChange({ type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user });
 			// A user changed presence
-			} else {
+			} else if(args.roomJid) {
 				// Initialize room if not yet existing
 				if(!Candy.View.Pane.Chat.rooms[args.roomJid]) {
 					Candy.View.Pane.Room.init(args.roomJid, args.roomName);
@@ -2601,6 +2601,8 @@ Candy.View.Observer = (function(self, $) {
 					Candy.View.Pane.Roster.update(args.user.getJid(), args.user, args.action, args.currentUser);
 					Candy.View.Pane.PrivateRoom.setStatus(args.user.getJid(), args.action);
 				}
+			} else {
+				// Unhandled type of presence
 			}
 		},
 
@@ -2999,17 +3001,6 @@ Candy.View.Pane = (function(self, $) {
 			}
 		},
 
-		/** Function: updateToolbar
-		 * Show toolbar
-		 */
-		updateToolbar: function(roomJid) {
-			$('#chat-toolbar').find('.context').click(function(e) {
-				self.Chat.Context.show(e.currentTarget, roomJid);
-				e.stopPropagation();
-			});
-			Candy.View.Pane.Chat.Toolbar.updateUsercount(Candy.View.Pane.Chat.rooms[roomJid].usercount);
-		},
-
 		/** Function: adminMessage
 		 * Display admin message
 		 *
@@ -3085,6 +3076,23 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			hide: function() {
 				$('#chat-toolbar').hide();
+			},
+
+			/* Function: update
+			 * Update toolbar for specific room
+			 */
+			update: function(roomJid) {
+				var context = $('#chat-toolbar').find('.context'),
+					me = self.Room.getUser(roomJid);
+				if(!me || !me.isModerator()) {
+					context.hide();
+				} else {
+					context.show().click(function(e) {
+						self.Chat.Context.show(e.currentTarget, roomJid);
+						e.stopPropagation();
+					});
+				}
+				self.Chat.Toolbar.updateUsercount(Candy.View.Pane.Chat.rooms[roomJid].usercount);
 			},
 
 			/** Function: playSound
@@ -3744,8 +3752,8 @@ Candy.View.Pane = (function(self, $) {
 				if(elem.attr('id') === ('chat-room-' + roomId)) {
 					elem.show();
 					Candy.View.getCurrent().roomJid = roomJid;
-					self.Chat.updateToolbar(roomJid);
 					self.Chat.setActiveTab(roomJid);
+					self.Chat.Toolbar.update(roomJid);
 					self.Chat.clearUnreadMessages(roomJid);
 					self.Room.setFocusToForm(roomJid);
 					self.Room.scrollToBottom(roomJid);
@@ -4166,6 +4174,10 @@ Candy.View.Pane = (function(self, $) {
 					usercountDiff = 0;
 					userElem.replaceWith(html);
 					$('#user-' + roomId + '-' + userId).css({opacity: 1}).show();
+					// it's me, update the toolbar
+					if(currentUser !== undefined && user.getNick() === currentUser.getNick() && self.Room.getUser(roomJid)) {
+						self.Chat.Toolbar.update(roomJid);
+					}
 				}
 
 				// Presence of client

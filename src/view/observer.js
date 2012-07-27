@@ -123,7 +123,7 @@ Candy.View.Observer = (function(self, $) {
 				}, 5000);
 				Candy.View.Event.Room.onPresenceChange({ type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user });
 			// A user changed presence
-			} else {
+			} else if(args.roomJid) {
 				// Initialize room if not yet existing
 				if(!Candy.View.Pane.Chat.rooms[args.roomJid]) {
 					Candy.View.Pane.Room.init(args.roomJid, args.roomName);
@@ -135,6 +135,8 @@ Candy.View.Observer = (function(self, $) {
 					Candy.View.Pane.Roster.update(args.user.getJid(), args.user, args.action, args.currentUser);
 					Candy.View.Pane.PrivateRoom.setStatus(args.user.getJid(), args.action);
 				}
+			} else {
+				// Unhandled type of presence
 			}
 		},
 
