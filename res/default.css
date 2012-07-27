@@ -47,7 +47,6 @@ ul {
 	position: relative;
 	white-space: nowrap;
 	margin: 3px 0 0 3px;
-	background-color: #666;
 }
 
 #chat-tabs a {
@@ -55,9 +54,11 @@ ul {
 	display: inline-block;
 	color: #ccc;
 	height: 20px;
+	background-color: #666;
+	border-radius: 3px 3px 0 0;
 }
 
-#chat-tabs .active, #chat-tabs .active a {
+#chat-tabs .active a {
 	background-color: #eee;
 	color: black;
 }
@@ -70,6 +71,7 @@ ul {
 	width: 35px;
 	height: 30px;
 	background: url(img/tab-transitions.png) repeat-y left;
+	border-radius: 0 3px 0 0;
 }
 
 #chat-tabs a.close {
