@@ -78,7 +78,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
-	
+
 	'de' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinden...',
@@ -144,7 +144,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},
-	
+
 	'fr' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Connecter...',
@@ -210,7 +210,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
 	},
-	
+
 	'nl' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinding maken...',
@@ -276,7 +276,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
 	},
-	
+
 	'es': {
 		'status': 'Estado: %s',
 		'statusConnecting': 'Conectando...',
@@ -406,7 +406,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage': '因为您在短时间内发送过多的消息 服务器要阻止您一小段时间。'
 	},
-	
+
 	'ja' : {
 		'status'        : 'ステータス: %s',
 		'statusConnecting'  : '接続中…',
@@ -471,5 +471,71 @@ Candy.View.Translation = {
 		'errorMaxOccupantsReached'  : '"%s"の部屋に入ることができません: 参加者の数はすでに上限に達しました。',
 
 		'antiSpamMessage'   : 'スパムなどの行為はやめてください。あなたは一時的にブロックされました。'
+	},
+
+	'pt': {
+		'status': 'Status: %s',
+		'statusConnecting': 'Conectando...',
+		'statusConnected' : 'Conectado',
+		'statusDisconnecting': 'Desligando...',
+		'statusDisconnected' : 'Desligado',
+		'statusAuthfail': 'Falha na autenticação',
+
+		'roomSubject'  : 'Assunto:',
+		'messageSubmit': 'Enviar',
+
+		'labelUsername': 'Usuário:',
+		'labelPassword': 'Senha:',
+		'loginSubmit'  : 'Entrar',
+		'loginInvalid'  : 'JID inválido',
+
+		'reason'				: 'Assunto:',
+		'subject'				: 'Questão:',
+		'reasonWas'				: 'O motivo foi: %s.',
+		'kickActionLabel'		: 'Expelir',
+		'youHaveBeenKickedBy'   : 'Você foi expelido de %1$s por %2$s',
+		'youHaveBeenKicked'     : 'Você foi expelido %s',
+		'banActionLabel'		: 'Proibir',
+		'youHaveBeenBannedBy'   : 'Você foi expelido permanentemente de %1$s por %2$s',
+		'youHaveBeenBanned'     : 'Você foi expelido permanentemente de %s',
+
+		'privateActionLabel' : 'Bate papo privado',
+		'ignoreActionLabel'  : 'Ignorar',
+		'unignoreActionLabel' : 'Não ignorar',
+
+		'setSubjectActionLabel': 'Trocar Assunto',
+
+		'administratorMessageSubject' : 'Administrador',
+
+		'userJoinedRoom'           : '%s você entrou na sala.',
+		'userLeftRoom'             : '%s você saiu na sala.',
+		'userHasBeenKickedFromRoom': '%s você foi expelido da sala.',
+		'userHasBeenBannedFromRoom': '%s você foi expelido permanentemente da sala.',
+
+		'presenceUnknownWarningSubject': 'Atenção:',
+		'presenceUnknownWarning'       : 'Este usuário poderá ser desligado..',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'Moderador',
+		'tooltipIgnored'		: 'Você ignora este usuário',
+		'tooltipEmoticons'		: 'Emoticons',
+		'tooltipSound'			: 'Reproduzir o som para novas mensagens privados',
+		'tooltipAutoscroll'		: 'Deslocamento automático',
+		'tooltipStatusmessage'	: 'Mostrar mensagens de status',
+		'tooltipAdministration'	: 'Administração da sala',
+		'tooltipUsercount'		: 'Usuários na sala',
+
+		'enterRoomPassword' : 'A sala "%s" é protegida por senha.',
+		'enterRoomPasswordSubmit' : 'Junte-se à sala',
+		'passwordEnteredInvalid' : 'Senha incorreta para a sala "%s".',
+
+		'nicknameConflict': 'O nome de usuário já está em uso. Por favor escolha outro.',
+
+		'errorMembersOnly': 'Não pode juntar se à sala "%s":  privilégios insuficientes.',
+		'errorMaxOccupantsReached': 'Não pode juntar se à sala "%s": muitos participantes.',
+
+		'antiSpamMessage' : 'Por favor, não faz spam. Você foi bloqueado temporariamente.'
 	}
 };
