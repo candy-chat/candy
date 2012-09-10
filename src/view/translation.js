@@ -595,5 +595,70 @@ Candy.View.Translation = {
 		'errorMaxOccupantsReached': 'Non puoi unirti alla stanza "%s": Troppi participanti.',
 
 		'antiSpamMessage' : 'Per favore non scrivere messaggi pubblicitari. Sei stato bloccato per un po\' di tempo.'
+	},
+	'pt': {
+		'status': 'Status: %s',
+		'statusConnecting': 'Conectando...',
+		'statusConnected' : 'Conectado',
+		'statusDisconnecting': 'Desligando...',
+		'statusDisconnected' : 'Desligado',
+		'statusAuthfail': 'Falha na autenticação',
+
+		'roomSubject'  : 'Assunto:',
+		'messageSubmit': 'Enviar',
+
+		'labelUsername': 'Usuário:',
+		'labelPassword': 'Senha:',
+		'loginSubmit'  : 'Entrar',
+		'loginInvalid'  : 'JID inválido',
+
+		'reason'				: 'Assunto:',
+		'subject'				: 'Questão:',
+		'reasonWas'				: 'O motivo foi: %s.',
+		'kickActionLabel'		: 'Expelir',
+		'youHaveBeenKickedBy'   : 'Você foi expelido de %1$s por %2$s',
+		'youHaveBeenKicked'     : 'Você foi expelido %s',
+		'banActionLabel'		: 'Proibir',
+		'youHaveBeenBannedBy'   : 'Você foi expelido permanentemente de %1$s por %2$s',
+		'youHaveBeenBanned'     : 'Você foi expelido permanentemente de %s',
+
+		'privateActionLabel' : 'Bate papo privado',
+		'ignoreActionLabel'  : 'Ignorar',
+		'unignoreActionLabel' : 'Não ignorar',
+
+		'setSubjectActionLabel': 'Trocar Assunto',
+
+		'administratorMessageSubject' : 'Administrador',
+
+		'userJoinedRoom'           : '%s você entrou na sala.',
+		'userLeftRoom'             : '%s você saiu na sala.',
+		'userHasBeenKickedFromRoom': '%s você foi expelido da sala.',
+		'userHasBeenBannedFromRoom': '%s você foi expelido permanentemente da sala.',
+
+		'presenceUnknownWarningSubject': 'Atenção:',
+		'presenceUnknownWarning'       : 'Este usuário poderá ser desligado..',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'Moderador',
+		'tooltipIgnored'		: 'Você ignora este usuário',
+		'tooltipEmoticons'		: 'Emoticons',
+		'tooltipSound'			: 'Reproduzir o som para novas mensagens privados',
+		'tooltipAutoscroll'		: 'Deslocamento automático',
+		'tooltipStatusmessage'	: 'Mostrar mensagens de status',
+		'tooltipAdministration'	: 'Administração da sala',
+		'tooltipUsercount'		: 'Usuários na sala',
+
+		'enterRoomPassword' : 'A sala "%s" é protegida por senha.',
+		'enterRoomPasswordSubmit' : 'Junte-se à sala',
+		'passwordEnteredInvalid' : 'Senha incorreta para a sala "%s".',
+
+		'nicknameConflict': 'O nome de usuário já está em uso. Por favor escolha outro.',
+
+		'errorMembersOnly': 'Não pode juntar se à sala "%s":  privilégios insuficientes.',
+		'errorMaxOccupantsReached': 'Não pode juntar se à sala "%s": muitos participantes.',
+
+		'antiSpamMessage' : 'Por favor, não faz spam. Você foi bloqueado temporariamente.'
 	}
 };
