@@ -612,17 +612,17 @@ Candy.View.Translation = {
 		'loginSubmit'  : 'Entrar',
 		'loginInvalid'  : 'JID inválido',
 
-		'reason'				: 'Assunto:',
-		'subject'				: 'Questão:',
+		'reason'				: 'Motivo:',
+		'subject'				: 'Assunto:',
 		'reasonWas'				: 'O motivo foi: %s.',
-		'kickActionLabel'		: 'Expelir',
-		'youHaveBeenKickedBy'   : 'Você foi expelido de %1$s por %2$s',
-		'youHaveBeenKicked'     : 'Você foi expelido %s',
-		'banActionLabel'		: 'Proibir',
-		'youHaveBeenBannedBy'   : 'Você foi expelido permanentemente de %1$s por %2$s',
-		'youHaveBeenBanned'     : 'Você foi expelido permanentemente de %s',
+		'kickActionLabel'		: 'Excluir',
+		'youHaveBeenKickedBy'   : 'Você foi excluido de %1$s por %2$s',
+		'youHaveBeenKicked'     : 'Você foi excluido de %s',
+		'banActionLabel'		: 'Bloquear',
+		'youHaveBeenBannedBy'   : 'Você foi excluido permanentemente de %1$s por %2$s',
+		'youHaveBeenBanned'     : 'Você foi excluido permanentemente de %s',
 
-		'privateActionLabel' : 'Bate papo privado',
+		'privateActionLabel' : 'Bate-papo privado',
 		'ignoreActionLabel'  : 'Ignorar',
 		'unignoreActionLabel' : 'Não ignorar',
 
@@ -630,12 +630,12 @@ Candy.View.Translation = {
 
 		'administratorMessageSubject' : 'Administrador',
 
-		'userJoinedRoom'           : '%s você entrou na sala.',
-		'userLeftRoom'             : '%s você saiu na sala.',
-		'userHasBeenKickedFromRoom': '%s você foi expelido da sala.',
-		'userHasBeenBannedFromRoom': '%s você foi expelido permanentemente da sala.',
+		'userJoinedRoom'           : '%s entrou na sala.',
+		'userLeftRoom'             : '%s saiu da sala.',
+		'userHasBeenKickedFromRoom': '%s foi excluido da sala.',
+		'userHasBeenBannedFromRoom': '%s foi excluido permanentemente da sala.',
 
-		'presenceUnknownWarningSubject': 'Atenção:',
+		'presenceUnknownWarning'       : 'Este usuário pode estar desconectado. Não é possível determinar o status.',
 		'presenceUnknownWarning'       : 'Este usuário poderá ser desligado..',
 
 		'dateFormat': 'dd.mm.yyyy',
@@ -654,11 +654,11 @@ Candy.View.Translation = {
 		'enterRoomPasswordSubmit' : 'Junte-se à sala',
 		'passwordEnteredInvalid' : 'Senha incorreta para a sala "%s".',
 
-		'nicknameConflict': 'O nome de usuário já está em uso. Por favor escolha outro.',
+		'nicknameConflict': 'O nome de usuário já está em uso. Por favor, escolha outro.',
 
-		'errorMembersOnly': 'Não pode juntar se à sala "%s":  privilégios insuficientes.',
-		'errorMaxOccupantsReached': 'Não pode juntar se à sala "%s": muitos participantes.',
+		'errorMembersOnly': 'Você não pode participar da sala "%s":  privilégios insuficientes.',
+		'errorMaxOccupantsReached': 'Você não pode participar da sala "%s": muitos participantes.',
 
-		'antiSpamMessage' : 'Por favor, não faz spam. Você foi bloqueado temporariamente.'
+		'antiSpamMessage' : 'Por favor, não envie spam. Você foi bloqueado temporariamente.'
 	}
 };
