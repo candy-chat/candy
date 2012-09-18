@@ -22,7 +22,7 @@ CANDY_BUNDLE_MIN = candy.min.js
 CANDY_BUNDLE_LIBRARIES = libs/libs.bundle.js
 CANDY_BUNDLE_LIBRARIES_MIN = libs/libs.min.js
 CANDY_FILES = $(SRC_DIR)/candy.js $(SRC_DIR)/core.js $(SRC_DIR)/view.js $(SRC_DIR)/util.js $(SRC_DIR)/core/action.js $(SRC_DIR)/core/chatRoom.js $(SRC_DIR)/core/chatRoster.js $(SRC_DIR)/core/chatUser.js $(SRC_DIR)/core/event.js $(SRC_DIR)/view/event.js $(SRC_DIR)/view/observer.js $(SRC_DIR)/view/pane.js $(SRC_DIR)/view/template.js $(SRC_DIR)/view/translation.js
-CANDY_LIBS_FILES = $(LIBS_DIR)/strophejs/strophe.js $(LIBS_DIR)/strophejs-plugins/muc/strophe.muc.js $(LIBS_DIR)/mustache.js/mustache.js $(LIBS_DIR)/jquery-i18n/jquery.i18n.js $(LIBS_DIR)/dateformat/dateFormat.js
+CANDY_LIBS_FILES = $(LIBS_DIR)/strophejs/strophe.js $(LIBS_DIR)/strophejs-plugins/muc/strophe.muc.js $(LIBS_DIR)/mustache.js/mustache.js $(LIBS_DIR)/jquery-i18n/jquery.i18n.js $(LIBS_DIR)/dateformat/dateFormat.js $(LIBS_DIR)/strophejs-plugins/disco/strophe.disco.js $(LIBS_DIR)/strophejs-plugins/caps/strophe.caps.jsonly.js
 CANDY_FILES_BUNDLE = $(CANDY_FILES:.js=.bundle)
 CANDY_LIBS_FILES_BUNDLE = $(CANDY_LIBS_FILES:.js=.libs-bundle)
 

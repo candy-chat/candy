@@ -44,7 +44,10 @@ var Candy = (function(self, $) {
 	 *   (Array|Boolean) autojoin - Autojoin these channels. When boolean true, do not autojoin, wait if the server sends something.
 	 */
 	self.init = function(service, options) {
-		self.View.init($('#candy'), options.view);
+		if (!options.viewClass) {
+			options.viewClass = self.View;
+		}
+		options.viewClass.init($('#candy'), options.view);
 		self.Core.init(service, options.core);
 	};
 

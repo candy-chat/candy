@@ -294,17 +294,6 @@ Candy.View.Pane = (function(self, $) {
 			}
 		},
 
-		/** Function: updateToolbar
-		 * Show toolbar
-		 */
-		updateToolbar: function(roomJid) {
-			$('#chat-toolbar').find('.context').click(function(e) {
-				self.Chat.Context.show(e.currentTarget, roomJid);
-				e.stopPropagation();
-			});
-			Candy.View.Pane.Chat.Toolbar.updateUsercount(Candy.View.Pane.Chat.rooms[roomJid].usercount);
-		},
-
 		/** Function: adminMessage
 		 * Display admin message
 		 *
@@ -377,6 +366,30 @@ Candy.View.Pane = (function(self, $) {
 		 * Chat toolbar for things like emoticons toolbar, room management etc.
 		 */
 		Toolbar: {
+			_supportsNativeAudio: false,
+
+			/** Function: init
+			 * Register handler and enable or disable sound and status messages.
+			 */
+			init: function() {
+				$('#emoticons-icon').click(function(e) {
+				self.Chat.Context.showEmoticonsMenu(e.currentTarget);
+					e.stopPropagation();
+				});
+				$('#chat-autoscroll-control').click(self.Chat.Toolbar.onAutoscrollControlClick);
+
+				var a = document.createElement('audio');
+				self.Chat.Toolbar._supportsNativeAudio = !!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, ''));
+				$('#chat-sound-control').click(self.Chat.Toolbar.onSoundControlClick);
+				if(Candy.Util.cookieExists('candy-nosound')) {
+					$('#chat-sound-control').click();
+				}
+				$('#chat-statusmessage-control').click(self.Chat.Toolbar.onStatusMessageControlClick);
+				if(Candy.Util.cookieExists('candy-nostatusmessages')) {
+					$('#chat-statusmessage-control').click();
+				}
+			},
+
 			/** Function: show
 			 * Show toolbar.
 			 */
@@ -391,6 +404,23 @@ Candy.View.Pane = (function(self, $) {
 				$('#chat-toolbar').hide();
 			},
 
+			/* Function: update
+			 * Update toolbar for specific room
+			 */
+			update: function(roomJid) {
+				var context = $('#chat-toolbar').find('.context'),
+					me = self.Room.getUser(roomJid);
+				if(!me || !me.isModerator()) {
+					context.hide();
+				} else {
+					context.show().click(function(e) {
+						self.Chat.Context.show(e.currentTarget, roomJid);
+						e.stopPropagation();
+					});
+				}
+				self.Chat.Toolbar.updateUsercount(self.Chat.rooms[roomJid].usercount);
+			},
+
 			/** Function: playSound
 			 * Play sound (default method).
 			 */
@@ -398,16 +428,22 @@ Candy.View.Pane = (function(self, $) {
 				self.Chat.Toolbar.onPlaySound();
 			},
 
-			/** Function: onPlaySound
-			 * Sound play event handler.
+			/** Function: onPlaySoundN
+			 * Sound play event handler. Uses native (HTML5) audio if supported
 			 *
 			 * Don't call this method directly. Call `playSound()` instead.
 			 * `playSound()` will only call this method if sound is enabled.
 			 */
 			onPlaySound: function() {
-				var chatSoundPlayer = document.getElementById('chat-sound-player');
-				chatSoundPlayer.SetVariable('method:stop', '');
-				chatSoundPlayer.SetVariable('method:play', '');
+				try {
+					if(self.Chat.Toolbar._supportsNativeAudio) {
+						new Audio(Candy.View.getOptions().resources + 'notify.mp3').play();
+					} else {
+						var chatSoundPlayer = document.getElementById('chat-sound-player');
+						chatSoundPlayer.SetVariable('method:stop', '');
+						chatSoundPlayer.SetVariable('method:play', '');
+					}
+				} catch (e) {}
 			},
 
 			/** Function: onSoundControlClick
@@ -589,7 +625,7 @@ Candy.View.Pane = (function(self, $) {
 					displayUsername: Candy.Core.isAnonymousConnection() || !presetJid,
 					presetJid: presetJid ? presetJid : false
 				}));
-				$('#login-form').children()[0].focus();
+				$('#login-form').children(':input:first').focus();
 
 				// register submit handler
 				$('#login-form').submit(function(event) {
@@ -1072,8 +1108,8 @@ Candy.View.Pane = (function(self, $) {
 				if(elem.attr('id') === ('chat-room-' + roomId)) {
 					elem.show();
 					Candy.View.getCurrent().roomJid = roomJid;
-					self.Chat.updateToolbar(roomJid);
 					self.Chat.setActiveTab(roomJid);
+					self.Chat.Toolbar.update(roomJid);
 					self.Chat.clearUnreadMessages(roomJid);
 					self.Room.setFocusToForm(roomJid);
 					self.Room.scrollToBottom(roomJid);
@@ -1541,6 +1577,10 @@ Candy.View.Pane = (function(self, $) {
 					usercountDiff = 0;
 					userElem.replaceWith(html);
 					$('#user-' + roomId + '-' + userId).css({opacity: 1}).show();
+					// it's me, update the toolbar
+					if(currentUser !== undefined && user.getNick() === currentUser.getNick() && self.Room.getUser(roomJid)) {
+						self.Chat.Toolbar.update(roomJid);
+					}
 				}
 
 				// Presence of client

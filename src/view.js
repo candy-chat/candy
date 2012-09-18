@@ -79,24 +79,11 @@ Candy.View = (function(self, $) {
 			$(window).resize(Candy.View.Pane.Chat.fitTabs);
 		},
 
-		/** PrivateFunction: _registerToolbarHandlers
-		 * Register toolbar handlers and disable sound if cookie says so.
+		/** PrivateFunction: _initToolbar
+		 * Initialize toolbar.
 		 */
-		_registerToolbarHandlers = function() {
-			$('#emoticons-icon').click(function(e) {
-				self.Pane.Chat.Context.showEmoticonsMenu(e.currentTarget);
-				e.stopPropagation();
-			});
-			$('#chat-autoscroll-control').click(Candy.View.Pane.Chat.Toolbar.onAutoscrollControlClick);
-
-			$('#chat-sound-control').click(Candy.View.Pane.Chat.Toolbar.onSoundControlClick);
-			if(Candy.Util.cookieExists('candy-nosound')) {
-				$('#chat-sound-control').click();
-			}
-			$('#chat-statusmessage-control').click(Candy.View.Pane.Chat.Toolbar.onStatusMessageControlClick);
-			if(Candy.Util.cookieExists('candy-nostatusmessages')) {
-				$('#chat-statusmessage-control').click();
-			}
+		_initToolbar = function() {
+			self.Pane.Chat.Toolbar.init();
 		},
 
 		/** PrivateFunction: _delegateTooltips
@@ -140,7 +127,7 @@ Candy.View = (function(self, $) {
 
 		// ... and let the elements dance.
 		_registerWindowHandlers();
-		_registerToolbarHandlers();
+		_initToolbar();
 		_registerObservers();
 		_delegateTooltips();
 	};
