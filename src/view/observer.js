@@ -134,8 +134,16 @@ Candy.View.Observer = (function(self, $) {
 				var evtData = { type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user };
 				Candy.View.Event.Room.onPresenceChange(evtData);
 
-				/* new event system call */
-				$(Candy.View.Observer.Chat).triggerHandler('presencechange', [evtData]);
+				/** Event: candy:view.presence
+				 * Presence update when kicked or banned
+				 *
+				 * Parameters:
+				 *   (String) type - Presence type [kick, ban]
+				 *   (String) reason - Reason for the kick|ban [optional]
+				 *   (String) roomJid - Room JID
+				 *   (Candy.Core.ChatUser) user - User which has been kicked or banned
+				 */
+				$(self).triggerHandler('candy:view.presence', [evtData]);
 
 			// A user changed presence
 			} else if(args.roomJid) {
@@ -159,7 +167,7 @@ Candy.View.Observer = (function(self, $) {
 		 * Notify private user chats if existing
 		 *
 		 * Parameters:
-		 *   (Candy.Core.chatUser) user - User which has done the event
+		 *   (Candy.Core.ChatUser) user - User which has done the event
 		 *   (String) type - Event type (leave, join, kick/ban)
 		 */
 		notifyPrivateChats: function(user, type) {

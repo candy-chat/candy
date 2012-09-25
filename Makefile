@@ -71,10 +71,8 @@ endif
 docs:
 	@@echo "Building candy documentation ..."
 ifdef NATURALDOCS_DIR
-	@@if [ ! -d $(NDPROJ_DIR) ]; then mkdir $(NDPROJ_DIR); fi
 	@@if [ ! -d $(DOC_DIR) ]; then mkdir $(DOC_DIR); fi
-	@@$(NATURALDOCS_DIR)/NaturalDocs -q --exclude-source libs --exclude-source res --exclude-source candy.min.js --exclude-source candy.bundle.js -i . -o html $(DOC_DIR) -p $(NDPROJ_DIR)
-	@@rm -r $(NDPROJ_DIR)
+	@@$(NATURALDOCS_DIR)/NaturalDocs -r -i ./src -o html $(DOC_DIR) -p $(NDPROJ_DIR)
 	@@echo "Documentation built."
 	@@echo
 else

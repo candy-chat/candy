@@ -72,7 +72,7 @@ Candy.View = (function(self, $) {
 		 */
 		_registerWindowHandlers = function() {
 			// Cross-browser focus handling
-			if($.browser.msie && !$.browser.version.match('^9'))	{
+			if($.browser.msie && !$.browser.version.match('^9')) {
 				$(document).focusin(Candy.View.Pane.Window.onFocus).focusout(Candy.View.Pane.Window.onBlur);
 			} else {
 				$(window).focus(Candy.View.Pane.Window.onFocus).blur(Candy.View.Pane.Window.onBlur);
