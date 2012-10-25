@@ -24,6 +24,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 	 *
 	 * Parameters:
 	 *   (String) presetJid - Preset user JID
+	 *
+	 * Triggers:
+	 *   candy:core.login using {presetJid}
 	 */
 	self.Login = function(presetJid) {
 		/** Event: candy:core.login
@@ -44,6 +47,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 *
 		 * Parameters:
 		 *   (Strophe.Status) status - Strophe statuses
+		 *
+		 * Triggers:
+		 *   candy:core.chat.connection using {status}
 		 */
 		Connect: function(status) {
 			Candy.Core.setStropheStatus(status);
@@ -122,6 +128,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 *
 		 * Parameters:
 		 *   (String) msg - Raw XML Message
+		 *
+		 * Triggers:
+		 *   candy:core.presence using {from, stanza}
 		 *
 		 * Returns:
 		 *   (Boolean) - true
@@ -221,6 +230,10 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 * Parameters:
 		 *   (String) msg - Raw XML Message
 		 *
+		 * Triggers:
+		 *   candy:core.chat.message.admin using {type, message}
+		 *   candy:core.chat.message.server {type, subject, message}
+		 *
 		 * Returns:
 		 *   (Boolean) - true
 		 */
@@ -271,6 +284,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 *
 			 * Parameters:
 			 *   (String) msg - Raw XML Message
+			 *
+			 * Triggers:
+			 *   candy:core.presence.leave using {roomJid, roomName, type, reason, actor, user}
 			 *
 			 * Returns:
 			 *   (Boolean) - true
@@ -366,6 +382,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 * Parameters:
 			 *   (Object) msg - jQuery object of XML message
 			 *
+			 * Triggers:
+			 *   candy:core.presence.room using {roomJid, roomName, user, action, currentUser}
+			 *
 			 * Returns:
 			 *   (Boolean) - true
 			 */
@@ -441,6 +460,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 * Parameters:
 			 *   (Object) msg - jQuery object of XML message
 			 *
+			 * Triggers:
+			 *   candy:core.presence.error using {msg, type, roomJid, roomName}
+			 *
 			 * Returns:
 			 *   (Boolean) - true
 			 */
@@ -477,6 +499,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 *
 			 * Parameters:
 			 *   (String) msg - jQuery object of XML message
+			 *
+			 * Triggers:
+			 *   candy:core.message using {roomJid, message, timestamp}
 			 *
 			 * Returns:
 			 *   (Boolean) - true
@@ -538,7 +563,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 * The resulting message object can contain different key-value pairs as stated in the documentation
 				 * of the parameters itself.
 				 *
-				 * The following list explains those parameters a little bit better.
+				 * The following lists explain those parameters:
 				 *
 				 * Message Object Parameters:
 				 *   (String) name - Room name
