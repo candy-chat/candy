@@ -7,6 +7,7 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
+ *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /*jslint regexp: true, browser: true, confusion: true, sloppy: true, white: true, nomen: true, plusplus: true, maxerr: 50, indent: 4 */
@@ -44,7 +45,10 @@ var Candy = (function(self, $) {
 	 *   (Array|Boolean) autojoin - Autojoin these channels. When boolean true, do not autojoin, wait if the server sends something.
 	 */
 	self.init = function(service, options) {
-		self.View.init($('#candy'), options.view);
+		if (!options.viewClass) {
+			options.viewClass = self.View;
+		}
+		options.viewClass.init($('#candy'), options.view);
 		self.Core.init(service, options.core);
 	};
 

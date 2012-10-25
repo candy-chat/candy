@@ -1,5 +1,6 @@
 Credits
 =======
+- [Special thanks to our contributors](https://github.com/candy-chat/candy/graphs/contributors)
 - [famfamfam silk icons](http://www.famfamfam.com/lab/icons/silk/) is a smooth, free icon set, containing over 700 16-by-16 pixel icons.
 - [Simple Smileys](http://simplesmileys.org) are beautifully simple emoticons.
 - [Flash MP3 Player](http://flash-mp3-player.net/players/js) is a very simple flash audio player used by Candy for audio notifications.

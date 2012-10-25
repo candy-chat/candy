@@ -7,6 +7,7 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
+ *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.Util
@@ -476,69 +477,3 @@ Candy.Util = (function(self, $){
 
 	return self;
 }(Candy.Util || {}, jQuery));
-
-
-/** Class: Candy.Util.Observable
- * A class can be extended with the observable to be able to notify observers
- */
-Candy.Util.Observable = (function(self) {
-	/** PrivateObject: _observers
-	 * List of observers
-	 */
-	var _observers = {};
-
-	/** Function: addObserver
-	 * Add an observer to the observer list
-	 *
-	 * Parameters:
-	 *   (String) key - The key the observer listens to
-	 *   (Callback) obj - The observer callback
-	 */
-	self.addObserver = function(key, obj) {
-		if (_observers[key] === undefined) {
-			_observers[key] = [];
-		}
-		_observers[key].push(obj);
-	};
-
-	/** Function: deleteObserver
-	 * Delete observer from list
-	 *
-	 * Parameters:
-	 *   (String) key - Key in which the observer lies
-	 *   (Callback) obj - The observer callback to be deleted
-	 */
-	self.deleteObserver = function(key, obj) {
-		delete _observers[key][obj];
-	};
-
-	/** Function: clearObservers
-	 * Deletes all observers in list
-	 *
-	 * Parameters:
-	 *   (String) key - If defined, remove observers of this key, otherwise remove all including all keys.
-	 */
-	self.clearObservers = function(key) {
-		if (key !== undefined) {
-			_observers[key] = [];
-		} else {
-			_observers = {};
-		}
-	};
-
-	/** Function: notifyObservers
-	 * Notify all of its observers of a certain event.
-	 *
-	 * Parameters:
-	 *   (String) key - Key to notify
-	 *   (Object) arg - An argument passed to the update-method of the observers
-	 */
-	self.notifyObservers = function(key, arg) {
-		var observer = _observers[key], i;
-		for(i = observer.length-1; i >= 0; i--) {
-			observer[i].update(self, arg);
-		}
-	};
-
-	return self;
-}(Candy.Util.Observable || {}));
