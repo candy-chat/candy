@@ -4581,30 +4581,30 @@ Candy.View.Translation = {
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},
 	'fr' : {
-		'status': 'Status: %s',
-		'statusConnecting': 'Connecter...',
+		'status': 'Status : %s',
+		'statusConnecting': 'Connexion…',
 		'statusConnected' : 'Connecté.',
-		'statusDisconnecting': 'Déconnecter....',
+		'statusDisconnecting': 'Déconnexion…',
 		'statusDisconnected' : 'Déconnecté.',
-		'statusAuthfail': 'Authentification a échoué',
+		'statusAuthfail': 'L\'authentification a échoué',
 
-		'roomSubject'  : 'Sujet:',
+		'roomSubject'  : 'Sujet :',
 		'messageSubmit': 'Envoyer',
 
-		'labelUsername': 'Nom d\'utilisateur:',
-		'labelPassword': 'Mot de passe:',
-		'loginSubmit'  : 'Inscription',
+		'labelUsername': 'Nom d\'utilisateur :',
+		'labelPassword': 'Mot de passe :',
+		'loginSubmit'  : 'Connexion',
 		'loginInvalid'  : 'JID invalide',
 
-		'reason'				: 'Justification:',
-		'subject'				: 'Titre:',
-		'reasonWas'				: 'Justification: %s.',
+		'reason'				: 'Motif :',
+		'subject'				: 'Titre :',
+		'reasonWas'				: 'Motif : %s.',
 		'kickActionLabel'		: 'Kick',
-		'youHaveBeenKickedBy'   : 'Tu as été expulsé de le salon %1$s (%2$s)',
-		'youHaveBeenKicked'     : 'Tu as été expulsé de le salon %s',
+		'youHaveBeenKickedBy'   : 'Vous avez été expulsé du salon %1$s (%2$s)',
+		'youHaveBeenKicked'     : 'Vous avez été expulsé du salon %s',
 		'banActionLabel'		: 'Ban',
-		'youHaveBeenBannedBy'   : 'Tu as été banni de le salon %1$s (%2$s)',
-		'youHaveBeenBanned'     : 'Tu as été banni de le salon %s',
+		'youHaveBeenBannedBy'   : 'Vous avez été banni du salon %1$s (%2$s)',
+		'youHaveBeenBanned'     : 'Vous avez été banni du salon %s',
 
 		'privateActionLabel' : 'Chat privé',
 		'ignoreActionLabel'  : 'Ignorer',
@@ -4619,31 +4619,31 @@ Candy.View.Translation = {
 		'userHasBeenKickedFromRoom': '%s a été expulsé du salon.',
 		'userHasBeenBannedFromRoom': '%s a été banni du salon.',
 
-		'presenceUnknownWarningSubject': 'Note:',
+		'presenceUnknownWarningSubject': 'Note :',
 		'presenceUnknownWarning'       : 'Cet utilisateur n\'est malheureusement plus connecté, le message ne sera pas envoyé.',
 
-		'dateFormat': 'dd.mm.yyyy',
+		'dateFormat': 'dd/mm/yyyy',
 		'timeFormat': 'HH:MM:ss',
 
 		'tooltipRole'			: 'Modérateur',
-		'tooltipIgnored'		: 'Tu ignores cette personne',
+		'tooltipIgnored'		: 'Vous ignorez cette personne',
 		'tooltipEmoticons'		: 'Smileys',
-		'tooltipSound'			: 'Jouer un son lorsque tu reçois de nouveaux messages privés',
-		'tooltipAutoscroll'		: 'Auto-defilement',
+		'tooltipSound'			: 'Jouer un son lors de la réception de nouveaux messages privés',
+		'tooltipAutoscroll'		: 'Défilement automatique',
 		'tooltipStatusmessage'	: 'Messages d\'état',
-		'tooltipAdministration'	: 'Administrer le salon',
+		'tooltipAdministration'	: 'Administration du salon',
 		'tooltipUsercount'		: 'Nombre d\'utilisateurs dans le salon',
 
 		'enterRoomPassword' : 'Le salon "%s" est protégé par un mot de passe.',
 		'enterRoomPasswordSubmit' : 'Entrer dans le salon',
-		'passwordEnteredInvalid' : 'Le mot de passe four le salon "%s" est invalide.',
+		'passwordEnteredInvalid' : 'Le mot de passe pour le salon "%s" est invalide.',
 
-		'nicknameConflict': 'Le nom d\'utilisateur est déjà utilisé. Choisi un autre.',
+		'nicknameConflict': 'Le nom d\'utilisateur est déjà utilisé. Veuillez en choisir un autre.',
 
-		'errorMembersOnly': 'Tu ne peut pas entrer de le salon "%s": droits insuffisants.',
-		'errorMaxOccupantsReached': 'Tu ne peut pas entrer de le salon "%s": Limite d\'utilisateur atteint.',
+		'errorMembersOnly': 'Vous ne pouvez pas entrer dans le salon "%s" : droits insuffisants.',
+		'errorMaxOccupantsReached': 'Vous ne pouvez pas entrer dans le salon "%s": Limite d\'utilisateur atteint.',
 
-		'antiSpamMessage' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
+		'antiSpamMessage' : 'Merci de ne pas envoyer de spam. Vous avez été bloqué pendant une courte période..'
 	},
 	'nl' : {
 		'status': 'Status: %s',
