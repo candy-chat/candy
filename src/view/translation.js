@@ -471,5 +471,71 @@ Candy.View.Translation = {
 		'errorMaxOccupantsReached'  : '"%s"の部屋に入ることができません: 参加者の数はすでに上限に達しました。',
 
 		'antiSpamMessage'   : 'スパムなどの行為はやめてください。あなたは一時的にブロックされました。'
+	},
+  
+	'ru' : {
+		'status': 'Статус: %s',
+		'statusConnecting': 'Соединение...',
+		'statusConnected' : 'Соединено',
+		'statusDisconnecting': 'Отключение...',
+		'statusDisconnected' : 'Отключено',
+		'statusAuthfail': 'Ошибка аутентификации',
+
+		'roomSubject'  : 'Тема:',
+		'messageSubmit': 'Отправить',
+
+		'labelUsername': 'Имя пользователя:',
+		'labelPassword': 'Пароль:',
+		'loginSubmit'  : 'Войти',
+		'loginInvalid'  : 'Неверный JID',
+
+		'reason'				: 'Причина:',
+		'subject'				: 'Тема:',
+		'reasonWas'				: 'По причине: %s.',
+		'kickActionLabel'		: 'Выгнать',
+		'youHaveBeenKickedBy'   : '%1$s выгнал вас из %2$s',
+		'youHaveBeenKicked'     : 'Вас выгнали из %s',
+		'banActionLabel'		: 'Забанить',
+		'youHaveBeenBannedBy'   : '%2$s забанил вас в %1$s',
+		'youHaveBeenBanned'     : 'Вас забанили в %s',
+
+		'privateActionLabel' : 'Личная переписка',
+		'ignoreActionLabel'  : 'Игнорировать',
+		'unignoreActionLabel' : 'Не игнорировать',
+
+		'setSubjectActionLabel': 'Изменить тему',
+
+		'administratorMessageSubject' : 'Администратор',
+
+		'userJoinedRoom'           : '%s вошел в комнату.',
+		'userLeftRoom'             : '%s покинул комнату.',
+		'userHasBeenKickedFromRoom': '%s был выгнан из комнаты.',
+		'userHasBeenBannedFromRoom': '%s был забанен в комнате.',
+
+		'presenceUnknownWarningSubject': 'Обратите внимание:',
+		'presenceUnknownWarning'       : 'Данный пользователь может быть не в сети. Мы не можем отследить его присутствие.',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'Модератор',
+		'tooltipIgnored'		: 'Вы игнорируете этого пользователя',
+		'tooltipEmoticons'		: 'Смайлики',
+		'tooltipSound'			: 'Воспроизводить звуковой сигнал при новом сообщении',
+		'tooltipAutoscroll'		: 'Автопрокрутка',
+		'tooltipStatusmessage'	: 'Показывать сообщение статуса',
+		'tooltipAdministration'	: 'Администратор комнаты',
+		'tooltipUsercount'		: 'Пользователи',
+
+		'enterRoomPassword' : 'Комната "%s" защищена паролем.',
+		'enterRoomPasswordSubmit' : 'Присоединиться',
+		'passwordEnteredInvalid' : 'Неверный пароль для комнаты "%s".',
+
+		'nicknameConflict': 'Имя пользователя уже используется. Пожалуйста, выберите другое.',
+
+		'errorMembersOnly': 'Вы не можете присоединиться к комнате "%s": Недостаточно прав.',
+		'errorMaxOccupantsReached': 'Вы не можете присоединиться к комнате "%s": Комната заполнена.',
+
+		'antiSpamMessage' : 'Из-за подозрения на спам, вы были заблокированы на короткое время.'
 	}
 };
