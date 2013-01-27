@@ -212,6 +212,9 @@ Candy.View.Observer = (function(self, $) {
 				Candy.View.Pane.Chat.infoMessage(args.roomJid, args.message.body);
 			} else {
 				// Initialize room if it's a message for a new private user chat
+				if(args.message.isNoConferenceRoomJid){
+					args.roomJid = Strophe.getBareJidFromJid(args.roomJid)
+				}
 				if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
 					Candy.View.Pane.PrivateRoom.open(args.roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
 				}
