@@ -1211,7 +1211,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		Autojoin: function() {
 			// Request bookmarks
 			if(Candy.Core.getOptions().autojoin === true) {
-				Candy.Core.getConnection().send($iq({type: 'get', xmlns: Strophe.NS.CLIENT}).c('query', {xmlns: Strophe.NS.PRIVATE}).c('storage', {xmlns: Strophe.NS.BOOKMARKS}).tree());
+				Candy.Core.getConnection().sendIQ($iq({type: 'get', xmlns: Strophe.NS.CLIENT}).c('query', {xmlns: Strophe.NS.PRIVATE}).c('storage', {xmlns: Strophe.NS.BOOKMARKS}).tree());
 			// Join defined rooms
 			} else if($.isArray(Candy.Core.getOptions().autojoin)) {
 				$.each(Candy.Core.getOptions().autojoin, function() {
@@ -2611,7 +2611,7 @@ Candy.View.Observer = (function(self, $) {
 			}
 		}
 	};
-	
+
 	/** Class: Candy.View.Observer.PresenceError
 	 * Presence error events
 	 */
@@ -2666,11 +2666,12 @@ Candy.View.Observer = (function(self, $) {
 			} else if(args.message.type === 'info') {
 				Candy.View.Pane.Chat.infoMessage(args.roomJid, args.message.body);
 			} else {
+				var roomJid = (args.message.isNoConferenceRoomJid ? Strophe.getBareJidFromJid(args.roomJid) : args.roomJid);
 				// Initialize room if it's a message for a new private user chat
-				if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
-					Candy.View.Pane.PrivateRoom.open(args.roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
+				if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[roomJid]) {
+					Candy.View.Pane.PrivateRoom.open(roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
 				}
-				Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.timestamp);
+				Candy.View.Pane.Message.show(roomJid, args.message.name, args.message.body, args.timestamp);
 			}
 		}
 	};
