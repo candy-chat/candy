@@ -251,23 +251,25 @@ Candy.Util = (function(self, $){
 	 *   Date-Object
 	 */
 	self.iso8601toDate = function(date) {
-        var timestamp = Date.parse(date), minutesOffset = 0;
-        if(isNaN(timestamp)) {
+		var timestamp = Date.parse(date);
+		if(isNaN(timestamp)) {
 			var struct = /^(\d{4}|[+\-]\d{6})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3,}))?)?(?:(Z)|([+\-])(\d{2})(?::?(\d{2}))?))?/.exec(date);
 			if(struct) {
+				var minutesOffset = 0;
 				if(struct[8] !== 'Z') {
 					minutesOffset = +struct[10] * 60 + (+struct[11]);
 					if(struct[9] === '+') {
 						minutesOffset = -minutesOffset;
 					}
 				}
+				minutesOffset -= new Date().getTimezoneOffset();
 				return new Date(+struct[1], +struct[2] - 1, +struct[3], +struct[4], +struct[5] + minutesOffset, +struct[6], struct[7] ? +struct[7].substr(0, 3) : 0);
 			} else {
 				// XEP-0091 date
 				timestamp = Date.parse(date.replace(/^(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') + 'Z');
 			}
-        }
-        return new Date(timestamp);
+		}
+		return new Date(timestamp);
 	};
 
 	/** Function: isEmptyObject
