@@ -473,7 +473,7 @@ Candy.View.Translation = {
 		'antiSpamMessage'   : 'スパムなどの行為はやめてください。あなたは一時的にブロックされました。'
 	},
 
-	'pt-br' : {
+	'pt_br' : {
 		'status': 'Estado: %s',
 		'statusConnecting': 'Conectando...',
 		'statusConnected' : 'Conectado',
