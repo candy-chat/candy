@@ -1523,7 +1523,12 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) elementId - Specific element to do the animation on
 		 */
 		joinAnimation: function(elementId) {
-			$('#' + elementId).stop(true).slideDown('normal', function() { $(this).animate({ opacity: 1 }); });
+      // $('#' + elementId).stop(true).slideDown('normal', function() { $(this).animate({ opacity: 1 }); });
+      
+      // disable join animation, basically.
+      // later, we'll want to look at the roster and trigger off how many
+      // people are in the room.
+      $('#' + elementId).show();
 		},
 
 		/** Function: leaveAnimation
@@ -1533,11 +1538,16 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) elementId - Specific element to do the animation on
 		 */
 		leaveAnimation: function(elementId) {
-			$('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({ opacity: 0 }, {
-				complete: function() {
-					$(this).slideUp('normal', function() { $(this).remove(); });
-				}
-			});
+      // $('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({ opacity: 0 }, {
+      //  complete: function() {
+      //    $(this).slideUp('normal', function() { $(this).remove(); });
+      //  }
+      // });
+			
+			// disable leave animation, basically.
+      // later, we'll want to look at the roster and trigger off how many
+      // people are in the room.
+      $('#' + elementId).hide();
 		}
 	};
 
