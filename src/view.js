@@ -36,7 +36,8 @@ Candy.View = (function(self, $) {
 			crop: {
 				message: { nickname: 15, body: 1000 },
 				roster: { nickname: 15 }
-			}
+			},
+			busyThreshold: 100
 		},
 
 		/** PrivateFunction: _setupTranslation

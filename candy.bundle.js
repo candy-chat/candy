@@ -431,7 +431,8 @@ Candy.View = (function(self, $) {
 			crop: {
 				message: { nickname: 15, body: 1000 },
 				roster: { nickname: 15 }
-			}
+			},
+			busyThreshold: 100
 		},
 
 		/** PrivateFunction: _setupTranslation
@@ -4159,7 +4160,11 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) elementId - Specific element to do the animation on
 		 */
 		joinAnimation: function(elementId) {
-			$('#' + elementId).stop(true).slideDown('normal', function() { $(this).animate({ opacity: 1 }); });
+		  if(self.Roster.getAll().length > Candy.View.getOptions().busyThreshold){
+		    $('#' + elementId).stop(true).show();
+		  } else {
+			  $('#' + elementId).stop(true).slideDown('normal', function() { $(this).animate({ opacity: 1 }); });
+		  }
 		},
 
 		/** Function: leaveAnimation
@@ -4169,11 +4174,15 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) elementId - Specific element to do the animation on
 		 */
 		leaveAnimation: function(elementId) {
-			$('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({ opacity: 0 }, {
-				complete: function() {
-					$(this).slideUp('normal', function() { $(this).remove(); });
-				}
-			});
+		  if(self.Roster.getAll().length > Candy.View.getOptions().busyThreshold){
+		    $('#' + elementId).stop(true).remove();
+	    } else {
+  			$('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({ opacity: 0 }, {
+  				complete: function() {
+  					$(this).slideUp('normal', function() { $(this).remove(); });
+  				}
+  			});
+	    }
 		}
 	};
 
