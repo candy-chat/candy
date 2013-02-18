@@ -4160,8 +4160,10 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) elementId - Specific element to do the animation on
 		 */
 		joinAnimation: function(elementId) {
+		  console.log("roster length: " + self.Roster.getAll().length);
+      console.log("option: " + Candy.View.getOptions().busyThreshold);
 		  if(self.Roster.getAll().length > Candy.View.getOptions().busyThreshold){
-		    $('#' + elementId).stop(true).show();
+		    $('#' + elementId).stop(true).show().css(opacity, 1);
 		  } else {
 			  $('#' + elementId).stop(true).slideDown('normal', function() { $(this).animate({ opacity: 1 }); });
 		  }

@@ -1524,7 +1524,7 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		joinAnimation: function(elementId) {
 		  if(self.Roster.getAll().length > Candy.View.getOptions().busyThreshold){
-		    $('#' + elementId).stop(true).show();
+		    $('#' + elementId).stop(true).show().css(opacity, 1);
 		  } else {
 			  $('#' + elementId).stop(true).slideDown('normal', function() { $(this).animate({ opacity: 1 }); });
 		  }
