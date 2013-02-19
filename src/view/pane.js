@@ -1523,7 +1523,14 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) elementId - Specific element to do the animation on
 		 */
 		joinAnimation: function(elementId) {
-			$('#' + elementId).stop(true).slideDown('normal', function() { $(this).animate({ opacity: 1 }); });
+		  var roomJid = Candy.View.getCurrent().roomJid;
+		  var roomPopulation = Candy.View.Pane.Chat.rooms[roomJid].usercount;
+		  
+      if(roomPopulation > Candy.View.getOptions().busyThreshold) {
+		    $('#' + elementId).show().css("opacity", 1);
+      } else {
+        $('#' + elementId).stop(true).slideDown('normal', function() { $(this).animate({ opacity: 1 }); });
+      }
 		},
 
 		/** Function: leaveAnimation
@@ -1533,11 +1540,18 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) elementId - Specific element to do the animation on
 		 */
 		leaveAnimation: function(elementId) {
-			$('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({ opacity: 0 }, {
-				complete: function() {
-					$(this).slideUp('normal', function() { $(this).remove(); });
-				}
-			});
+		  var roomJid = Candy.View.getCurrent().roomJid;
+		  var roomPopulation = Candy.View.Pane.Chat.rooms[roomJid].usercount;
+		  
+      if(roomPopulation > Candy.View.getOptions().busyThreshold) {
+		    $('#' + elementId).stop(true).remove();
+	    } else {
+  			$('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({ opacity: 0 }, {
+  				complete: function() {
+  					$(this).slideUp('normal', function() { $(this).remove(); });
+  				}
+  			});
+	    }
 		}
 	};
 
@@ -1583,20 +1597,24 @@ Candy.View.Pane = (function(self, $) {
 			if(!message) {
 				return;
 			}
-
+      
+      var localUsername = self.Room.getUser(Candy.View.getCurrent().roomJid).getNick();
+      
 			var html = Mustache.to_html(Candy.View.Template.Message.item, {
 				name: name,
 				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.nickname),
 				message: message,
-				time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
+				time: Candy.Util.localizedTime(timestamp || new Date().toGMTString()),
+				mention: message.indexOf("@" + localUsername)!=-1 ? "mention" : ""
 			});
+			
 			self.Room.appendToMessagePane(roomJid, html);
 			var elem = self.Room.getPane(roomJid, '.message-pane').children().last();
 			// click on username opens private chat
 			elem.find('a.name').click(function(event) {
 				event.preventDefault();
 				// Check if user is online and not myself
-				if(name !== self.Room.getUser(Candy.View.getCurrent().roomJid).getNick() && Candy.Core.getRoom(roomJid).getRoster().get(roomJid + '/' + name)) {
+				if(name !== localUsername && Candy.Core.getRoom(roomJid).getRoster().get(roomJid + '/' + name)) {
 					Candy.View.Pane.PrivateRoom.open(roomJid + '/' + name, name, true);
 				}
 			});
@@ -1611,7 +1629,7 @@ Candy.View.Pane = (function(self, $) {
 			if(Candy.View.getCurrent().roomJid === roomJid) {
 				self.Room.scrollToBottom(roomJid);
 			}
-
+      
 			Candy.View.Event.Message.onShow({'roomJid': roomJid, 'element': elem, 'nick': name, 'message': message});
 		}
 	};
