@@ -313,6 +313,7 @@ ul {
 	font-size: 10px;
 	text-align: right;
 	padding-top: 4px;
+	height: 13px;
 }
 
 .message-pane dd {
@@ -323,7 +324,7 @@ ul {
 	word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
 
-.message-pane dd.mention {
+.message-pane dd.mention, .message-pane dt.mention {
   background-color: #FFF7DE;
 }
 
