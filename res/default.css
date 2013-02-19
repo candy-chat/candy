@@ -323,6 +323,10 @@ ul {
 	word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
 
+.message-pane dd.mention {
+  background-color: #FFF8C9;
+}
+
 .message-pane dd .label {
 	font-weight: bold;
 	white-space: nowrap;
