@@ -1583,20 +1583,24 @@ Candy.View.Pane = (function(self, $) {
 			if(!message) {
 				return;
 			}
-
+      
+      var localUsername = self.Room.getUser(Candy.View.getCurrent().roomJid).getNick();
+      
 			var html = Mustache.to_html(Candy.View.Template.Message.item, {
 				name: name,
 				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.nickname),
 				message: message,
-				time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
+				time: Candy.Util.localizedTime(timestamp || new Date().toGMTString()),
+				mention: message.indexOf("@" + localUsername)!=-1 ? "mention" : ""
 			});
+			
 			self.Room.appendToMessagePane(roomJid, html);
 			var elem = self.Room.getPane(roomJid, '.message-pane').children().last();
 			// click on username opens private chat
 			elem.find('a.name').click(function(event) {
 				event.preventDefault();
 				// Check if user is online and not myself
-				if(name !== self.Room.getUser(Candy.View.getCurrent().roomJid).getNick() && Candy.Core.getRoom(roomJid).getRoster().get(roomJid + '/' + name)) {
+				if(name !== localUsername && Candy.Core.getRoom(roomJid).getRoster().get(roomJid + '/' + name)) {
 					Candy.View.Pane.PrivateRoom.open(roomJid + '/' + name, name, true);
 				}
 			});
