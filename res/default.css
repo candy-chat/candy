@@ -321,6 +321,11 @@ ul {
 	margin: 0 0 2px 0;
 	white-space: -o-pre-wrap; /* Opera */
 	word-wrap: break-word; /* Internet Explorer 5.5+ */
+	height: 13px;
+}
+
+.message-pane dd.mention, .message-pane dt.mention {
+  background-color: #FFF7DE;
 }
 
 .message-pane dd .label {
