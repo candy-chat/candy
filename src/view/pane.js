@@ -1516,30 +1516,44 @@ Candy.View.Pane = (function(self, $) {
 			self.PrivateRoom.open(elem.attr('data-jid'), elem.attr('data-nick'), true);
 		},
 
-		/** Function: joinAnimation
-		 * Animates specified elementId on join
-		 *
-		 * Parameters:
-		 *   (String) elementId - Specific element to do the animation on
-		 */
-		joinAnimation: function(elementId) {
-			$('#' + elementId).stop(true).slideDown('normal', function() { $(this).animate({ opacity: 1 }); });
-		},
+    /** Function: joinAnimation
+     * Animates specified elementId on join
+     *
+     * Parameters:
+     *   (String) elementId - Specific element to do the animation on
+     */
+    joinAnimation: function(elementId) {
+      var roomJid = Candy.View.getCurrent().roomJid;
+      var roomPopulation = Candy.View.Pane.Chat.rooms[roomJid].usercount;
 
-		/** Function: leaveAnimation
-		 * Leave animation for specified element id and removes the DOM element on completion.
-		 *
-		 * Parameters:
-		 *   (String) elementId - Specific element to do the animation on
-		 */
-		leaveAnimation: function(elementId) {
-			$('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({ opacity: 0 }, {
-				complete: function() {
-					$(this).slideUp('normal', function() { $(this).remove(); });
-				}
-			});
-		}
-	};
+      if(roomPopulation > Candy.View.getOptions().bigRoomThreshold) {
+        $('#' + elementId).show().css("opacity", 1);
+      } else {
+        $('#' + elementId).stop(true).slideDown('normal', function() { $(this).animate({ opacity: 1 }); });
+      }
+    },
+
+    /** Function: leaveAnimation
+     * Leave animation for specified element id and removes the DOM element on completion.
+     *
+     * Parameters:
+     *   (String) elementId - Specific element to do the animation on
+     */
+    leaveAnimation: function(elementId) {
+      var roomJid = Candy.View.getCurrent().roomJid;
+      var roomPopulation = Candy.View.Pane.Chat.rooms[roomJid].usercount;
+
+      if(roomPopulation > Candy.View.getOptions().bigRoomThreshold) {
+        $('#' + elementId).stop(true).remove();
+      } else {
+    		$('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({ opacity: 0 }, {
+    			complete: function() {
+    				$(this).slideUp('normal', function() { $(this).remove(); });
+    			}
+    		});
+      }
+    }
+  };
 
 	/** Class: Candy.View.Pane.Message
 	 * Message submit/show handling
