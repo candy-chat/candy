@@ -1526,7 +1526,7 @@ Candy.View.Pane = (function(self, $) {
       var roomJid = Candy.View.getCurrent().roomJid;
       var roomPopulation = Candy.View.Pane.Chat.rooms[roomJid].usercount;
 
-      if(roomPopulation > Candy.View.getOptions().busyThreshold) {
+      if(roomPopulation > Candy.View.getOptions().bigRoomThreshold) {
         $('#' + elementId).show().css("opacity", 1);
       } else {
         $('#' + elementId).stop(true).slideDown('normal', function() { $(this).animate({ opacity: 1 }); });
@@ -1543,7 +1543,7 @@ Candy.View.Pane = (function(self, $) {
       var roomJid = Candy.View.getCurrent().roomJid;
       var roomPopulation = Candy.View.Pane.Chat.rooms[roomJid].usercount;
 
-      if(roomPopulation > Candy.View.getOptions().busyThreshold) {
+      if(roomPopulation > Candy.View.getOptions().bigRoomThreshold) {
         $('#' + elementId).stop(true).remove();
       } else {
     		$('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({ opacity: 0 }, {
