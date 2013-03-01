@@ -1578,6 +1578,17 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) timestamp - [optional] Timestamp of the message, if not present, current date.
 		 */
 		show: function(roomJid, name, message, timestamp) {
+		  // for messages that come in when you login, the roster has not
+		  // yet been populated, so we can't reliably extract user objects,
+		  // so there must be defaults in that situation.
+		  var user = Candy.Core.getRooms()[roomJid].roster.get(roomJid + "/" + name);
+
+			var affiliation = "", role = "";
+			if(user !== undefined) {
+				affiliation = user.getAffiliation();
+				role = user.getRole();
+			}
+
 			message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
 			message = Candy.View.Event.Message.beforeShow({'roomJid': roomJid, 'nick': name, 'message': message});
 			if(!message) {
@@ -1586,10 +1597,13 @@ Candy.View.Pane = (function(self, $) {
 
 			var html = Mustache.to_html(Candy.View.Template.Message.item, {
 				name: name,
+		    affiliation: affiliation,
+		    role: role,
 				displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.nickname),
 				message: message,
-				time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
+				time: Candy.Util.localizedTime(timestamp || new Date().toGMTString()),
 			});
+
 			self.Room.appendToMessagePane(roomJid, html);
 			var elem = self.Room.getPane(roomJid, '.message-pane').children().last();
 			// click on username opens private chat
