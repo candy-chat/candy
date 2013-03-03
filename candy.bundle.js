@@ -3209,11 +3209,13 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			showLoginForm: function(message, presetJid) {
 				self.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
+				  _labelNickname: $.i18n._('labelNickname'),
 					_labelUsername: $.i18n._('labelUsername'),
 					_labelPassword: $.i18n._('labelPassword'),
 					_loginSubmit: $.i18n._('loginSubmit'),
 					displayPassword: !Candy.Core.isAnonymousConnection(),
-					displayUsername: Candy.Core.isAnonymousConnection() || !presetJid,
+					displayUsername: !presetJid,
+					displayNickname: Candy.Core.isAnonymousConnection(),
 					presetJid: presetJid ? presetJid : false
 				}));
 				$('#login-form').children()[0].focus();
@@ -4317,6 +4319,7 @@ Candy.View.Template = (function(self){
 
 	self.Login = {
 		form: '<form method="post" id="login-form" class="login-form">'
+		+ '{{#displayNickname}}<label for="username">{{_labelNickname}}</label><input type="text" id="username" name="username"/>{{/displayNickname}}'
 			+ '{{#displayUsername}}<label for="username">{{_labelUsername}}</label><input type="text" id="username" name="username"/>{{/displayUsername}}'
 			+ '{{#presetJid}}<input type="hidden" id="username" name="username" value="{{presetJid}}"/>{{/presetJid}}'
 			+ '{{#displayPassword}}<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />{{/displayPassword}}'
@@ -4364,6 +4367,7 @@ Candy.View.Translation = {
 		'messageSubmit': 'Send',
 
 		'labelUsername': 'Username:',
+		'labelNickname': 'Nickname:',
 		'labelPassword': 'Password:',
 		'loginSubmit'  : 'Login',
 		'loginInvalid'  : 'Invalid JID',

@@ -25,6 +25,7 @@ Candy.View.Translation = {
 		'messageSubmit': 'Send',
 
 		'labelUsername': 'Username:',
+		'labelNickname': 'Nickname:',
 		'labelPassword': 'Password:',
 		'loginSubmit'  : 'Login',
 		'loginInvalid'  : 'Invalid JID',
