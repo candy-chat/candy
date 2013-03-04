@@ -77,8 +77,8 @@ ul {
 #chat-tabs a.close {
 	background-color: transparent;
 	position: absolute;
-	top: 0;
-	right: 0;
+	right: -2px;
+	top: -3px;
 	height: auto;
 	padding: 5px;
 	margin: 0 5px 0 2px;
@@ -621,8 +621,7 @@ ul {
 
 #chat-modal .close {
 	position: absolute;
-	right: -2px;
-	top: -3px;
+	right: 0;
 	display: none;
 	padding: 0 5px;
 	margin: -17px 3px 0 0;
