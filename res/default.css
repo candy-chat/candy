@@ -8,7 +8,7 @@
 html, body {
 	margin: 0;
 	padding: 0;
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: 'Helvetica Neue', Helvetica, sans-serif;
 }
 
 #candy {
@@ -204,7 +204,7 @@ ul {
 	margin: 30px 0 32px 0;
 	background-color: #333;
 	border-top: 1px solid black;
-	box-shadow: inset 0 1px 0 0 #444;
+	box-shadow: inset 0 1px 0 0 #555;
 }
 
 .roster-pane .user {
@@ -217,7 +217,7 @@ ul {
 	clear: both;
 	height: 14px;
 	border-bottom: 1px solid black;
-	box-shadow: 0 1px 0 0 #444;
+	box-shadow: 0 1px 0 0 #555;
 }
 
 .roster-pane .user:hover {
@@ -279,18 +279,19 @@ ul {
 	display: block;
 }
 
-.roster-pane .me li.context {
-	display: none;
-}
-
 .roster-pane li.context {
-	background-image: url(img/action/menu.png);
+	color: #999;
+	text-align: center;
 	cursor: pointer;
 }
 
 .roster-pane li.context:hover {
-	background-color: #888;
+	background-color: #666;
 	border-radius: 4px;
+}
+
+.roster-pane .me li.context {
+	display: none;
 }
 
 .message-pane-wrapper {
@@ -441,7 +442,7 @@ ul {
 	line-height: 12px;
 	height: 25px;
 	font-weight: bold;
-	border-radius: 10px;
+	border-radius: 3px;
 }
 
 #tooltip {
@@ -620,7 +621,8 @@ ul {
 
 #chat-modal .close {
 	position: absolute;
-	right: 0;
+	right: -2px;
+	top: -3px;
 	display: none;
 	padding: 0 5px;
 	margin: -17px 3px 0 0;
