@@ -509,7 +509,7 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			hide: function(callback) {
 				$('#chat-modal').fadeOut('fast', function() {
-					$('#chat-modal-body').text('');	
+					$('#chat-modal-body').text('');
 					$('#chat-modal-overlay').hide();
 				});
 				// restore initial esc handling
@@ -604,7 +604,7 @@ Candy.View.Pane = (function(self, $) {
 					return false;
 				});
 			},
-			
+
 			/** Function: showEnterPasswordForm
 			 * Shows a form for entering room password
 			 *
@@ -621,18 +621,18 @@ Candy.View.Pane = (function(self, $) {
 					_joinSubmit: $.i18n._('enterRoomPasswordSubmit')
 				}), true);
 				$('#password').focus();
-				
+
 				// register submit handler
 				$('#enter-password-form').submit(function() {
 					var password = $('#password').val();
-					
+
 					self.Chat.Modal.hide(function() {
 						Candy.Core.Action.Jabber.Room.Join(roomJid, password);
 					});
 					return false;
 				});
 			},
-			
+
 			/** Function: showNicknameConflictForm
 			 * Shows a form indicating that the nickname is already taken and
 			 * for chosing a new nickname
@@ -647,7 +647,7 @@ Candy.View.Pane = (function(self, $) {
 					_loginSubmit: $.i18n._('loginSubmit')
 				}));
 				$('#nickname').focus();
-				
+
 				// register submit handler
 				$('#nickname-conflict-form').submit(function() {
 					var nickname = $('#nickname').val();
@@ -659,7 +659,7 @@ Candy.View.Pane = (function(self, $) {
 					return false;
 				});
 			},
-			
+
 			/** Function: showError
 			 * Show modal containing error message
 			 *
@@ -1593,7 +1593,7 @@ Candy.View.Pane = (function(self, $) {
 			self.Room.appendToMessagePane(roomJid, html);
 			var elem = self.Room.getPane(roomJid, '.message-pane').children().last();
 			// click on username opens private chat
-			elem.find('a.name').click(function(event) {
+			elem.find('a.label').click(function(event) {
 				event.preventDefault();
 				// Check if user is online and not myself
 				if(name !== self.Room.getUser(Candy.View.getCurrent().roomJid).getNick() && Candy.Core.getRoom(roomJid).getRoster().get(roomJid + '/' + name)) {
