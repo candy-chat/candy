@@ -1581,7 +1581,17 @@ Candy.View.Pane = (function(self, $) {
 		  // for messages that come in when you login, the roster has not
 		  // yet been populated, so we can't reliably extract user objects,
 		  // so there must be defaults in that situation.
-		  var user = Candy.Core.getRooms()[roomJid].roster.get(roomJid + "/" + name);
+		  var user = undefined;
+		  
+		  // private messages come in with a roomJid looking like this:
+		  // room@hostname/user
+		  // This is not actually a top level room as far as Candy.Core is
+		  // concerned, so make sure the room is actually a real room
+		  // before looking up the user. I'm not sure how to find the user
+		  // in the global user space.
+		  if(roomJid in Candy.Core.getRooms()) {
+		    user = Candy.Core.getRooms()[roomJid].roster.get(roomJid + "/" + name);
+		  }
 
 			var affiliation = "", role = "";
 			if(user !== undefined) {
