@@ -534,7 +534,7 @@ Candy.View.Translation = {
 	'it' : {
 		'status': 'Stato: %s',
 		'statusConnecting': 'Connessione...',
-		'statusConnected' : 'Connessone',
+		'statusConnected' : 'Connessione',
 		'statusDisconnecting': 'Disconnessione...',
 		'statusDisconnected' : 'Disconnesso',
 		'statusAuthfail': 'Autenticazione fallita',
@@ -554,8 +554,8 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Sei stato espulso da %2$s da %1$s',
 		'youHaveBeenKicked'     : 'Sei stato espulso da %s',
 		'banActionLabel'        : 'Escluso',
-		'youHaveBeenBannedBy'   : 'Sei stato escludo da %1$s da %2$s',
-		'youHaveBeenBanned'     : 'Sei stato escludo da %s',
+		'youHaveBeenBannedBy'   : 'Sei stato escluso da %1$s da %2$s',
+		'youHaveBeenBanned'     : 'Sei stato escluso da %s',
 
 		'privateActionLabel' : 'Stanza privata',
 		'ignoreActionLabel'  : 'Ignora',
@@ -573,7 +573,7 @@ Candy.View.Translation = {
 		'presenceUnknownWarningSubject': 'Nota:',
 		'presenceUnknownWarning'       : 'Questo utente potrebbe essere offline. Non possiamo tracciare la sua presenza.',
 
-		'dateFormat': 'dd.mm.yyyy',
+		'dateFormat': 'dd/mm/yyyy',
 		'timeFormat': 'HH:MM:ss',
 
 		'tooltipRole'           : 'Moderatore',
@@ -592,7 +592,7 @@ Candy.View.Translation = {
 		'nicknameConflict': 'Nome utente già in uso. Scegline un altro.',
 
 		'errorMembersOnly': 'Non puoi unirti alla stanza "%s": Permessi insufficienti.',
-		'errorMaxOccupantsReached': 'Non puoi unirti alla stanza "%s": Troppi participanti.',
+		'errorMaxOccupantsReached': 'Non puoi unirti alla stanza "%s": Troppi partecipanti.',
 
 		'antiSpamMessage' : 'Per favore non scrivere messaggi pubblicitari. Sei stato bloccato per un po\' di tempo.'
 	},
