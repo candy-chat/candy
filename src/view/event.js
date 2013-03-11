@@ -38,6 +38,13 @@ Candy.View.Event = (function(self, $) {
 			return;
 		},
 		
+		/** Function: onConnected
+		 * Called when client is connected
+		 */
+		onConnected: function() {
+			return;
+		},
+		
 		/** Function: onAuthfail
 		 * Called when authentication fails
 		 */
