@@ -42,6 +42,7 @@ Candy.View.Observer = (function(self, $) {
 					case Strophe.Status.CONNECTED:
 						Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnected'));
 						Candy.View.Pane.Chat.Modal.hide();
+						Candy.View.Event.Chat.Connected();
 						break;
 
 					case Strophe.Status.DISCONNECTING:
