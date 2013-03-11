@@ -449,34 +449,66 @@ ul {
 	position: absolute;
 	z-index: 10;
 	display: none;
-	margin: 18px -18px 2px -2px;
-	color: white;
+	margin: 13px -18px -3px -2px;
+	color: #333;
 	font-size: 11px;
 	padding: 5px 0;
-	background: url(img/tooltip-arrows.gif) no-repeat left bottom;
 }
 
 #tooltip div {
-	background-color: black;
+	background-color: #f7f7f7;
 	padding: 2px 5px;
 	zoom: 1;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, .75);
+}
+
+.arrow {
+	background: url(img/tooltip-arrows.gif) no-repeat left bottom;
+	height: 5px;
+	display: block;
+	position: relative;
+	z-index: 11;
+}
+
+.right-bottom .arrow-bottom {
+	background-position: right bottom;
+}
+
+.arrow-top {
+	display: none;
+	background-position: left top;
+}
+
+.right-top .arrow-top {
+	display: block;
+	background-position: right top;
+}
+
+.left-top .arrow-top {
+	display: block;
+}
+
+
+.left-top .arrow-bottom,
+.right-top .arrow-bottom {
+	display: none;
 }
 
 #context-menu {
 	position: absolute;
 	z-index: 10;
 	display: none;
-	padding: 15px 10px;
-	margin: 8px -28px -8px -12px;
-	background: url(img/context-arrows.gif) no-repeat left bottom;
+	padding: 5px 10px;
+	margin: 13px -28px -3px -12px;
 }
 
 #context-menu ul {
-	background-color: black;
-	color: white;
+	background-color: #f7f7f7;
+	color: #333;
 	font-size: 12px;
 	padding: 2px;
 	zoom: 1;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, .75);
 }
 
 #context-menu li {
@@ -489,7 +521,7 @@ ul {
 }
 
 #context-menu li:hover {
-	background-color: #666;
+	background-color: #ccc;
 }
 
 #context-menu li:last-child {

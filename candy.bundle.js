@@ -3346,7 +3346,11 @@ Candy.View.Pane = (function(self, $) {
 						posLeft = Candy.Util.getPosLeftAccordingToWindowBounds(tooltip, pos.left),
 						posTop  = Candy.Util.getPosTopAccordingToWindowBounds(tooltip, pos.top);
 
-				tooltip.css({'left': posLeft.px, 'top': posTop.px, backgroundPosition: posLeft.backgroundPositionAlignment + ' ' + posTop.backgroundPositionAlignment}).fadeIn('fast');
+				tooltip
+					.css({'left': posLeft.px, 'top': posTop.px})
+					.removeClass('left-top left-bottom right-top right-bottom')
+					.addClass(posLeft.backgroundPositionAlignment + '-' + posTop.backgroundPositionAlignment)
+					.fadeIn('fast');
 
 				target.mouseleave(function(event) {
 					event.stopPropagation();
@@ -3431,8 +3435,11 @@ Candy.View.Pane = (function(self, $) {
 						posLeft = Candy.Util.getPosLeftAccordingToWindowBounds(menu, pos.left),
 						posTop  = Candy.Util.getPosTopAccordingToWindowBounds(menu, pos.top);
 
-					menu.css({'left': posLeft.px, 'top': posTop.px, backgroundPosition: posLeft.backgroundPositionAlignment + ' ' + posTop.backgroundPositionAlignment});
-					menu.fadeIn('fast');
+					menu
+						.css({'left': posLeft.px, 'top': posTop.px})
+						.removeClass('left-top left-bottom right-top right-bottom')
+						.addClass(posLeft.backgroundPositionAlignment + '-' + posTop.backgroundPositionAlignment)
+						.fadeIn('fast');
 
 					Candy.View.Event.Roster.afterContextMenu({'roomJid' : roomJid, 'user' : user, 'element': menu });
 
@@ -3596,8 +3603,11 @@ Candy.View.Pane = (function(self, $) {
 				var posLeft = Candy.Util.getPosLeftAccordingToWindowBounds(menu, pos.left),
 					posTop  = Candy.Util.getPosTopAccordingToWindowBounds(menu, pos.top);
 
-				menu.css({'left': posLeft.px, 'top': posTop.px, backgroundPosition: posLeft.backgroundPositionAlignment + ' ' + posTop.backgroundPositionAlignment});
-				menu.fadeIn('fast');
+				menu
+					.css({'left': posLeft.px, 'top': posTop.px})
+					.removeClass('left-top left-bottom right-top right-bottom')
+					.addClass(posLeft.backgroundPositionAlignment + '-' + posTop.backgroundPositionAlignment)
+					.fadeIn('fast');
 
 				return true;
 			}
@@ -4291,12 +4301,12 @@ Candy.View.Template = (function(self){
 						+ ' value="always" /><param name="FlashVars" value="listener=audioplayerListener&amp;mp3={{resourcesPath}}notify.mp3" />'
 						+ '</object>',
 		Context: {
-			menu: '<div id="context-menu"><ul></ul></div>',
+			menu: '<div id="context-menu"><i class="arrow arrow-top"></i><ul></ul><i class="arrow arrow-bottom"></i></div>',
 			menulinks: '<li class="{{class}}" id="context-menu-{{id}}">{{label}}</li>',
 			contextModalForm: '<form action="#" id="context-modal-form"><label for="context-modal-label">{{_label}}</label><input type="text" name="contextModalField" id="context-modal-field" /><input type="submit" class="button" name="send" value="{{_submit}}" /></form>',
 			adminMessageReason: '<a id="admin-message-cancel" class="close" href="#">×</a><p>{{_action}}</p>{{#reason}}<p>{{_reason}}</p>{{/reason}}'
 		},
-		tooltip: '<div id="tooltip"><div></div></div>'
+		tooltip: '<div id="tooltip"><i class="arrow arrow-top"></i><div></div><i class="arrow arrow-bottom"></i></div>'
 	};
 
 	self.Room = {

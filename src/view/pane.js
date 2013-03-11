@@ -710,7 +710,11 @@ Candy.View.Pane = (function(self, $) {
 						posLeft = Candy.Util.getPosLeftAccordingToWindowBounds(tooltip, pos.left),
 						posTop  = Candy.Util.getPosTopAccordingToWindowBounds(tooltip, pos.top);
 
-				tooltip.css({'left': posLeft.px, 'top': posTop.px, backgroundPosition: posLeft.backgroundPositionAlignment + ' ' + posTop.backgroundPositionAlignment}).fadeIn('fast');
+				tooltip
+					.css({'left': posLeft.px, 'top': posTop.px})
+					.removeClass('left-top left-bottom right-top right-bottom')
+					.addClass(posLeft.backgroundPositionAlignment + '-' + posTop.backgroundPositionAlignment)
+					.fadeIn('fast');
 
 				target.mouseleave(function(event) {
 					event.stopPropagation();
@@ -795,8 +799,11 @@ Candy.View.Pane = (function(self, $) {
 						posLeft = Candy.Util.getPosLeftAccordingToWindowBounds(menu, pos.left),
 						posTop  = Candy.Util.getPosTopAccordingToWindowBounds(menu, pos.top);
 
-					menu.css({'left': posLeft.px, 'top': posTop.px, backgroundPosition: posLeft.backgroundPositionAlignment + ' ' + posTop.backgroundPositionAlignment});
-					menu.fadeIn('fast');
+					menu
+						.css({'left': posLeft.px, 'top': posTop.px})
+						.removeClass('left-top left-bottom right-top right-bottom')
+						.addClass(posLeft.backgroundPositionAlignment + '-' + posTop.backgroundPositionAlignment)
+						.fadeIn('fast');
 
 					Candy.View.Event.Roster.afterContextMenu({'roomJid' : roomJid, 'user' : user, 'element': menu });
 
@@ -960,8 +967,11 @@ Candy.View.Pane = (function(self, $) {
 				var posLeft = Candy.Util.getPosLeftAccordingToWindowBounds(menu, pos.left),
 					posTop  = Candy.Util.getPosTopAccordingToWindowBounds(menu, pos.top);
 
-				menu.css({'left': posLeft.px, 'top': posTop.px, backgroundPosition: posLeft.backgroundPositionAlignment + ' ' + posTop.backgroundPositionAlignment});
-				menu.fadeIn('fast');
+				menu
+					.css({'left': posLeft.px, 'top': posTop.px})
+					.removeClass('left-top left-bottom right-top right-bottom')
+					.addClass(posLeft.backgroundPositionAlignment + '-' + posTop.backgroundPositionAlignment)
+					.fadeIn('fast');
 
 				return true;
 			}
