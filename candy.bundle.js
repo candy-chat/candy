@@ -624,7 +624,7 @@ Candy.Util = (function(self, $){
 	self.jidToId = function(jid) {
 		return MD5.hexdigest(jid);
 	};
-	
+
 	/** Function: escapeJid
 	 * Escapes a jid (node & resource get escaped)
 	 *
@@ -641,15 +641,15 @@ Candy.Util = (function(self, $){
 		var node = Strophe.escapeNode(Strophe.getNodeFromJid(jid)),
 			domain = Strophe.getDomainFromJid(jid),
 			resource = Strophe.getResourceFromJid(jid);
-			
+
 		jid = node + '@' + domain;
 		if (resource) {
 			jid += '/' + Strophe.escapeNode(resource);
 		}
-		
+
 		return jid;
 	};
-	
+
 	/** Function: unescapeJid
 	 * Unescapes a jid (node & resource get unescaped)
 	 *
@@ -666,12 +666,12 @@ Candy.Util = (function(self, $){
 		var node = Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
 			domain = Strophe.getDomainFromJid(jid),
 			resource = Strophe.getResourceFromJid(jid);
-		
+
 		jid = node + '@' + domain;
 		if(resource) {
 			jid += '/' + Strophe.unescapeNode(resource);
 		}
-		
+
 		return jid;
 	};
 
@@ -726,13 +726,13 @@ Candy.Util = (function(self, $){
 	 *   Cookie value or undefined
 	 */
 	self.getCookie = function(name) {
-	    if(document.cookie)	{
+		if(document.cookie)	{
 				var regex = new RegExp(escape(name) + '=([^;]*)', 'gm'),
 					matches = regex.exec(document.cookie);
 					if(matches) {
 						return matches[1];
 					}
-	    }
+		}
 	};
 
 	/** Function: deleteCookie
@@ -909,7 +909,7 @@ Candy.Util = (function(self, $){
 		 * Use setEmoticonPath() to change it
 		 */
 		_emoticonPath: '',
-		
+
 		/** Function: setEmoticonPath
 		 * Set emoticons location.
 		 *
@@ -1052,6 +1052,19 @@ Candy.Util = (function(self, $){
 			return $('<div/>').text(text).html();
 		},
 
+		/** Function: nl2br
+		 * replaces newline characters with a <br/> to make multi line messages look nice
+		 *
+		 * Parameters:
+		 *   (String) text - Text to process
+		 *
+		 * Returns:
+		 *   Processed text
+		 */
+		nl2br: function(text) {
+			return text.replace(/\r\n|\r|\n/g, '<br />');
+		},
+
 		/** Function: all
 		 * Does everything of the parser: escaping, linkifying and emotifying.
 		 *
@@ -1066,6 +1079,7 @@ Candy.Util = (function(self, $){
 				text = this.escape(text);
 				text = this.linkify(text);
 				text = this.emotify(text);
+				text = this.nl2br(text);
 			}
 			return text;
 		}
@@ -1301,7 +1315,9 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *   (String) roomJid - Room to leave
 			 */
 			Leave: function(roomJid) {
-				Candy.Core.getConnection().muc.leave(roomJid, Candy.Core.getRoom(roomJid).getUser().getNick(), function() {});
+				if(Candy.Core.getRoom(roomJid).getUser()){
+					Candy.Core.getConnection().muc.leave(roomJid, Candy.Core.getRoom(roomJid).getUser().getNick(), function() {});
+				}
 			},
 
 			/** Function: Disco
@@ -4974,7 +4990,7 @@ Candy.View.Translation = {
 	'it' : {
 		'status': 'Stato: %s',
 		'statusConnecting': 'Connessione...',
-		'statusConnected' : 'Connessone',
+		'statusConnected' : 'Connessione',
 		'statusDisconnecting': 'Disconnessione...',
 		'statusDisconnected' : 'Disconnesso',
 		'statusAuthfail': 'Autenticazione fallita',
@@ -4994,8 +5010,8 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Sei stato espulso da %2$s da %1$s',
 		'youHaveBeenKicked'     : 'Sei stato espulso da %s',
 		'banActionLabel'        : 'Escluso',
-		'youHaveBeenBannedBy'   : 'Sei stato escludo da %1$s da %2$s',
-		'youHaveBeenBanned'     : 'Sei stato escludo da %s',
+		'youHaveBeenBannedBy'   : 'Sei stato escluso da %1$s da %2$s',
+		'youHaveBeenBanned'     : 'Sei stato escluso da %s',
 
 		'privateActionLabel' : 'Stanza privata',
 		'ignoreActionLabel'  : 'Ignora',
@@ -5013,7 +5029,7 @@ Candy.View.Translation = {
 		'presenceUnknownWarningSubject': 'Nota:',
 		'presenceUnknownWarning'       : 'Questo utente potrebbe essere offline. Non possiamo tracciare la sua presenza.',
 
-		'dateFormat': 'dd.mm.yyyy',
+		'dateFormat': 'dd/mm/yyyy',
 		'timeFormat': 'HH:MM:ss',
 
 		'tooltipRole'           : 'Moderatore',
@@ -5032,7 +5048,7 @@ Candy.View.Translation = {
 		'nicknameConflict': 'Nome utente già in uso. Scegline un altro.',
 
 		'errorMembersOnly': 'Non puoi unirti alla stanza "%s": Permessi insufficienti.',
-		'errorMaxOccupantsReached': 'Non puoi unirti alla stanza "%s": Troppi participanti.',
+		'errorMaxOccupantsReached': 'Non puoi unirti alla stanza "%s": Troppi partecipanti.',
 
 		'antiSpamMessage' : 'Per favore non scrivere messaggi pubblicitari. Sei stato bloccato per un po\' di tempo.'
 	},

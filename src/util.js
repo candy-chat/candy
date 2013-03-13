@@ -29,7 +29,7 @@ Candy.Util = (function(self, $){
 	self.jidToId = function(jid) {
 		return MD5.hexdigest(jid);
 	};
-	
+
 	/** Function: escapeJid
 	 * Escapes a jid (node & resource get escaped)
 	 *
@@ -46,15 +46,15 @@ Candy.Util = (function(self, $){
 		var node = Strophe.escapeNode(Strophe.getNodeFromJid(jid)),
 			domain = Strophe.getDomainFromJid(jid),
 			resource = Strophe.getResourceFromJid(jid);
-			
+
 		jid = node + '@' + domain;
 		if (resource) {
 			jid += '/' + Strophe.escapeNode(resource);
 		}
-		
+
 		return jid;
 	};
-	
+
 	/** Function: unescapeJid
 	 * Unescapes a jid (node & resource get unescaped)
 	 *
@@ -71,12 +71,12 @@ Candy.Util = (function(self, $){
 		var node = Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
 			domain = Strophe.getDomainFromJid(jid),
 			resource = Strophe.getResourceFromJid(jid);
-		
+
 		jid = node + '@' + domain;
 		if(resource) {
 			jid += '/' + Strophe.unescapeNode(resource);
 		}
-		
+
 		return jid;
 	};
 
@@ -131,13 +131,13 @@ Candy.Util = (function(self, $){
 	 *   Cookie value or undefined
 	 */
 	self.getCookie = function(name) {
-	    if(document.cookie)	{
+		if(document.cookie)	{
 				var regex = new RegExp(escape(name) + '=([^;]*)', 'gm'),
 					matches = regex.exec(document.cookie);
 					if(matches) {
 						return matches[1];
 					}
-	    }
+		}
 	};
 
 	/** Function: deleteCookie
@@ -314,7 +314,7 @@ Candy.Util = (function(self, $){
 		 * Use setEmoticonPath() to change it
 		 */
 		_emoticonPath: '',
-		
+
 		/** Function: setEmoticonPath
 		 * Set emoticons location.
 		 *
@@ -456,18 +456,18 @@ Candy.Util = (function(self, $){
 		escape: function(text) {
 			return $('<div/>').text(text).html();
 		},
- 		
- 		/** Function: nicelines
-                 * replaces newline characters with a <br/> to make multi line messages look nice
-                 *
-                 * Parameters:
-                 *   (String) text - Text to make nice
-                 *
-                 * Returns:
-                 *   newline characters replaces with <br/>
-                 */
-		nicelines: function(text) {
-			return text.replace(/\r\n|\r|\n/g, '<br/>');
+
+		/** Function: nl2br
+		 * replaces newline characters with a <br/> to make multi line messages look nice
+		 *
+		 * Parameters:
+		 *   (String) text - Text to process
+		 *
+		 * Returns:
+		 *   Processed text
+		 */
+		nl2br: function(text) {
+			return text.replace(/\r\n|\r|\n/g, '<br />');
 		},
 
 		/** Function: all
@@ -484,7 +484,7 @@ Candy.Util = (function(self, $){
 				text = this.escape(text);
 				text = this.linkify(text);
 				text = this.emotify(text);
-				text = this.nicelines(text);
+				text = this.nl2br(text);
 			}
 			return text;
 		}
