@@ -1606,7 +1606,8 @@ Candy.View.Pane = (function(self, $) {
 			elem.find('a.label').click(function(event) {
 				event.preventDefault();
 				// Check if user is online and not myself
-				if(name !== self.Room.getUser(Candy.View.getCurrent().roomJid).getNick() && Candy.Core.getRoom(roomJid).getRoster().get(roomJid + '/' + name)) {
+				var room = Candy.Core.getRoom(roomJid);
+				if(room && name !== self.Room.getUser(Candy.View.getCurrent().roomJid).getNick() && room.getRoster().get(roomJid + '/' + name)) {
 					Candy.View.Pane.PrivateRoom.open(roomJid + '/' + name, name, true);
 				}
 			});
