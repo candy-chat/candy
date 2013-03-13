@@ -160,8 +160,9 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *   (String) roomJid - Room to leave
 			 */
 			Leave: function(roomJid) {
-				if(Candy.Core.getRoom(roomJid).getUser()){
-					Candy.Core.getConnection().muc.leave(roomJid, Candy.Core.getRoom(roomJid).getUser().getNick(), function() {});
+				var user = Candy.Core.getRoom(roomJid).getUser();
+				if (user) {
+					Candy.Core.getConnection().muc.leave(roomJid, user.getNick(), function() {});
 				}
 			},
 

@@ -132,11 +132,11 @@ Candy.Util = (function(self, $){
 	 */
 	self.getCookie = function(name) {
 		if(document.cookie)	{
-				var regex = new RegExp(escape(name) + '=([^;]*)', 'gm'),
-					matches = regex.exec(document.cookie);
-					if(matches) {
-						return matches[1];
-					}
+			var regex = new RegExp(escape(name) + '=([^;]*)', 'gm'),
+				matches = regex.exec(document.cookie);
+			if(matches) {
+				return matches[1];
+			}
 		}
 	};
 

@@ -727,11 +727,11 @@ Candy.Util = (function(self, $){
 	 */
 	self.getCookie = function(name) {
 		if(document.cookie)	{
-				var regex = new RegExp(escape(name) + '=([^;]*)', 'gm'),
-					matches = regex.exec(document.cookie);
-					if(matches) {
-						return matches[1];
-					}
+			var regex = new RegExp(escape(name) + '=([^;]*)', 'gm'),
+				matches = regex.exec(document.cookie);
+			if(matches) {
+				return matches[1];
+			}
 		}
 	};
 
@@ -1315,8 +1315,9 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *   (String) roomJid - Room to leave
 			 */
 			Leave: function(roomJid) {
-				if(Candy.Core.getRoom(roomJid).getUser()){
-					Candy.Core.getConnection().muc.leave(roomJid, Candy.Core.getRoom(roomJid).getUser().getNick(), function() {});
+				var user = Candy.Core.getRoom(roomJid).getUser();
+				if (user) {
+					Candy.Core.getConnection().muc.leave(roomJid, user.getNick(), function() {});
 				}
 			},
 
