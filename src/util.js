@@ -464,25 +464,25 @@ Candy.Util = (function(self, $){
                  * Returns:
                  *   newline characters replaces with <br/>
                  */
-                nicelines: function(text) {
-                        return text.replace(/\r\n|\r|\n/g, '<br/>');
-                },
+		nicelines: function(text) {
+			return text.replace(/\r\n|\r|\n/g, '<br/>');
+		},
 
-                /** Function: all
-                 * Does everything of the parser: escaping, linkifying and emotifying.
-                 *
-                 * Parameters:
-                 *   (String) text - Text to parse
-                 *
-                 * Returns:
-                 *   Parsed text
-                 */
-                all: function(text) {
-                        if(text) {
-                                text = this.escape(text);
-                                text = this.linkify(text);
-                                text = this.emotify(text);
-                                text = this.nicelines(text);
+		/** Function: all
+		 * Does everything of the parser: escaping, linkifying and emotifying.
+		 *
+		 * Parameters:
+		 *   (String) text - Text to parse
+		 *
+		 * Returns:
+		 *   Parsed text
+		 */
+		all: function(text) {
+			if(text) {
+				text = this.escape(text);
+				text = this.linkify(text);
+				text = this.emotify(text);
+				text = this.nicelines(text);
 			}
 			return text;
 		}
