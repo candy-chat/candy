@@ -570,10 +570,10 @@ ul {
 }
 
 #chat-modal {
-	background: url(img/modal-bg.png);
+	background: #eee;
 	width: 300px;
 	padding: 20px 5px;
-	color: #ccc;
+	color: #333;
 	font-size: 16px;
 	position: fixed;
 	left: 50%;
@@ -583,7 +583,7 @@ ul {
 	text-align: center;
 	display: none;
 	z-index: 100;
-	border: 5px solid #666;
+	border: 5px solid #888;
 	border-radius: 5px;
 	box-shadow: 0 0 5px black;
 }
@@ -626,12 +626,13 @@ ul {
 	width: 150px;
 }
 
-#chat-modal input[type='text'] {
-	background-color: #333;
-	border: 0 none;
+#chat-modal input[type='text'],
+#chat-modal input[type='password'] {
+	background-color: white;
+	border: 1px solid #ccc;
 	padding: 4px;
 	font-size: 14px;
-	color: #ddd;
+	color: #333;
 }
 
 #chat-modal label {
@@ -657,10 +658,11 @@ ul {
 	display: none;
 	padding: 0 5px;
 	margin: -17px 3px 0 0;
-	color: #aaa;
+	color: #999;
 	border-radius: 3px;
 }
 
 #chat-modal .close:hover {
-	background-color: #333;
+	color: #333;
+	background-color: #aaa;
 }
