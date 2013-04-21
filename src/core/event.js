@@ -397,14 +397,12 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				// Client left a room
 				if(Strophe.getResourceFromJid(from) === Candy.Core.getUser().getNick() && presenceType === 'unavailable') {
 					self.Jabber.Room.Leave(msg);
-					console.log('1');
 					return true;
 				}
 
 				// Client joined a room
 				var room = Candy.Core.getRoom(roomJid);
 				if(!room) {
-					console.log('2');
 					Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
 					room = Candy.Core.getRoom(roomJid);
 				}
@@ -414,7 +412,6 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					item = msg.find('item');
 				// User joined a room
 				if(presenceType !== 'unavailable') {
-					console.log('3');
 					var nick = Strophe.getResourceFromJid(from);
 					user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
 					// Room existed but client (myself) is not yet registered
@@ -425,7 +422,6 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					action = 'join';
 				// User left a room
 				} else {
-					console.log('4');
 					action = 'leave';
 					if(item.attr('role') === 'none') {
 						if(msg.find('status').attr('code') === '307') {
@@ -448,7 +444,6 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) action - Action [kick, ban, leave, join]
 				 *   (Candy.Core.ChatUser) currentUser - Current local user
 				 */
-				 console.log('5');
 				$(self).triggerHandler('candy:core.presence.room', {
 					'roomJid': roomJid,
 					'roomName': room.getName(),
