@@ -7,6 +7,7 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
+ *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.Core.Event
@@ -16,33 +17,25 @@
  *   (Candy.Core.Event) self - itself
  *   (Strophe) Strophe - Strophe
  *   (jQuery) $ - jQuery
- *   (Candy.Util.Observable) observable - Observable to mixin
  */
-Candy.Core.Event = (function(self, Strophe, $, observable) {
-	/**
-	 * Mixin observable
-	 */
-	var i;
-	for (i in observable) {
-		if (observable.hasOwnProperty(i)) {
-			self[i] = observable[i];
-		}
-	}
-
-	/** Enum: KEYS
-	 * Observer keys
+Candy.Core.Event = (function(self, Strophe, $) {
+	/** Function: Login
+	 * Notify view that the login window should be displayed
 	 *
-	 * CHAT - Chat events
-	 * PRESENCE - Presence events
-	 * MESSAGE - Message events
-	 * LOGIN - Login event
+	 * Parameters:
+	 *   (String) presetJid - Preset user JID
+	 *
+	 * Triggers:
+	 *   candy:core.login using {presetJid}
 	 */
-	self.KEYS = {
-		CHAT: 1,
-		PRESENCE: 2,
-		MESSAGE: 3,
-		LOGIN: 4,
-		PRESENCE_ERROR: 5
+	self.Login = function(presetJid) {
+		/** Event: candy:core.login
+		 * Triggered when the login window should be displayed
+		 *
+		 * Parameters:
+		 *   (String) presetJid - Preset user JID
+		 */
+	    $(self).triggerHandler('candy:core.login', { presetJid: presetJid } );
 	};
 
 	/** Class: Candy.Core.Event.Strophe
@@ -54,6 +47,9 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		 *
 		 * Parameters:
 		 *   (Strophe.Status) status - Strophe statuses
+		 *
+		 * Triggers:
+		 *   candy:core.chat.connection using {status}
 		 */
 		Connect: function(status) {
 			Candy.Core.setStropheStatus(status);
@@ -98,19 +94,14 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					Candy.Core.log('[Connection] What?!');
 					break;
 			}
-
-			self.notifyObservers(self.KEYS.CHAT, { type: 'connection', status: status } );
+			/** Event: candy:core.chat.connection
+			 * Connection status updates
+			 *
+			 * Parameters:
+			 *   (Strophe.Status) status - Strophe status
+			 */
+			$(self).triggerHandler('candy:core.chat.connection', { status: status } );
 		}
-	};
-
-	/** Function: Login
-	 * Notify view that the login window should be displayed
-	 *
-	 * Parameters:
-	 *   (String) presetJid - Preset user JID
-	 */
-	self.Login = function(presetJid) {
-		self.notifyObservers(self.KEYS.LOGIN, { presetJid: presetJid } );
 	};
 
 	/** Class: Candy.Core.Event.Jabber
@@ -138,6 +129,9 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		 * Parameters:
 		 *   (String) msg - Raw XML Message
 		 *
+		 * Triggers:
+		 *   candy:core.presence using {from, stanza}
+		 *
 		 * Returns:
 		 *   (Boolean) - true
 		 */
@@ -151,7 +145,14 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					self.Jabber.Room.Presence(msg);
 				}
 			} else {
-				self.notifyObservers(self.KEYS.PRESENCE, {'from': msg.attr('from'), 'stanza': msg});
+				/** Event: candy:core.presence
+				 * Presence updates. Emitted only when not a muc presence.
+				 *
+				 * Parameters:
+				 *   (JID) from - From Jid
+				 *   (String) stanza - Stanza
+				 */
+				$(self).triggerHandler('candy:core.presence', {'from': msg.attr('from'), 'stanza': msg});
 			}
 			return true;
 		},
@@ -229,6 +230,10 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 		 * Parameters:
 		 *   (String) msg - Raw XML Message
 		 *
+		 * Triggers:
+		 *   candy:core.chat.message.admin using {type, message}
+		 *   candy:core.chat.message.server {type, subject, message}
+		 *
 		 * Returns:
 		 *   (Boolean) - true
 		 */
@@ -243,10 +248,29 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				self.Jabber.Room.Message(msg);
 			// Admin message
 			} else if(!toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
-				self.notifyObservers(self.KEYS.CHAT, { type: (type || 'message'), message: msg.children('body').text() });
+				/** Event: candy:core.chat.message.admin
+				 * Admin message
+				 *
+				 * Parameters:
+				 *   (String) type - Type of the message [default: message]
+				 *   (String) message - Message text
+				 */
+				$(self).triggerHandler('candy:core.chat.message.admin', { type: (type || 'message'), message: msg.children('body').text() });
 			// Server Message
 			} else if(toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
-				self.notifyObservers(self.KEYS.CHAT, { type: (type || 'message'), subject: msg.children('subject').text(), message: msg.children('body').text() });
+				/** Event: candy:core.chat.message.server
+				 * Server message (e.g. subject)
+				 *
+				 * Parameters:
+				 *   (String) type - Message type [default: message]
+				 *   (String) subject - Subject text
+				 *   (String) message - Message text
+				 */
+				$(self).triggerHandler('candy:core.chat.message.server', { 
+					type: (type || 'message'), 
+					subject: msg.children('subject').text(), 
+					message: msg.children('body').text()
+				});
 			}
 			return true;
 		},
@@ -260,6 +284,9 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			 *
 			 * Parameters:
 			 *   (String) msg - Raw XML Message
+			 *
+			 * Triggers:
+			 *   candy:core.presence.leave using {roomJid, roomName, type, reason, actor, user}
 			 *
 			 * Returns:
 			 *   (Boolean) - true
@@ -295,7 +322,27 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 
 				var user = new Candy.Core.ChatUser(from, Strophe.getResourceFromJid(from), item.attr('affiliation'), item.attr('role'));
 
-				self.notifyObservers(self.KEYS.PRESENCE, { 'roomJid': roomJid, 'roomName': roomName, 'type': type, 'reason': reason, 'actor': actor, 'user': user } );
+				/** Event: candy:core.presence.leave
+				 * When the local client leaves a room
+				 *
+				 * Also triggered when the local client gets kicked or banned from a room.
+				 *
+				 * Parameters:
+				 *   (String) roomJid - Room
+				 *   (String) roomName - Name of room
+				 *   (String) type - Presence type [kick, ban, leave]
+				 *   (String) reason - When type equals kick|ban, this is the reason the moderator has supplied.
+				 *   (String) actor - When type equals kick|ban, this is the moderator which did the kick
+				 *   (Candy.Core.ChatUser) user - user which leaves the room
+				 */
+				$(self).triggerHandler('candy:core.presence.leave', {
+					'roomJid': roomJid, 
+					'roomName': roomName, 
+					'type': type, 
+					'reason': reason, 
+					'actor': actor, 
+					'user': user
+				});
 				return true;
 			},
 
@@ -334,6 +381,9 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			 *
 			 * Parameters:
 			 *   (Object) msg - jQuery object of XML message
+			 *
+			 * Triggers:
+			 *   candy:core.presence.room using {roomJid, roomName, user, action, currentUser}
 			 *
 			 * Returns:
 			 *   (Boolean) - true
@@ -384,7 +434,23 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					roster.remove(from);
 				}
 
-				self.notifyObservers(self.KEYS.PRESENCE, {'roomJid': roomJid, 'roomName': room.getName(), 'user': user, 'action': action, 'currentUser': Candy.Core.getUser() } );
+				/** Event: candy:core.presence.room
+				 * Room presence updates
+				 *
+				 * Parameters:
+				 *   (String) roomJid - Room JID
+				 *   (String) roomName - Room name
+				 *   (Candy.Core.ChatUser) user - User which does the presence update
+				 *   (String) action - Action [kick, ban, leave, join]
+				 *   (Candy.Core.ChatUser) currentUser - Current local user
+				 */
+				$(self).triggerHandler('candy:core.presence.room', {
+					'roomJid': roomJid,
+					'roomName': room.getName(),
+					'user': user,
+					'action': action,
+					'currentUser': Candy.Core.getUser()
+				});
 				return true;
 			},
 			
@@ -393,6 +459,9 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			 *
 			 * Parameters:
 			 *   (Object) msg - jQuery object of XML message
+			 *
+			 * Triggers:
+			 *   candy:core.presence.error using {msg, type, roomJid, roomName}
 			 *
 			 * Returns:
 			 *   (Boolean) - true
@@ -406,8 +475,22 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 					
 				// Presence error: Remove room from array to prevent error when disconnecting
 				delete room;
-				
-				self.notifyObservers(self.KEYS.PRESENCE_ERROR, {'msg' : msg, 'type': msg.children('error').children()[0].tagName.toLowerCase(), 'roomJid': roomJid, 'roomName': roomName});
+
+				/** Event: candy:core.presence.error
+				 * Triggered when a presence error happened
+				 *
+				 * Parameters:
+				 *   (Object) msg - jQuery object of XML message
+				 *   (String) type - Error type
+				 *   (String) roomJid - Room jid
+				 *   (String) roomName - Room name 
+				 */
+				$(self).triggerHandler('candy:core.presence.error', {
+					'msg' : msg,
+					'type': msg.children('error').children()[0].tagName.toLowerCase(),
+					'roomJid': roomJid,
+					'roomName': roomName
+				});
 			},
 
 			/** Function: Message
@@ -416,6 +499,9 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 			 *
 			 * Parameters:
 			 *   (String) msg - jQuery object of XML message
+			 *
+			 * Triggers:
+			 *   candy:core.message using {roomJid, message, timestamp}
 			 *
 			 * Returns:
 			 *   (Boolean) - true
@@ -471,11 +557,46 @@ Candy.Core.Event = (function(self, Strophe, $, observable) {
 				var delay = msg.children('delay') ? msg.children('delay') : msg.children('x[xmlns="' + Strophe.NS.DELAY +'"]'),
 					timestamp = delay !== undefined ? delay.attr('stamp') : null;
 
-				self.notifyObservers(self.KEYS.MESSAGE, {roomJid: roomJid, message: message, timestamp: timestamp, stanza: msg } );
+				/** Event: candy:core.message
+				 * Triggers on various message events (subject changed, private chat message, multi-user chat message).
+				 *
+				 * The resulting message object can contain different key-value pairs as stated in the documentation
+				 * of the parameters itself.
+				 *
+				 * The following lists explain those parameters:
+				 *
+				 * Message Object Parameters:
+				 *   (String) name - Room name
+				 *   (String) body - Message text
+				 *   (String) type - Message type ([normal, chat, groupchat]) 
+				 *                   or 'info' which is used internally for displaying informational messages
+				 *   (Boolean) isNoConferenceRoomJid - if a 3rd-party client sends a direct message to 
+				 *                                     this user (not via the room) then the username is the node 
+				 *                                     and not the resource.
+				 *                                     This flag tells if this is the case.
+				 *
+				 * Parameters:
+				 *   (String) roomJid - Room jid
+				 *   (Object) message - Depending on what kind of message, the object consists of different key-value pairs:
+				 *                        - Room Subject: {name, body, type}
+				 *                        - Error message: {type = 'info', body}
+				 *                        - Private chat message: {name, body, type, isNoConferenceRoomJid}
+				 *                        - MUC msg from a user: {name, body, type}
+				 *                        - MUC msg from server: {name = '', body, type = 'info'}
+				 *   (String) timestamp - Timestamp, only when it's an offline message
+				 *
+				 * TODO: 
+				 *   Streamline those events sent and rename the parameters.
+				 */
+				$(self).triggerHandler('candy:core.message', {
+					roomJid: roomJid,
+					message: message,
+					timestamp: timestamp
+				});
 				return true;
 			}
 		}
 	};
 
 	return self;
-}(Candy.Core.Event || {}, Strophe, jQuery, Candy.Util.Observable));
+}(Candy.Core.Event || {}, Strophe, jQuery));

@@ -7,6 +7,7 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
+ *   (c) 2012 Patrick Stadler & Michael Weibel
  */
 
 /** Class: Candy.View.Observer
@@ -21,49 +22,57 @@ Candy.View.Observer = (function(self, $) {
 	 * Chat events
 	 */
 	self.Chat = {
-		/** Function: update
+		/** Function: Connection
 		 * The update method gets called whenever an event to which "Chat" is subscribed.
 		 *
-		 * Currently listens for connection status updates & admin messages / motd
+		 * Currently listens for connection status updates
 		 *
 		 * Parameters:
-		 *   (Candy.Core.Event) obj - Candy core event object
-		 *   (Object) args - {type, connection or message & subject}
+		 *   (jQuery.Event) event - jQuery Event object
+		 *   (Object) args - {status (Strophe.Status.*)}
 		 */
-		update: function(obj, args) {
-			if(args.type === 'connection') {
-				switch(args.status) {
-					case Strophe.Status.CONNECTING:
-					case Strophe.Status.AUTHENTICATING:
-						Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnecting'), false, true);
-						break;
+		Connection: function(event, args) {
+			switch(args.status) {
+				case Strophe.Status.CONNECTING:
+				case Strophe.Status.AUTHENTICATING:
+					Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnecting'), false, true);
+					break;
+				case Strophe.Status.ATTACHED:
+				case Strophe.Status.CONNECTED:
+					Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnected'));
+					Candy.View.Pane.Chat.Modal.hide();
+					break;
 
-					case Strophe.Status.ATTACHED:
-					case Strophe.Status.CONNECTED:
-						Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnected'));
-						Candy.View.Pane.Chat.Modal.hide();
-						break;
+				case Strophe.Status.DISCONNECTING:
+					Candy.View.Pane.Chat.Modal.show($.i18n._('statusDisconnecting'), false, true);
+					break;
 
-					case Strophe.Status.DISCONNECTING:
-						Candy.View.Pane.Chat.Modal.show($.i18n._('statusDisconnecting'), false, true);
-						break;
+				case Strophe.Status.DISCONNECTED:
+					var presetJid = Candy.Core.isAnonymousConnection() ? Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : null;
+					Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'), presetJid);
+					Candy.View.Event.Chat.onDisconnect();
+					break;
 
-					case Strophe.Status.DISCONNECTED:
-						var presetJid = Candy.Core.isAnonymousConnection() ? Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : null;
-						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'), presetJid);
-						Candy.View.Event.Chat.onDisconnect();
-						break;
+				case Strophe.Status.AUTHFAIL:
+					Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusAuthfail'));
+					Candy.View.Event.Chat.onAuthfail();
+					break;
 
-					case Strophe.Status.AUTHFAIL:
-						Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusAuthfail'));
-						Candy.View.Event.Chat.onAuthfail();
-						break;
+				default:
+					Candy.View.Pane.Chat.Modal.show($.i18n._('status', args.status));
+					break;
+			}
+		},
 
-					default:
-						Candy.View.Pane.Chat.Modal.show($.i18n._('status', args.status));
-						break;
-				}
-			} else if(args.type === 'message') {
+		/** Function: Message
+		 * Dispatches admin and info messages
+		 *
+		 * Parameters:
+		 *   (jQuery.Event) event - jQuery Event object
+		 *   (Object) args - {type (message/chat/groupchat), subject (if type = message), message}
+		 */
+		Message: function(event, args) {
+			if(args.type === 'message') {
 				Candy.View.Pane.Chat.adminMessage((args.subject || ''), args.message);
 			} else if(args.type === 'chat' || args.type === 'groupchat') {
 				// use onInfoMessage as infos from the server shouldn't be hidden by the infoMessage switch.
@@ -80,13 +89,13 @@ Candy.View.Observer = (function(self, $) {
 		 * Every presence update gets dispatched from this method.
 		 *
 		 * Parameters:
-		 *   (Candy.Core.Event) obj - Candy core event object
+		 *   (jQuery.Event) event - jQuery.Event object
 		 *   (Object) args - Arguments differ on each type
 		 *
 		 * Uses:
 		 *   - <notifyPrivateChats>
 		 */
-		update: function(obj, args) {
+		update: function(event, args) {
 			// Client left
 			if(args.type === 'leave') {
 				var user = Candy.View.Pane.Room.getUser(args.roomJid);
@@ -121,7 +130,21 @@ Candy.View.Observer = (function(self, $) {
 						self.Presence.notifyPrivateChats(args.user, args.type);
 					});
 				}, 5000);
-				Candy.View.Event.Room.onPresenceChange({ type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user });
+
+				var evtData = { type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user };
+				Candy.View.Event.Room.onPresenceChange(evtData);
+
+				/** Event: candy:view.presence
+				 * Presence update when kicked or banned
+				 *
+				 * Parameters:
+				 *   (String) type - Presence type [kick, ban]
+				 *   (String) reason - Reason for the kick|ban [optional]
+				 *   (String) roomJid - Room JID
+				 *   (Candy.Core.ChatUser) user - User which has been kicked or banned
+				 */
+				$(self).triggerHandler('candy:view.presence', [evtData]);
+
 			// A user changed presence
 			} else if(args.roomJid) {
 				// Initialize room if not yet existing
@@ -144,7 +167,7 @@ Candy.View.Observer = (function(self, $) {
 		 * Notify private user chats if existing
 		 *
 		 * Parameters:
-		 *   (Candy.Core.chatUser) user - User which has done the event
+		 *   (Candy.Core.ChatUser) user - User which has done the event
 		 *   (String) type - Event type (leave, join, kick/ban)
 		 */
 		notifyPrivateChats: function(user, type) {
@@ -160,83 +183,67 @@ Candy.View.Observer = (function(self, $) {
 	};
 
 	/** Class: Candy.View.Observer.PresenceError
-	 * Presence error events
+	 * Presence errors get handled in this method
+	 *
+	 * Parameters:
+	 *   (jQuery.Event) event - jQuery.Event object
+	 *   (Object) args - {msg, type, roomJid, roomName}
 	 */
-	self.PresenceError = {
-		/** Function: update
-		 * Presence errors get handled in this method
-		 *
-		 * Parameters:
-		 *   (Candy.Core.Event) obj - Candy core event object
-		 *   (Object) args - {msg, type, roomJid, roomName}
-		 */
-		update: function(obj, args) {
-			switch(args.type) {
-				case 'not-authorized':
-					var message;
-					if (args.msg.children('x').children('password').length > 0) {
-						message = $.i18n._('passwordEnteredInvalid', [args.roomName]);
-					}
-					Candy.View.Pane.Chat.Modal.showEnterPasswordForm(args.roomJid, args.roomName, message);
-					break;
-				case 'conflict':
-					Candy.View.Pane.Chat.Modal.showNicknameConflictForm(args.roomJid);
-					break;
-				case 'registration-required':
-					Candy.View.Pane.Chat.Modal.showError('errorMembersOnly', [args.roomName]);
-					break;
-				case 'service-unavailable':
-					Candy.View.Pane.Chat.Modal.showError('errorMaxOccupantsReached', [args.roomName]);
-					break;
-			}
+	self.PresenceError = function(obj, args) {
+		switch(args.type) {
+			case 'not-authorized':
+				var message;
+				if (args.msg.children('x').children('password').length > 0) {
+					message = $.i18n._('passwordEnteredInvalid', [args.roomName]);
+				}
+				Candy.View.Pane.Chat.Modal.showEnterPasswordForm(args.roomJid, args.roomName, message);
+				break;
+			case 'conflict':
+				Candy.View.Pane.Chat.Modal.showNicknameConflictForm(args.roomJid);
+				break;
+			case 'registration-required':
+				Candy.View.Pane.Chat.Modal.showError('errorMembersOnly', [args.roomName]);
+				break;
+			case 'service-unavailable':
+				Candy.View.Pane.Chat.Modal.showError('errorMaxOccupantsReached', [args.roomName]);
+				break;
 		}
-	}
+	};
 
 	/** Class: Candy.View.Observer.Message
-	 * Message related events
+	 * Messages received get dispatched from this method.
+	 *
+	 * Parameters:
+	 *   (jQuery.Event) event - jQuery Event object
+	 *   (Object) args - {message, roomJid}
 	 */
-	self.Message = {
-		/** Function: update
-		 * Messages received get dispatched from this method.
-		 *
-		 * Parameters:
-		 *   (Candy.Core.Event) obj - Candy core event object
-		 *   (Object) args - {message, roomJid}
-		 */
-		update: function(obj, args) {
-			if(args.message.type === 'subject') {
-				if (!Candy.View.Pane.Chat.rooms[args.roomJid]) {
-					Candy.View.Pane.Room.init(args.roomJid, args.message.name);
-					Candy.View.Pane.Room.show(args.roomJid);
-				}
-				Candy.View.Pane.Room.setSubject(args.roomJid, args.message.body);
-			} else if(args.message.type === 'info') {
-				Candy.View.Pane.Chat.infoMessage(args.roomJid, args.message.body);
-			} else {
-				var roomJid = (args.message.isNoConferenceRoomJid ? Strophe.getBareJidFromJid(args.roomJid) : args.roomJid);
-				// Initialize room if it's a message for a new private user chat
-				if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[roomJid]) {
-					Candy.View.Pane.PrivateRoom.open(roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
-				}
-				Candy.View.Pane.Message.show(roomJid, args.message.name, args.message.body, args.timestamp);
+	self.Message = function(event, args) {
+		if(args.message.type === 'subject') {
+			if (!Candy.View.Pane.Chat.rooms[args.roomJid]) {
+				Candy.View.Pane.Room.init(args.roomJid, args.message.name);
+				Candy.View.Pane.Room.show(args.roomJid);
 			}
+			Candy.View.Pane.Room.setSubject(args.roomJid, args.message.body);
+		} else if(args.message.type === 'info') {
+			Candy.View.Pane.Chat.infoMessage(args.roomJid, args.message.body);
+		} else {
+			// Initialize room if it's a message for a new private user chat
+			if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
+				Candy.View.Pane.PrivateRoom.open(args.roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
+			}
+			Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.timestamp);
 		}
 	};
 
 	/** Class: Candy.View.Observer.Login
-	 * Handles when display login window should appear
+	 * The login event gets dispatched to this method
+	 *
+	 * Parameters:
+	 *   (jQuery.Event) event - jQuery Event object
+	 *   (Object) args - {presetJid}
 	 */
-	self.Login = {
-		/** Function: update
-		 * The login event gets dispatched to this method
-		 *
-		 * Parameters:
-		 *   (Candy.Core.Event) obj - Candy core event object
-		 *   (Object) args - {presetJid}
-		 */
-		update: function(obj, args) {
-			Candy.View.Pane.Chat.Modal.showLoginForm(null, args.presetJid);
-		}
+	self.Login = function(event, args) {
+		Candy.View.Pane.Chat.Modal.showLoginForm(null, args.presetJid);
 	};
 
 	return self;

@@ -7,10 +7,14 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
+ *   (c) 2012 Patrick Stadler & Michael Weibel
  */
 
 /** Class: Candy.View.Event
  * Empty hooks to capture events and inject custom code.
+ *
+ * Deprecated:
+ *   Don't use this anymore. Bind on the triggered events on Candy.View.*
  *
  * Parameters:
  *   (Candy.View.Event) self - itself
