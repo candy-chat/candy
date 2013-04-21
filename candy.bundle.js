@@ -3355,7 +3355,7 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			hide: function(callback) {
 				$('#chat-modal').fadeOut('fast', function() {
-					$('#chat-modal-body').text('');	
+					$('#chat-modal-body').text('');
 					$('#chat-modal-overlay').hide();
 				});
 				// restore initial esc handling
@@ -3450,7 +3450,7 @@ Candy.View.Pane = (function(self, $) {
 					return false;
 				});
 			},
-			
+
 			/** Function: showEnterPasswordForm
 			 * Shows a form for entering room password
 			 *
@@ -3467,18 +3467,18 @@ Candy.View.Pane = (function(self, $) {
 					_joinSubmit: $.i18n._('enterRoomPasswordSubmit')
 				}), true);
 				$('#password').focus();
-				
+
 				// register submit handler
 				$('#enter-password-form').submit(function() {
 					var password = $('#password').val();
-					
+
 					self.Chat.Modal.hide(function() {
 						Candy.Core.Action.Jabber.Room.Join(roomJid, password);
 					});
 					return false;
 				});
 			},
-			
+
 			/** Function: showNicknameConflictForm
 			 * Shows a form indicating that the nickname is already taken and
 			 * for chosing a new nickname
@@ -3493,7 +3493,7 @@ Candy.View.Pane = (function(self, $) {
 					_loginSubmit: $.i18n._('loginSubmit')
 				}));
 				$('#nickname').focus();
-				
+
 				// register submit handler
 				$('#nickname-conflict-form').submit(function() {
 					var nickname = $('#nickname').val();
@@ -3505,7 +3505,7 @@ Candy.View.Pane = (function(self, $) {
 					return false;
 				});
 			},
-			
+
 			/** Function: showError
 			 * Show modal containing error message
 			 *
@@ -3556,7 +3556,11 @@ Candy.View.Pane = (function(self, $) {
 						posLeft = Candy.Util.getPosLeftAccordingToWindowBounds(tooltip, pos.left),
 						posTop  = Candy.Util.getPosTopAccordingToWindowBounds(tooltip, pos.top);
 
-				tooltip.css({'left': posLeft.px, 'top': posTop.px, backgroundPosition: posLeft.backgroundPositionAlignment + ' ' + posTop.backgroundPositionAlignment}).fadeIn('fast');
+				tooltip
+					.css({'left': posLeft.px, 'top': posTop.px})
+					.removeClass('left-top left-bottom right-top right-bottom')
+					.addClass(posLeft.backgroundPositionAlignment + '-' + posTop.backgroundPositionAlignment)
+					.fadeIn('fast');
 
 				target.mouseleave(function(event) {
 					event.stopPropagation();
@@ -3641,8 +3645,11 @@ Candy.View.Pane = (function(self, $) {
 						posLeft = Candy.Util.getPosLeftAccordingToWindowBounds(menu, pos.left),
 						posTop  = Candy.Util.getPosTopAccordingToWindowBounds(menu, pos.top);
 
-					menu.css({'left': posLeft.px, 'top': posTop.px, backgroundPosition: posLeft.backgroundPositionAlignment + ' ' + posTop.backgroundPositionAlignment});
-					menu.fadeIn('fast');
+					menu
+						.css({'left': posLeft.px, 'top': posTop.px})
+						.removeClass('left-top left-bottom right-top right-bottom')
+						.addClass(posLeft.backgroundPositionAlignment + '-' + posTop.backgroundPositionAlignment)
+						.fadeIn('fast');
 
 					var evtData = {'roomJid' : roomJid, 'user' : user, 'element': menu};
 
@@ -3847,8 +3854,11 @@ Candy.View.Pane = (function(self, $) {
 				var posLeft = Candy.Util.getPosLeftAccordingToWindowBounds(menu, pos.left),
 					posTop  = Candy.Util.getPosTopAccordingToWindowBounds(menu, pos.top);
 
-				menu.css({'left': posLeft.px, 'top': posTop.px, backgroundPosition: posLeft.backgroundPositionAlignment + ' ' + posTop.backgroundPositionAlignment});
-				menu.fadeIn('fast');
+				menu
+					.css({'left': posLeft.px, 'top': posTop.px})
+					.removeClass('left-top left-bottom right-top right-bottom')
+					.addClass(posLeft.backgroundPositionAlignment + '-' + posTop.backgroundPositionAlignment)
+					.fadeIn('fast');
 
 				return true;
 			}
@@ -4091,7 +4101,7 @@ Candy.View.Pane = (function(self, $) {
 			if(self.Window.autoscroll) {
 				var options = Candy.View.getOptions().messages;
 				if(self.Chat.rooms[roomJid].messageCount > options.limit) {
-					self.Room.getPane(roomJid, '.message-pane').children().slice(0, options.remove*2).remove();
+					self.Room.getPane(roomJid, '.message-pane').children().slice(0, options.remove).remove();
 					self.Chat.rooms[roomJid].messageCount -= options.remove;
 				}
 			}
@@ -4668,10 +4678,11 @@ Candy.View.Pane = (function(self, $) {
 			self.Room.appendToMessagePane(roomJid, html);
 			var elem = self.Room.getPane(roomJid, '.message-pane').children().last();
 			// click on username opens private chat
-			elem.find('a.name').click(function(event) {
+			elem.find('a.label').click(function(event) {
 				event.preventDefault();
 				// Check if user is online and not myself
-				if(name !== self.Room.getUser(Candy.View.getCurrent().roomJid).getNick() && Candy.Core.getRoom(roomJid).getRoster().get(roomJid + '/' + name)) {
+				var room = Candy.Core.getRoom(roomJid);
+				if(room && name !== self.Room.getUser(Candy.View.getCurrent().roomJid).getNick() && room.getRoster().get(roomJid + '/' + name)) {
 					Candy.View.Pane.PrivateRoom.open(roomJid + '/' + name, name, true);
 				}
 			});
@@ -4736,8 +4747,8 @@ Candy.View.Template = (function(self){
 		tabs: '<ul id="chat-tabs"></ul>',
 		tab: '<li class="roomtype-{{roomType}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}"><a href="#" class="label">{{#privateUserChat}}@{{/privateUserChat}}{{name}}</a><a href="#" class="transition"></a><a href="#" class="close">\u00D7</a><small class="unread"></small></li>',
 		modal: '<div id="chat-modal"><a id="admin-message-cancel" class="close" href="#">\u00D7</a><span id="chat-modal-body"></span><img src="{{resourcesPath}}img/modal-spinner.gif" id="chat-modal-spinner" /></div><div id="chat-modal-overlay"></div>',
-		adminMessage: '<dt>{{time}}</dt><dd class="adminmessage"><span class="label">{{sender}}</span>{{subject}} {{message}}</dd>',
-		infoMessage: '<dt>{{time}}</dt><dd class="infomessage">{{subject}} {{message}}</dd>',
+		adminMessage: '<li><small>{{time}}</small><div class="adminmessage"><span class="label">{{sender}}</span><span class="spacer">▸</span>{{subject}} {{message}}</div></li>',
+		infoMessage: '<li><small>{{time}}</small><div class="infomessage"><span class="spacer">•</span>{{subject}} {{message}}</div></li>',
 		toolbar: '<ul id="chat-toolbar"><li id="emoticons-icon" data-tooltip="{{tooltipEmoticons}}"></li><li id="chat-sound-control" class="checked" data-tooltip="{{tooltipSound}}">{{> soundcontrol}}</li><li id="chat-autoscroll-control" class="checked" data-tooltip="{{tooltipAutoscroll}}"></li><li class="checked" id="chat-statusmessage-control" data-tooltip="{{tooltipStatusmessage}}"></li><li class="context" data-tooltip="{{tooltipAdministration}}"></li><li class="usercount" data-tooltip="{{tooltipUsercount}}"><span id="chat-usercount"></span></li></ul>',
 		soundcontrol:	'<script type="text/javascript">var audioplayerListener = new Object(); audioplayerListener.onInit = function() { };'
 						+ '</script><object id="chat-sound-player" type="application/x-shockwave-flash" data="{{resourcesPath}}audioplayer.swf"'
@@ -4745,28 +4756,28 @@ Candy.View.Template = (function(self){
 						+ ' value="always" /><param name="FlashVars" value="listener=audioplayerListener&amp;mp3={{resourcesPath}}notify.mp3" />'
 						+ '</object>',
 		Context: {
-			menu: '<div id="context-menu"><ul></ul></div>',
+			menu: '<div id="context-menu"><i class="arrow arrow-top"></i><ul></ul><i class="arrow arrow-bottom"></i></div>',
 			menulinks: '<li class="{{class}}" id="context-menu-{{id}}">{{label}}</li>',
 			contextModalForm: '<form action="#" id="context-modal-form"><label for="context-modal-label">{{_label}}</label><input type="text" name="contextModalField" id="context-modal-field" /><input type="submit" class="button" name="send" value="{{_submit}}" /></form>',
 			adminMessageReason: '<a id="admin-message-cancel" class="close" href="#">×</a><p>{{_action}}</p>{{#reason}}<p>{{_reason}}</p>{{/reason}}'
 		},
-		tooltip: '<div id="tooltip"><div></div></div>'
+		tooltip: '<div id="tooltip"><i class="arrow arrow-top"></i><div></div><i class="arrow arrow-bottom"></i></div>'
 	};
 
 	self.Room = {
 		pane: '<div class="room-pane roomtype-{{roomType}}" id="chat-room-{{roomId}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">{{> roster}}{{> messages}}{{> form}}</div>',
-		subject: '<dt>{{time}}</dt><dd class="subject"><span class="label">{{roomName}}</span>{{_roomSubject}} {{subject}}</dd>',
-		form: '<div class="message-form-wrapper"></div><form method="post" class="message-form"><input name="message" class="field" type="text" autocomplete="off" maxlength="1000" /><input type="submit" class="submit" name="submit" value="{{_messageSubmit}}" /></form>'
+		subject: '<li><small>{{time}}</small><div class="subject"><span class="label">{{roomName}}</span><span class="spacer">▸</span>{{_roomSubject}} {{subject}}</div></li>',
+		form: '<div class="message-form-wrapper"><form method="post" class="message-form"><input name="message" class="field" type="text" autocomplete="off" maxlength="1000" /><input type="submit" class="submit" name="submit" value="{{_messageSubmit}}" /></form></div>'
 	};
 
 	self.Roster = {
 		pane: '<div class="roster-pane"></div>',
-		user: '<div class="user role-{{role}} affiliation-{{affiliation}}{{#me}} me{{/me}}" id="user-{{roomId}}-{{userId}}" data-jid="{{userJid}}" data-nick="{{nick}}" data-role="{{role}}" data-affiliation="{{affiliation}}"><div class="label">{{displayNick}}</div><ul><li class="context" id="context-{{roomId}}-{{userId}}"></li><li class="role role-{{role}} affiliation-{{affiliation}}" data-tooltip="{{tooltipRole}}"></li><li class="ignore" data-tooltip="{{tooltipIgnored}}"></li></ul></div>'
+		user: '<div class="user role-{{role}} affiliation-{{affiliation}}{{#me}} me{{/me}}" id="user-{{roomId}}-{{userId}}" data-jid="{{userJid}}" data-nick="{{nick}}" data-role="{{role}}" data-affiliation="{{affiliation}}"><div class="label">{{displayNick}}</div><ul><li class="context" id="context-{{roomId}}-{{userId}}">&#x25BE;</li><li class="role role-{{role}} affiliation-{{affiliation}}" data-tooltip="{{tooltipRole}}"></li><li class="ignore" data-tooltip="{{tooltipIgnored}}"></li></ul></div>'
 	};
 
 	self.Message = {
-		pane: '<div class="message-pane-wrapper"><dl class="message-pane"></dl></div>',
-		item: '<dt>{{time}}</dt><dd><span class="label"><a href="#" class="name">{{displayName}}</a></span>{{{message}}}</dd>'
+		pane: '<div class="message-pane-wrapper"><ul class="message-pane"></ul></div>',
+		item: '<li><small>{{time}}</small><div><a class="label" href="#" class="name">{{displayName}}</a><span class="spacer">▸</span>{{{message}}}</div></li>'
 	};
 
 	self.Login = {
@@ -4776,7 +4787,7 @@ Candy.View.Template = (function(self){
 			+ '{{#displayPassword}}<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />{{/displayPassword}}'
 			+ '<input type="submit" class="button" value="{{_loginSubmit}}" /></form>'
 	};
-	
+
 	self.PresenceError = {
 		enterPasswordForm: '<strong>{{_label}}</strong>'
 			+ '<form method="post" id="enter-password-form" class="enter-password-form">'
