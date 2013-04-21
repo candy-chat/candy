@@ -1,6 +1,6 @@
 html, body {
-	font-family: Georgia, serif;
-	background-color: #ccc;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	background-color: #222;
 }
 
 ul, ol {
@@ -33,7 +33,6 @@ p {
 }
 
 img.shadow {
-	-webkit-box-shadow: 0 0 7px 1px #666;
 	box-shadow: 0 0 7px 1px #666;
 }
 
@@ -68,8 +67,7 @@ a.button {
 	border: 1px solid white;
 	border-radius: 12px;
 	text-shadow: 0 0 1px black;
-	-webkit-box-shadow: 0 0 2px 1px #666;
-	box-shadow: 0 0 2px 1px #666;
+	box-shadow: 0 0 4px 0 black;
 	background: #7d0000 url(images/download.png) no-repeat top left;
 }
 
@@ -97,8 +95,7 @@ section {
 	color: #333;
 	padding: 25px;
 	margin: 30px 0;
-	background-color: white;
-	border-radius: 15px;
+	background-color: #eee;
 }
 
 header {
@@ -107,10 +104,12 @@ header {
 }
 
 h1 {
+	color: #eee;
 	font-size: 3em;
+	font-weight: normal;
 	margin: 0;
 	padding: 0 0 10px 145px;
-	text-shadow: 1px 1px 3px #666;
+	text-shadow: 1px 1px 3px black;
 }
 
 h2 {
@@ -129,15 +128,14 @@ h4 {
 	font-size: 1.1em;
 	font-weight: bold;
 	border: none;
-} 
+}
 
 header em {
 	display: block;
-	padding: 0 0 20px 165px;
-	font-style: italic;
-	color: #666;
-	font-weight: bold;
+	padding: 0 0 20px 145px;
+	color: #999;
 	font-size: 1.4em;
+	font-style: normal;
 }
 
 header section {
@@ -146,7 +144,7 @@ header section {
 	line-height: 1.7em;
 	padding: 15px;
 	margin: 40px auto;
-	background-color: #bbb;
+	background-color: #888;
 	border-radius: 0;
 }
 
@@ -157,8 +155,7 @@ header section {
 
 #download span, .demo-sponsor {
 	display: block;
-	font-family: Helvetica, Arial, sans-serif;
-	color: #666;
+	color: #777;
 	font-size: .7em;
 	padding-top: 5px;
 }
@@ -172,7 +169,7 @@ header section {
 
 #download span a:hover {
 	background: none;
-	color: black;
+	color: #eee;
 }
 
 .download-arrow {
@@ -181,13 +178,13 @@ header section {
 }
 
 code {
-	font-family: Lucida Console, Courier New, serif;
+	font-family: Consolas, Lucida Console, Courier New, serif;
 	font-size: 0.8em;
 	padding: 5px;
 	margin-top: 5px;
 	white-space: pre;
 	display: block;
-	background-color: #f2f2f2;
+	background-color: #fff;
 	border: 1px solid #ddd;
 }
 
@@ -224,7 +221,7 @@ section div {
 	margin: 31px 0 0 -125px;
 	padding: 2px 0;
 	text-align: center;
-	font-family: Helvetica, Arial, sans-serif;	
+	font-family: Helvetica, Arial, sans-serif;
 }
 
 #demo h3 {
@@ -237,8 +234,8 @@ section div {
 }
 
 .demo {
-	background-color: #f2f2f2;
-	border: 5px solid #eee;
+	background-color: white;
+	border: 5px solid #ddd;
 	color: #666;
 	font-style: italic;
 	font-size: 1.4em;

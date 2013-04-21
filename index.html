@@ -13,7 +13,7 @@
 		var _gaq = _gaq || [];
 		_gaq.push(['_setAccount', 'UA-31013446-1']);
 		_gaq.push(['_trackPageview']);
-		
+
 		(function() {
 			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
 			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
@@ -28,7 +28,7 @@
 				<!-- if you change the version, change it in the onclick tracker as well -->
 				<a href="http://github.com/candy-chat/candy/tarball/master" onClick="_gaq.push(['_trackEvent', 'Download', '1.0.9']);" class="button">
 					Download candy.tar.gz
-					<small>v1.0.9 &mdash; <time datetime="2011-11-30">November 30th, 2011</time></small>
+					<small>v1.5 &mdash; <time datetime="2013-12-14">December 14th, 2013</time></small>
 				</a>
 				<span>Released under the <a href="http://github.com/candy-chat/candy/blob/master/LICENSE">MIT Licence</a></span>
 			</div>
@@ -75,7 +75,7 @@
 				<div class="demo">
 					<div id="demoarrow"></div>
 					<a id="demobutton" href="javascript:;">Try the Demo</a><br />
-					It's worth more than a thousand pictures!
+					It's worth more than a thousand pictures.
 				</div>
 				<span class="demo-sponsor">
 					Demo powered by <a href="http://www.swissjabber.ch"><img src="public/images/swissjabber.png" alt="Swissjabber" /></a> &mdash; a service operated by <a href="http://nine.ch"><img src="public/images/nine_ch.png" alt="nine.ch" /></a>
@@ -105,13 +105,10 @@
 			<h2>Setup &amp; Usage</h2>
 			<h3>Prerequisites</h3>
 			<p>
-				Before you get started you need access to a <strong>Jabber server</strong> with HTTP-binding enabled. We provide guides for <a href="http://www.ejabberd.im/">ejabberd</a> and <a href="http://www.igniterealtime.org/projects/openfire/index.jsp">Openfire</a> to help you setting up and configuring your own server within minutes: <a href="https://github.com/candy-chat/candy/wiki/Installing-a-Jabber-server">Installing a Jabber server</a>.
+				Install and configure a Jabber server with HTTP binding enabled. <a href="https://github.com/candy-chat/candy/wiki/Installing-a-Jabber-server">Read our setup guides for ejabberd and OpenFire</a>.
 			</p>
 			<p>
-				Please assure that you use the most <strong>recent jQuery version</strong>. Candy has been tested with jQuery 1.6.1.
-			</p>
-			<p>
-				To run the example you'll also need an <strong>HTTP server with proxy capabilities</strong> because it's not allowed to make cross-domain AJAX requests.<br />Candy is delivered with a sample <code>.htaccess</code> file for <a href="http://httpd.apache.org/">Apache HTTP server</a>. Please note that you need to have to following Apache modules enabled: mod_rewrite, mod_proxy and mod_proxy_http.	For more information about the configuration of different web servers take a look at the following guide: <a href="https://github.com/candy-chat/candy/wiki/HTTP-Proxy-Configuration">HTTP Proxy Configuration</a>.
+				Due to the nature of AJAX you need to proxy the HTTP requests to the Jabber service which usually runs on a different port. The source code contains a sample <code>.htaccess</code> file to be used with Apache. We cover the configuration for the most used web servers <a href="https://github.com/candy-chat/candy/wiki/HTTP-Proxy-Configuration">here</a>.
 			</p>
 			<h3>Setup</h3>
 			<p>
@@ -119,9 +116,7 @@
 			</p>
 			<h4>Getting Started</h4>
 			<p>
-				If you're using Apache copy <code>example/htaccess</code> to <code>example/.htaccess</code> and change the rewrite rule to point to your HTTP-Bind service. For other web servers check out the <a href="https://github.com/candy-chat/candy/wiki/HTTP-Proxy-Configuration">HTTP Proxy Configuration</a> guide.
-			</p>
-			<p>Sample .htaccess file, assuming your Jabber host is running the HTTP-Bind service at <code>yourhost.com/http-bind/</code> on port 5280:</p>
+				Copy <code>example/htaccess</code> to <code>example/.htaccess</code> and change the rewrite rule to point to your HTTP bind service. If you're running your Jabber host with HTTP bind service at <code>yourhost.com/http-bind/</code> on port 5280, the <code>.htaccess</code> file should look like this:</p>
 			<code>AddDefaultCharset UTF-8
 Options +MultiViews
 RewriteEngine On
@@ -304,7 +299,7 @@ Candy.Core.connect();</code>
 			</p>
 			<h3>Event Hooks</h3>
 			<p>
-				Candy provides easy accessible hooks that will be called before or after a specific event happens. Just overwrite the default handlers in order to extend the basic functionality with your custom code. <a href="http://candy-chat.github.com/candy/docs/files/candy-bundle-js.html#Candy.View.Event">All available event hooks are listed in the API documentation.</a>
+				Candy provides hooks that will be called during specific events which makes it easy for you to extend the basic functionality with your own code. <a href="http://candy-chat.github.com/candy/docs/files/candy-bundle-js.html#Candy.View.Event">All available event hooks are listed in the API documentation.</a>
 			</p>
 		</section>
 
@@ -320,7 +315,7 @@ Candy.Core.connect();</code>
 			<p>
 				Candy is built with JavaScript using long poll AJAX requests to emulate bidirectional-streams between client and server following the draft standard <a href="http://xmpp.org/extensions/xep-0124.html">XEP-0124</a> of the XMPP Standards Foundation. By using this standard there are no additional requirements on client-side but having a web browser installed.
 			</p>
-			<h3>Used Libraries</h3>
+			<h3>3rd Party Libraries</h3>
 			<ul>
 				<li>
 					<a href="http://strophe.im/strophejs/">Strophe.js</a> <small>an XMPP library for JavaScript</small>
@@ -335,25 +330,7 @@ Candy.Core.connect();</code>
 			<h3>Credits</h3>
 			<ul>
 				<li>
-					<a href="http://www.famfamfam.com/lab/icons/silk/">famfamfam.com: Silk Icons</a> <small>is a smooth, free icon set, containing over 700 16-by-16 pixel icons.</small>
-				</li>
-				<li>
-					<a href="http://simplesmileys.org">Simple Smileys</a> <small>are beautifully simple emoticons.</small>
-				</li>
-				<li>
-					<a href="http://flash-mp3-player.net/players/js">Flash MP3 Player</a> <small>is a very simple flash audio player used by Candy for audio notifications.</small>
-				</li>
-				<li>
-				<a href="http://zetafleet.com/blog/javascript-dateparse-for-iso-8601">Colin Snover</a> <small>provides a fix for browsers not supporting latest Date.parse()</small>
-				</li>
-				<li>
-					<a href="http://www.adequatelygood.com/2010/3/JavaScript-Module-Pattern-In-Depth">Ben Cherry</a> <small>wrote a great article about the JS module pattern.</small>
-				</li>
-				<li>
 					<a href="http://www.swissjabber.ch">Swissjabber</a> <small>provides the chat server for our official demo. Swissjabber is a service by <a href="http://nine.ch">nine.ch</a></small>
-				</li>
-				<li>
-					<a href="http://www.amiadogroup.com">Amiado Group</a> <small>allowed us to make Candy freely available for everyone! :)</small>
 				</li>
 			</ul>
 		</section>
@@ -361,7 +338,7 @@ Candy.Core.connect();</code>
 		<section id="about">
 			<h2>About Candy</h2>
 			<p>
-				Candy &mdash; abbreviation for <mark><i>Chats are not dead yet</i></mark> &mdash; was developed by <a href="http://github.com/mweibel">Michael Weibel</a> (<a href="https://twitter.com/#!/weibelm">@weibelm</a>) and <a href="http://koeniglich.ch">Patrick Stadler</a> (<a href="https://twitter.com/#!/pstadler">@pstadler</a>) on behalf of their former employer <a href="http://www.amiadogroup.com">Amiado Group</a>.
+				Candy &mdash; abbreviation for <mark><i>Chats are not dead yet</i></mark> &mdash; was developed by <a href="https://github.com/mweibel">Michael Weibel</a> (<a href="https://twitter.com/weibelm">@weibelm</a>) and <a href="http://pstadler.sh">Patrick Stadler</a> (<a href="https://twitter.com/pstadler">@pstadler</a>).
 			</p>
 		</section>
 	</article>
