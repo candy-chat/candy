@@ -266,9 +266,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) subject - Subject text
 				 *   (String) message - Message text
 				 */
-				$(self).triggerHandler('candy:core.chat.message.server', { 
-					type: (type || 'message'), 
-					subject: msg.children('subject').text(), 
+				$(self).triggerHandler('candy:core.chat.message.server', {
+					type: (type || 'message'),
+					subject: msg.children('subject').text(),
 					message: msg.children('body').text()
 				});
 			}
@@ -336,11 +336,11 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (Candy.Core.ChatUser) user - user which leaves the room
 				 */
 				$(self).triggerHandler('candy:core.presence.leave', {
-					'roomJid': roomJid, 
-					'roomName': roomName, 
-					'type': type, 
-					'reason': reason, 
-					'actor': actor, 
+					'roomJid': roomJid,
+					'roomName': roomName,
+					'type': type,
+					'reason': reason,
+					'actor': actor,
 					'user': user
 				});
 				return true;
@@ -397,12 +397,14 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				// Client left a room
 				if(Strophe.getResourceFromJid(from) === Candy.Core.getUser().getNick() && presenceType === 'unavailable') {
 					self.Jabber.Room.Leave(msg);
+					console.log('1');
 					return true;
 				}
 
 				// Client joined a room
 				var room = Candy.Core.getRoom(roomJid);
 				if(!room) {
+					console.log('2');
 					Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
 					room = Candy.Core.getRoom(roomJid);
 				}
@@ -412,6 +414,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					item = msg.find('item');
 				// User joined a room
 				if(presenceType !== 'unavailable') {
+					console.log('3');
 					var nick = Strophe.getResourceFromJid(from);
 					user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
 					// Room existed but client (myself) is not yet registered
@@ -422,6 +425,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					action = 'join';
 				// User left a room
 				} else {
+					console.log('4');
 					action = 'leave';
 					if(item.attr('role') === 'none') {
 						if(msg.find('status').attr('code') === '307') {
@@ -444,6 +448,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) action - Action [kick, ban, leave, join]
 				 *   (Candy.Core.ChatUser) currentUser - Current local user
 				 */
+				 console.log('5');
 				$(self).triggerHandler('candy:core.presence.room', {
 					'roomJid': roomJid,
 					'roomName': room.getName(),
@@ -453,7 +458,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				});
 				return true;
 			},
-			
+
 			/** Function: PresenceError
 			 * Acts when a presence of type error has been retrieved.
 			 *
@@ -472,7 +477,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					roomJid = Strophe.getBareJidFromJid(from),
 					room = Candy.Core.getRooms()[roomJid],
 					roomName = room.getName();
-					
+
 				// Presence error: Remove room from array to prevent error when disconnecting
 				delete room;
 
@@ -483,7 +488,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (Object) msg - jQuery object of XML message
 				 *   (String) type - Error type
 				 *   (String) roomJid - Room jid
-				 *   (String) roomName - Room name 
+				 *   (String) roomName - Room name
 				 */
 				$(self).triggerHandler('candy:core.presence.error', {
 					'msg' : msg,
@@ -568,10 +573,10 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 * Message Object Parameters:
 				 *   (String) name - Room name
 				 *   (String) body - Message text
-				 *   (String) type - Message type ([normal, chat, groupchat]) 
+				 *   (String) type - Message type ([normal, chat, groupchat])
 				 *                   or 'info' which is used internally for displaying informational messages
-				 *   (Boolean) isNoConferenceRoomJid - if a 3rd-party client sends a direct message to 
-				 *                                     this user (not via the room) then the username is the node 
+				 *   (Boolean) isNoConferenceRoomJid - if a 3rd-party client sends a direct message to
+				 *                                     this user (not via the room) then the username is the node
 				 *                                     and not the resource.
 				 *                                     This flag tells if this is the case.
 				 *
@@ -585,7 +590,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *                        - MUC msg from server: {name = '', body, type = 'info'}
 				 *   (String) timestamp - Timestamp, only when it's an offline message
 				 *
-				 * TODO: 
+				 * TODO:
 				 *   Streamline those events sent and rename the parameters.
 				 */
 				$(self).triggerHandler('candy:core.message', {

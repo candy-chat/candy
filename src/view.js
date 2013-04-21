@@ -61,6 +61,7 @@ Candy.View = (function(self, $) {
 		    $(Candy.Core.Event).on('candy:core.chat.message', self.Observer.Chat.Message);
 		    $(Candy.Core.Event).on('candy:core.login', self.Observer.Login);
 		    $(Candy.Core.Event).on('candy:core.presence', self.Observer.Presence.update);
+		    $(Candy.Core.Event).on('candy:core.presence.room', self.Observer.Presence.update);
 		    $(Candy.Core.Event).on('candy:core.presence.error', self.Observer.PresenceError);
 		    $(Candy.Core.Event).on('candy:core.message', self.Observer.Message);
 		},
@@ -104,7 +105,7 @@ Candy.View = (function(self, $) {
 	self.init = function(container, options) {
 		$.extend(true, _options, options);
 		_setupTranslation(_options.language);
-		
+
 		// Set path to emoticons
 		Candy.Util.Parser.setEmoticonPath(this.getOptions().resources + 'img/emoticons/');
 
