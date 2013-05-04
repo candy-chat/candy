@@ -78,7 +78,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
-	
+
 	'de' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinden...',
@@ -144,7 +144,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},
-	
+
 	'fr' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Connecter...',
@@ -210,7 +210,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
 	},
-	
+
 	'nl' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinding maken...',
@@ -276,7 +276,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
 	},
-	
+
 	'es': {
 		'status': 'Estado: %s',
 		'statusConnecting': 'Conectando...',
@@ -343,6 +343,72 @@ Candy.View.Translation = {
 		'antiSpamMessage' : 'Por favor, no hagas spam. Has sido bloqueado temporalmente.'
 	},
 
+	'pt': {
+		'status': 'Estado: %s',
+		'statusConnecting': 'Conectando...',
+		'statusConnected' : 'Conectado',
+		'statusDisconnecting': 'Desconectando...',
+		'statusDisconnected' : 'Desconectado',
+		'statusAuthfail': 'Falha na autenticação',
+
+		'roomSubject'  : 'Assunto:',
+		'messageSubmit': 'Enviar',
+
+		'labelUsername': 'Utilizador:',
+		'labelPassword': 'Palavra chave:',
+		'loginSubmit'  : 'Entrar',
+		'loginInvalid'  : 'JID não é valido',
+
+		'reason'				: 'Razão:',
+		'subject'				: 'Assunto:',
+		'reasonWas'				: 'A razão foi: %s.',
+		'kickActionLabel'		: 'Expulsar',
+		'youHaveBeenKickedBy'   : 'Você foi expulsado do canal %1$s por %2$s',
+		'youHaveBeenKicked'     : 'Você foi expulsado do canal %s',
+		'banActionLabel'		: 'Banir',
+		'youHaveBeenBannedBy'   : 'Você foi banido do canal %1$s por %2$s',
+		'youHaveBeenBanned'     : 'Você foi banido do canal %s',
+
+		'privateActionLabel' : 'Chat privado',
+		'ignoreActionLabel'  : 'Ignorar',
+		'unignoreActionLabel' : 'Não Ignorar',
+
+		'setSubjectActionLabel': 'Mudar assunto',
+
+		'administratorMessageSubject' : 'Administrador',
+
+		'userJoinedRoom'           : '%s entrou no canal.',
+		'userLeftRoom'             : '%s saiu do canal.',
+		'userHasBeenKickedFromRoom': '%s foi expulsado do canal.',
+		'userHasBeenBannedFromRoom': '%s foi banido do canal.',
+
+		'presenceUnknownWarningSubject': 'Atenção:',
+		'presenceUnknownWarning'       : 'Este utilizador pode estar desconectado. Não o conseguimos encontrar.',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'Moderador',
+		'tooltipIgnored'		: 'Você ignora este utilizador',
+		'tooltipEmoticons'		: 'Emoticons',
+		'tooltipSound'			: 'Reproduzir som em novas mensagens',
+		'tooltipAutoscroll'		: 'Scroll automático',
+		'tooltipStatusmessage'	: 'Mostrar mensagens de estado',
+		'tooltipAdministration'	: 'Administradores do canal',
+		'tooltipUsercount'		: 'Utlizadores no canal',
+
+		'enterRoomPassword' : 'O canal "%s" é protegido com palavra chave.',
+		'enterRoomPasswordSubmit' : 'Entrar no canal',
+		'passwordEnteredInvalid' : 'Palavra chave incorrecta para o canal "%s".',
+
+		'nicknameConflict': 'Nome de utilizador já em uso. Por favor escolha outro nome.',
+
+		'errorMembersOnly': 'Não pode entrar no canal "%s": não tem permissões suficientes.',
+		'errorMaxOccupantsReached': 'Não pode entrar no canal "%s": canal está lotado.',
+
+		'antiSpamMessage' : 'Por favor, não faça spam. Você foi bloqueado temporariamente.'
+	},
+
 	'cn': {
 		'status': '状态: %s',
 		'statusConnecting': '连接中...',
@@ -406,7 +472,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage': '因为您在短时间内发送过多的消息 服务器要阻止您一小段时间。'
 	},
-	
+
 	'ja' : {
 		'status'        : 'ステータス: %s',
 		'statusConnecting'  : '接続中…',
