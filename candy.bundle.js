@@ -30,7 +30,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.0.10-dev'
+		version: '1.5.0-dev'
 	};
 
 	/** Function: init
@@ -503,6 +503,7 @@ Candy.View = (function(self, $) {
 		    $(Candy.Core.Event).on('candy:core.chat.message', self.Observer.Chat.Message);
 		    $(Candy.Core.Event).on('candy:core.login', self.Observer.Login);
 		    $(Candy.Core.Event).on('candy:core.presence', self.Observer.Presence.update);
+			$(Candy.Core.Event).on('candy:core.presence.leave', self.Observer.Presence.update);
 		    $(Candy.Core.Event).on('candy:core.presence.room', self.Observer.Presence.update);
 		    $(Candy.Core.Event).on('candy:core.presence.error', self.Observer.PresenceError);
 		    $(Candy.Core.Event).on('candy:core.message', self.Observer.Message);
