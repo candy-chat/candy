@@ -1604,7 +1604,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
 	this.getJid = function() {
 		if(this.data.jid) {
-			return Candy.Util.unescapeJid(this.data.jid);
+			return Candy.Util.unescapeJid(this.data.jid).replace(' ', '\\20');
 		}
 		return;
 	};
