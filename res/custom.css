@@ -316,8 +316,7 @@ ul {
 
 .message-pane li {
 	cursor: default;
-	;border-bottom: 1px solid #ccc;
-	;box-shadow: 0 1px 0 0 white;
+	
 }
 
 .message-pane small {
