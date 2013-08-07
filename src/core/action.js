@@ -86,7 +86,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Create new ignore privacy list (and reset the old one, if it exists).
 		 */
 		ResetIgnoreList: function() {
-			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set1'})
+			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid().replace(/ /g, '\\20'), id: 'set1'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).c('item', {'action': 'allow', 'order': '0'}).tree());
 		},
 
@@ -94,7 +94,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Remove an existing ignore list.
 		 */
 		RemoveIgnoreList: function() {
-			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'remove1'})
+			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid().replace(/ /g, '\\20'), id: 'remove1'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).tree());
 		},
 
@@ -102,7 +102,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Get existing ignore privacy list when connecting.
 		 */
 		GetIgnoreList: function() {
-			Candy.Core.getConnection().send($iq({type: 'get', from: Candy.Core.getUser().getJid(), id: 'get1'})
+			Candy.Core.getConnection().send($iq({type: 'get', from: Candy.Core.getUser().getJid().replace(/ /g, '\\20'), id: 'get1'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).tree());
 		},
 
@@ -110,7 +110,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Set ignore privacy list active
 		 */
 		SetIgnoreListActive: function() {
-			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set2'})
+			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid().replace(/ /g, '\\20'), id: 'set2'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('active', {name:'ignore'}).tree());
 		},
 
@@ -174,7 +174,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *   (String) roomJid - Room to get info for
 			 */
 			Disco: function(roomJid) {
-				Candy.Core.getConnection().send($iq({type: 'get', from: Candy.Core.getUser().getJid(), to: roomJid, id: 'disco3'}).c('query', {xmlns: Strophe.NS.DISCO_INFO}).tree());
+				Candy.Core.getConnection().send($iq({type: 'get', from: Candy.Core.getUser().getJid().replace(/ /g, '\\20'), to: roomJid, id: 'disco3'}).c('query', {xmlns: Strophe.NS.DISCO_INFO}).tree());
 			},
 
 			/** Function: Message
@@ -216,7 +216,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 */
 			UpdatePrivacyList: function() {
 				var currentUser = Candy.Core.getUser(),
-					iq = $iq({type: 'set', from: currentUser.getJid(), id: 'edit1'})
+					iq = $iq({type: 'set', from: currentUser.getJid().replace(/ /g, '\\20'), id: 'edit1'})
 						.c('query', {xmlns: 'jabber:iq:privacy' })
 							.c('list', {name: 'ignore'}),
 					privacyList = currentUser.getPrivacyList('ignore');
