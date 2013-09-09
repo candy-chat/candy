@@ -2357,6 +2357,16 @@ Candy.View.Event = (function(self, $) {
 	 * Message-related events
 	 */
 	self.Message = {
+		__callbacks: [],
+		/**
+		 * Function addCallback
+		 * @param fn
+		 * Allows multiple plugins to operate on a specific event
+		 * i.e. Candy.View.Event.Message.addCallback(handleOnShow)
+		 */
+		addCallback: function(fn) {
+			this.__callbacks.push(fn);
+		},
 		/** Function: beforeShow
 		 * Called before a new message will be shown.
 		 *
@@ -2377,6 +2387,9 @@ Candy.View.Event = (function(self, $) {
 		 *   (Object) args - {roomJid, element, nick, message}
 		 */
 		onShow: function(args) {
+			for (f in this.__callbacks) {
+				this.__callbacks[f].call(this, args);
+			}
 			return;
 		},
 		
