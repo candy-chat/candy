@@ -204,6 +204,9 @@ Candy.Core = (function(self, Strophe, $) {
 		self.addHandler(self.Event.Jabber.Room.Disco, Strophe.NS.DISCO_INFO, 'iq', 'result');
 		self.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq', 'result');
 		self.addHandler(self.Event.Jabber.PrivacyListError, Strophe.NS.PRIVACY, 'iq', 'error');
+		
+		//try to add BanList hendlers
+		self.addHandler(self.Event.Jabber.Room.GetBanList, Strophe.NS.MUC_ADMIN, 'iq', 'result');
 
 		self.addHandler(_connection.disco._onDiscoInfo.bind(_connection.disco), Strophe.NS.DISCO_INFO, 'iq', 'get');
 		self.addHandler(_connection.disco._onDiscoItems.bind(_connection.disco), Strophe.NS.DISCO_ITEMS, 'iq', 'get');
@@ -1182,7 +1185,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Create new ignore privacy list (and reset the old one, if it exists).
 		 */
 		ResetIgnoreList: function() {
-			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set1'})
+			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid().replace(/ /g, '\\20'), id: 'set1'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).c('item', {'action': 'allow', 'order': '0'}).tree());
 		},
 
@@ -1190,7 +1193,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Remove an existing ignore list.
 		 */
 		RemoveIgnoreList: function() {
-			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'remove1'})
+			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid().replace(/ /g, '\\20'), id: 'remove1'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).tree());
 		},
 
@@ -1198,7 +1201,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Get existing ignore privacy list when connecting.
 		 */
 		GetIgnoreList: function() {
-			Candy.Core.getConnection().send($iq({type: 'get', from: Candy.Core.getUser().getJid(), id: 'get1'})
+			Candy.Core.getConnection().send($iq({type: 'get', from: Candy.Core.getUser().getJid().replace(/ /g, '\\20'), id: 'get1'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).tree());
 		},
 
@@ -1206,7 +1209,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Set ignore privacy list active
 		 */
 		SetIgnoreListActive: function() {
-			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), id: 'set2'})
+			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid().replace(/ /g, '\\20'), id: 'set2'})
 				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('active', {name:'ignore'}).tree());
 		},
 
@@ -1270,7 +1273,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *   (String) roomJid - Room to get info for
 			 */
 			Disco: function(roomJid) {
-				Candy.Core.getConnection().send($iq({type: 'get', from: Candy.Core.getUser().getJid(), to: roomJid, id: 'disco3'}).c('query', {xmlns: Strophe.NS.DISCO_INFO}).tree());
+				Candy.Core.getConnection().send($iq({type: 'get', from: Candy.Core.getUser().getJid().replace(/ /g, '\\20'), to: roomJid, id: 'disco3'}).c('query', {xmlns: Strophe.NS.DISCO_INFO}).tree());
 			},
 
 			/** Function: Message
@@ -1293,7 +1296,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				Candy.Core.getConnection().muc.message(Candy.Util.escapeJid(roomJid), null, msg, null, type);
 				return true;
 			},
-
+			
 			/** Function: IgnoreUnignore
 			 * Checks if the user is already ignoring the target user, if yes: unignore him, if no: ignore him.
 			 *
@@ -1312,7 +1315,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 */
 			UpdatePrivacyList: function() {
 				var currentUser = Candy.Core.getUser(),
-					iq = $iq({type: 'set', from: currentUser.getJid(), id: 'edit1'})
+					iq = $iq({type: 'set', from: currentUser.getJid().replace(/ /g, '\\20'), id: 'edit1'})
 						.c('query', {xmlns: 'jabber:iq:privacy' })
 							.c('list', {name: 'ignore'}),
 					privacyList = currentUser.getPrivacyList('ignore');
@@ -1361,7 +1364,22 @@ Candy.Core.Action = (function(self, Strophe, $) {
 					Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), to: roomJid, id: iqId}).c('query', {xmlns: Strophe.NS.MUC_ADMIN }).c('item', itemObj).c('reason').t(reason).tree());
 					return true;
 				},
+				/**Function: GetBanList
+				* Get List of banned users of a room.
+				* 
+				* Paramaters:
+				* (String) roomJid - Room
+				*/
+				
+				GetBanList: function(roomJid) {
+					var iqId = 'ban2';
+					var affiliation = 'outcast'
+					
+					Candy.Core.getConnection().send($iq({type: 'get', from: Candy.Core.getUser().getJid(), to: roomJid, id: iqId}).c('query', {xmlns: Strophe.NS.MUC_ADMIN }).c('item', {affiliation: 'outcast'}).tree());
+					return true;
+				},
 
+				
 				/** Function: SetSubject
 				 * Sets subject (topic) of a room.
 				 *
@@ -2335,6 +2353,27 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					message: message,
 					timestamp: timestamp
 				});
+				return true;
+			},
+			
+			GetBanList: function(msg) {
+				var msg = $(msg);
+				var roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
+				var iqId = 'ban3';
+				Candy.Core.log('[Jabber:Room] BanList');
+				var query = msg.children('query');
+				Candy.View.Pane.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.contextBanList, {}), true)
+				if(query.children('item').length > 0) {
+					$.each( query.children('item'), function( item ) {
+						var banned = Strophe.getBareJidFromJid($(this).attr('jid'));
+						var reason = $(this).children('reason').text();
+						
+						$('#banList').append('<tr><td>' + banned + '</td><td>' + reason + '</td><td id="remove'+ item +'">x</td></tr>');
+						$('#banList #remove' + item).on('click', function () {
+							Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), to: roomJid, id: iqId}).c('query', {xmlns: Strophe.NS.MUC_ADMIN }).c('item', {affiliation: 'none', jid: banned}).tree());
+						});
+					});
+				}
 				return true;
 			}
 		}
@@ -3813,7 +3852,18 @@ Candy.View.Pane = (function(self, $) {
 								e.preventDefault();
 							});
 						}
-					}
+					},
+					'banlist': {
+						requiredPermission: function(user, me) {
+							return me.getNick() === user.getNick() && me.isModerator();
+                        },
+                        'class': 'banlist',
+                        'label' : $.i18n._('banListLabel'),
+                        'callback': function(e, roomJid, user) {
+							Candy.Core.Action.Jabber.Room.Admin.GetBanList(roomJid);
+                        }
+
+                    }
 				};
 			},
 
@@ -4755,6 +4805,7 @@ Candy.View.Template = (function(self){
 			menu: '<div id="context-menu"><i class="arrow arrow-top"></i><ul></ul><i class="arrow arrow-bottom"></i></div>',
 			menulinks: '<li class="{{class}}" id="context-menu-{{id}}">{{label}}</li>',
 			contextModalForm: '<form action="#" id="context-modal-form"><label for="context-modal-label">{{_label}}</label><input type="text" name="contextModalField" id="context-modal-field" /><input type="submit" class="button" name="send" value="{{_submit}}" /></form>',
+			contextBanList: '<i class="arrow arrow-top">BanList</i><table style="font-size: 10pt; text-align: left;" id="banList"><th>JID</th><th>Reason</th><th></th></table>',
 			adminMessageReason: '<a id="admin-message-cancel" class="close" href="#">×</a><p>{{_action}}</p>{{#reason}}<p>{{_reason}}</p>{{/reason}}'
 		},
 		tooltip: '<div id="tooltip"><i class="arrow arrow-top"></i><div></div><i class="arrow arrow-bottom"></i></div>'
@@ -4837,6 +4888,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'You have been kicked from %2$s by %1$s',
 		'youHaveBeenKicked'     : 'You have been kicked from %s',
 		'banActionLabel'		: 'Ban',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'You have been banned from %1$s by %2$s',
 		'youHaveBeenBanned'     : 'You have been banned from %s',
 
@@ -4902,6 +4954,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Du wurdest soeben aus dem Raum %1$s gekickt (%2$s)',
 		'youHaveBeenKicked'     : 'Du wurdest soeben aus dem Raum %s gekickt',
 		'banActionLabel'		: 'Ban',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Du wurdest soeben aus dem Raum %1$s verbannt (%2$s)',
 		'youHaveBeenBanned'     : 'Du wurdest soeben aus dem Raum %s verbannt',
 
@@ -4967,6 +5020,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Vous avez été expulsé du salon %1$s (%2$s)',
 		'youHaveBeenKicked'     : 'Vous avez été expulsé du salon %s',
 		'banActionLabel'		: 'Ban',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Vous avez été banni du salon %1$s (%2$s)',
 		'youHaveBeenBanned'     : 'Vous avez été banni du salon %s',
 
@@ -5032,6 +5086,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Je bent verwijderd van %1$s door %2$s',
 		'youHaveBeenKicked'     : 'Je bent verwijderd van %s',
 		'banActionLabel'		: 'Blokkeren',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Je bent geblokkeerd van %1$s door %2$s',
 		'youHaveBeenBanned'     : 'Je bent geblokkeerd van %s',
 
@@ -5097,6 +5152,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Has sido expulsado de %1$s por %2$s',
 		'youHaveBeenKicked'     : 'Has sido expulsado de %s',
 		'banActionLabel'		: 'Prohibir',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Has sido expulsado permanentemente de %1$s por %2$s',
 		'youHaveBeenBanned'     : 'Has sido expulsado permanentemente de %s',
 
@@ -5161,6 +5217,7 @@ Candy.View.Translation = {
 		'kickActionLabel': '踢除',
 		'youHaveBeenKickedBy': '你在 %1$s 被管理者 %2$s 请出房间',
 		'banActionLabel': '禁言',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy': '你在 %1$s 被管理者 %2$s 禁言',
 
 		'privateActionLabel': '单独对话',
@@ -5225,6 +5282,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'あなたは%2$sにより%1$sからキックされました。',
 		'youHaveBeenKicked'     : 'あなたは%sからキックされました。',
 		'banActionLabel'    : 'アカウントバン',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'あなたは%2$sにより%1$sからアカウントバンされました。',
 		'youHaveBeenBanned'     : 'あなたは%sからアカウントバンされました。',
 
@@ -5290,6 +5348,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Du har blivit utsparkad från %2$s av %1$s',
 		'youHaveBeenKicked'     : 'Du har blivit utsparkad från %s',
 		'banActionLabel'        : 'Bannlys',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Du har blivit bannlyst från %1$s av %2$s',
 		'youHaveBeenBanned'     : 'Du har blivit bannlyst från %s',
 
@@ -5355,6 +5414,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Sei stato espulso da %2$s da %1$s',
 		'youHaveBeenKicked'     : 'Sei stato espulso da %s',
 		'banActionLabel'        : 'Escluso',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Sei stato escluso da %1$s da %2$s',
 		'youHaveBeenBanned'     : 'Sei stato escluso da %s',
 
@@ -5420,6 +5480,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Você foi excluido de %1$s por %2$s',
 		'youHaveBeenKicked'     : 'Você foi excluido de %s',
 		'banActionLabel'		: 'Bloquear',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Você foi excluido permanentemente de %1$s por %2$s',
 		'youHaveBeenBanned'     : 'Você foi excluido permanentemente de %s',
 
@@ -5485,6 +5546,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Пользователь %1$s выбросил вас из чата %2$s',
 		'youHaveBeenKicked'     : 'Вас выбросили из чата %s',
 		'banActionLabel'		: 'Запретить доступ',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Пользователь %1$s запретил вам доступ в чат %2$s',
 		'youHaveBeenBanned'     : 'Вам запретили доступ в чат %s',
 
@@ -5550,6 +5612,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Has estat expulsat de %1$s per %2$s',
 		'youHaveBeenKicked'     : 'Has estat expulsat de %s',
 		'banActionLabel'        : 'Prohibir',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Has estat expulsat permanentment de %1$s per %2$s',
 		'youHaveBeenBanned'     : 'Has estat expulsat permanentment de %s',
 
