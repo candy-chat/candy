@@ -197,7 +197,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				Candy.Core.getConnection().muc.message(Candy.Util.escapeJid(roomJid), null, msg, null, type);
 				return true;
 			},
-
+			
 			/** Function: IgnoreUnignore
 			 * Checks if the user is already ignoring the target user, if yes: unignore him, if no: ignore him.
 			 *
@@ -265,7 +265,22 @@ Candy.Core.Action = (function(self, Strophe, $) {
 					Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), to: roomJid, id: iqId}).c('query', {xmlns: Strophe.NS.MUC_ADMIN }).c('item', itemObj).c('reason').t(reason).tree());
 					return true;
 				},
+				/**Function: GetBanList
+				* Get List of banned users of a room.
+				* 
+				* Paramaters:
+				* (String) roomJid - Room
+				*/
+				
+				GetBanList: function(roomJid) {
+					var iqId = 'ban2';
+					var affiliation = 'outcast'
+					
+					Candy.Core.getConnection().send($iq({type: 'get', from: Candy.Core.getUser().getJid(), to: roomJid, id: iqId}).c('query', {xmlns: Strophe.NS.MUC_ADMIN }).c('item', {affiliation: 'outcast'}).tree());
+					return true;
+				},
 
+				
 				/** Function: SetSubject
 				 * Sets subject (topic) of a room.
 				 *
