@@ -37,6 +37,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'You have been kicked from %2$s by %1$s',
 		'youHaveBeenKicked'     : 'You have been kicked from %s',
 		'banActionLabel'		: 'Ban',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'You have been banned from %1$s by %2$s',
 		'youHaveBeenBanned'     : 'You have been banned from %s',
 
@@ -102,6 +103,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Du wurdest soeben aus dem Raum %1$s gekickt (%2$s)',
 		'youHaveBeenKicked'     : 'Du wurdest soeben aus dem Raum %s gekickt',
 		'banActionLabel'		: 'Ban',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Du wurdest soeben aus dem Raum %1$s verbannt (%2$s)',
 		'youHaveBeenBanned'     : 'Du wurdest soeben aus dem Raum %s verbannt',
 
@@ -167,6 +169,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Vous avez été expulsé du salon %1$s (%2$s)',
 		'youHaveBeenKicked'     : 'Vous avez été expulsé du salon %s',
 		'banActionLabel'		: 'Ban',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Vous avez été banni du salon %1$s (%2$s)',
 		'youHaveBeenBanned'     : 'Vous avez été banni du salon %s',
 
@@ -232,6 +235,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Je bent verwijderd van %1$s door %2$s',
 		'youHaveBeenKicked'     : 'Je bent verwijderd van %s',
 		'banActionLabel'		: 'Blokkeren',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Je bent geblokkeerd van %1$s door %2$s',
 		'youHaveBeenBanned'     : 'Je bent geblokkeerd van %s',
 
@@ -297,6 +301,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Has sido expulsado de %1$s por %2$s',
 		'youHaveBeenKicked'     : 'Has sido expulsado de %s',
 		'banActionLabel'		: 'Prohibir',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Has sido expulsado permanentemente de %1$s por %2$s',
 		'youHaveBeenBanned'     : 'Has sido expulsado permanentemente de %s',
 
@@ -361,6 +366,7 @@ Candy.View.Translation = {
 		'kickActionLabel': '踢除',
 		'youHaveBeenKickedBy': '你在 %1$s 被管理者 %2$s 请出房间',
 		'banActionLabel': '禁言',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy': '你在 %1$s 被管理者 %2$s 禁言',
 
 		'privateActionLabel': '单独对话',
@@ -425,6 +431,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'あなたは%2$sにより%1$sからキックされました。',
 		'youHaveBeenKicked'     : 'あなたは%sからキックされました。',
 		'banActionLabel'    : 'アカウントバン',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'あなたは%2$sにより%1$sからアカウントバンされました。',
 		'youHaveBeenBanned'     : 'あなたは%sからアカウントバンされました。',
 
@@ -490,6 +497,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Du har blivit utsparkad från %2$s av %1$s',
 		'youHaveBeenKicked'     : 'Du har blivit utsparkad från %s',
 		'banActionLabel'        : 'Bannlys',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Du har blivit bannlyst från %1$s av %2$s',
 		'youHaveBeenBanned'     : 'Du har blivit bannlyst från %s',
 
@@ -555,6 +563,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Sei stato espulso da %2$s da %1$s',
 		'youHaveBeenKicked'     : 'Sei stato espulso da %s',
 		'banActionLabel'        : 'Escluso',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Sei stato escluso da %1$s da %2$s',
 		'youHaveBeenBanned'     : 'Sei stato escluso da %s',
 
@@ -620,6 +629,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Você foi excluido de %1$s por %2$s',
 		'youHaveBeenKicked'     : 'Você foi excluido de %s',
 		'banActionLabel'		: 'Bloquear',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Você foi excluido permanentemente de %1$s por %2$s',
 		'youHaveBeenBanned'     : 'Você foi excluido permanentemente de %s',
 
@@ -685,6 +695,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Пользователь %1$s выбросил вас из чата %2$s',
 		'youHaveBeenKicked'     : 'Вас выбросили из чата %s',
 		'banActionLabel'		: 'Запретить доступ',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Пользователь %1$s запретил вам доступ в чат %2$s',
 		'youHaveBeenBanned'     : 'Вам запретили доступ в чат %s',
 
@@ -750,6 +761,7 @@ Candy.View.Translation = {
 		'youHaveBeenKickedBy'   : 'Has estat expulsat de %1$s per %2$s',
 		'youHaveBeenKicked'     : 'Has estat expulsat de %s',
 		'banActionLabel'        : 'Prohibir',
+		'banListLabel'		: 'Ban List',
 		'youHaveBeenBannedBy'   : 'Has estat expulsat permanentment de %1$s per %2$s',
 		'youHaveBeenBanned'     : 'Has estat expulsat permanentment de %s',
 
