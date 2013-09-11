@@ -1022,7 +1022,18 @@ Candy.View.Pane = (function(self, $) {
 								e.preventDefault();
 							});
 						}
-					}
+					},
+					'banlist': {
+						requiredPermission: function(user, me) {
+							return me.getNick() === user.getNick() && me.isModerator();
+                        },
+                        'class': 'banlist',
+                        'label' : $.i18n._('banListLabel'),
+                        'callback': function(e, roomJid, user) {
+							Candy.Core.Action.Jabber.Room.Admin.GetBanList(roomJid);
+                        }
+
+                    }
 				};
 			},
 
