@@ -471,5 +471,70 @@ Candy.View.Translation = {
 		'errorMaxOccupantsReached'  : '"%s"の部屋に入ることができません: 参加者の数はすでに上限に達しました。',
 
 		'antiSpamMessage'   : 'スパムなどの行為はやめてください。あなたは一時的にブロックされました。'
+	},
+	'it' : {
+		'status': 'Stato: %s',
+		'statusConnecting': 'Connessione...',
+		'statusConnected' : 'Connesso',
+		'statusDisconnecting': 'Disconnessione...',
+		'statusDisconnected' : 'Disconnesso',
+		'statusAuthfail': 'Autenticazione fallita.',
+
+		'roomSubject'  : 'Oggetto:',
+		'messageSubmit': 'Invia',
+
+		'labelUsername': 'Nome utente:',
+		'labelPassword': 'Password:',
+		'loginSubmit'  : 'Login',
+		'loginInvalid'  : 'JID non valido',
+
+		'reason'				: 'Motivo:',
+		'subject'				: 'Oggetto:',
+		'reasonWas'				: 'Motivo: %s.',
+		'kickActionLabel'		: 'Caccia',
+		'youHaveBeenKickedBy'   : 'Sei stato espulso da %2$s da %1$s',
+		'youHaveBeenKicked'     : 'Sei stato espulso da %s',
+		'banActionLabel'		: 'Bandisci',
+		'youHaveBeenBannedBy'   : 'Sei stato bandito da %1$s da %2$s',
+		'youHaveBeenBanned'     : 'Sei stato bandito da %s',
+
+		'privateActionLabel' : 'Chat privata',
+		'ignoreActionLabel'  : 'Ignora',
+		'unignoreActionLabel' : 'Non ignorare',
+
+		'setSubjectActionLabel': 'Cambia oggetto',
+
+		'administratorMessageSubject' : 'Amministratore',
+
+		'userJoinedRoom'           : '%s si è unito alla conversazione.',
+		'userLeftRoom'             : '%s ha lasciato la conversazione.',
+		'userHasBeenKickedFromRoom': '%s è stato espulso dalla conversazione.',
+		'userHasBeenBannedFromRoom': '%s è stato bandito dalla conversazione.',
+
+		'presenceUnknownWarningSubject': 'Avviso:',
+		'presenceUnknownWarning'       : 'L\'utente potrebbe non essere presente.',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'Moderatore',
+		'tooltipIgnored'		: 'Utente ignorato',
+		'tooltipEmoticons'		: 'Emoticons',
+		'tooltipSound'			: 'Suono per nuovi messaggi privati',
+		'tooltipAutoscroll'		: 'Autoscroll',
+		'tooltipStatusmessage'	: 'Mostra messaggi di stato',
+		'tooltipAdministration'	: 'Amministrazione',
+		'tooltipUsercount'		: 'Partecipanti',
+
+		'enterRoomPassword' : 'La stanza "%s" è protetta da password.',
+		'enterRoomPasswordSubmit' : 'Partecipa',
+		'passwordEnteredInvalid' : 'Password non valida per "%s".',
+
+		'nicknameConflict': 'Nome utente già in uso.',
+
+		'errorMembersOnly': 'Non puoi partecipare a "%s": privilegi insufficienti.',
+		'errorMaxOccupantsReached': 'Non puoi partecipare a "%s": troppi utenti connessi.',
+
+		'antiSpamMessage' : 'Stai inviando troppi messaggi. Sei stato temporaneamente bloccato.'
 	}
 };
