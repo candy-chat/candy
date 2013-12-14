@@ -299,14 +299,21 @@ Candy.Core.connect();</code>
 			</p>
 			<h3>Event Hooks</h3>
 			<p>
-				Candy provides hooks that will be called during specific events which makes it easy for you to extend the basic functionality with your own code. <a href="http://candy-chat.github.com/candy/docs/index/Events.html">All available event hooks are listed in the API documentation.</a>
+				Candy provides hooks that will be called during specific events which makes it easy for you to tweak and extend basic functionalities, such as displaying messages:
+			</p>
+			<code>// candy:view.message.before-show is triggered before a chat message is displayed
+$(Candy).on('candy:view.message.before-show', function(evt, args) {
+	args.message = args.message.replace(/jappix/gi, '*censored*'); // censor 'jappix' in chat messages
+});</code>
+			<p>
+				<a href="http://candy-chat.github.io/candy/docs/index/Events.html">Click here to see all available event hooks.</a>
 			</p>
 		</section>
 
 		<section id="api">
 			<h2>API Documentation</h2>
 			<p>
-				<a href="http://candy-chat.github.com/candy/docs/">The API documentation of the latest version can be found here.</a>
+				<a href="http://candy-chat.github.io/candy/docs/">The API documentation of the latest version can be found here.</a>
 			</p>
 		</section>
 
