@@ -594,6 +594,27 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					timestamp: timestamp
 				});
 				return true;
+			},
+			
+			GetBanList: function(msg) {
+				var msg = $(msg);
+				var roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
+				var iqId = 'ban3';
+				Candy.Core.log('[Jabber:Room] BanList');
+				var query = msg.children('query');
+				Candy.View.Pane.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.contextBanList, {}), true)
+				if(query.children('item').length > 0) {
+					$.each( query.children('item'), function( item ) {
+						var banned = Strophe.getBareJidFromJid($(this).attr('jid'));
+						var reason = $(this).children('reason').text();
+						
+						$('#banList').append('<tr><td>' + banned + '</td><td>' + reason + '</td><td id="remove'+ item +'">x</td></tr>');
+						$('#banList #remove' + item).on('click', function () {
+							Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getJid(), to: roomJid, id: iqId}).c('query', {xmlns: Strophe.NS.MUC_ADMIN }).c('item', {affiliation: 'none', jid: banned}).tree());
+						});
+					});
+				}
+				return true;
 			}
 		}
 	};

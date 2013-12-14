@@ -148,6 +148,9 @@ Candy.Core = (function(self, Strophe, $) {
 		self.addHandler(self.Event.Jabber.Room.Disco, Strophe.NS.DISCO_INFO, 'iq', 'result');
 		self.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq', 'result');
 		self.addHandler(self.Event.Jabber.PrivacyListError, Strophe.NS.PRIVACY, 'iq', 'error');
+		
+		//try to add BanList hendlers
+		self.addHandler(self.Event.Jabber.Room.GetBanList, Strophe.NS.MUC_ADMIN, 'iq', 'result');
 
 		self.addHandler(_connection.disco._onDiscoInfo.bind(_connection.disco), Strophe.NS.DISCO_INFO, 'iq', 'get');
 		self.addHandler(_connection.disco._onDiscoItems.bind(_connection.disco), Strophe.NS.DISCO_ITEMS, 'iq', 'get');
