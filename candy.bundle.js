@@ -30,7 +30,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.5.0-dev'
+		version: '1.5.0'
 	};
 
 	/** Function: init
@@ -499,14 +499,14 @@ Candy.View = (function(self, $) {
 		 * Register observers. Candy core will now notify the View on changes.
 		 */
 		_registerObservers = function() {
-			$(Candy.Core.Event).on('candy:core.chat.connection', self.Observer.Chat.Connection);
-			$(Candy.Core.Event).on('candy:core.chat.message', self.Observer.Chat.Message);
-			$(Candy.Core.Event).on('candy:core.login', self.Observer.Login);
-			$(Candy.Core.Event).on('candy:core.presence', self.Observer.Presence.update);
-			$(Candy.Core.Event).on('candy:core.presence.leave', self.Observer.Presence.update);
-			$(Candy.Core.Event).on('candy:core.presence.room', self.Observer.Presence.update);
-			$(Candy.Core.Event).on('candy:core.presence.error', self.Observer.PresenceError);
-			$(Candy.Core.Event).on('candy:core.message', self.Observer.Message);
+			$(Candy).on('candy:core.chat.connection', self.Observer.Chat.Connection);
+			$(Candy).on('candy:core.chat.message', self.Observer.Chat.Message);
+			$(Candy).on('candy:core.login', self.Observer.Login);
+			$(Candy).on('candy:core.presence', self.Observer.Presence.update);
+			$(Candy).on('candy:core.presence.leave', self.Observer.Presence.update);
+			$(Candy).on('candy:core.presence.room', self.Observer.Presence.update);
+			$(Candy).on('candy:core.presence.error', self.Observer.PresenceError);
+			$(Candy).on('candy:core.message', self.Observer.Message);
 		},
 
 		/** PrivateFunction: _registerWindowHandlers
@@ -1777,7 +1777,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 * Parameters:
 		 *   (String) presetJid - Preset user JID
 		 */
-	    $(self).triggerHandler('candy:core.login', { presetJid: presetJid } );
+	    $(Candy).triggerHandler('candy:core.login', { presetJid: presetJid } );
 	};
 
 	/** Class: Candy.Core.Event.Strophe
@@ -1842,7 +1842,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 * Parameters:
 			 *   (Strophe.Status) status - Strophe status
 			 */
-			$(self).triggerHandler('candy:core.chat.connection', { status: status } );
+			$(Candy).triggerHandler('candy:core.chat.connection', { status: status } );
 		}
 	};
 
@@ -1894,7 +1894,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (JID) from - From Jid
 				 *   (String) stanza - Stanza
 				 */
-				$(self).triggerHandler('candy:core.presence', {'from': msg.attr('from'), 'stanza': msg});
+				$(Candy).triggerHandler('candy:core.presence', {'from': msg.attr('from'), 'stanza': msg});
 			}
 			return true;
 		},
@@ -1997,7 +1997,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) type - Type of the message [default: message]
 				 *   (String) message - Message text
 				 */
-				$(self).triggerHandler('candy:core.chat.message.admin', { type: (type || 'message'), message: msg.children('body').text() });
+				$(Candy).triggerHandler('candy:core.chat.message.admin', { type: (type || 'message'), message: msg.children('body').text() });
 			// Server Message
 			} else if(toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
 				/** Event: candy:core.chat.message.server
@@ -2008,7 +2008,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) subject - Subject text
 				 *   (String) message - Message text
 				 */
-				$(self).triggerHandler('candy:core.chat.message.server', {
+				$(Candy).triggerHandler('candy:core.chat.message.server', {
 					type: (type || 'message'),
 					subject: msg.children('subject').text(),
 					message: msg.children('body').text()
@@ -2077,7 +2077,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) actor - When type equals kick|ban, this is the moderator which did the kick
 				 *   (Candy.Core.ChatUser) user - user which leaves the room
 				 */
-				$(self).triggerHandler('candy:core.presence.leave', {
+				$(Candy).triggerHandler('candy:core.presence.leave', {
 					'roomJid': roomJid,
 					'roomName': roomName,
 					'type': type,
@@ -2186,7 +2186,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) action - Action [kick, ban, leave, join]
 				 *   (Candy.Core.ChatUser) currentUser - Current local user
 				 */
-				$(self).triggerHandler('candy:core.presence.room', {
+				$(Candy).triggerHandler('candy:core.presence.room', {
 					'roomJid': roomJid,
 					'roomName': room.getName(),
 					'user': user,
@@ -2227,7 +2227,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) roomJid - Room jid
 				 *   (String) roomName - Room name
 				 */
-				$(self).triggerHandler('candy:core.presence.error', {
+				$(Candy).triggerHandler('candy:core.presence.error', {
 					'msg' : msg,
 					'type': msg.children('error').children()[0].tagName.toLowerCase(),
 					'roomJid': roomJid,
@@ -2330,7 +2330,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 * TODO:
 				 *   Streamline those events sent and rename the parameters.
 				 */
-				$(self).triggerHandler('candy:core.message', {
+				$(Candy).triggerHandler('candy:core.message', {
 					roomJid: roomJid,
 					message: message,
 					timestamp: timestamp
@@ -2685,7 +2685,7 @@ Candy.View.Observer = (function(self, $) {
 				 *   (String) roomJid - Room JID
 				 *   (Candy.Core.ChatUser) user - User which has been kicked or banned
 				 */
-				$(self).triggerHandler('candy:view.presence', [evtData]);
+				$(Candy).triggerHandler('candy:view.presence', [evtData]);
 
 			// A user changed presence
 			} else if(args.roomJid) {
@@ -3120,7 +3120,7 @@ Candy.View.Pane = (function(self, $) {
 				 * Parameters:
 				 *   (String) presetJid - Preset user JID
 				 */
-				$(self).triggerHandler('candy:view.chat.admin-message', evtData);
+				$(Candy).triggerHandler('candy:view.chat.admin-message', evtData);
 			}
 		},
 
@@ -3660,7 +3660,7 @@ Candy.View.Pane = (function(self, $) {
 					 *   (Candy.Core.ChatUser) user - User
 					 *   (jQuery.Element) element - Menu element
 					 */
-					$(self).triggerHandler('candy:view.roster.after-context-menu', evtData);
+					$(Candy).triggerHandler('candy:view.roster.after-context-menu', evtData);
 
 					return true;
 				}
@@ -3686,7 +3686,7 @@ Candy.View.Pane = (function(self, $) {
 				var evtData = {'roomJid' : roomJid, 'user' : user, 'elem': elem};
 				// deprecated
 				extramenulinks = Candy.View.Event.Roster.onContextMenu(evtData);
-				
+
 				evtData.menulinks = $.extend(this.initialMenuLinks(elem), extramenulinks);
 
 				/** Event: candy:view.roster.context-menu
@@ -3700,7 +3700,7 @@ Candy.View.Pane = (function(self, $) {
 				 *   (Candy.Core.ChatUser) user - User
 				 *   (jQuery.Element) elem - Parent element of the context menu
 				 */
-				$(self).triggerHandler('candy:view.roster.context-menu', evtData);
+				$(Candy).triggerHandler('candy:view.roster.context-menu', evtData);
 
 				menulinks = evtData.menulinks;
 
@@ -3925,7 +3925,7 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) type - Room Type
 			 *   (jQuery.Element) element - Room element
 			 */
-			$(self).triggerHandler('candy:view.room.after-add', evtData);
+			$(Candy).triggerHandler('candy:view.room.after-add', evtData);
 
 			return roomId;
 		},
@@ -3965,7 +3965,7 @@ Candy.View.Pane = (function(self, $) {
 					 *   (String) roomJid - Room JID
 					 *   (jQuery.Element) element - Room element
 					 */
-					$(self).triggerHandler('candy:view.room.after-show', evtData);
+					$(Candy).triggerHandler('candy:view.room.after-show', evtData);
 
 				} else {
 					elem.hide();
@@ -3981,7 +3981,7 @@ Candy.View.Pane = (function(self, $) {
 					 *   (String) roomJid - Room JID
 					 *   (jQuery.Element) element - Room element
 					 */
-					$(self).triggerHandler('candy:view.room.after-hide', evtData);
+					$(Candy).triggerHandler('candy:view.room.after-hide', evtData);
 				}
 			});
 		},
@@ -4019,13 +4019,13 @@ Candy.View.Pane = (function(self, $) {
 			 *   (jQuery.Element) element - Room element
 			 *   (String) subject - New subject
 			 */
-			$(self).triggerHandler('candy:view.room.after-subject-change', evtData);
+			$(Candy).triggerHandler('candy:view.room.after-subject-change', evtData);
 		},
 
 		/** Function: close
 		 * Close a room and remove everything in the DOM belonging to this room.
 		 *
-		 * NOTICE: There's a rendering bug in Opera when all rooms have been closed. 
+		 * NOTICE: There's a rendering bug in Opera when all rooms have been closed.
 		 *         (Take a look in the source for a more detailed description)
 		 *
 		 * Triggers:
@@ -4066,7 +4066,7 @@ Candy.View.Pane = (function(self, $) {
 			 * Parameters:
 			 *   (String) roomJid - Room JID
 			 */
-			$(self).triggerHandler('candy:view.room.after-close', evtData);
+			$(Candy).triggerHandler('candy:view.room.after-close', evtData);
 		},
 
 		/** Function: appendToMessagePane
@@ -4312,13 +4312,13 @@ Candy.View.Pane = (function(self, $) {
 			if(switchToRoom) {
 				self.Room.show(roomJid);
 			}
-			
+
 			self.Roster.update(roomJid, new Candy.Core.ChatUser(roomJid, roomName), 'join', user);
 			self.Roster.update(roomJid, user, 'join', user);
 			self.PrivateRoom.setStatus(roomJid, 'join');
-			
-			
-			
+
+
+
 			// We can't track the presence of a user if it's not a conference jid
 			if(isNoConferenceRoomJid) {
 				self.Chat.infoMessage(roomJid, $.i18n._('presenceUnknownWarningSubject'), $.i18n._('presenceUnknownWarning'));
@@ -4337,7 +4337,7 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) type - 'chat'
 			 *   (jQuery.Element) element - User element
 			 */
-			$(self).triggerHandler('candy:view.private-room.after-open', evtData);
+			$(Candy).triggerHandler('candy:view.private-room.after-open', evtData);
 		},
 
 		/** Function: setStatus
@@ -4382,17 +4382,17 @@ Candy.View.Pane = (function(self, $) {
 		 *   (Candy.Core.ChatUser) currentUser - Current user
 		 *
 		 * Triggers:
-		 *   candy:view.roster.before-update using {roomJid, user, action, element} 
-		 *   candy:view.roster.after-update using {roomJid, user, action, element} 
+		 *   candy:view.roster.before-update using {roomJid, user, action, element}
+		 *   candy:view.roster.after-update using {roomJid, user, action, element}
 		 */
 		update: function(roomJid, user, action, currentUser) {
 			var roomId = self.Chat.rooms[roomJid].id,
 				userId = Candy.Util.jidToId(user.getJid()),
 				usercountDiff = -1,
 				userElem = $('#user-' + roomId + '-' + userId);
-				
+
 			var evtData = {'roomJid': roomJid, type: null, 'user': user};
-			
+
 			/** Event: candy:view.roster.before-update
 			 * Before updating the roster of a room
 			 *
@@ -4402,10 +4402,10 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) action - [join, leave, kick, ban]
 			 *   (jQuery.Element) element - User element
 			 */
-			$(self).triggerHandler('candy:view.roster.before-update', {
-				'roomJid' : roomJid, 
-				'user' : user, 
-				'action': action, 
+			$(Candy).triggerHandler('candy:view.roster.before-update', {
+				'roomJid' : roomJid,
+				'user' : user,
+				'action': action,
 				'element': userElem
 			});
 
@@ -4513,9 +4513,9 @@ Candy.View.Pane = (function(self, $) {
 			}
 
 			var evtData = {
-				'roomJid' : roomJid, 
-				'user' : user, 
-				'action': action, 
+				'roomJid' : roomJid,
+				'user' : user,
+				'action': action,
 				'element': $('#user-' + roomId + '-' + userId)
 			};
 
@@ -4531,7 +4531,7 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) action - [join, leave, kick, ban]
 			 *   (jQuery.Element) element - User element
 			 */
-			$(self).triggerHandler('candy:view.roster.after-update', evtData);
+			$(Candy).triggerHandler('candy:view.roster.after-update', evtData);
 		},
 
 		/** Function: userClick
@@ -4589,14 +4589,14 @@ Candy.View.Pane = (function(self, $) {
 			message = Candy.View.Event.Message.beforeSend(message);
 
 			var evtData = {message: message};
-			
+
 			/** Event: candy:view.message.before-send
 			 * Before sending a message
 			 *
 			 * Parameters:
 			 *   (String) message - Message text
 			 */
-			$(self).triggerHandler('candy:view.message.before-send', evtData);
+			$(Candy).triggerHandler('candy:view.message.before-send', evtData);
 
 			message = evtData.message;
 
@@ -4639,14 +4639,14 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) name - Name of the sending user
 			 *   (String) message - Message text
 			 */
-			$(self).triggerHandler('candy:view.message.before-show', evtData);
+			$(Candy).triggerHandler('candy:view.message.before-show', evtData);
 
 			message = evtData.message;
-			
+
 			if(!message) {
 				return;
 			}
-			
+
 			var renderEvtData = {
 				template: Candy.View.Template.Message.item,
 				templateData: {
@@ -4656,7 +4656,7 @@ Candy.View.Pane = (function(self, $) {
 					time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
 				}
 			};
-			
+
 			/** Event: candy:view.message.before-render
 			 * Before rendering the message element
 			 *
@@ -4668,7 +4668,7 @@ Candy.View.Pane = (function(self, $) {
 			 *                           - (String) message - Message text
 			 *                           - (String) time - Localized time
 			 */
-			$(self).triggerHandler('candy:view.message.before-render', renderEvtData);
+			$(Candy).triggerHandler('candy:view.message.before-render', renderEvtData);
 
 			var html = Mustache.to_html(renderEvtData.template, renderEvtData.templateData);
 			self.Room.appendToMessagePane(roomJid, html);
@@ -4708,7 +4708,7 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) name - Name of the sending user
 			 *   (String) message - Message text
 			 */
-			$(self).triggerHandler('candy:view.message.after-show', evtData);
+			$(Candy).triggerHandler('candy:view.message.after-show', evtData);
 		}
 	};
 

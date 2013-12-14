@@ -35,7 +35,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 * Parameters:
 		 *   (String) presetJid - Preset user JID
 		 */
-	    $(self).triggerHandler('candy:core.login', { presetJid: presetJid } );
+	    $(Candy).triggerHandler('candy:core.login', { presetJid: presetJid } );
 	};
 
 	/** Class: Candy.Core.Event.Strophe
@@ -100,7 +100,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 * Parameters:
 			 *   (Strophe.Status) status - Strophe status
 			 */
-			$(self).triggerHandler('candy:core.chat.connection', { status: status } );
+			$(Candy).triggerHandler('candy:core.chat.connection', { status: status } );
 		}
 	};
 
@@ -152,7 +152,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (JID) from - From Jid
 				 *   (String) stanza - Stanza
 				 */
-				$(self).triggerHandler('candy:core.presence', {'from': msg.attr('from'), 'stanza': msg});
+				$(Candy).triggerHandler('candy:core.presence', {'from': msg.attr('from'), 'stanza': msg});
 			}
 			return true;
 		},
@@ -255,7 +255,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) type - Type of the message [default: message]
 				 *   (String) message - Message text
 				 */
-				$(self).triggerHandler('candy:core.chat.message.admin', { type: (type || 'message'), message: msg.children('body').text() });
+				$(Candy).triggerHandler('candy:core.chat.message.admin', { type: (type || 'message'), message: msg.children('body').text() });
 			// Server Message
 			} else if(toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
 				/** Event: candy:core.chat.message.server
@@ -266,7 +266,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) subject - Subject text
 				 *   (String) message - Message text
 				 */
-				$(self).triggerHandler('candy:core.chat.message.server', {
+				$(Candy).triggerHandler('candy:core.chat.message.server', {
 					type: (type || 'message'),
 					subject: msg.children('subject').text(),
 					message: msg.children('body').text()
@@ -335,7 +335,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) actor - When type equals kick|ban, this is the moderator which did the kick
 				 *   (Candy.Core.ChatUser) user - user which leaves the room
 				 */
-				$(self).triggerHandler('candy:core.presence.leave', {
+				$(Candy).triggerHandler('candy:core.presence.leave', {
 					'roomJid': roomJid,
 					'roomName': roomName,
 					'type': type,
@@ -444,7 +444,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) action - Action [kick, ban, leave, join]
 				 *   (Candy.Core.ChatUser) currentUser - Current local user
 				 */
-				$(self).triggerHandler('candy:core.presence.room', {
+				$(Candy).triggerHandler('candy:core.presence.room', {
 					'roomJid': roomJid,
 					'roomName': room.getName(),
 					'user': user,
@@ -485,7 +485,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) roomJid - Room jid
 				 *   (String) roomName - Room name
 				 */
-				$(self).triggerHandler('candy:core.presence.error', {
+				$(Candy).triggerHandler('candy:core.presence.error', {
 					'msg' : msg,
 					'type': msg.children('error').children()[0].tagName.toLowerCase(),
 					'roomJid': roomJid,
@@ -588,7 +588,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 * TODO:
 				 *   Streamline those events sent and rename the parameters.
 				 */
-				$(self).triggerHandler('candy:core.message', {
+				$(Candy).triggerHandler('candy:core.message', {
 					roomJid: roomJid,
 					message: message,
 					timestamp: timestamp

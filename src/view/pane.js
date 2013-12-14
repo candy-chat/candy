@@ -329,7 +329,7 @@ Candy.View.Pane = (function(self, $) {
 				 * Parameters:
 				 *   (String) presetJid - Preset user JID
 				 */
-				$(self).triggerHandler('candy:view.chat.admin-message', evtData);
+				$(Candy).triggerHandler('candy:view.chat.admin-message', evtData);
 			}
 		},
 
@@ -869,7 +869,7 @@ Candy.View.Pane = (function(self, $) {
 					 *   (Candy.Core.ChatUser) user - User
 					 *   (jQuery.Element) element - Menu element
 					 */
-					$(self).triggerHandler('candy:view.roster.after-context-menu', evtData);
+					$(Candy).triggerHandler('candy:view.roster.after-context-menu', evtData);
 
 					return true;
 				}
@@ -895,7 +895,7 @@ Candy.View.Pane = (function(self, $) {
 				var evtData = {'roomJid' : roomJid, 'user' : user, 'elem': elem};
 				// deprecated
 				extramenulinks = Candy.View.Event.Roster.onContextMenu(evtData);
-				
+
 				evtData.menulinks = $.extend(this.initialMenuLinks(elem), extramenulinks);
 
 				/** Event: candy:view.roster.context-menu
@@ -909,7 +909,7 @@ Candy.View.Pane = (function(self, $) {
 				 *   (Candy.Core.ChatUser) user - User
 				 *   (jQuery.Element) elem - Parent element of the context menu
 				 */
-				$(self).triggerHandler('candy:view.roster.context-menu', evtData);
+				$(Candy).triggerHandler('candy:view.roster.context-menu', evtData);
 
 				menulinks = evtData.menulinks;
 
@@ -1134,7 +1134,7 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) type - Room Type
 			 *   (jQuery.Element) element - Room element
 			 */
-			$(self).triggerHandler('candy:view.room.after-add', evtData);
+			$(Candy).triggerHandler('candy:view.room.after-add', evtData);
 
 			return roomId;
 		},
@@ -1174,7 +1174,7 @@ Candy.View.Pane = (function(self, $) {
 					 *   (String) roomJid - Room JID
 					 *   (jQuery.Element) element - Room element
 					 */
-					$(self).triggerHandler('candy:view.room.after-show', evtData);
+					$(Candy).triggerHandler('candy:view.room.after-show', evtData);
 
 				} else {
 					elem.hide();
@@ -1190,7 +1190,7 @@ Candy.View.Pane = (function(self, $) {
 					 *   (String) roomJid - Room JID
 					 *   (jQuery.Element) element - Room element
 					 */
-					$(self).triggerHandler('candy:view.room.after-hide', evtData);
+					$(Candy).triggerHandler('candy:view.room.after-hide', evtData);
 				}
 			});
 		},
@@ -1228,13 +1228,13 @@ Candy.View.Pane = (function(self, $) {
 			 *   (jQuery.Element) element - Room element
 			 *   (String) subject - New subject
 			 */
-			$(self).triggerHandler('candy:view.room.after-subject-change', evtData);
+			$(Candy).triggerHandler('candy:view.room.after-subject-change', evtData);
 		},
 
 		/** Function: close
 		 * Close a room and remove everything in the DOM belonging to this room.
 		 *
-		 * NOTICE: There's a rendering bug in Opera when all rooms have been closed. 
+		 * NOTICE: There's a rendering bug in Opera when all rooms have been closed.
 		 *         (Take a look in the source for a more detailed description)
 		 *
 		 * Triggers:
@@ -1275,7 +1275,7 @@ Candy.View.Pane = (function(self, $) {
 			 * Parameters:
 			 *   (String) roomJid - Room JID
 			 */
-			$(self).triggerHandler('candy:view.room.after-close', evtData);
+			$(Candy).triggerHandler('candy:view.room.after-close', evtData);
 		},
 
 		/** Function: appendToMessagePane
@@ -1521,13 +1521,13 @@ Candy.View.Pane = (function(self, $) {
 			if(switchToRoom) {
 				self.Room.show(roomJid);
 			}
-			
+
 			self.Roster.update(roomJid, new Candy.Core.ChatUser(roomJid, roomName), 'join', user);
 			self.Roster.update(roomJid, user, 'join', user);
 			self.PrivateRoom.setStatus(roomJid, 'join');
-			
-			
-			
+
+
+
 			// We can't track the presence of a user if it's not a conference jid
 			if(isNoConferenceRoomJid) {
 				self.Chat.infoMessage(roomJid, $.i18n._('presenceUnknownWarningSubject'), $.i18n._('presenceUnknownWarning'));
@@ -1546,7 +1546,7 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) type - 'chat'
 			 *   (jQuery.Element) element - User element
 			 */
-			$(self).triggerHandler('candy:view.private-room.after-open', evtData);
+			$(Candy).triggerHandler('candy:view.private-room.after-open', evtData);
 		},
 
 		/** Function: setStatus
@@ -1591,17 +1591,17 @@ Candy.View.Pane = (function(self, $) {
 		 *   (Candy.Core.ChatUser) currentUser - Current user
 		 *
 		 * Triggers:
-		 *   candy:view.roster.before-update using {roomJid, user, action, element} 
-		 *   candy:view.roster.after-update using {roomJid, user, action, element} 
+		 *   candy:view.roster.before-update using {roomJid, user, action, element}
+		 *   candy:view.roster.after-update using {roomJid, user, action, element}
 		 */
 		update: function(roomJid, user, action, currentUser) {
 			var roomId = self.Chat.rooms[roomJid].id,
 				userId = Candy.Util.jidToId(user.getJid()),
 				usercountDiff = -1,
 				userElem = $('#user-' + roomId + '-' + userId);
-				
+
 			var evtData = {'roomJid': roomJid, type: null, 'user': user};
-			
+
 			/** Event: candy:view.roster.before-update
 			 * Before updating the roster of a room
 			 *
@@ -1611,10 +1611,10 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) action - [join, leave, kick, ban]
 			 *   (jQuery.Element) element - User element
 			 */
-			$(self).triggerHandler('candy:view.roster.before-update', {
-				'roomJid' : roomJid, 
-				'user' : user, 
-				'action': action, 
+			$(Candy).triggerHandler('candy:view.roster.before-update', {
+				'roomJid' : roomJid,
+				'user' : user,
+				'action': action,
 				'element': userElem
 			});
 
@@ -1722,9 +1722,9 @@ Candy.View.Pane = (function(self, $) {
 			}
 
 			var evtData = {
-				'roomJid' : roomJid, 
-				'user' : user, 
-				'action': action, 
+				'roomJid' : roomJid,
+				'user' : user,
+				'action': action,
 				'element': $('#user-' + roomId + '-' + userId)
 			};
 
@@ -1740,7 +1740,7 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) action - [join, leave, kick, ban]
 			 *   (jQuery.Element) element - User element
 			 */
-			$(self).triggerHandler('candy:view.roster.after-update', evtData);
+			$(Candy).triggerHandler('candy:view.roster.after-update', evtData);
 		},
 
 		/** Function: userClick
@@ -1798,14 +1798,14 @@ Candy.View.Pane = (function(self, $) {
 			message = Candy.View.Event.Message.beforeSend(message);
 
 			var evtData = {message: message};
-			
+
 			/** Event: candy:view.message.before-send
 			 * Before sending a message
 			 *
 			 * Parameters:
 			 *   (String) message - Message text
 			 */
-			$(self).triggerHandler('candy:view.message.before-send', evtData);
+			$(Candy).triggerHandler('candy:view.message.before-send', evtData);
 
 			message = evtData.message;
 
@@ -1848,14 +1848,14 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) name - Name of the sending user
 			 *   (String) message - Message text
 			 */
-			$(self).triggerHandler('candy:view.message.before-show', evtData);
+			$(Candy).triggerHandler('candy:view.message.before-show', evtData);
 
 			message = evtData.message;
-			
+
 			if(!message) {
 				return;
 			}
-			
+
 			var renderEvtData = {
 				template: Candy.View.Template.Message.item,
 				templateData: {
@@ -1865,7 +1865,7 @@ Candy.View.Pane = (function(self, $) {
 					time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
 				}
 			};
-			
+
 			/** Event: candy:view.message.before-render
 			 * Before rendering the message element
 			 *
@@ -1877,7 +1877,7 @@ Candy.View.Pane = (function(self, $) {
 			 *                           - (String) message - Message text
 			 *                           - (String) time - Localized time
 			 */
-			$(self).triggerHandler('candy:view.message.before-render', renderEvtData);
+			$(Candy).triggerHandler('candy:view.message.before-render', renderEvtData);
 
 			var html = Mustache.to_html(renderEvtData.template, renderEvtData.templateData);
 			self.Room.appendToMessagePane(roomJid, html);
@@ -1917,7 +1917,7 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) name - Name of the sending user
 			 *   (String) message - Message text
 			 */
-			$(self).triggerHandler('candy:view.message.after-show', evtData);
+			$(Candy).triggerHandler('candy:view.message.after-show', evtData);
 		}
 	};
 

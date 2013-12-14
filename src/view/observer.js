@@ -143,7 +143,7 @@ Candy.View.Observer = (function(self, $) {
 				 *   (String) roomJid - Room JID
 				 *   (Candy.Core.ChatUser) user - User which has been kicked or banned
 				 */
-				$(self).triggerHandler('candy:view.presence', [evtData]);
+				$(Candy).triggerHandler('candy:view.presence', [evtData]);
 
 			// A user changed presence
 			} else if(args.roomJid) {
