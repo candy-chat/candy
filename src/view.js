@@ -7,6 +7,7 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
+ *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.View
@@ -56,11 +57,14 @@ Candy.View = (function(self, $) {
 		 * Register observers. Candy core will now notify the View on changes.
 		 */
 		_registerObservers = function() {
-			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.CHAT, self.Observer.Chat);
-			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.PRESENCE, self.Observer.Presence);
-			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.PRESENCE_ERROR, self.Observer.PresenceError);
-			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.MESSAGE, self.Observer.Message);
-			Candy.Core.Event.addObserver(Candy.Core.Event.KEYS.LOGIN, self.Observer.Login);
+			$(Candy).on('candy:core.chat.connection', self.Observer.Chat.Connection);
+			$(Candy).on('candy:core.chat.message', self.Observer.Chat.Message);
+			$(Candy).on('candy:core.login', self.Observer.Login);
+			$(Candy).on('candy:core.presence', self.Observer.Presence.update);
+			$(Candy).on('candy:core.presence.leave', self.Observer.Presence.update);
+			$(Candy).on('candy:core.presence.room', self.Observer.Presence.update);
+			$(Candy).on('candy:core.presence.error', self.Observer.PresenceError);
+			$(Candy).on('candy:core.message', self.Observer.Message);
 		},
 
 		/** PrivateFunction: _registerWindowHandlers
@@ -70,7 +74,7 @@ Candy.View = (function(self, $) {
 		 */
 		_registerWindowHandlers = function() {
 			// Cross-browser focus handling
-			if($.browser.msie && !$.browser.version.match('^9'))	{
+			if($.browser.msie && !$.browser.version.match('^9')) {
 				$(document).focusin(Candy.View.Pane.Window.onFocus).focusout(Candy.View.Pane.Window.onBlur);
 			} else {
 				$(window).focus(Candy.View.Pane.Window.onFocus).blur(Candy.View.Pane.Window.onBlur);
@@ -78,24 +82,11 @@ Candy.View = (function(self, $) {
 			$(window).resize(Candy.View.Pane.Chat.fitTabs);
 		},
 
-		/** PrivateFunction: _registerToolbarHandlers
-		 * Register toolbar handlers and disable sound if cookie says so.
+		/** PrivateFunction: _initToolbar
+		 * Initialize toolbar.
 		 */
-		_registerToolbarHandlers = function() {
-			$('#emoticons-icon').click(function(e) {
-				self.Pane.Chat.Context.showEmoticonsMenu(e.currentTarget);
-				e.stopPropagation();
-			});
-			$('#chat-autoscroll-control').click(Candy.View.Pane.Chat.Toolbar.onAutoscrollControlClick);
-
-			$('#chat-sound-control').click(Candy.View.Pane.Chat.Toolbar.onSoundControlClick);
-			if(Candy.Util.cookieExists('candy-nosound')) {
-				$('#chat-sound-control').click();
-			}
-			$('#chat-statusmessage-control').click(Candy.View.Pane.Chat.Toolbar.onStatusMessageControlClick);
-			if(Candy.Util.cookieExists('candy-nostatusmessages')) {
-				$('#chat-statusmessage-control').click();
-			}
+		_initToolbar = function() {
+			self.Pane.Chat.Toolbar.init();
 		},
 
 		/** PrivateFunction: _delegateTooltips
@@ -115,7 +106,7 @@ Candy.View = (function(self, $) {
 	self.init = function(container, options) {
 		$.extend(true, _options, options);
 		_setupTranslation(_options.language);
-		
+
 		// Set path to emoticons
 		Candy.Util.Parser.setEmoticonPath(this.getOptions().resources + 'img/emoticons/');
 
@@ -139,7 +130,7 @@ Candy.View = (function(self, $) {
 
 		// ... and let the elements dance.
 		_registerWindowHandlers();
-		_registerToolbarHandlers();
+		_initToolbar();
 		_registerObservers();
 		_delegateTooltips();
 	};

@@ -1,7 +1,7 @@
 Candy — a JavaScript-based multi-user chat client
 ==================================================
 
-Visit the official project page: http://candy-chat.github.com/candy
+Visit the official project page: http://candy-chat.github.io/candy
 
 Features
 --------

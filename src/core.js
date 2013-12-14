@@ -7,6 +7,7 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
+ *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.Core
@@ -38,6 +39,10 @@ Candy.Core = (function(self, Strophe, $) {
 		 * Set in <Candy.Core.connect> when jidOrHost doesn't contain a @-char.
 		 */
 		_anonymousConnection = false,
+		/** PrivateVariable: _status
+		 * Current Strophe connection state
+		 */
+		_status,
 		/** PrivateVariable: _options
 		 * Options:
 		 *   (Boolean) debug - Debug (Default: false)
@@ -49,7 +54,12 @@ Candy.Core = (function(self, Strophe, $) {
 			 * You may want to define an array of rooms to autojoin: `['room1@conference.host.tld', 'room2...]` (ejabberd, Openfire, ...)
 			 */
 			autojoin: true,
-			debug: false
+			debug: false,
+			disableWindowUnload: false,
+			/** Integer: presencePriority
+			 * Default priority for presence messages in order to receive messages across different resources
+			 */
+			presencePriority: 1
 		},
 
 		/** PrivateFunction: _addNamespace
@@ -73,17 +83,10 @@ Candy.Core = (function(self, Strophe, $) {
 			_addNamespace('DELAY', 'jabber:x:delay');
 		},
 
-		/** PrivateFunction: _registerEventHandlers
-		 * Adds listening handlers to the connection.
-		 */
-		_registerEventHandlers = function() {
-			self.addHandler(self.Event.Jabber.Version, Strophe.NS.VERSION, 'iq');
-			self.addHandler(self.Event.Jabber.Presence, null, 'presence');
-			self.addHandler(self.Event.Jabber.Message, null, 'message');
-			self.addHandler(self.Event.Jabber.Bookmarks, Strophe.NS.PRIVATE, 'iq');
-			self.addHandler(self.Event.Jabber.Room.Disco, Strophe.NS.DISCO_INFO, 'iq');
-			self.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq', 'result');
-			self.addHandler(self.Event.Jabber.PrivacyListError, Strophe.NS.PRIVACY, 'iq', 'error');
+		_getEscapedJidFromJid = function(jid) {
+			var node = Strophe.getNodeFromJid(jid),
+				domain = Strophe.getDomainFromJid(jid);
+			return node ? Strophe.escapeNode(node) + '@' + domain : domain;
 		};
 
 	/** Function: init
@@ -105,9 +108,7 @@ Candy.Core = (function(self, Strophe, $) {
 					if(typeof window.console !== undefined && typeof window.console.log !== undefined) {
 						console.log(str);
 					}
-				} catch(e) {
-					//console.error(e);
-				}
+				} catch(e) {}
 			};
 			self.log('[Init] Debugging enabled');
 		}
@@ -120,7 +121,9 @@ Candy.Core = (function(self, Strophe, $) {
 
 		// Window unload handler... works on all browsers but Opera. There is NO workaround.
 		// Opera clients getting disconnected 1-2 minutes delayed.
-		window.onbeforeunload = self.onWindowUnload;
+		if (!_options.disableWindowUnload) {
+			window.onbeforeunload = self.onWindowUnload;
+		}
 
 		// Prevent Firefox from aborting AJAX requests when pressing ESC
 		if($.browser.mozilla) {
@@ -130,6 +133,25 @@ Candy.Core = (function(self, Strophe, $) {
 				}
 			});
 		}
+	};
+
+	/** Function: registerEventHandlers
+	 * Adds listening handlers to the connection.
+	 *
+	 * Use with caution from outside of Candy.
+	 */
+	self.registerEventHandlers = function() {
+		self.addHandler(self.Event.Jabber.Version, Strophe.NS.VERSION, 'iq');
+		self.addHandler(self.Event.Jabber.Presence, null, 'presence');
+		self.addHandler(self.Event.Jabber.Message, null, 'message');
+		self.addHandler(self.Event.Jabber.Bookmarks, Strophe.NS.PRIVATE, 'iq');
+		self.addHandler(self.Event.Jabber.Room.Disco, Strophe.NS.DISCO_INFO, 'iq', 'result');
+		self.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq', 'result');
+		self.addHandler(self.Event.Jabber.PrivacyListError, Strophe.NS.PRIVACY, 'iq', 'error');
+
+		self.addHandler(_connection.disco._onDiscoInfo.bind(_connection.disco), Strophe.NS.DISCO_INFO, 'iq', 'get');
+		self.addHandler(_connection.disco._onDiscoItems.bind(_connection.disco), Strophe.NS.DISCO_ITEMS, 'iq', 'get');
+		self.addHandler(_connection.caps._delegateCapabilities.bind(_connection.caps), Strophe.NS.CAPS);
 	};
 
 	/** Function: connect
@@ -154,14 +176,18 @@ Candy.Core = (function(self, Strophe, $) {
 	self.connect = function(jidOrHost, password, nick) {
 		// Reset before every connection attempt to make sure reconnections work after authfail, alltabsclosed, ...
 		_connection.reset();
-		_registerEventHandlers();
+		self.registerEventHandlers();
 
 		_anonymousConnection = !_anonymousConnection ? jidOrHost && jidOrHost.indexOf("@") < 0 : true;
 
 		if(jidOrHost && password) {
 			// authentication
 			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
-			_user = new self.ChatUser(jidOrHost, Strophe.getNodeFromJid(jidOrHost));
+			if (nick) {
+				_user = new self.ChatUser(jidOrHost, nick);
+			} else {
+				_user = new self.ChatUser(jidOrHost, Strophe.getNodeFromJid(jidOrHost));
+			}
 		} else if(jidOrHost && nick) {
 			// anonymous connect
 			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, null, Candy.Core.Event.Strophe.Connect);
@@ -172,12 +198,6 @@ Candy.Core = (function(self, Strophe, $) {
 			// display login modal
 			Candy.Core.Event.Login();
 		}
-	};
-	
-	_getEscapedJidFromJid = function(jid) {
-		var node = Strophe.getNodeFromJid(jid),
-			domain = Strophe.getDomainFromJid(jid);
-		return node ? Strophe.escapeNode(node) + '@' + domain : domain;
 	};
 
 	/** Function: attach
@@ -192,7 +212,7 @@ Candy.Core = (function(self, Strophe, $) {
 	 */
 	self.attach = function(jid, sid, rid) {
 		_user = new self.ChatUser(jid, Strophe.getNodeFromJid(jid));
-		_registerEventHandlers();
+		self.registerEventHandlers();
 		_connection.attach(jid, sid, rid, Candy.Core.Event.Strophe.Connect);
 	};
 
@@ -265,6 +285,29 @@ Candy.Core = (function(self, Strophe, $) {
 	 */
 	self.getRooms = function() {
 		return _rooms;
+	};
+
+	/** Function: getStropheStatus
+	 * Get the status set by Strophe.
+	 *
+	 * Returns:
+	 *   (Strophe.Status.*) - one of Strophe's statuses
+	 */
+	self.getStropheStatus = function() {
+		return _status;
+	};
+
+	/** Function: setStropheStatus
+	 * Set the strophe status
+	 *
+	 * Called by:
+	 *   Candy.Core.Event.Strophe.Connect
+	 *
+	 * Parameters:
+	 *   (Strophe.Status.*) status - Strophe's status
+	 */
+	self.setStropheStatus = function(status) {
+		_status = status;
 	};
 
 	/** Function: isAnonymousConnection

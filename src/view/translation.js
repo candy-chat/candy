@@ -7,6 +7,7 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
+ *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.View.Translation
@@ -78,7 +79,6 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
-	
 	'de' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinden...',
@@ -144,32 +144,31 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},
-	
 	'fr' : {
-		'status': 'Status: %s',
-		'statusConnecting': 'Connecter...',
+		'status': 'Status : %s',
+		'statusConnecting': 'Connexion…',
 		'statusConnected' : 'Connecté.',
-		'statusDisconnecting': 'Déconnecter....',
+		'statusDisconnecting': 'Déconnexion…',
 		'statusDisconnected' : 'Déconnecté.',
-		'statusAuthfail': 'Authentification a échoué',
+		'statusAuthfail': 'L\'authentification a échoué',
 
-		'roomSubject'  : 'Sujet:',
+		'roomSubject'  : 'Sujet :',
 		'messageSubmit': 'Envoyer',
 
-		'labelUsername': 'Nom d\'utilisateur:',
-		'labelPassword': 'Mot de passe:',
-		'loginSubmit'  : 'Inscription',
+		'labelUsername': 'Nom d\'utilisateur :',
+		'labelPassword': 'Mot de passe :',
+		'loginSubmit'  : 'Connexion',
 		'loginInvalid'  : 'JID invalide',
 
-		'reason'				: 'Justification:',
-		'subject'				: 'Titre:',
-		'reasonWas'				: 'Justification: %s.',
+		'reason'				: 'Motif :',
+		'subject'				: 'Titre :',
+		'reasonWas'				: 'Motif : %s.',
 		'kickActionLabel'		: 'Kick',
-		'youHaveBeenKickedBy'   : 'Tu as été expulsé de le salon %1$s (%2$s)',
-		'youHaveBeenKicked'     : 'Tu as été expulsé de le salon %s',
+		'youHaveBeenKickedBy'   : 'Vous avez été expulsé du salon %1$s (%2$s)',
+		'youHaveBeenKicked'     : 'Vous avez été expulsé du salon %s',
 		'banActionLabel'		: 'Ban',
-		'youHaveBeenBannedBy'   : 'Tu as été banni de le salon %1$s (%2$s)',
-		'youHaveBeenBanned'     : 'Tu as été banni de le salon %s',
+		'youHaveBeenBannedBy'   : 'Vous avez été banni du salon %1$s (%2$s)',
+		'youHaveBeenBanned'     : 'Vous avez été banni du salon %s',
 
 		'privateActionLabel' : 'Chat privé',
 		'ignoreActionLabel'  : 'Ignorer',
@@ -184,33 +183,32 @@ Candy.View.Translation = {
 		'userHasBeenKickedFromRoom': '%s a été expulsé du salon.',
 		'userHasBeenBannedFromRoom': '%s a été banni du salon.',
 
-		'presenceUnknownWarningSubject': 'Note:',
+		'presenceUnknownWarningSubject': 'Note :',
 		'presenceUnknownWarning'       : 'Cet utilisateur n\'est malheureusement plus connecté, le message ne sera pas envoyé.',
 
-		'dateFormat': 'dd.mm.yyyy',
+		'dateFormat': 'dd/mm/yyyy',
 		'timeFormat': 'HH:MM:ss',
 
 		'tooltipRole'			: 'Modérateur',
-		'tooltipIgnored'		: 'Tu ignores cette personne',
+		'tooltipIgnored'		: 'Vous ignorez cette personne',
 		'tooltipEmoticons'		: 'Smileys',
-		'tooltipSound'			: 'Jouer un son lorsque tu reçois de nouveaux messages privés',
-		'tooltipAutoscroll'		: 'Auto-defilement',
+		'tooltipSound'			: 'Jouer un son lors de la réception de nouveaux messages privés',
+		'tooltipAutoscroll'		: 'Défilement automatique',
 		'tooltipStatusmessage'	: 'Messages d\'état',
-		'tooltipAdministration'	: 'Administrer le salon',
+		'tooltipAdministration'	: 'Administration du salon',
 		'tooltipUsercount'		: 'Nombre d\'utilisateurs dans le salon',
 
 		'enterRoomPassword' : 'Le salon "%s" est protégé par un mot de passe.',
 		'enterRoomPasswordSubmit' : 'Entrer dans le salon',
-		'passwordEnteredInvalid' : 'Le mot de passe four le salon "%s" est invalide.',
+		'passwordEnteredInvalid' : 'Le mot de passe pour le salon "%s" est invalide.',
 
-		'nicknameConflict': 'Le nom d\'utilisateur est déjà utilisé. Choisi un autre.',
+		'nicknameConflict': 'Le nom d\'utilisateur est déjà utilisé. Veuillez en choisir un autre.',
 
-		'errorMembersOnly': 'Tu ne peut pas entrer de le salon "%s": droits insuffisants.',
-		'errorMaxOccupantsReached': 'Tu ne peut pas entrer de le salon "%s": Limite d\'utilisateur atteint.',
+		'errorMembersOnly': 'Vous ne pouvez pas entrer dans le salon "%s" : droits insuffisants.',
+		'errorMaxOccupantsReached': 'Vous ne pouvez pas entrer dans le salon "%s": Limite d\'utilisateur atteint.',
 
-		'antiSpamMessage' : 'S\'il te plaît, pas de spam. Tu as été bloqué pendant une courte période..'
+		'antiSpamMessage' : 'Merci de ne pas envoyer de spam. Vous avez été bloqué pendant une courte période..'
 	},
-	
 	'nl' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Verbinding maken...',
@@ -276,7 +274,6 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Het is niet toegestaan om veel berichten naar de server te versturen. Je bent voor een korte periode geblokkeerd.'
 	},
-	
 	'es': {
 		'status': 'Estado: %s',
 		'statusConnecting': 'Conectando...',
@@ -342,7 +339,6 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Por favor, no hagas spam. Has sido bloqueado temporalmente.'
 	},
-
 	'cn': {
 		'status': '状态: %s',
 		'statusConnecting': '连接中...',
@@ -406,7 +402,6 @@ Candy.View.Translation = {
 
 		'antiSpamMessage': '因为您在短时间内发送过多的消息 服务器要阻止您一小段时间。'
 	},
-	
 	'ja' : {
 		'status'        : 'ステータス: %s',
 		'statusConnecting'  : '接続中…',
@@ -471,5 +466,330 @@ Candy.View.Translation = {
 		'errorMaxOccupantsReached'  : '"%s"の部屋に入ることができません: 参加者の数はすでに上限に達しました。',
 
 		'antiSpamMessage'   : 'スパムなどの行為はやめてください。あなたは一時的にブロックされました。'
+	},
+	'sv' : {
+		'status': 'Status: %s',
+		'statusConnecting': 'Ansluter...',
+		'statusConnected' : 'Ansluten',
+		'statusDisconnecting': 'Kopplar från...',
+		'statusDisconnected' : 'Frånkopplad',
+		'statusAuthfail': 'Autentisering misslyckades',
+
+		'roomSubject'  : 'Ämne:',
+		'messageSubmit': 'Skicka',
+
+		'labelUsername': 'Användarnamn:',
+		'labelPassword': 'Lösenord:',
+		'loginSubmit'  : 'Logga in',
+		'loginInvalid'  : 'Ogiltigt JID',
+
+		'reason'                : 'Anledning:',
+		'subject'               : 'Ämne:',
+		'reasonWas'             : 'Anledningen var: %s.',
+		'kickActionLabel'       : 'Sparka ut',
+		'youHaveBeenKickedBy'   : 'Du har blivit utsparkad från %2$s av %1$s',
+		'youHaveBeenKicked'     : 'Du har blivit utsparkad från %s',
+		'banActionLabel'        : 'Bannlys',
+		'youHaveBeenBannedBy'   : 'Du har blivit bannlyst från %1$s av %2$s',
+		'youHaveBeenBanned'     : 'Du har blivit bannlyst från %s',
+
+		'privateActionLabel' : 'Privat chatt',
+		'ignoreActionLabel'  : 'Blockera',
+		'unignoreActionLabel' : 'Avblockera',
+
+		'setSubjectActionLabel': 'Ändra ämne',
+
+		'administratorMessageSubject' : 'Administratör',
+
+		'userJoinedRoom'           : '%s kom in i rummet.',
+		'userLeftRoom'             : '%s har lämnat rummet.',
+		'userHasBeenKickedFromRoom': '%s har blivit utsparkad ur rummet.',
+		'userHasBeenBannedFromRoom': '%s har blivit bannlyst från rummet.',
+
+		'presenceUnknownWarningSubject': 'Notera:',
+		'presenceUnknownWarning'       : 'Denna användare kan vara offline. Vi kan inte följa dennes närvaro.',
+
+		'dateFormat': 'yyyy-mm-dd',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'           : 'Moderator',
+		'tooltipIgnored'        : 'Du blockerar denna användare',
+		'tooltipEmoticons'      : 'Smilies',
+		'tooltipSound'          : 'Spela upp ett ljud vid nytt privat meddelande',
+		'tooltipAutoscroll'     : 'Autoskrolla',
+		'tooltipStatusmessage'  : 'Visa statusmeddelanden',
+		'tooltipAdministration' : 'Rumadministrering',
+		'tooltipUsercount'      : 'Antal användare i rummet',
+
+		'enterRoomPassword' : 'Rummet "%s" är lösenordsskyddat.',
+		'enterRoomPasswordSubmit' : 'Anslut till rum',
+		'passwordEnteredInvalid' : 'Ogiltigt lösenord för rummet "%s".',
+
+		'nicknameConflict': 'Upptaget användarnamn. Var god välj ett annat.',
+
+		'errorMembersOnly': 'Du kan inte ansluta till rummet "%s": Otillräckliga rättigheter.',
+		'errorMaxOccupantsReached': 'Du kan inte ansluta till rummet "%s": Rummet är fullt.',
+
+		'antiSpamMessage' : 'Var god avstå från att spamma. Du har blivit blockerad för en kort stund.'
+	},
+	'it' : {
+		'status': 'Stato: %s',
+		'statusConnecting': 'Connessione...',
+		'statusConnected' : 'Connessione',
+		'statusDisconnecting': 'Disconnessione...',
+		'statusDisconnected' : 'Disconnesso',
+		'statusAuthfail': 'Autenticazione fallita',
+
+		'roomSubject'  : 'Oggetto:',
+		'messageSubmit': 'Invia',
+
+		'labelUsername': 'Nome utente:',
+		'labelPassword': 'Password:',
+		'loginSubmit'  : 'Login',
+		'loginInvalid'  : 'JID non valido',
+
+		'reason'                : 'Ragione:',
+		'subject'               : 'Oggetto:',
+		'reasonWas'             : 'Ragione precedente: %s.',
+		'kickActionLabel'       : 'Espelli',
+		'youHaveBeenKickedBy'   : 'Sei stato espulso da %2$s da %1$s',
+		'youHaveBeenKicked'     : 'Sei stato espulso da %s',
+		'banActionLabel'        : 'Escluso',
+		'youHaveBeenBannedBy'   : 'Sei stato escluso da %1$s da %2$s',
+		'youHaveBeenBanned'     : 'Sei stato escluso da %s',
+
+		'privateActionLabel' : 'Stanza privata',
+		'ignoreActionLabel'  : 'Ignora',
+		'unignoreActionLabel' : 'Non ignorare',
+
+		'setSubjectActionLabel': 'Cambia oggetto',
+
+		'administratorMessageSubject' : 'Amministratore',
+
+		'userJoinedRoom'           : '%s si è unito alla stanza.',
+		'userLeftRoom'             : '%s ha lasciato la stanza.',
+		'userHasBeenKickedFromRoom': '%s è stato espulso dalla stanza.',
+		'userHasBeenBannedFromRoom': '%s è stato escluso dalla stanza.',
+
+		'presenceUnknownWarningSubject': 'Nota:',
+		'presenceUnknownWarning'       : 'Questo utente potrebbe essere offline. Non possiamo tracciare la sua presenza.',
+
+		'dateFormat': 'dd/mm/yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'           : 'Moderatore',
+		'tooltipIgnored'        : 'Stai ignorando questo utente',
+		'tooltipEmoticons'      : 'Emoticons',
+		'tooltipSound'          : 'Riproduci un suono quando arrivano messaggi privati',
+		'tooltipAutoscroll'     : 'Autoscroll',
+		'tooltipStatusmessage'  : 'Mostra messaggi di stato',
+		'tooltipAdministration' : 'Amministrazione stanza',
+		'tooltipUsercount'      : 'Partecipanti alla stanza',
+
+		'enterRoomPassword' : 'La stanza "%s" è protetta da password.',
+		'enterRoomPasswordSubmit' : 'Unisciti alla stanza',
+		'passwordEnteredInvalid' : 'Password non valida per la stanza "%s".',
+
+		'nicknameConflict': 'Nome utente già in uso. Scegline un altro.',
+
+		'errorMembersOnly': 'Non puoi unirti alla stanza "%s": Permessi insufficienti.',
+		'errorMaxOccupantsReached': 'Non puoi unirti alla stanza "%s": Troppi partecipanti.',
+
+		'antiSpamMessage' : 'Per favore non scrivere messaggi pubblicitari. Sei stato bloccato per un po\' di tempo.'
+	},
+	'pt': {
+		'status': 'Status: %s',
+		'statusConnecting': 'Conectando...',
+		'statusConnected' : 'Conectado',
+		'statusDisconnecting': 'Desligando...',
+		'statusDisconnected' : 'Desligado',
+		'statusAuthfail': 'Falha na autenticação',
+
+		'roomSubject'  : 'Assunto:',
+		'messageSubmit': 'Enviar',
+
+		'labelUsername': 'Usuário:',
+		'labelPassword': 'Senha:',
+		'loginSubmit'  : 'Entrar',
+		'loginInvalid'  : 'JID inválido',
+
+		'reason'				: 'Motivo:',
+		'subject'				: 'Assunto:',
+		'reasonWas'				: 'O motivo foi: %s.',
+		'kickActionLabel'		: 'Excluir',
+		'youHaveBeenKickedBy'   : 'Você foi excluido de %1$s por %2$s',
+		'youHaveBeenKicked'     : 'Você foi excluido de %s',
+		'banActionLabel'		: 'Bloquear',
+		'youHaveBeenBannedBy'   : 'Você foi excluido permanentemente de %1$s por %2$s',
+		'youHaveBeenBanned'     : 'Você foi excluido permanentemente de %s',
+
+		'privateActionLabel' : 'Bate-papo privado',
+		'ignoreActionLabel'  : 'Ignorar',
+		'unignoreActionLabel' : 'Não ignorar',
+
+		'setSubjectActionLabel': 'Trocar Assunto',
+
+		'administratorMessageSubject' : 'Administrador',
+
+		'userJoinedRoom'           : '%s entrou na sala.',
+		'userLeftRoom'             : '%s saiu da sala.',
+		'userHasBeenKickedFromRoom': '%s foi excluido da sala.',
+		'userHasBeenBannedFromRoom': '%s foi excluido permanentemente da sala.',
+
+		'presenceUnknownWarning'       : 'Este usuário pode estar desconectado. Não é possível determinar o status.',
+		'presenceUnknownWarning'       : 'Este usuário poderá ser desligado..',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'Moderador',
+		'tooltipIgnored'		: 'Você ignora este usuário',
+		'tooltipEmoticons'		: 'Emoticons',
+		'tooltipSound'			: 'Reproduzir o som para novas mensagens privados',
+		'tooltipAutoscroll'		: 'Deslocamento automático',
+		'tooltipStatusmessage'	: 'Mostrar mensagens de status',
+		'tooltipAdministration'	: 'Administração da sala',
+		'tooltipUsercount'		: 'Usuários na sala',
+
+		'enterRoomPassword' : 'A sala "%s" é protegida por senha.',
+		'enterRoomPasswordSubmit' : 'Junte-se à sala',
+		'passwordEnteredInvalid' : 'Senha incorreta para a sala "%s".',
+
+		'nicknameConflict': 'O nome de usuário já está em uso. Por favor, escolha outro.',
+
+		'errorMembersOnly': 'Você não pode participar da sala "%s":  privilégios insuficientes.',
+		'errorMaxOccupantsReached': 'Você não pode participar da sala "%s": muitos participantes.',
+
+		'antiSpamMessage' : 'Por favor, não envie spam. Você foi bloqueado temporariamente.'
+	},
+	'ru' : {
+		'status': 'Статус: %s',
+		'statusConnecting': 'Подключение...',
+		'statusConnected' : 'Подключено',
+		'statusDisconnecting': 'Отключение...',
+		'statusDisconnected' : 'Отключено',
+		'statusAuthfail': 'Неверный логин',
+
+		'roomSubject'  : 'Топик:',
+		'messageSubmit': 'Послать',
+
+		'labelUsername': 'Имя:',
+		'labelPassword': 'Пароль:',
+		'loginSubmit'  : 'Логин',
+		'loginInvalid'  : 'Неверный JID',
+
+		'reason'				: 'Причина:',
+		'subject'				: 'Топик:',
+		'reasonWas'				: 'Причина была: %s.',
+		'kickActionLabel'		: 'Выбросить',
+		'youHaveBeenKickedBy'   : 'Пользователь %1$s выбросил вас из чата %2$s',
+		'youHaveBeenKicked'     : 'Вас выбросили из чата %s',
+		'banActionLabel'		: 'Запретить доступ',
+		'youHaveBeenBannedBy'   : 'Пользователь %1$s запретил вам доступ в чат %2$s',
+		'youHaveBeenBanned'     : 'Вам запретили доступ в чат %s',
+
+		'privateActionLabel' : 'Один-на-один чат',
+		'ignoreActionLabel'  : 'Игнорировать',
+		'unignoreActionLabel' : 'Отменить игнорирование',
+
+		'setSubjectActionLabel': 'Изменить топик',
+
+		'administratorMessageSubject' : 'Администратор',
+
+		'userJoinedRoom'           : '%s вошёл в чат.',
+		'userLeftRoom'             : '%s вышел из чата.',
+		'userHasBeenKickedFromRoom': '%s выброшен из чата.',
+		'userHasBeenBannedFromRoom': '%s запрещён доступ в чат.',
+
+		'presenceUnknownWarningSubject': 'Уведомление:',
+		'presenceUnknownWarning'       : 'Этот пользователь вероятнее всего оффлайн.',
+
+		'dateFormat': 'mm.dd.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'Модератор',
+		'tooltipIgnored'		: 'Вы игнорируете этого пользователя.',
+		'tooltipEmoticons'		: 'Смайлики',
+		'tooltipSound'			: 'Озвучивать новое частное сообщение',
+		'tooltipAutoscroll'		: 'Авто-прокручивание',
+		'tooltipStatusmessage'	: 'Показывать статус сообщения',
+		'tooltipAdministration'	: 'Администрирование чат комнаты',
+		'tooltipUsercount'		: 'Участники чата',
+
+		'enterRoomPassword' : 'Чат комната "%s" защищена паролем.',
+		'enterRoomPasswordSubmit' : 'Войти в чат',
+		'passwordEnteredInvalid' : 'Неверный пароль для комнаты "%s".',
+
+		'nicknameConflict': 'Это имя уже используется. Пожалуйста выберите другое имя.',
+
+		'errorMembersOnly': 'Вы не можете войти в чат "%s": Недостаточно прав доступа.',
+		'errorMaxOccupantsReached': 'Вы не можете войти в чат "%s": Слишком много участников.',
+
+		'antiSpamMessage' : 'Пожалуйста не рассылайте спам. Вас заблокировали на короткое время.'
+	},
+	'ca': {
+		'status': 'Estat: %s',
+		'statusConnecting': 'Connectant...',
+		'statusConnected' : 'Connectat',
+		'statusDisconnecting': 'Desconnectant...',
+		'statusDisconnected' : 'Desconnectat',
+		'statusAuthfail': 'Ha fallat la autenticació',
+
+		'roomSubject'  : 'Assumpte:',
+		'messageSubmit': 'Enviar',
+
+		'labelUsername': 'Usuari:',
+		'labelPassword': 'Clau:',
+		'loginSubmit'  : 'Entrar',
+		'loginInvalid'  : 'JID no vàlid',
+
+		'reason'                : 'Raó:',
+		'subject'               : 'Assumpte:',
+		'reasonWas'             : 'La raó ha estat: %s.',
+		'kickActionLabel'       : 'Expulsar',
+		'youHaveBeenKickedBy'   : 'Has estat expulsat de %1$s per %2$s',
+		'youHaveBeenKicked'     : 'Has estat expulsat de %s',
+		'banActionLabel'        : 'Prohibir',
+		'youHaveBeenBannedBy'   : 'Has estat expulsat permanentment de %1$s per %2$s',
+		'youHaveBeenBanned'     : 'Has estat expulsat permanentment de %s',
+
+		'privateActionLabel' : 'Xat privat',
+		'ignoreActionLabel'  : 'Ignorar',
+		'unignoreActionLabel' : 'No ignorar',
+
+		'setSubjectActionLabel': 'Canviar assumpte',
+
+		'administratorMessageSubject' : 'Administrador',
+
+		'userJoinedRoom'           : '%s ha entrat a la sala.',
+		'userLeftRoom'             : '%s ha deixat la sala.',
+		'userHasBeenKickedFromRoom': '%s ha estat expulsat de la sala.',
+		'userHasBeenBannedFromRoom': '%s ha estat expulsat permanentment de la sala.',
+
+		'presenceUnknownWarningSubject': 'Atenció:',
+		'presenceUnknownWarning'       : 'Aquest usuari podria estar desconnectat ...',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'           : 'Moderador',
+		'tooltipIgnored'        : 'Estàs ignorant aquest usuari',
+		'tooltipEmoticons'      : 'Emoticones',
+		'tooltipSound'          : 'Reproduir un so per a nous missatges',
+		'tooltipAutoscroll'     : 'Desplaçament automàtic',
+		'tooltipStatusmessage'  : 'Mostrar missatges d\'estat',
+		'tooltipAdministration' : 'Administració de la sala',
+		'tooltipUsercount'      : 'Usuaris dins la sala',
+
+		'enterRoomPassword' : 'La sala "%s" està protegida amb contrasenya.',
+		'enterRoomPasswordSubmit' : 'Entrar a la sala',
+		'passwordEnteredInvalid' : 'Contrasenya incorrecta per a la sala "%s".',
+
+		'nicknameConflict': 'El nom d\'usuari ja s\'està utilitzant. Si us plau, escolleix-ne un altre.',
+
+		'errorMembersOnly': 'No pots unir-te a la sala "%s": no tens prous privilegis.',
+		'errorMaxOccupantsReached': 'No pots unir-te a la sala "%s": hi ha masses participants.',
+
+		'antiSpamMessage' : 'Si us plau, no facis spam. Has estat bloquejat temporalment.'
 	}
 };
