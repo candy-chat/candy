@@ -21,3 +21,5 @@ Support & Community
 -------------------
 Take a look at our [FAQ](https://github.com/candy-chat/candy/wiki/Frequently-Asked-Questions). If it doesn't solve your questions, you're welcome to join our [Mailinglist on Google Groups](http://groups.google.com/group/candy-chat).
 You don't need to have a Gmail account for it. 
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a41a8075608abeaf99db685d7ef29cf6 "githalytics.com")](http://githalytics.com/candy-chat/candy)
