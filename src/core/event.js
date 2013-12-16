@@ -10,6 +10,8 @@
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
+/* global Candy, Strophe, jQuery */
+
 /** Class: Candy.Core.Event
  * Chat Events
  *
@@ -35,7 +37,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 * Parameters:
 		 *   (String) presetJid - Preset user JID
 		 */
-	    $(Candy).triggerHandler('candy:core.login', { presetJid: presetJid } );
+		$(Candy).triggerHandler('candy:core.login', { presetJid: presetJid } );
 	};
 
 	/** Class: Candy.Core.Event.Strophe
@@ -57,7 +59,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				case Strophe.Status.CONNECTED:
 					Candy.Core.log('[Connection] Connected');
 					Candy.Core.Action.Jabber.GetJidIfAnonymous();
-					// fall through because the same things need to be done :)
+					/* falls through */
 				case Strophe.Status.ATTACHED:
 					Candy.Core.log('[Connection] Attached');
 					Candy.Core.Action.Jabber.Presence();
@@ -239,8 +241,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 */
 		Message: function(msg) {
 			Candy.Core.log('[Jabber] Message');
-			var msg = $(msg),
-				fromJid = msg.attr('from'),
+			msg = $(msg);
+
+			var fromJid = msg.attr('from'),
 				type = msg.attr('type'),
 				toJid = msg.attr('to');
 			// Room message
@@ -293,8 +296,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 */
 			Leave: function(msg) {
 				Candy.Core.log('[Jabber:Room] Leave');
-				var msg = $(msg),
-					from = msg.attr('from'),
+				msg = $(msg);
+				var from = msg.attr('from'),
 					roomJid = Strophe.getBareJidFromJid(from);
 
 				// if room is not joined yet, ignore.
@@ -357,8 +360,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 */
 			Disco: function(msg) {
 				Candy.Core.log('[Jabber:Room] Disco');
-				var msg = $(msg),
-					roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
+				msg = $(msg);
+				var roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
 
 				// Client joined a room
 				if(!Candy.Core.getRooms()[roomJid]) {
@@ -474,7 +477,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					roomName = room.getName();
 
 				// Presence error: Remove room from array to prevent error when disconnecting
-				delete room;
+				Candy.Core.removeRoom(roomJid);
+				room = undefined;
 
 				/** Event: candy:core.presence.error
 				 * Triggered when a presence error happened

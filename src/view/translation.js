@@ -10,6 +10,8 @@
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
+/* global Candy */
+
 /** Class: Candy.View.Translation
  * Contains translations
  */
@@ -637,7 +639,6 @@ Candy.View.Translation = {
 		'userHasBeenBannedFromRoom': '%s foi excluido permanentemente da sala.',
 
 		'presenceUnknownWarning'       : 'Este usuário pode estar desconectado. Não é possível determinar o status.',
-		'presenceUnknownWarning'       : 'Este usuário poderá ser desligado..',
 
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',

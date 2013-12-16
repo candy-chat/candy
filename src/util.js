@@ -10,6 +10,8 @@
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
+/* global Candy, MD5, Strophe, document, escape, jQuery */
+
 /** Class: Candy.Util
  * Candy utils
  *

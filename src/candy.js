@@ -10,8 +10,7 @@
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
-/*jslint regexp: true, browser: true, confusion: true, sloppy: true, white: true, nomen: true, plusplus: true, maxerr: 50, indent: 4 */
-/*global jQuery: true, MD5: true, escape: true, Mustache: true, console: true, Strophe: true, $iq: true, $pres: true */
+/* global jQuery */
 
 /** Class: Candy
  * Candy base class for initalizing the view and the core

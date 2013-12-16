@@ -10,6 +10,8 @@
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
+/* global Candy, Strophe */
+
 /** Class: Candy.Core.ChatUser
  * Chat User
  */
@@ -172,8 +174,8 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	/** Function: setCustomData
 	 * Stores custom data
 	 *
-	 *	Parameter:
-	 *	  (Object) data - Object containing custom data
+	 * Parameter:
+	 *   (Object) data - Object containing custom data
 	 */
 	this.setCustomData = function(data) {
 		this.data.customData = data;
@@ -182,8 +184,8 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	/** Function: getCustomData
 	 * Retrieve custom data
 	 *
-	 *	Returns:
-	 *	  (Object) - Object containing custom data
+	 * Returns:
+	 *   (Object) - Object containing custom data
 	 */
 	this.getCustomData = function() {
 		return this.data.customData;

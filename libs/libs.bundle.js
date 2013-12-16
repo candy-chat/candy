@@ -4203,6 +4203,7 @@ if (callback) {
     window.$pres = arguments[4];
 });
 
+
 /*
  *Plugin to implement the MUC extension.
    http://xmpp.org/extensions/xep-0045.html
@@ -5145,6 +5146,481 @@ if (callback) {
   })();
 
 }).call(this);
+
+/*
+  Copyright 2010, François de Metz <francois@2metz.fr>
+*/
+
+/**
+ * Disco Strophe Plugin
+ * Implement http://xmpp.org/extensions/xep-0030.html
+ * TODO: manage node hierarchies, and node on info request
+ */
+Strophe.addConnectionPlugin('disco',
+{
+    _connection: null,
+    _identities : [],
+    _features : [],
+    _items : [],
+    /** Function: init
+     * Plugin init
+     *
+     * Parameters:
+     *   (Strophe.Connection) conn - Strophe connection
+     */
+    init: function(conn)
+    {
+    this._connection = conn;
+        this._identities = [];
+        this._features   = [];
+        this._items      = [];
+        // disco info
+        conn.addHandler(this._onDiscoInfo.bind(this), Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
+        // disco items
+        conn.addHandler(this._onDiscoItems.bind(this), Strophe.NS.DISCO_ITEMS, 'iq', 'get', null, null);
+    },
+    /** Function: addIdentity
+     * See http://xmpp.org/registrar/disco-categories.html
+     * Parameters:
+     *   (String) category - category of identity (like client, automation, etc ...)
+     *   (String) type - type of identity (like pc, web, bot , etc ...)
+     *   (String) name - name of identity in natural language
+     *   (String) lang - lang of name parameter
+     *
+     * Returns:
+     *   Boolean
+     */
+    addIdentity: function(category, type, name, lang)
+    {
+        for (var i=0; i<this._identities.length; i++)
+        {
+            if (this._identities[i].category == category &&
+                this._identities[i].type == type &&
+                this._identities[i].name == name &&
+                this._identities[i].lang == lang)
+            {
+                return false;
+            }
+        }
+        this._identities.push({category: category, type: type, name: name, lang: lang});
+        return true;
+    },
+    /** Function: addFeature
+     *
+     * Parameters:
+     *   (String) var_name - feature name (like jabber:iq:version)
+     *
+     * Returns:
+     *   boolean
+     */
+    addFeature: function(var_name)
+    {
+        for (var i=0; i<this._features.length; i++)
+        {
+             if (this._features[i] == var_name)
+                 return false;
+        }
+        this._features.push(var_name);
+        return true;
+    },
+    /** Function: removeFeature
+     *
+     * Parameters:
+     *   (String) var_name - feature name (like jabber:iq:version)
+     *
+     * Returns:
+     *   boolean
+     */
+    removeFeature: function(var_name)
+    {
+        for (var i=0; i<this._features.length; i++)
+        {
+             if (this._features[i] === var_name){
+                 this._features.splice(i,1)
+                 return true;
+             }
+        }
+        return false;
+    },
+    /** Function: addItem
+     *
+     * Parameters:
+     *   (String) jid
+     *   (String) name
+     *   (String) node
+     *   (Function) call_back
+     *
+     * Returns:
+     *   boolean
+     */
+    addItem: function(jid, name, node, call_back)
+    {
+        if (node && !call_back)
+            return false;
+        this._items.push({jid: jid, name: name, node: node, call_back: call_back});
+        return true;
+    },
+    /** Function: info
+     * Info query
+     *
+     * Parameters:
+     *   (Function) call_back
+     *   (String) jid
+     *   (String) node
+     */
+    info: function(jid, node, success, error, timeout)
+    {
+        var attrs = {xmlns: Strophe.NS.DISCO_INFO};
+        if (node)
+            attrs.node = node;
+
+        var info = $iq({from:this._connection.jid,
+                         to:jid, type:'get'}).c('query', attrs);
+        this._connection.sendIQ(info, success, error, timeout);
+    },
+    /** Function: items
+     * Items query
+     *
+     * Parameters:
+     *   (Function) call_back
+     *   (String) jid
+     *   (String) node
+     */
+    items: function(jid, node, success, error, timeout)
+    {
+        var attrs = {xmlns: Strophe.NS.DISCO_ITEMS};
+        if (node)
+            attrs.node = node;
+
+        var items = $iq({from:this._connection.jid,
+                         to:jid, type:'get'}).c('query', attrs);
+        this._connection.sendIQ(items, success, error, timeout);
+    },
+
+    /** PrivateFunction: _buildIQResult
+     */
+    _buildIQResult: function(stanza, query_attrs)
+    {
+        var id   =  stanza.getAttribute('id');
+        var from = stanza.getAttribute('from');
+        var iqresult = $iq({type: 'result', id: id});
+
+        if (from !== null) {
+            iqresult.attrs({to: from});
+        }
+
+        return iqresult.c('query', query_attrs);
+    },
+
+    /** PrivateFunction: _onDiscoInfo
+     * Called when receive info request
+     */
+    _onDiscoInfo: function(stanza)
+    {
+        var node = stanza.getElementsByTagName('query')[0].getAttribute('node');
+        var attrs = {xmlns: Strophe.NS.DISCO_INFO};
+        if (node)
+        {
+            attrs.node = node;
+        }
+        var iqresult = this._buildIQResult(stanza, attrs);
+        for (var i=0; i<this._identities.length; i++)
+        {
+            var attrs = {category: this._identities[i].category,
+                         type    : this._identities[i].type};
+            if (this._identities[i].name)
+                attrs.name = this._identities[i].name;
+            if (this._identities[i].lang)
+                attrs['xml:lang'] = this._identities[i].lang;
+            iqresult.c('identity', attrs).up();
+        }
+        for (var i=0; i<this._features.length; i++)
+        {
+            iqresult.c('feature', {'var':this._features[i]}).up();
+        }
+        this._connection.send(iqresult.tree());
+        return true;
+    },
+    /** PrivateFunction: _onDiscoItems
+     * Called when receive items request
+     */
+    _onDiscoItems: function(stanza)
+    {
+        var query_attrs = {xmlns: Strophe.NS.DISCO_ITEMS};
+        var node = stanza.getElementsByTagName('query')[0].getAttribute('node');
+        if (node)
+        {
+            query_attrs.node = node;
+            var items = [];
+            for (var i = 0; i < this._items.length; i++)
+            {
+                if (this._items[i].node == node)
+                {
+                    items = this._items[i].call_back(stanza);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            var items = this._items;
+        }
+        var iqresult = this._buildIQResult(stanza, query_attrs);
+        for (var i = 0; i < items.length; i++)
+        {
+            var attrs = {jid:  items[i].jid};
+            if (items[i].name)
+                attrs.name = items[i].name;
+            if (items[i].node)
+                attrs.node = items[i].node;
+            iqresult.c('item', attrs).up();
+        }
+        this._connection.send(iqresult.tree());
+        return true;
+    }
+});
+
+/**
+ * Entity Capabilities (XEP-0115)
+ *
+ * Depends on disco plugin.
+ *
+ * See: http://xmpp.org/extensions/xep-0115.html
+ *
+ * Authors:
+ *   - Michael Weibel <michael.weibel@gmail.com>
+ *
+ * Copyright:
+ *   - Michael Weibel <michael.weibel@gmail.com>
+ */
+
+ Strophe.addConnectionPlugin('caps', {
+	/** Constant: HASH
+	 * Hash used
+	 *
+	 * Currently only sha-1 is supported.
+	 */
+	HASH: 'sha-1',
+	/** Variable: node
+	 * Client which is being used.
+	 *
+	 * Can be overwritten as soon as Strophe has been initialized.
+	 */
+	node: 'http://strophe.im/strophejs/',
+	/** PrivateVariable: _ver
+	 * Own generated version string
+	 */
+	_ver: '',
+	/** PrivateVariable: _connection
+	 * Strophe connection
+	 */
+	_connection: null,
+	/** PrivateVariable: _knownCapabilities
+	 * A hashtable containing version-strings and their capabilities, serialized
+	 * as string.
+	 *
+	 * TODO: Maybe those caps shouldn't be serialized.
+	 */
+	_knownCapabilities: {},
+	/** PrivateVariable: _jidVerIndex
+	 * A hashtable containing jids and their versions for better lookup of capabilities.
+	 */
+	_jidVerIndex: {},
+
+	/** Function: init
+	 * Initialize plugin:
+	 *   - Add caps namespace
+	 *   - Add caps feature to disco plugin
+	 *   - Add handler for caps stanzas
+	 *
+	 * Parameters:
+	 *   (Strophe.Connection) conn - Strophe connection
+	 */
+	init: function(conn) {
+		this._connection = conn;
+
+		Strophe.addNamespace('CAPS', 'http://jabber.org/protocol/caps');
+
+		if (!this._connection.disco) {
+			throw "Caps plugin requires the disco plugin to be installed.";
+		}
+
+		this._connection.disco.addFeature(Strophe.NS.CAPS);
+		this._connection.addHandler(this._delegateCapabilities.bind(this), Strophe.NS.CAPS);
+	},
+
+	/** Function: generateCapsAttrs
+	 * Returns the attributes for generating the "c"-stanza containing the own version
+	 *
+	 * Returns:
+	 *   (Object) - attributes
+	 */
+	generateCapsAttrs: function() {
+		return {
+			'xmlns': Strophe.NS.CAPS,
+			'hash': this.HASH,
+			'node': this.node,
+			'ver': this.generateVer()
+		};
+	},
+
+	/** Function: generateVer
+	 * Returns the base64 encoded version string (encoded itself with sha1)
+	 *
+	 * Returns:
+	 *   (String) - version
+	 */
+	generateVer: function() {
+		if (this._ver !== "") {
+			return this._ver;
+		}
+
+		var ver = "",
+			identities = this._connection.disco._identities.sort(this._sortIdentities),
+			identitiesLen = identities.length,
+			features = this._connection.disco._features.sort(),
+			featuresLen = features.length;
+		for(var i = 0; i < identitiesLen; i++) {
+			var curIdent = identities[i];
+			ver += curIdent.category + "/" + curIdent.type + "/" + curIdent.lang + "/" + curIdent.name + "<";
+		}
+		for(var i = 0; i < featuresLen; i++) {
+			ver += features[i] + '<';
+		}
+
+		this._ver = b64_sha1(ver);
+		return this._ver;
+	},
+
+	/** Function: getCapabilitiesByJid
+	 * Returns serialized capabilities of a jid (if available).
+	 * Otherwise null.
+	 *
+	 * Parameters:
+	 *   (String) jid - Jabber id
+	 *
+	 * Returns:
+	 *   (String|null) - capabilities, serialized; or null when not available.
+	 */
+	getCapabilitiesByJid: function(jid) {
+		if (this._jidVerIndex[jid]) {
+			return this._knownCapabilities[this._jidVerIndex[jid]];
+		}
+		return null;
+	},
+
+	/** PrivateFunction: _delegateCapabilities
+	 * Checks if the version has already been saved.
+	 * If yes: do nothing.
+	 * If no: Request capabilities
+	 *
+	 * Parameters:
+	 *   (Strophe.Builder) stanza - Stanza
+	 *
+	 * Returns:
+	 *   (Boolean)
+	 */
+	_delegateCapabilities: function(stanza) {
+		var from = stanza.getAttribute('from'),
+			c = stanza.querySelector('c'),
+			ver = c.getAttribute('ver'),
+			node = c.getAttribute('node');
+		if (!this._knownCapabilities[ver]) {
+			return this._requestCapabilities(from, node, ver);
+		} else {
+			this._jidVerIndex[from] = ver;
+		}
+		if (!this._jidVerIndex[from] || !this._jidVerIndex[from] !== ver) {
+			this._jidVerIndex[from] = ver;
+		}
+		return true;
+	},
+
+	/** PrivateFunction: _requestCapabilities
+	 * Requests capabilities from the one which sent the caps-info stanza.
+	 * This is done using disco info.
+	 *
+	 * Additionally, it registers a handler for handling the reply.
+	 *
+	 * Parameters:
+	 *   (String) to - Destination jid
+	 *   (String) node - Node attribute of the caps-stanza
+	 *   (String) ver - Version of the caps-stanza
+	 *
+	 * Returns:
+	 *   (Boolean) - true
+	 */
+	_requestCapabilities: function(to, node, ver) {
+		if (to !== this._connection.jid) {
+			var id = this._connection.disco.info(to, node + '#' + ver);
+			this._connection.addHandler(this._handleDiscoInfoReply.bind(this), Strophe.NS.DISCO_INFO, 'iq', 'result', id, to);
+		}
+		return true;
+	},
+
+	/** PrivateFunction: _handleDiscoInfoReply
+	 * Parses the disco info reply and adds the version & it's capabilities to the _knownCapabilities variable.
+	 * Additionally, it adds the jid & the version to the _jidVerIndex variable for a better lookup.
+	 *
+	 * Parameters:
+	 *   (Strophe.Builder) stanza - Disco info stanza
+	 *
+	 * Returns:
+	 *   (Boolean) - false, to automatically remove the handler.
+	 */
+	_handleDiscoInfoReply: function(stanza) {
+		var query = stanza.querySelector('query'),
+			node = query.getAttribute('node').split('#'),
+			ver = node[1],
+			from = stanza.getAttribute('from');
+		if (!this._knownCapabilities[ver]) {
+			var childNodes = query.childNodes,
+				childNodesLen = childNodes.length;
+			this._knownCapabilities[ver] = [];
+			for(var i = 0; i < childNodesLen; i++) {
+				var node = childNodes[i];
+				this._knownCapabilities[ver].push({name: node.nodeName, attributes: node.attributes});
+			}
+			this._jidVerIndex[from] = ver;
+		} else if (!this._jidVerIndex[from] || !this._jidVerIndex[from] !== ver) {
+			this._jidVerIndex[from] = ver;
+		}
+		return false;
+	},
+
+	/** PrivateFunction: _sortIdentities
+	 * Sorts two identities according the sorting requirements in XEP-0115.
+	 *
+	 * Parameters:
+	 *   (Object) a - Identity a
+	 *   (Object) b - Identity b
+	 *
+	 * Returns:
+	 *   (Integer) - 1, 0 or -1; according to which one's greater.
+	 */
+	_sortIdentities: function(a, b) {
+		if (a.category > b.category) {
+			return 1;
+		}
+		if (a.category < b.category) {
+			return -1;
+		}
+		if (a.type > b.type) {
+			return 1;
+		}
+		if (a.type < b.type) {
+			return -1;
+		}
+		if (a.lang > b.lang) {
+			return 1;
+		}
+		if (a.lang < b.lang) {
+			return -1;
+		}
+		return 0;
+	}
+ });
+
 /*
   mustache.js — Logic-less templates in JavaScript
 
@@ -5470,6 +5946,7 @@ var Mustache = function() {
     }
   });
 }();
+
 /*
  * jQuery i18n plugin
  * @requires jQuery v1.1 or later
@@ -5623,478 +6100,7 @@ $.fn._t = function(str, params) {
 
 
 })(jQuery);
-/*
-  Copyright 2010, François de Metz <francois@2metz.fr>
-*/
 
-/**
- * Disco Strophe Plugin
- * Implement http://xmpp.org/extensions/xep-0030.html
- * TODO: manage node hierarchies, and node on info request
- */
-Strophe.addConnectionPlugin('disco',
-{
-    _connection: null,
-    _identities : [],
-    _features : [],
-    _items : [],
-    /** Function: init
-     * Plugin init
-     *
-     * Parameters:
-     *   (Strophe.Connection) conn - Strophe connection
-     */
-    init: function(conn)
-    {
-    this._connection = conn;
-        this._identities = [];
-        this._features   = [];
-        this._items      = [];
-        // disco info
-        conn.addHandler(this._onDiscoInfo.bind(this), Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
-        // disco items
-        conn.addHandler(this._onDiscoItems.bind(this), Strophe.NS.DISCO_ITEMS, 'iq', 'get', null, null);
-    },
-    /** Function: addIdentity
-     * See http://xmpp.org/registrar/disco-categories.html
-     * Parameters:
-     *   (String) category - category of identity (like client, automation, etc ...)
-     *   (String) type - type of identity (like pc, web, bot , etc ...)
-     *   (String) name - name of identity in natural language
-     *   (String) lang - lang of name parameter
-     *
-     * Returns:
-     *   Boolean
-     */
-    addIdentity: function(category, type, name, lang)
-    {
-        for (var i=0; i<this._identities.length; i++)
-        {
-            if (this._identities[i].category == category &&
-                this._identities[i].type == type &&
-                this._identities[i].name == name &&
-                this._identities[i].lang == lang)
-            {
-                return false;
-            }
-        }
-        this._identities.push({category: category, type: type, name: name, lang: lang});
-        return true;
-    },
-    /** Function: addFeature
-     *
-     * Parameters:
-     *   (String) var_name - feature name (like jabber:iq:version)
-     *
-     * Returns:
-     *   boolean
-     */
-    addFeature: function(var_name)
-    {
-        for (var i=0; i<this._features.length; i++)
-        {
-             if (this._features[i] == var_name)
-                 return false;
-        }
-        this._features.push(var_name);
-        return true;
-    },
-    /** Function: removeFeature
-     *
-     * Parameters:
-     *   (String) var_name - feature name (like jabber:iq:version)
-     *
-     * Returns:
-     *   boolean
-     */
-    removeFeature: function(var_name)
-    {
-        for (var i=0; i<this._features.length; i++)
-        {
-             if (this._features[i] === var_name){
-                 this._features.splice(i,1)
-                 return true;
-             }
-        }
-        return false;
-    },
-    /** Function: addItem
-     *
-     * Parameters:
-     *   (String) jid
-     *   (String) name
-     *   (String) node
-     *   (Function) call_back
-     *
-     * Returns:
-     *   boolean
-     */
-    addItem: function(jid, name, node, call_back)
-    {
-        if (node && !call_back)
-            return false;
-        this._items.push({jid: jid, name: name, node: node, call_back: call_back});
-        return true;
-    },
-    /** Function: info
-     * Info query
-     *
-     * Parameters:
-     *   (Function) call_back
-     *   (String) jid
-     *   (String) node
-     */
-    info: function(jid, node, success, error, timeout)
-    {
-        var attrs = {xmlns: Strophe.NS.DISCO_INFO};
-        if (node)
-            attrs.node = node;
-
-        var info = $iq({from:this._connection.jid,
-                         to:jid, type:'get'}).c('query', attrs);
-        this._connection.sendIQ(info, success, error, timeout);
-    },
-    /** Function: items
-     * Items query
-     *
-     * Parameters:
-     *   (Function) call_back
-     *   (String) jid
-     *   (String) node
-     */
-    items: function(jid, node, success, error, timeout)
-    {
-        var attrs = {xmlns: Strophe.NS.DISCO_ITEMS};
-        if (node)
-            attrs.node = node;
-
-        var items = $iq({from:this._connection.jid,
-                         to:jid, type:'get'}).c('query', attrs);
-        this._connection.sendIQ(items, success, error, timeout);
-    },
-
-    /** PrivateFunction: _buildIQResult
-     */
-    _buildIQResult: function(stanza, query_attrs)
-    {
-        var id   =  stanza.getAttribute('id');
-        var from = stanza.getAttribute('from');
-        var iqresult = $iq({type: 'result', id: id});
-
-        if (from !== null) {
-            iqresult.attrs({to: from});
-        }
-
-        return iqresult.c('query', query_attrs);
-    },
-
-    /** PrivateFunction: _onDiscoInfo
-     * Called when receive info request
-     */
-    _onDiscoInfo: function(stanza)
-    {
-        var node = stanza.getElementsByTagName('query')[0].getAttribute('node');
-        var attrs = {xmlns: Strophe.NS.DISCO_INFO};
-        if (node)
-        {
-            attrs.node = node;
-        }
-        var iqresult = this._buildIQResult(stanza, attrs);
-        for (var i=0; i<this._identities.length; i++)
-        {
-            var attrs = {category: this._identities[i].category,
-                         type    : this._identities[i].type};
-            if (this._identities[i].name)
-                attrs.name = this._identities[i].name;
-            if (this._identities[i].lang)
-                attrs['xml:lang'] = this._identities[i].lang;
-            iqresult.c('identity', attrs).up();
-        }
-        for (var i=0; i<this._features.length; i++)
-        {
-            iqresult.c('feature', {'var':this._features[i]}).up();
-        }
-        this._connection.send(iqresult.tree());
-        return true;
-    },
-    /** PrivateFunction: _onDiscoItems
-     * Called when receive items request
-     */
-    _onDiscoItems: function(stanza)
-    {
-        var query_attrs = {xmlns: Strophe.NS.DISCO_ITEMS};
-        var node = stanza.getElementsByTagName('query')[0].getAttribute('node');
-        if (node)
-        {
-            query_attrs.node = node;
-            var items = [];
-            for (var i = 0; i < this._items.length; i++)
-            {
-                if (this._items[i].node == node)
-                {
-                    items = this._items[i].call_back(stanza);
-                    break;
-                }
-            }
-        }
-        else
-        {
-            var items = this._items;
-        }
-        var iqresult = this._buildIQResult(stanza, query_attrs);
-        for (var i = 0; i < items.length; i++)
-        {
-            var attrs = {jid:  items[i].jid};
-            if (items[i].name)
-                attrs.name = items[i].name;
-            if (items[i].node)
-                attrs.node = items[i].node;
-            iqresult.c('item', attrs).up();
-        }
-        this._connection.send(iqresult.tree());
-        return true;
-    }
-});
-/**
- * Entity Capabilities (XEP-0115)
- *
- * Depends on disco plugin.
- *
- * See: http://xmpp.org/extensions/xep-0115.html
- *
- * Authors:
- *   - Michael Weibel <michael.weibel@gmail.com>
- *
- * Copyright:
- *   - Michael Weibel <michael.weibel@gmail.com>
- */
-
- Strophe.addConnectionPlugin('caps', {
-	/** Constant: HASH
-	 * Hash used
-	 *
-	 * Currently only sha-1 is supported.
-	 */
-	HASH: 'sha-1',
-	/** Variable: node
-	 * Client which is being used.
-	 *
-	 * Can be overwritten as soon as Strophe has been initialized.
-	 */
-	node: 'http://strophe.im/strophejs/',
-	/** PrivateVariable: _ver
-	 * Own generated version string
-	 */
-	_ver: '',
-	/** PrivateVariable: _connection
-	 * Strophe connection
-	 */
-	_connection: null,
-	/** PrivateVariable: _knownCapabilities
-	 * A hashtable containing version-strings and their capabilities, serialized
-	 * as string.
-	 *
-	 * TODO: Maybe those caps shouldn't be serialized.
-	 */
-	_knownCapabilities: {},
-	/** PrivateVariable: _jidVerIndex
-	 * A hashtable containing jids and their versions for better lookup of capabilities.
-	 */
-	_jidVerIndex: {},
-
-	/** Function: init
-	 * Initialize plugin:
-	 *   - Add caps namespace
-	 *   - Add caps feature to disco plugin
-	 *   - Add handler for caps stanzas
-	 *
-	 * Parameters:
-	 *   (Strophe.Connection) conn - Strophe connection
-	 */
-	init: function(conn) {
-		this._connection = conn;
-
-		Strophe.addNamespace('CAPS', 'http://jabber.org/protocol/caps');
-
-		if (!this._connection.disco) {
-			throw "Caps plugin requires the disco plugin to be installed.";
-		}
-
-		this._connection.disco.addFeature(Strophe.NS.CAPS);
-		this._connection.addHandler(this._delegateCapabilities.bind(this), Strophe.NS.CAPS);
-	},
-
-	/** Function: generateCapsAttrs
-	 * Returns the attributes for generating the "c"-stanza containing the own version
-	 *
-	 * Returns:
-	 *   (Object) - attributes
-	 */
-	generateCapsAttrs: function() {
-		return {
-			'xmlns': Strophe.NS.CAPS,
-			'hash': this.HASH,
-			'node': this.node,
-			'ver': this.generateVer()
-		};
-	},
-
-	/** Function: generateVer
-	 * Returns the base64 encoded version string (encoded itself with sha1)
-	 *
-	 * Returns:
-	 *   (String) - version
-	 */
-	generateVer: function() {
-		if (this._ver !== "") {
-			return this._ver;
-		}
-
-		var ver = "",
-			identities = this._connection.disco._identities.sort(this._sortIdentities),
-			identitiesLen = identities.length,
-			features = this._connection.disco._features.sort(),
-			featuresLen = features.length;
-		for(var i = 0; i < identitiesLen; i++) {
-			var curIdent = identities[i];
-			ver += curIdent.category + "/" + curIdent.type + "/" + curIdent.lang + "/" + curIdent.name + "<";
-		}
-		for(var i = 0; i < featuresLen; i++) {
-			ver += features[i] + '<';
-		}
-
-		this._ver = b64_sha1(ver);
-		return this._ver;
-	},
-
-	/** Function: getCapabilitiesByJid
-	 * Returns serialized capabilities of a jid (if available).
-	 * Otherwise null.
-	 *
-	 * Parameters:
-	 *   (String) jid - Jabber id
-	 *
-	 * Returns:
-	 *   (String|null) - capabilities, serialized; or null when not available.
-	 */
-	getCapabilitiesByJid: function(jid) {
-		if (this._jidVerIndex[jid]) {
-			return this._knownCapabilities[this._jidVerIndex[jid]];
-		}
-		return null;
-	},
-
-	/** PrivateFunction: _delegateCapabilities
-	 * Checks if the version has already been saved.
-	 * If yes: do nothing.
-	 * If no: Request capabilities
-	 *
-	 * Parameters:
-	 *   (Strophe.Builder) stanza - Stanza
-	 *
-	 * Returns:
-	 *   (Boolean)
-	 */
-	_delegateCapabilities: function(stanza) {
-		var from = stanza.getAttribute('from'),
-			c = stanza.querySelector('c'),
-			ver = c.getAttribute('ver'),
-			node = c.getAttribute('node');
-		if (!this._knownCapabilities[ver]) {
-			return this._requestCapabilities(from, node, ver);
-		} else {
-			this._jidVerIndex[from] = ver;
-		}
-		if (!this._jidVerIndex[from] || !this._jidVerIndex[from] !== ver) {
-			this._jidVerIndex[from] = ver;
-		}
-		return true;
-	},
-
-	/** PrivateFunction: _requestCapabilities
-	 * Requests capabilities from the one which sent the caps-info stanza.
-	 * This is done using disco info.
-	 *
-	 * Additionally, it registers a handler for handling the reply.
-	 *
-	 * Parameters:
-	 *   (String) to - Destination jid
-	 *   (String) node - Node attribute of the caps-stanza
-	 *   (String) ver - Version of the caps-stanza
-	 *
-	 * Returns:
-	 *   (Boolean) - true
-	 */
-	_requestCapabilities: function(to, node, ver) {
-		if (to !== this._connection.jid) {
-			var id = this._connection.disco.info(to, node + '#' + ver);
-			this._connection.addHandler(this._handleDiscoInfoReply.bind(this), Strophe.NS.DISCO_INFO, 'iq', 'result', id, to);
-		}
-		return true;
-	},
-
-	/** PrivateFunction: _handleDiscoInfoReply
-	 * Parses the disco info reply and adds the version & it's capabilities to the _knownCapabilities variable.
-	 * Additionally, it adds the jid & the version to the _jidVerIndex variable for a better lookup.
-	 *
-	 * Parameters:
-	 *   (Strophe.Builder) stanza - Disco info stanza
-	 *
-	 * Returns:
-	 *   (Boolean) - false, to automatically remove the handler.
-	 */
-	_handleDiscoInfoReply: function(stanza) {
-		var query = stanza.querySelector('query'),
-			node = query.getAttribute('node').split('#'),
-			ver = node[1],
-			from = stanza.getAttribute('from');
-		if (!this._knownCapabilities[ver]) {
-			var childNodes = query.childNodes,
-				childNodesLen = childNodes.length;
-			this._knownCapabilities[ver] = [];
-			for(var i = 0; i < childNodesLen; i++) {
-				var node = childNodes[i];
-				this._knownCapabilities[ver].push({name: node.nodeName, attributes: node.attributes});
-			}
-			this._jidVerIndex[from] = ver;
-		} else if (!this._jidVerIndex[from] || !this._jidVerIndex[from] !== ver) {
-			this._jidVerIndex[from] = ver;
-		}
-		return false;
-	},
-
-	/** PrivateFunction: _sortIdentities
-	 * Sorts two identities according the sorting requirements in XEP-0115.
-	 *
-	 * Parameters:
-	 *   (Object) a - Identity a
-	 *   (Object) b - Identity b
-	 *
-	 * Returns:
-	 *   (Integer) - 1, 0 or -1; according to which one's greater.
-	 */
-	_sortIdentities: function(a, b) {
-		if (a.category > b.category) {
-			return 1;
-		}
-		if (a.category < b.category) {
-			return -1;
-		}
-		if (a.type > b.type) {
-			return 1;
-		}
-		if (a.type < b.type) {
-			return -1;
-		}
-		if (a.lang > b.lang) {
-			return 1;
-		}
-		if (a.lang < b.lang) {
-			return -1;
-		}
-		return 0;
-	}
- });
 /*
  * Date Format 1.2.3
  * (c) 2007-2009 Steven Levithan <stevenlevithan.com>

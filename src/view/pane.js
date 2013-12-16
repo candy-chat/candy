@@ -10,6 +10,8 @@
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
+/* global Candy, document, Mustache, Strophe, Audio, jQuery */
+
 /** Class: Candy.View.Pane
  * Candy view pane handles everything regarding DOM updates etc.
  *
@@ -242,7 +244,7 @@ Candy.View.Pane = (function(self, $) {
 		 * Returns:
 		 *   (Boolean) - false, this will stop the event from bubbling
 		 */
-		tabClose: function(e) {
+		tabClose: function() {
 			var roomJid = $(this).parent().attr('data-roomjid');
 			// close private user tab
 			if(self.Chat.rooms[roomJid].type === 'chat') {
@@ -634,7 +636,7 @@ Candy.View.Pane = (function(self, $) {
 				$('#login-form').children(':input:first').focus();
 
 				// register submit handler
-				$('#login-form').submit(function(event) {
+				$('#login-form').submit(function() {
 					var username = $('#username').val(),
 						password = $('#password').val();
 
@@ -978,7 +980,7 @@ Candy.View.Pane = (function(self, $) {
 								_submit: $.i18n._('kickActionLabel')
 							}), true);
 							$('#context-modal-field').focus();
-							$('#context-modal-form').submit(function(event) {
+							$('#context-modal-form').submit(function() {
 								Candy.Core.Action.Jabber.Room.Admin.UserAction(roomJid, user.getJid(), 'kick', $('#context-modal-field').val());
 								self.Chat.Modal.hide();
 								return false; // stop propagation & preventDefault, as otherwise you get disconnected (wtf?)
@@ -997,7 +999,7 @@ Candy.View.Pane = (function(self, $) {
 								_submit: $.i18n._('banActionLabel')
 							}), true);
 							$('#context-modal-field').focus();
-							$('#context-modal-form').submit(function(e) {
+							$('#context-modal-form').submit(function() {
 								Candy.Core.Action.Jabber.Room.Admin.UserAction(roomJid, user.getJid(), 'ban', $('#context-modal-field').val());
 								self.Chat.Modal.hide();
 								return false; // stop propagation & preventDefault, as otherwise you get disconnected (wtf?)
@@ -1010,7 +1012,7 @@ Candy.View.Pane = (function(self, $) {
 						},
 						'class': 'subject',
 						'label' : $.i18n._('setSubjectActionLabel'),
-						'callback': function(e, roomJid, user) {
+						'callback': function(e, roomJid) {
 							self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.contextModalForm, {
 								_label: $.i18n._('subject'),
 								_submit: $.i18n._('setSubjectActionLabel')
@@ -1150,7 +1152,9 @@ Candy.View.Pane = (function(self, $) {
 		 *   candy:view.room.after-hide using {roomJid, element}
 		 */
 		show: function(roomJid) {
-			var roomId = self.Chat.rooms[roomJid].id;
+			var roomId = self.Chat.rooms[roomJid].id,
+				evtData;
+
 			$('.room-pane').each(function() {
 				var elem = $(this);
 				if(elem.attr('id') === ('chat-room-' + roomId)) {
@@ -1162,7 +1166,7 @@ Candy.View.Pane = (function(self, $) {
 					self.Room.setFocusToForm(roomJid);
 					self.Room.scrollToBottom(roomJid);
 
-					var evtData = {'roomJid': roomJid, 'element' : elem};
+					evtData = {'roomJid': roomJid, 'element' : elem};
 
 					// deprecated
 					Candy.View.Event.Room.onShow(evtData);
@@ -1179,7 +1183,7 @@ Candy.View.Pane = (function(self, $) {
 				} else {
 					elem.hide();
 
-					var evtData = {'roomJid': roomJid, 'element' : elem};
+					evtData = {'roomJid': roomJid, 'element' : elem};
 					// deprecated
 					Candy.View.Event.Room.onHide(evtData);
 
@@ -1721,7 +1725,7 @@ Candy.View.Pane = (function(self, $) {
 				Candy.View.Pane.Chat.Toolbar.updateUsercount(Candy.View.Pane.Chat.rooms[roomJid].usercount);
 			}
 
-			var evtData = {
+			evtData = {
 				'roomJid' : roomJid,
 				'user' : user,
 				'action': action,
@@ -1903,7 +1907,7 @@ Candy.View.Pane = (function(self, $) {
 				self.Room.scrollToBottom(roomJid);
 			}
 
-			var evtData = {'roomJid': roomJid, 'element': elem, 'name': name, 'message': message};
+			evtData = {'roomJid': roomJid, 'element': elem, 'name': name, 'message': message};
 
 			// deprecated
 			Candy.View.Event.Message.onShow(evtData);

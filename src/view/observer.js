@@ -10,6 +10,8 @@
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel
  */
 
+/* global Candy, Strophe, Mustache, jQuery */
+
 /** Class: Candy.View.Observer
  * Observes Candy core events
  *

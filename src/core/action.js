@@ -10,6 +10,8 @@
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
+/* global Candy, $iq, navigator, Candy, $pres, Strophe, jQuery */
+
 /** Class: Candy.Core.Action
  * Chat Actions (basicly a abstraction of Jabber commands)
  *
@@ -147,7 +149,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 					room_nick = conn.muc.test_append_nick(roomJid, Candy.Core.getUser().getNick()),
 					pres = $pres({ from: conn.jid, to: room_nick })
 						.c('x', {xmlns: Strophe.NS.MUC});
-				if (password != null) {
+				if (password !== null) {
 					pres.c('password').t(password);
 				}
 				pres.up().c('c', conn.caps.generateCapsAttrs());

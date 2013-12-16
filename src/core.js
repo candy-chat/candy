@@ -10,6 +10,8 @@
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
+/* global Candy, window, document, Strophe, jQuery */
+
 /** Class: Candy.Core
  * Candy Chat Core
  *
@@ -275,6 +277,16 @@ Candy.Core = (function(self, Strophe, $) {
 	 */
 	self.getConnection = function() {
 		return _connection;
+	};
+
+	/** Function: removeRoom
+	 * Removes a room from the rooms list
+	 *
+	 * Parameters:
+	 *   (String) roomJid - roomJid
+	 */
+	self.removeRoom = function(roomJid) {
+		delete _rooms[roomJid];
 	};
 
 	/** Function: getRooms

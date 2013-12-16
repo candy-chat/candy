@@ -10,8 +10,7 @@
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
-/*jslint regexp: true, browser: true, confusion: true, sloppy: true, white: true, nomen: true, plusplus: true, maxerr: 50, indent: 4 */
-/*global jQuery: true, MD5: true, escape: true, Mustache: true, console: true, Strophe: true, $iq: true, $pres: true */
+/* global jQuery */
 
 /** Class: Candy
  * Candy base class for initalizing the view and the core
@@ -54,6 +53,7 @@ var Candy = (function(self, $) {
 
 	return self;
 }(Candy || {}, jQuery));
+
 /** File: core.js
  * Candy - Chats are not dead yet.
  *
@@ -65,6 +65,8 @@ var Candy = (function(self, $) {
  *   (c) 2011 Amiado Group AG. All rights reserved.
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+
+/* global Candy, window, document, Strophe, jQuery */
 
 /** Class: Candy.Core
  * Candy Chat Core
@@ -333,6 +335,16 @@ Candy.Core = (function(self, Strophe, $) {
 		return _connection;
 	};
 
+	/** Function: removeRoom
+	 * Removes a room from the rooms list
+	 *
+	 * Parameters:
+	 *   (String) roomJid - roomJid
+	 */
+	self.removeRoom = function(roomJid) {
+		delete _rooms[roomJid];
+	};
+
 	/** Function: getRooms
 	 * Gets all joined rooms
 	 *
@@ -440,6 +452,7 @@ Candy.Core = (function(self, Strophe, $) {
 
 	return self;
 }(Candy.Core || {}, Strophe, jQuery));
+
 /** File: view.js
  * Candy - Chats are not dead yet.
  *
@@ -451,6 +464,8 @@ Candy.Core = (function(self, Strophe, $) {
  *   (c) 2011 Amiado Group AG. All rights reserved.
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+
+/* global jQuery, Candy, document, window, Mustache */
 
 /** Class: Candy.View
  * The Candy View Class
@@ -599,6 +614,7 @@ Candy.View = (function(self, $) {
 
 	return self;
 }(Candy.View || {}, jQuery));
+
 /** File: util.js
  * Candy - Chats are not dead yet.
  *
@@ -610,6 +626,8 @@ Candy.View = (function(self, $) {
  *   (c) 2011 Amiado Group AG. All rights reserved.
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+
+/* global Candy, MD5, Strophe, document, escape, jQuery */
 
 /** Class: Candy.Util
  * Candy utils
@@ -1094,6 +1112,7 @@ Candy.Util = (function(self, $){
 
 	return self;
 }(Candy.Util || {}, jQuery));
+
 /** File: action.js
  * Candy - Chats are not dead yet.
  *
@@ -1105,6 +1124,8 @@ Candy.Util = (function(self, $){
  *   (c) 2011 Amiado Group AG. All rights reserved.
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+
+/* global Candy, $iq, navigator, Candy, $pres, Strophe, jQuery */
 
 /** Class: Candy.Core.Action
  * Chat Actions (basicly a abstraction of Jabber commands)
@@ -1243,7 +1264,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 					room_nick = conn.muc.test_append_nick(roomJid, Candy.Core.getUser().getNick()),
 					pres = $pres({ from: conn.jid, to: room_nick })
 						.c('x', {xmlns: Strophe.NS.MUC});
-				if (password != null) {
+				if (password !== null) {
 					pres.c('password').t(password);
 				}
 				pres.up().c('c', conn.caps.generateCapsAttrs());
@@ -1378,6 +1399,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 
 	return self;
 }(Candy.Core.Action || {}, Strophe, jQuery));
+
 /** File: chatRoom.js
  * Candy - Chats are not dead yet.
  *
@@ -1389,6 +1411,8 @@ Candy.Core.Action = (function(self, Strophe, $) {
  *   (c) 2011 Amiado Group AG. All rights reserved.
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+
+/* global Candy */
 
 /** Class: Candy.Core.ChatRoom
  * Candy Chat Room
@@ -1485,6 +1509,7 @@ Candy.Core.ChatRoom = function(roomJid) {
 		return this.roster;
 	};
 };
+
 /** File: chatRoster.js
  * Candy - Chats are not dead yet.
  *
@@ -1496,6 +1521,8 @@ Candy.Core.ChatRoom = function(roomJid) {
  *   (c) 2011 Amiado Group AG. All rights reserved.
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+
+/* global Candy */
 
 /** Class: Candy.Core.ChatRoster
  * Chat Roster
@@ -1549,6 +1576,7 @@ Candy.Core.ChatRoster = function () {
 		return this.items;
 	};
 };
+
 /** File: chatUser.js
  * Candy - Chats are not dead yet.
  *
@@ -1560,6 +1588,8 @@ Candy.Core.ChatRoster = function () {
  *   (c) 2011 Amiado Group AG. All rights reserved.
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+
+/* global Candy, Strophe */
 
 /** Class: Candy.Core.ChatUser
  * Chat User
@@ -1723,8 +1753,8 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	/** Function: setCustomData
 	 * Stores custom data
 	 *
-	 *	Parameter:
-	 *	  (Object) data - Object containing custom data
+	 * Parameter:
+	 *   (Object) data - Object containing custom data
 	 */
 	this.setCustomData = function(data) {
 		this.data.customData = data;
@@ -1733,13 +1763,14 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	/** Function: getCustomData
 	 * Retrieve custom data
 	 *
-	 *	Returns:
-	 *	  (Object) - Object containing custom data
+	 * Returns:
+	 *   (Object) - Object containing custom data
 	 */
 	this.getCustomData = function() {
 		return this.data.customData;
 	};
 };
+
 /** File: event.js
  * Candy - Chats are not dead yet.
  *
@@ -1751,6 +1782,8 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
  *   (c) 2011 Amiado Group AG. All rights reserved.
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+
+/* global Candy, Strophe, jQuery */
 
 /** Class: Candy.Core.Event
  * Chat Events
@@ -1777,7 +1810,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 * Parameters:
 		 *   (String) presetJid - Preset user JID
 		 */
-	    $(Candy).triggerHandler('candy:core.login', { presetJid: presetJid } );
+		$(Candy).triggerHandler('candy:core.login', { presetJid: presetJid } );
 	};
 
 	/** Class: Candy.Core.Event.Strophe
@@ -1799,7 +1832,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				case Strophe.Status.CONNECTED:
 					Candy.Core.log('[Connection] Connected');
 					Candy.Core.Action.Jabber.GetJidIfAnonymous();
-					// fall through because the same things need to be done :)
+					/* falls through */
 				case Strophe.Status.ATTACHED:
 					Candy.Core.log('[Connection] Attached');
 					Candy.Core.Action.Jabber.Presence();
@@ -1981,8 +2014,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 */
 		Message: function(msg) {
 			Candy.Core.log('[Jabber] Message');
-			var msg = $(msg),
-				fromJid = msg.attr('from'),
+			msg = $(msg);
+
+			var fromJid = msg.attr('from'),
 				type = msg.attr('type'),
 				toJid = msg.attr('to');
 			// Room message
@@ -2035,8 +2069,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 */
 			Leave: function(msg) {
 				Candy.Core.log('[Jabber:Room] Leave');
-				var msg = $(msg),
-					from = msg.attr('from'),
+				msg = $(msg);
+				var from = msg.attr('from'),
 					roomJid = Strophe.getBareJidFromJid(from);
 
 				// if room is not joined yet, ignore.
@@ -2099,8 +2133,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 */
 			Disco: function(msg) {
 				Candy.Core.log('[Jabber:Room] Disco');
-				var msg = $(msg),
-					roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
+				msg = $(msg);
+				var roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
 
 				// Client joined a room
 				if(!Candy.Core.getRooms()[roomJid]) {
@@ -2216,7 +2250,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					roomName = room.getName();
 
 				// Presence error: Remove room from array to prevent error when disconnecting
-				delete room;
+				Candy.Core.removeRoom(roomJid);
+				room = undefined;
 
 				/** Event: candy:core.presence.error
 				 * Triggered when a presence error happened
@@ -2342,6 +2377,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 
 	return self;
 }(Candy.Core.Event || {}, Strophe, jQuery));
+
 /** File: event.js
  * Candy - Chats are not dead yet.
  *
@@ -2354,6 +2390,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel
  */
 
+/* global Candy */
+/* jshint unused:false */
+
 /** Class: Candy.View.Event
  * Empty hooks to capture events and inject custom code.
  *
@@ -2364,7 +2403,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
  *   (Candy.View.Event) self - itself
  *   (jQuery) $ - jQuery
  */
-Candy.View.Event = (function(self, $) {
+Candy.View.Event = (function(self) {
 	/** Class: Candy.View.Event.Chat
 	 * Chat-related events
 	 */
@@ -2540,7 +2579,8 @@ Candy.View.Event = (function(self, $) {
 	};
 
 	return self;
-}(Candy.View.Event || {}, jQuery));/** File: observer.js
+}(Candy.View.Event || {}));
+/** File: observer.js
  * Candy - Chats are not dead yet.
  *
  * Authors:
@@ -2551,6 +2591,8 @@ Candy.View.Event = (function(self, $) {
  *   (c) 2011 Amiado Group AG. All rights reserved.
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel
  */
+
+/* global Candy, Strophe, Mustache, jQuery */
 
 /** Class: Candy.View.Observer
  * Observes Candy core events
@@ -2789,7 +2831,8 @@ Candy.View.Observer = (function(self, $) {
 	};
 
 	return self;
-}(Candy.View.Observer || {}, jQuery));/** File: pane.js
+}(Candy.View.Observer || {}, jQuery));
+/** File: pane.js
  * Candy - Chats are not dead yet.
  *
  * Authors:
@@ -2800,6 +2843,8 @@ Candy.View.Observer = (function(self, $) {
  *   (c) 2011 Amiado Group AG. All rights reserved.
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+
+/* global Candy, document, Mustache, Strophe, Audio, jQuery */
 
 /** Class: Candy.View.Pane
  * Candy view pane handles everything regarding DOM updates etc.
@@ -3033,7 +3078,7 @@ Candy.View.Pane = (function(self, $) {
 		 * Returns:
 		 *   (Boolean) - false, this will stop the event from bubbling
 		 */
-		tabClose: function(e) {
+		tabClose: function() {
 			var roomJid = $(this).parent().attr('data-roomjid');
 			// close private user tab
 			if(self.Chat.rooms[roomJid].type === 'chat') {
@@ -3425,7 +3470,7 @@ Candy.View.Pane = (function(self, $) {
 				$('#login-form').children(':input:first').focus();
 
 				// register submit handler
-				$('#login-form').submit(function(event) {
+				$('#login-form').submit(function() {
 					var username = $('#username').val(),
 						password = $('#password').val();
 
@@ -3769,7 +3814,7 @@ Candy.View.Pane = (function(self, $) {
 								_submit: $.i18n._('kickActionLabel')
 							}), true);
 							$('#context-modal-field').focus();
-							$('#context-modal-form').submit(function(event) {
+							$('#context-modal-form').submit(function() {
 								Candy.Core.Action.Jabber.Room.Admin.UserAction(roomJid, user.getJid(), 'kick', $('#context-modal-field').val());
 								self.Chat.Modal.hide();
 								return false; // stop propagation & preventDefault, as otherwise you get disconnected (wtf?)
@@ -3788,7 +3833,7 @@ Candy.View.Pane = (function(self, $) {
 								_submit: $.i18n._('banActionLabel')
 							}), true);
 							$('#context-modal-field').focus();
-							$('#context-modal-form').submit(function(e) {
+							$('#context-modal-form').submit(function() {
 								Candy.Core.Action.Jabber.Room.Admin.UserAction(roomJid, user.getJid(), 'ban', $('#context-modal-field').val());
 								self.Chat.Modal.hide();
 								return false; // stop propagation & preventDefault, as otherwise you get disconnected (wtf?)
@@ -3801,7 +3846,7 @@ Candy.View.Pane = (function(self, $) {
 						},
 						'class': 'subject',
 						'label' : $.i18n._('setSubjectActionLabel'),
-						'callback': function(e, roomJid, user) {
+						'callback': function(e, roomJid) {
 							self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.contextModalForm, {
 								_label: $.i18n._('subject'),
 								_submit: $.i18n._('setSubjectActionLabel')
@@ -3941,7 +3986,9 @@ Candy.View.Pane = (function(self, $) {
 		 *   candy:view.room.after-hide using {roomJid, element}
 		 */
 		show: function(roomJid) {
-			var roomId = self.Chat.rooms[roomJid].id;
+			var roomId = self.Chat.rooms[roomJid].id,
+				evtData;
+
 			$('.room-pane').each(function() {
 				var elem = $(this);
 				if(elem.attr('id') === ('chat-room-' + roomId)) {
@@ -3953,7 +4000,7 @@ Candy.View.Pane = (function(self, $) {
 					self.Room.setFocusToForm(roomJid);
 					self.Room.scrollToBottom(roomJid);
 
-					var evtData = {'roomJid': roomJid, 'element' : elem};
+					evtData = {'roomJid': roomJid, 'element' : elem};
 
 					// deprecated
 					Candy.View.Event.Room.onShow(evtData);
@@ -3970,7 +4017,7 @@ Candy.View.Pane = (function(self, $) {
 				} else {
 					elem.hide();
 
-					var evtData = {'roomJid': roomJid, 'element' : elem};
+					evtData = {'roomJid': roomJid, 'element' : elem};
 					// deprecated
 					Candy.View.Event.Room.onHide(evtData);
 
@@ -4512,7 +4559,7 @@ Candy.View.Pane = (function(self, $) {
 				Candy.View.Pane.Chat.Toolbar.updateUsercount(Candy.View.Pane.Chat.rooms[roomJid].usercount);
 			}
 
-			var evtData = {
+			evtData = {
 				'roomJid' : roomJid,
 				'user' : user,
 				'action': action,
@@ -4694,7 +4741,7 @@ Candy.View.Pane = (function(self, $) {
 				self.Room.scrollToBottom(roomJid);
 			}
 
-			var evtData = {'roomJid': roomJid, 'element': elem, 'name': name, 'message': message};
+			evtData = {'roomJid': roomJid, 'element': elem, 'name': name, 'message': message};
 
 			// deprecated
 			Candy.View.Event.Message.onShow(evtData);
@@ -4714,6 +4761,7 @@ Candy.View.Pane = (function(self, $) {
 
 	return self;
 }(Candy.View.Pane || {}, jQuery));
+
 /** File: template.js
  * Candy - Chats are not dead yet.
  *
@@ -4725,6 +4773,8 @@ Candy.View.Pane = (function(self, $) {
  *   (c) 2011 Amiado Group AG. All rights reserved.
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+
+/* global Candy */
 
 /** Class: Candy.View.Template
  * Contains mustache.js templates
@@ -4741,63 +4791,103 @@ Candy.View.Template = (function(self){
 		pane: '<div id="chat-pane">{{> tabs}}{{> toolbar}}{{> rooms}}</div>{{> modal}}',
 		rooms: '<div id="chat-rooms" class="rooms"></div>',
 		tabs: '<ul id="chat-tabs"></ul>',
-		tab: '<li class="roomtype-{{roomType}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}"><a href="#" class="label">{{#privateUserChat}}@{{/privateUserChat}}{{name}}</a><a href="#" class="transition"></a><a href="#" class="close">\u00D7</a><small class="unread"></small></li>',
-		modal: '<div id="chat-modal"><a id="admin-message-cancel" class="close" href="#">\u00D7</a><span id="chat-modal-body"></span><img src="{{resourcesPath}}img/modal-spinner.gif" id="chat-modal-spinner" /></div><div id="chat-modal-overlay"></div>',
-		adminMessage: '<li><small>{{time}}</small><div class="adminmessage"><span class="label">{{sender}}</span><span class="spacer">▸</span>{{subject}} {{message}}</div></li>',
-		infoMessage: '<li><small>{{time}}</small><div class="infomessage"><span class="spacer">•</span>{{subject}} {{message}}</div></li>',
-		toolbar: '<ul id="chat-toolbar"><li id="emoticons-icon" data-tooltip="{{tooltipEmoticons}}"></li><li id="chat-sound-control" class="checked" data-tooltip="{{tooltipSound}}">{{> soundcontrol}}</li><li id="chat-autoscroll-control" class="checked" data-tooltip="{{tooltipAutoscroll}}"></li><li class="checked" id="chat-statusmessage-control" data-tooltip="{{tooltipStatusmessage}}"></li><li class="context" data-tooltip="{{tooltipAdministration}}"></li><li class="usercount" data-tooltip="{{tooltipUsercount}}"><span id="chat-usercount"></span></li></ul>',
-		soundcontrol:	'<script type="text/javascript">var audioplayerListener = new Object(); audioplayerListener.onInit = function() { };'
-						+ '</script><object id="chat-sound-player" type="application/x-shockwave-flash" data="{{resourcesPath}}audioplayer.swf"'
-						+ ' width="0" height="0"><param name="movie" value="{{resourcesPath}}audioplayer.swf" /><param name="AllowScriptAccess"'
-						+ ' value="always" /><param name="FlashVars" value="listener=audioplayerListener&amp;mp3={{resourcesPath}}notify.mp3" />'
-						+ '</object>',
+		tab: '<li class="roomtype-{{roomType}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">' +
+				'<a href="#" class="label">{{#privateUserChat}}@{{/privateUserChat}}{{name}}</a>' +
+				'<a href="#" class="transition"></a><a href="#" class="close">\u00D7</a>' +
+				'<small class="unread"></small></li>',
+		modal: '<div id="chat-modal"><a id="admin-message-cancel" class="close" href="#">\u00D7</a>' +
+				'<span id="chat-modal-body"></span>' +
+				'<img src="{{resourcesPath}}img/modal-spinner.gif" id="chat-modal-spinner" />' +
+				'</div><div id="chat-modal-overlay"></div>',
+		adminMessage: '<li><small>{{time}}</small><div class="adminmessage">' +
+				'<span class="label">{{sender}}</span>' +
+				'<span class="spacer">▸</span>{{subject}} {{message}}</div></li>',
+		infoMessage: '<li><small>{{time}}</small><div class="infomessage">' +
+				'<span class="spacer">•</span>{{subject}} {{message}}</div></li>',
+		toolbar: '<ul id="chat-toolbar">' +
+				'<li id="emoticons-icon" data-tooltip="{{tooltipEmoticons}}"></li>' +
+				'<li id="chat-sound-control" class="checked" data-tooltip="{{tooltipSound}}">{{> soundcontrol}}</li>' +
+				'<li id="chat-autoscroll-control" class="checked" data-tooltip="{{tooltipAutoscroll}}"></li>' +
+				'<li class="checked" id="chat-statusmessage-control" data-tooltip="{{tooltipStatusmessage}}">' +
+				'</li><li class="context" data-tooltip="{{tooltipAdministration}}"></li>' +
+				'<li class="usercount" data-tooltip="{{tooltipUsercount}}">' +
+				'<span id="chat-usercount"></span></li></ul>',
+		soundcontrol: '<script type="text/javascript">var audioplayerListener = new Object();' +
+						' audioplayerListener.onInit = function() { };' +
+						'</script><object id="chat-sound-player" type="application/x-shockwave-flash" data="{{resourcesPath}}audioplayer.swf"' +
+						' width="0" height="0"><param name="movie" value="{{resourcesPath}}audioplayer.swf" /><param name="AllowScriptAccess"' +
+						' value="always" /><param name="FlashVars" value="listener=audioplayerListener&amp;mp3={{resourcesPath}}notify.mp3" />' +
+						'</object>',
 		Context: {
-			menu: '<div id="context-menu"><i class="arrow arrow-top"></i><ul></ul><i class="arrow arrow-bottom"></i></div>',
+			menu: '<div id="context-menu"><i class="arrow arrow-top"></i>' +
+				'<ul></ul><i class="arrow arrow-bottom"></i></div>',
 			menulinks: '<li class="{{class}}" id="context-menu-{{id}}">{{label}}</li>',
-			contextModalForm: '<form action="#" id="context-modal-form"><label for="context-modal-label">{{_label}}</label><input type="text" name="contextModalField" id="context-modal-field" /><input type="submit" class="button" name="send" value="{{_submit}}" /></form>',
-			adminMessageReason: '<a id="admin-message-cancel" class="close" href="#">×</a><p>{{_action}}</p>{{#reason}}<p>{{_reason}}</p>{{/reason}}'
+			contextModalForm: '<form action="#" id="context-modal-form">' +
+							'<label for="context-modal-label">{{_label}}</label>' +
+							'<input type="text" name="contextModalField" id="context-modal-field" />' +
+							'<input type="submit" class="button" name="send" value="{{_submit}}" /></form>',
+			adminMessageReason: '<a id="admin-message-cancel" class="close" href="#">×</a>' +
+							'<p>{{_action}}</p>{{#reason}}<p>{{_reason}}</p>{{/reason}}'
 		},
-		tooltip: '<div id="tooltip"><i class="arrow arrow-top"></i><div></div><i class="arrow arrow-bottom"></i></div>'
+		tooltip: '<div id="tooltip"><i class="arrow arrow-top"></i>' +
+					'<div></div><i class="arrow arrow-bottom"></i></div>'
 	};
 
 	self.Room = {
-		pane: '<div class="room-pane roomtype-{{roomType}}" id="chat-room-{{roomId}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">{{> roster}}{{> messages}}{{> form}}</div>',
-		subject: '<li><small>{{time}}</small><div class="subject"><span class="label">{{roomName}}</span><span class="spacer">▸</span>{{_roomSubject}} {{subject}}</div></li>',
-		form: '<div class="message-form-wrapper"><form method="post" class="message-form"><input name="message" class="field" type="text" autocomplete="off" maxlength="1000" /><input type="submit" class="submit" name="submit" value="{{_messageSubmit}}" /></form></div>'
+		pane: '<div class="room-pane roomtype-{{roomType}}" id="chat-room-{{roomId}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">' +
+			'{{> roster}}{{> messages}}{{> form}}</div>',
+		subject: '<li><small>{{time}}</small><div class="subject">' +
+				'<span class="label">{{roomName}}</span>' +
+				'<span class="spacer">▸</span>{{_roomSubject}} {{subject}}</div></li>',
+		form: '<div class="message-form-wrapper">' +
+				'<form method="post" class="message-form">' +
+				'<input name="message" class="field" type="text" autocomplete="off" maxlength="1000" />' +
+				'<input type="submit" class="submit" name="submit" value="{{_messageSubmit}}" /></form></div>'
 	};
 
 	self.Roster = {
 		pane: '<div class="roster-pane"></div>',
-		user: '<div class="user role-{{role}} affiliation-{{affiliation}}{{#me}} me{{/me}}" id="user-{{roomId}}-{{userId}}" data-jid="{{userJid}}" data-nick="{{nick}}" data-role="{{role}}" data-affiliation="{{affiliation}}"><div class="label">{{displayNick}}</div><ul><li class="context" id="context-{{roomId}}-{{userId}}">&#x25BE;</li><li class="role role-{{role}} affiliation-{{affiliation}}" data-tooltip="{{tooltipRole}}"></li><li class="ignore" data-tooltip="{{tooltipIgnored}}"></li></ul></div>'
+		user: '<div class="user role-{{role}} affiliation-{{affiliation}}{{#me}} me{{/me}}"' +
+				' id="user-{{roomId}}-{{userId}}" data-jid="{{userJid}}"' +
+				' data-nick="{{nick}}" data-role="{{role}}" data-affiliation="{{affiliation}}">' +
+				'<div class="label">{{displayNick}}</div><ul>' +
+				'<li class="context" id="context-{{roomId}}-{{userId}}">&#x25BE;</li>' +
+				'<li class="role role-{{role}} affiliation-{{affiliation}}" data-tooltip="{{tooltipRole}}"></li>' +
+				'<li class="ignore" data-tooltip="{{tooltipIgnored}}"></li></ul></div>'
 	};
 
 	self.Message = {
 		pane: '<div class="message-pane-wrapper"><ul class="message-pane"></ul></div>',
-		item: '<li><small>{{time}}</small><div><a class="label" href="#" class="name">{{displayName}}</a><span class="spacer">▸</span>{{{message}}}</div></li>'
+		item: '<li><small>{{time}}</small><div>' +
+				'<a class="label" href="#" class="name">{{displayName}}</a>' +
+				'<span class="spacer">▸</span>{{{message}}}</div></li>'
 	};
 
 	self.Login = {
-		form: '<form method="post" id="login-form" class="login-form">'
-			+ '{{#displayUsername}}<label for="username">{{_labelUsername}}</label><input type="text" id="username" name="username"/>{{/displayUsername}}'
-			+ '{{#presetJid}}<input type="hidden" id="username" name="username" value="{{presetJid}}"/>{{/presetJid}}'
-			+ '{{#displayPassword}}<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />{{/displayPassword}}'
-			+ '<input type="submit" class="button" value="{{_loginSubmit}}" /></form>'
+		form: '<form method="post" id="login-form" class="login-form">' +
+			'{{#displayUsername}}<label for="username">{{_labelUsername}}</label>' +
+			'<input type="text" id="username" name="username"/>{{/displayUsername}}' +
+			'{{#presetJid}}<input type="hidden" id="username" name="username" value="{{presetJid}}"/>{{/presetJid}}' +
+			'{{#displayPassword}}<label for="password">{{_labelPassword}}</label>' +
+			'<input type="password" id="password" name="password" />{{/displayPassword}}' +
+			'<input type="submit" class="button" value="{{_loginSubmit}}" /></form>'
 	};
 
 	self.PresenceError = {
-		enterPasswordForm: '<strong>{{_label}}</strong>'
-			+ '<form method="post" id="enter-password-form" class="enter-password-form">'
-			+ '<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />'
-			+ '<input type="submit" class="button" value="{{_joinSubmit}}" /></form>',
-		nicknameConflictForm: '<strong>{{_label}}</strong>'
-			+ '<form method="post" id="nickname-conflict-form" class="nickname-conflict-form">'
-			+ '<label for="nickname">{{_labelNickname}}</label><input type="text" id="nickname" name="nickname" />'
-			+ '<input type="submit" class="button" value="{{_loginSubmit}}" /></form>',
+		enterPasswordForm: '<strong>{{_label}}</strong>' +
+			'<form method="post" id="enter-password-form" class="enter-password-form">' +
+			'<label for="password">{{_labelPassword}}</label><input type="password" id="password" name="password" />' +
+			'<input type="submit" class="button" value="{{_joinSubmit}}" /></form>',
+		nicknameConflictForm: '<strong>{{_label}}</strong>' +
+			'<form method="post" id="nickname-conflict-form" class="nickname-conflict-form">' +
+			'<label for="nickname">{{_labelNickname}}</label><input type="text" id="nickname" name="nickname" />' +
+			'<input type="submit" class="button" value="{{_loginSubmit}}" /></form>',
 		displayError: '<strong>{{_error}}</strong>'
 	};
 
 	return self;
 }(Candy.View.Template || {}));
+
 /** File: translation.js
  * Candy - Chats are not dead yet.
  *
@@ -4809,6 +4899,8 @@ Candy.View.Template = (function(self){
  *   (c) 2011 Amiado Group AG. All rights reserved.
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+
+/* global Candy */
 
 /** Class: Candy.View.Translation
  * Contains translations
@@ -5437,7 +5529,6 @@ Candy.View.Translation = {
 		'userHasBeenBannedFromRoom': '%s foi excluido permanentemente da sala.',
 
 		'presenceUnknownWarning'       : 'Este usuário pode estar desconectado. Não é possível determinar o status.',
-		'presenceUnknownWarning'       : 'Este usuário poderá ser desligado..',
 
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',

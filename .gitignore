@@ -5,3 +5,4 @@ example/.htaccess
 .idea
 .ndproj/Data
 .ndproj/Menu.txt
+node_modules

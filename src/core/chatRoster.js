@@ -10,6 +10,8 @@
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
+/* global Candy */
+
 /** Class: Candy.Core.ChatRoster
  * Chat Roster
  */

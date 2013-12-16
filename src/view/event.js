@@ -10,6 +10,9 @@
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel
  */
 
+/* global Candy */
+/* jshint unused:false */
+
 /** Class: Candy.View.Event
  * Empty hooks to capture events and inject custom code.
  *
@@ -20,7 +23,7 @@
  *   (Candy.View.Event) self - itself
  *   (jQuery) $ - jQuery
  */
-Candy.View.Event = (function(self, $) {
+Candy.View.Event = (function(self) {
 	/** Class: Candy.View.Event.Chat
 	 * Chat-related events
 	 */
@@ -196,4 +199,4 @@ Candy.View.Event = (function(self, $) {
 	};
 
 	return self;
-}(Candy.View.Event || {}, jQuery));
+}(Candy.View.Event || {}));
