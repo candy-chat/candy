@@ -7,7 +7,7 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel
  */
 
 /** Class: Candy.View.Event
@@ -34,14 +34,14 @@ Candy.View.Event = (function(self, $) {
 		onAdminMessage: function(args) {
 			return;
 		},
-		
+
 		/** Function: onDisconnect
 		 * Called when client disconnects
 		 */
 		onDisconnect: function() {
 			return;
 		},
-		
+
 		/** Function: onAuthfail
 		 * Called when authentication fails
 		 */
@@ -103,7 +103,7 @@ Candy.View.Event = (function(self, $) {
 		onClose: function(args) {
 			return;
 		},
-		
+
 		/** Function: onPresenceChange
 		 * Called when presence of user changes (kick, ban)
 		 *
@@ -142,7 +142,7 @@ Candy.View.Event = (function(self, $) {
 		onContextMenu: function(args) {
 			return {};
 		},
-		
+
 		/** Function: afterContextMenu
 		 * Called when after a the context menu is rendered
 		 *
@@ -170,7 +170,7 @@ Candy.View.Event = (function(self, $) {
 		beforeShow: function(args) {
 			return args.message;
 		},
-		
+
 		/** Function: onShow
 		 * Called after a new message has been shown
 		 *
@@ -180,7 +180,7 @@ Candy.View.Event = (function(self, $) {
 		onShow: function(args) {
 			return;
 		},
-		
+
 		/** Function: beforeSend
 		 * Called before a message get sent
 		 *

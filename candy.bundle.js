@@ -7,7 +7,7 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /*jslint regexp: true, browser: true, confusion: true, sloppy: true, white: true, nomen: true, plusplus: true, maxerr: 50, indent: 4 */
@@ -30,7 +30,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.5.0'
+		version: '1.5.1-dev'
 	};
 
 	/** Function: init
@@ -63,7 +63,7 @@ var Candy = (function(self, $) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.Core
@@ -283,7 +283,7 @@ Candy.Core = (function(self, Strophe, $) {
 			_connection.disconnect();
 		}
 	};
-	
+
 	/** Function: addHandler
 	 * Wrapper for Strophe.Connection.addHandler() to add a stanza handler for the connection.
 	 *
@@ -449,7 +449,7 @@ Candy.Core = (function(self, Strophe, $) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.View
@@ -608,7 +608,7 @@ Candy.View = (function(self, $) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.Util
@@ -1103,7 +1103,7 @@ Candy.Util = (function(self, $){
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.Core.Action
@@ -1387,7 +1387,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.Core.ChatRoom
@@ -1494,7 +1494,7 @@ Candy.Core.ChatRoom = function(roomJid) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.Core.ChatRoster
@@ -1558,7 +1558,7 @@ Candy.Core.ChatRoster = function () {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.Core.ChatUser
@@ -1592,7 +1592,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 		privacyLists: {},
 		customData: {}
 	};
-	
+
 	/** Function: getJid
 	 * Gets an unescaped user jid
 	 *
@@ -1608,7 +1608,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 		}
 		return;
 	};
-	
+
 	/** Function: getEscapedJid
 	 * Escapes the user's jid (node & resource get escaped)
 	 *
@@ -1749,7 +1749,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.Core.Event
@@ -2351,7 +2351,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel
  */
 
 /** Class: Candy.View.Event
@@ -2378,14 +2378,14 @@ Candy.View.Event = (function(self, $) {
 		onAdminMessage: function(args) {
 			return;
 		},
-		
+
 		/** Function: onDisconnect
 		 * Called when client disconnects
 		 */
 		onDisconnect: function() {
 			return;
 		},
-		
+
 		/** Function: onAuthfail
 		 * Called when authentication fails
 		 */
@@ -2447,7 +2447,7 @@ Candy.View.Event = (function(self, $) {
 		onClose: function(args) {
 			return;
 		},
-		
+
 		/** Function: onPresenceChange
 		 * Called when presence of user changes (kick, ban)
 		 *
@@ -2486,7 +2486,7 @@ Candy.View.Event = (function(self, $) {
 		onContextMenu: function(args) {
 			return {};
 		},
-		
+
 		/** Function: afterContextMenu
 		 * Called when after a the context menu is rendered
 		 *
@@ -2514,7 +2514,7 @@ Candy.View.Event = (function(self, $) {
 		beforeShow: function(args) {
 			return args.message;
 		},
-		
+
 		/** Function: onShow
 		 * Called after a new message has been shown
 		 *
@@ -2524,7 +2524,7 @@ Candy.View.Event = (function(self, $) {
 		onShow: function(args) {
 			return;
 		},
-		
+
 		/** Function: beforeSend
 		 * Called before a message get sent
 		 *
@@ -2549,7 +2549,7 @@ Candy.View.Event = (function(self, $) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel
  */
 
 /** Class: Candy.View.Observer
@@ -2798,7 +2798,7 @@ Candy.View.Observer = (function(self, $) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.View.Pane
@@ -4723,7 +4723,7 @@ Candy.View.Pane = (function(self, $) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.View.Template
@@ -4807,7 +4807,7 @@ Candy.View.Template = (function(self){
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.View.Translation

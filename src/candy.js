@@ -7,7 +7,7 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /*jslint regexp: true, browser: true, confusion: true, sloppy: true, white: true, nomen: true, plusplus: true, maxerr: 50, indent: 4 */
@@ -30,7 +30,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.5.0'
+		version: '1.5.1-dev'
 	};
 
 	/** Function: init

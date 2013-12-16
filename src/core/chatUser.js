@@ -7,7 +7,7 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
 /** Class: Candy.Core.ChatUser
@@ -41,7 +41,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 		privacyLists: {},
 		customData: {}
 	};
-	
+
 	/** Function: getJid
 	 * Gets an unescaped user jid
 	 *
@@ -57,7 +57,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 		}
 		return;
 	};
-	
+
 	/** Function: getEscapedJid
 	 * Escapes the user's jid (node & resource get escaped)
 	 *
