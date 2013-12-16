@@ -111,7 +111,7 @@ Candy.Core = (function(self, Strophe, $) {
 			 * If set to `true` try to get the bookmarks and autojoin the rooms (supported by Openfire).
 			 * You may want to define an array of rooms to autojoin: `['room1@conference.host.tld', 'room2...]` (ejabberd, Openfire, ...)
 			 */
-			autojoin: true,
+			autojoin: undefined,
 			debug: false,
 			disableWindowUnload: false,
 			/** Integer: presencePriority
@@ -511,6 +511,7 @@ Candy.View = (function(self, $) {
 			$(Candy).on('candy:core.chat.connection', self.Observer.Chat.Connection);
 			$(Candy).on('candy:core.chat.message', self.Observer.Chat.Message);
 			$(Candy).on('candy:core.login', self.Observer.Login);
+			$(Candy).on('candy:core.autojoin-missing', self.Observer.AutojoinMissing);
 			$(Candy).on('candy:core.presence', self.Observer.Presence.update);
 			$(Candy).on('candy:core.presence.leave', self.Observer.Presence.update);
 			$(Candy).on('candy:core.presence.room', self.Observer.Presence.update);
@@ -1175,6 +1176,9 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 *
 		 * Otherwise, if Candy.Core.getOptions().autojoin is an array, join each channel specified.
 		 * Channel can be in jid:password format to pass room password if needed.
+
+		 * Triggers:
+		 *   candy:core.autojoin-missing in case no autojoin info has been found
 		 */
 		Autojoin: function() {
 			// Request bookmarks
@@ -1185,6 +1189,11 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				$.each(Candy.Core.getOptions().autojoin, function() {
 					self.Jabber.Room.Join.apply(null, this.valueOf().split(':',2));
 				});
+			} else {
+				/** Event: candy:core.autojoin-missing
+				 * Triggered when no autojoin information has been found
+				 */
+				$(Candy).triggerHandler('candy:core.autojoin-missing');
 			}
 		},
 
@@ -2591,6 +2600,12 @@ Candy.View.Event = (function(self) {
  *   (jQuery) $ - jQuery
  */
 Candy.View.Observer = (function(self, $) {
+	/** PrivateVariable: _showConnectedMessageModal
+	 * Ugly way to determine if the 'connected' modal should be shown.
+	 * Is set to false in case no autojoin param is set.
+	 */
+	var _showConnectedMessageModal = true;
+
 	/** Class: Candy.View.Observer.Chat
 	 * Chat events
 	 */
@@ -2612,8 +2627,12 @@ Candy.View.Observer = (function(self, $) {
 					break;
 				case Strophe.Status.ATTACHED:
 				case Strophe.Status.CONNECTED:
-					Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnected'));
-					Candy.View.Pane.Chat.Modal.hide();
+					if(_showConnectedMessageModal === true) {
+						// only show 'connected' if the autojoin error is not shown
+						// which is determined by having a visible modal in this stage.
+						Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnected'));
+						Candy.View.Pane.Chat.Modal.hide();
+					}
 					break;
 
 				case Strophe.Status.DISCONNECTING:
@@ -2755,7 +2774,7 @@ Candy.View.Observer = (function(self, $) {
 		}
 	};
 
-	/** Class: Candy.View.Observer.PresenceError
+	/** Function: Candy.View.Observer.PresenceError
 	 * Presence errors get handled in this method
 	 *
 	 * Parameters:
@@ -2783,7 +2802,7 @@ Candy.View.Observer = (function(self, $) {
 		}
 	};
 
-	/** Class: Candy.View.Observer.Message
+	/** Function: Candy.View.Observer.Message
 	 * Messages received get dispatched from this method.
 	 *
 	 * Parameters:
@@ -2808,7 +2827,7 @@ Candy.View.Observer = (function(self, $) {
 		}
 	};
 
-	/** Class: Candy.View.Observer.Login
+	/** Function: Candy.View.Observer.Login
 	 * The login event gets dispatched to this method
 	 *
 	 * Parameters:
@@ -2817,6 +2836,14 @@ Candy.View.Observer = (function(self, $) {
 	 */
 	self.Login = function(event, args) {
 		Candy.View.Pane.Chat.Modal.showLoginForm(null, args.presetJid);
+	};
+
+	/** Class: Candy.View.Observer.AutojoinMissing
+	 * Displays an error about missing autojoin information
+	 */
+	self.AutojoinMissing = function() {
+		_showConnectedMessageModal = false;
+		Candy.View.Pane.Chat.Modal.showError('errorAutojoinMissing');
 	};
 
 	return self;
@@ -4948,6 +4975,7 @@ Candy.View.Translation = {
 
 		'errorMembersOnly': 'You can\'t join room "%s": Insufficient rights.',
 		'errorMaxOccupantsReached': 'You can\'t join room "%s": Too many occupants.',
+		'errorAutojoinMissing': 'No autojoin parameter set in configuration. Please set one to continue.',
 
 		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
@@ -5013,6 +5041,7 @@ Candy.View.Translation = {
 
 		'errorMembersOnly': 'Du kannst den Raum "%s" nicht betreten: Ungenügende Rechte.',
 		'errorMaxOccupantsReached': 'Du kannst den Raum "%s" nicht betreten: Benutzerlimit erreicht.',
+		'errorAutojoinMissing': 'Keine "autojoin" Konfiguration gefunden. Bitte setze eine konfiguration um fortzufahren.',
 
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},

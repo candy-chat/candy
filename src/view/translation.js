@@ -78,6 +78,7 @@ Candy.View.Translation = {
 
 		'errorMembersOnly': 'You can\'t join room "%s": Insufficient rights.',
 		'errorMaxOccupantsReached': 'You can\'t join room "%s": Too many occupants.',
+		'errorAutojoinMissing': 'No autojoin parameter set in configuration. Please set one to continue.',
 
 		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
@@ -143,6 +144,7 @@ Candy.View.Translation = {
 
 		'errorMembersOnly': 'Du kannst den Raum "%s" nicht betreten: Ungenügende Rechte.',
 		'errorMaxOccupantsReached': 'Du kannst den Raum "%s" nicht betreten: Benutzerlimit erreicht.',
+		'errorAutojoinMissing': 'Keine "autojoin" Konfiguration gefunden. Bitte setze eine konfiguration um fortzufahren.',
 
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},

@@ -55,7 +55,7 @@ Candy.Core = (function(self, Strophe, $) {
 			 * If set to `true` try to get the bookmarks and autojoin the rooms (supported by Openfire).
 			 * You may want to define an array of rooms to autojoin: `['room1@conference.host.tld', 'room2...]` (ejabberd, Openfire, ...)
 			 */
-			autojoin: true,
+			autojoin: undefined,
 			debug: false,
 			disableWindowUnload: false,
 			/** Integer: presencePriority

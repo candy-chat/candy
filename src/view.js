@@ -62,6 +62,7 @@ Candy.View = (function(self, $) {
 			$(Candy).on('candy:core.chat.connection', self.Observer.Chat.Connection);
 			$(Candy).on('candy:core.chat.message', self.Observer.Chat.Message);
 			$(Candy).on('candy:core.login', self.Observer.Login);
+			$(Candy).on('candy:core.autojoin-missing', self.Observer.AutojoinMissing);
 			$(Candy).on('candy:core.presence', self.Observer.Presence.update);
 			$(Candy).on('candy:core.presence.leave', self.Observer.Presence.update);
 			$(Candy).on('candy:core.presence.room', self.Observer.Presence.update);

@@ -20,6 +20,12 @@
  *   (jQuery) $ - jQuery
  */
 Candy.View.Observer = (function(self, $) {
+	/** PrivateVariable: _showConnectedMessageModal
+	 * Ugly way to determine if the 'connected' modal should be shown.
+	 * Is set to false in case no autojoin param is set.
+	 */
+	var _showConnectedMessageModal = true;
+
 	/** Class: Candy.View.Observer.Chat
 	 * Chat events
 	 */
@@ -41,8 +47,12 @@ Candy.View.Observer = (function(self, $) {
 					break;
 				case Strophe.Status.ATTACHED:
 				case Strophe.Status.CONNECTED:
-					Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnected'));
-					Candy.View.Pane.Chat.Modal.hide();
+					if(_showConnectedMessageModal === true) {
+						// only show 'connected' if the autojoin error is not shown
+						// which is determined by having a visible modal in this stage.
+						Candy.View.Pane.Chat.Modal.show($.i18n._('statusConnected'));
+						Candy.View.Pane.Chat.Modal.hide();
+					}
 					break;
 
 				case Strophe.Status.DISCONNECTING:
@@ -184,7 +194,7 @@ Candy.View.Observer = (function(self, $) {
 		}
 	};
 
-	/** Class: Candy.View.Observer.PresenceError
+	/** Function: Candy.View.Observer.PresenceError
 	 * Presence errors get handled in this method
 	 *
 	 * Parameters:
@@ -212,7 +222,7 @@ Candy.View.Observer = (function(self, $) {
 		}
 	};
 
-	/** Class: Candy.View.Observer.Message
+	/** Function: Candy.View.Observer.Message
 	 * Messages received get dispatched from this method.
 	 *
 	 * Parameters:
@@ -237,7 +247,7 @@ Candy.View.Observer = (function(self, $) {
 		}
 	};
 
-	/** Class: Candy.View.Observer.Login
+	/** Function: Candy.View.Observer.Login
 	 * The login event gets dispatched to this method
 	 *
 	 * Parameters:
@@ -246,6 +256,14 @@ Candy.View.Observer = (function(self, $) {
 	 */
 	self.Login = function(event, args) {
 		Candy.View.Pane.Chat.Modal.showLoginForm(null, args.presetJid);
+	};
+
+	/** Class: Candy.View.Observer.AutojoinMissing
+	 * Displays an error about missing autojoin information
+	 */
+	self.AutojoinMissing = function() {
+		_showConnectedMessageModal = false;
+		Candy.View.Pane.Chat.Modal.showError('errorAutojoinMissing');
 	};
 
 	return self;

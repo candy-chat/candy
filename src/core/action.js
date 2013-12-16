@@ -71,6 +71,9 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 *
 		 * Otherwise, if Candy.Core.getOptions().autojoin is an array, join each channel specified.
 		 * Channel can be in jid:password format to pass room password if needed.
+
+		 * Triggers:
+		 *   candy:core.autojoin-missing in case no autojoin info has been found
 		 */
 		Autojoin: function() {
 			// Request bookmarks
@@ -81,6 +84,11 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				$.each(Candy.Core.getOptions().autojoin, function() {
 					self.Jabber.Room.Join.apply(null, this.valueOf().split(':',2));
 				});
+			} else {
+				/** Event: candy:core.autojoin-missing
+				 * Triggered when no autojoin information has been found
+				 */
+				$(Candy).triggerHandler('candy:core.autojoin-missing');
 			}
 		},
 
