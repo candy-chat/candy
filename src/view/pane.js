@@ -268,15 +268,6 @@ Candy.View.Pane = (function(self, $) {
 			Candy.Core.disconnect();
 			self.Chat.Toolbar.hide();
 			return;
-			// this is a workaround because browsers prevent to close non-js-opened windows
-			/*if($.browser.msie) {
-				this.focus();
-				self.opener = this;
-				self.close();
-			} else {
-				window.open(location.href, '_self');
-				window.close();
-			}*/
 		},
 
 		/** Function: fitTabs
