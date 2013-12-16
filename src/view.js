@@ -10,7 +10,7 @@
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
-/* global jQuery, Candy, document, window, Mustache */
+/* global jQuery, Candy, window, Mustache */
 
 /** Class: Candy.View
  * The Candy View Class
@@ -75,12 +75,7 @@ Candy.View = (function(self, $) {
 		 * jQuery.focus()/.blur() <= 1.5.1 do not work for IE < 9. Fortunately onfocusin/onfocusout will work for them.
 		 */
 		_registerWindowHandlers = function() {
-			// Cross-browser focus handling
-			if($.browser.msie && !$.browser.version.match('^9')) {
-				$(document).focusin(Candy.View.Pane.Window.onFocus).focusout(Candy.View.Pane.Window.onBlur);
-			} else {
-				$(window).focus(Candy.View.Pane.Window.onFocus).blur(Candy.View.Pane.Window.onBlur);
-			}
+			$(window).focus(Candy.View.Pane.Window.onFocus).blur(Candy.View.Pane.Window.onBlur);
 			$(window).resize(Candy.View.Pane.Chat.fitTabs);
 		},
 

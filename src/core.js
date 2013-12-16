@@ -10,7 +10,7 @@
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
-/* global Candy, window, document, Strophe, jQuery */
+/* global Candy, window, Strophe, jQuery */
 
 /** Class: Candy.Core
  * Candy Chat Core
@@ -125,15 +125,6 @@ Candy.Core = (function(self, Strophe, $) {
 		// Opera clients getting disconnected 1-2 minutes delayed.
 		if (!_options.disableWindowUnload) {
 			window.onbeforeunload = self.onWindowUnload;
-		}
-
-		// Prevent Firefox from aborting AJAX requests when pressing ESC
-		if($.browser.mozilla) {
-			$(document).keydown(function(e) {
-				if(e.which === 27) {
-					e.preventDefault();
-				}
-			});
 		}
 	};
 
