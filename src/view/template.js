@@ -77,7 +77,7 @@ Candy.View.Template = (function(self){
 				'<span class="spacer">▸</span>{{_roomSubject}} {{subject}}</div></li>',
 		form: '<div class="message-form-wrapper">' +
 				'<form method="post" class="message-form">' +
-				'<input name="message" class="field" type="text" autocomplete="off" maxlength="1000" />' +
+				'<input name="message" class="field" type="text" aria-label="Message Form Text Field" autocomplete="off" maxlength="1000" />' +
 				'<input type="submit" class="submit" name="submit" value="{{_messageSubmit}}" /></form></div>'
 	};
 
