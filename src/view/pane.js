@@ -621,7 +621,8 @@ Candy.View.Pane = (function(self, $) {
 					_labelPassword: $.i18n._('labelPassword'),
 					_loginSubmit: $.i18n._('loginSubmit'),
 					displayPassword: !Candy.Core.isAnonymousConnection(),
-					displayUsername: Candy.Core.isAnonymousConnection() || !presetJid,
+					displayUsername: !presetJid,
+					displayNickname: Candy.Core.isAnonymousConnection(),
 					presetJid: presetJid ? presetJid : false
 				}));
 				$('#login-form').children(':input:first').focus();

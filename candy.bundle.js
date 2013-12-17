@@ -3471,7 +3471,8 @@ Candy.View.Pane = (function(self, $) {
 					_labelPassword: $.i18n._('labelPassword'),
 					_loginSubmit: $.i18n._('loginSubmit'),
 					displayPassword: !Candy.Core.isAnonymousConnection(),
-					displayUsername: Candy.Core.isAnonymousConnection() || !presetJid,
+					displayUsername: !presetJid,
+					displayNickname: Candy.Core.isAnonymousConnection(),
 					presetJid: presetJid ? presetJid : false
 				}));
 				$('#login-form').children(':input:first').focus();
@@ -4873,6 +4874,7 @@ Candy.View.Template = (function(self){
 
 	self.Login = {
 		form: '<form method="post" id="login-form" class="login-form">' +
+			'{{#displayNickname}}<label for="username">{{_labelNickname}}</label><input type="text" id="username" name="username"/>{{/displayNickname}}' +
 			'{{#displayUsername}}<label for="username">{{_labelUsername}}</label>' +
 			'<input type="text" id="username" name="username"/>{{/displayUsername}}' +
 			'{{#presetJid}}<input type="hidden" id="username" name="username" value="{{presetJid}}"/>{{/presetJid}}' +
@@ -4926,6 +4928,7 @@ Candy.View.Translation = {
 		'messageSubmit': 'Send',
 
 		'labelUsername': 'Username:',
+		'labelNickname': 'Nickname:',
 		'labelPassword': 'Password:',
 		'loginSubmit'  : 'Login',
 		'loginInvalid'  : 'Invalid JID',
@@ -4992,6 +4995,7 @@ Candy.View.Translation = {
 		'messageSubmit': 'Senden',
 
 		'labelUsername': 'Benutzername:',
+		'labelNickname': 'Spitzname:',
 		'labelPassword': 'Passwort:',
 		'loginSubmit'  : 'Anmelden',
 		'loginInvalid'  : 'Ungültige JID',

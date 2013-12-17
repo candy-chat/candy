@@ -28,6 +28,7 @@ Candy.View.Translation = {
 		'messageSubmit': 'Send',
 
 		'labelUsername': 'Username:',
+		'labelNickname': 'Nickname:',
 		'labelPassword': 'Password:',
 		'loginSubmit'  : 'Login',
 		'loginInvalid'  : 'Invalid JID',
@@ -94,6 +95,7 @@ Candy.View.Translation = {
 		'messageSubmit': 'Senden',
 
 		'labelUsername': 'Benutzername:',
+		'labelNickname': 'Spitzname:',
 		'labelPassword': 'Passwort:',
 		'loginSubmit'  : 'Anmelden',
 		'loginInvalid'  : 'Ungültige JID',
