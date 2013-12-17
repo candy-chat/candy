@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	<meta name="description" content="Candy is a simple but powerful multi-user chat client for Jabber (XMPP) that's built for your community." />
+	<meta name="description" content="Candy is a simple but powerful multi-user chat client for XMPP (Jabber) that's built for your community." />
 	<title>Candy &mdash; a JavaScript-based multi-user chat client</title>
 	<link rel="shortcut icon" href="public/favicon.png" />
 	<link rel="stylesheet" type="text/css" href="public/stylesheet.css" />
@@ -59,7 +59,7 @@
 					<a href="#api">→ API Documentation</a>
 				</li>
 				<li>
-					Built for <mark>Jabber (XMPP)</mark>, using famous technologies
+					Built for <mark>XMPP (Jabber)</mark>, using famous technologies
 					<a href="#underthehood">→ Under The Hood</a>
 				</li>
 				<li>
@@ -105,10 +105,10 @@
 			<h2>Setup &amp; Usage</h2>
 			<h3>Prerequisites</h3>
 			<p>
-				Install and configure a Jabber server with HTTP binding enabled. <a href="https://github.com/candy-chat/candy/wiki/Installing-a-Jabber-server">Read our setup guides for ejabberd and OpenFire</a>.
+				Install and configure a XMPP server with HTTP binding enabled. <a href="https://github.com/candy-chat/candy/wiki/Installing-a-XMPP-server">Read our setup guides for ejabberd and Openfire</a>.
 			</p>
 			<p>
-				Due to the nature of AJAX you need to proxy the HTTP requests to the Jabber service which usually runs on a different port. The source code contains a sample <code>.htaccess</code> file to be used with Apache. We cover the configuration for the most used web servers <a href="https://github.com/candy-chat/candy/wiki/HTTP-Proxy-Configuration">here</a>.
+				Due to the nature of AJAX you need to proxy the HTTP requests to the XMPP service which usually runs on a different port. The source code contains a sample <code>.htaccess</code> file to be used with Apache. We cover the configuration for the most used web servers <a href="https://github.com/candy-chat/candy/wiki/HTTP-Proxy-Configuration">here</a>.
 			</p>
 			<h3>Setup</h3>
 			<p>
@@ -116,16 +116,16 @@
 			</p>
 			<h4>Getting Started</h4>
 			<p>
-				Copy <code>example/htaccess</code> to <code>example/.htaccess</code> and change the rewrite rule to point to your HTTP bind service. If you're running your Jabber host with HTTP bind service at <code>yourhost.com/http-bind/</code> on port 5280, the <code>.htaccess</code> file should look like this:</p>
+				Copy <code>example/htaccess</code> to <code>example/.htaccess</code> and change the rewrite rule to point to your HTTP bind service. If you're running your XMPP host with HTTP bind service at <code>yourhost.com/http-bind/</code> on port 5280, the <code>.htaccess</code> file should look like this:</p>
 			<code>AddDefaultCharset UTF-8
 Options +MultiViews
 RewriteEngine On
 RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
 			<p>
-				Open your web browser and navigate to <code>example/index.html</code>. Make sure that you're visiting the site via Apache because it's essential that the requests to http-bind/ are redirected to your jabber server by the .htaccess file.
+				Open your web browser and navigate to <code>example/index.html</code>. Make sure that you're visiting the site via Apache because it's essential that the requests to http-bind/ are redirected to your XMPP server by the .htaccess file.
 			</p>
 			<p>
-				You should be greeted with a login form. Enter your JID (username@yourhost.com) and password to connect to the Jabber server.
+				You should be greeted with a login form. Enter your JID (username@yourhost.com) and password to connect to the XMPP server.
 			</p>
 			<h3 id="configuration">Configuration</h3>
 			<p>
@@ -143,7 +143,7 @@ RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
 				</dd>
 				<dt><code><strong>autojoin</strong> &mdash; boolean <u>true</u> or an array containing rooms to auto-join: [room1,room2,...]</code></dt>
 				<dd>
-					If set to <strong>true</strong>, Candy will follow <a href="http://xmpp.org/extensions/xep-0048.html">XEP-0048</a> and auto-join rooms based on the bookmarks configuration of your Jabber server.<br />Please note: <mark>Bookmarks are supported by Openfire, but not by ejabberd.</mark><br />
+					If set to <strong>true</strong>, Candy will follow <a href="http://xmpp.org/extensions/xep-0048.html">XEP-0048</a> and auto-join rooms based on the bookmarks configuration of your XMPP server.<br />Please note: <mark>Bookmarks are supported by Openfire, but not by ejabberd.</mark><br />
 					You need to tell ejabberd which rooms to join by passing an array such as <strong>['jid1', 'jid2', ...]</strong>
 				</dd>
 			</dl>
