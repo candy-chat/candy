@@ -1755,7 +1755,14 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) elementId - Specific element to do the animation on
 		 */
 		joinAnimation: function(elementId) {
-			$('#' + elementId).stop(true).slideDown('normal', function() {$(this).animate({opacity: 1});});
+			var roomJid = Candy.View.getCurrent().roomJid;
+			var roomUserCount = Candy.View.Pane.Chat.rooms[roomJid].usercount;
+
+			if(roomUserCount > Candy.View.getOption('bigroomThresholds').disableAnimation) {
+				$('#' + elementId).show().css("opacity", 1);
+			} else {
+				$('#' + elementId).stop(true).slideDown('normal', function() { $(this).animate({ opacity: 1 }); });
+			}
 		},
 
 		/** Function: leaveAnimation
@@ -1765,11 +1772,18 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) elementId - Specific element to do the animation on
 		 */
 		leaveAnimation: function(elementId) {
-			$('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({opacity: 0}, {
-				complete: function() {
-					$(this).slideUp('normal', function() {$(this).remove();});
-				}
-			});
+			var roomJid = Candy.View.getCurrent().roomJid;
+			var roomUserCount = Candy.View.Pane.Chat.rooms[roomJid].usercount;
+
+			if(roomUserCount > Candy.View.getOption('bigroomThresholds').disableAnimation) {
+				$('#' + elementId).stop(true).remove();
+			} else {
+				$('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({ opacity: 0 }, {
+					complete: function() {
+						$(this).slideUp('normal', function() { $(this).remove(); });
+					}
+				});
+			}
 		}
 	};
 

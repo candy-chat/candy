@@ -480,6 +480,7 @@ Candy.View = (function(self, $) {
 		 *   (String) resources - path to resources directory (with trailing slash)
 		 *   (Object) messages - limit: clean up message pane when n is reached / remove: remove n messages after limit has been reached
 		 *   (Object) crop - crop if longer than defined: message.nickname=15, message.body=1000, roster.nickname=15
+		 *   (Object) bigroomThresholds - Thresholds for improving scalability with a big amount of users
 		 */
 		_options = {
 			language: 'en',
@@ -488,6 +489,11 @@ Candy.View = (function(self, $) {
 			crop: {
 				message: { nickname: 15, body: 1000 },
 				roster: { nickname: 15 }
+			},
+			bigroomThresholds: {
+				disableAnimation: 1,
+				disableSorting: -1,
+				batchRosterUpdate: 500
 			}
 		},
 
@@ -600,6 +606,19 @@ Candy.View = (function(self, $) {
 	 */
 	self.getOptions = function() {
 		return _options;
+	};
+
+	/** Function: getOption
+	 * Gets option by key
+	 *¨
+	 * Parameters:
+	 *   (String) key - Config key
+	 *
+	 * Returns:
+	 *   Object
+	 */
+	self.getOption = function(key) {
+		return _options[key];
 	};
 
 	return self;
@@ -4605,7 +4624,14 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) elementId - Specific element to do the animation on
 		 */
 		joinAnimation: function(elementId) {
-			$('#' + elementId).stop(true).slideDown('normal', function() {$(this).animate({opacity: 1});});
+			var roomJid = Candy.View.getCurrent().roomJid;
+			var roomUserCount = Candy.View.Pane.Chat.rooms[roomJid].usercount;
+
+			if(roomUserCount > Candy.View.getOption('bigroomThresholds').disableAnimation) {
+				$('#' + elementId).show().css("opacity", 1);
+			} else {
+				$('#' + elementId).stop(true).slideDown('normal', function() { $(this).animate({ opacity: 1 }); });
+			}
 		},
 
 		/** Function: leaveAnimation
@@ -4615,11 +4641,18 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) elementId - Specific element to do the animation on
 		 */
 		leaveAnimation: function(elementId) {
-			$('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({opacity: 0}, {
-				complete: function() {
-					$(this).slideUp('normal', function() {$(this).remove();});
-				}
-			});
+			var roomJid = Candy.View.getCurrent().roomJid;
+			var roomUserCount = Candy.View.Pane.Chat.rooms[roomJid].usercount;
+
+			if(roomUserCount > Candy.View.getOption('bigroomThresholds').disableAnimation) {
+				$('#' + elementId).stop(true).remove();
+			} else {
+				$('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({ opacity: 0 }, {
+					complete: function() {
+						$(this).slideUp('normal', function() { $(this).remove(); });
+					}
+				});
+			}
 		}
 	};
 
