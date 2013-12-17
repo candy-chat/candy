@@ -4051,6 +4051,7 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) subject - The new subject
 		 */
 		setSubject: function(roomJid, subject) {
+			subject = Candy.Util.Parser.linkify(Candy.Util.Parser.escape(subject));
 			var html = Mustache.to_html(Candy.View.Template.Room.subject, {
 				subject: subject,
 				roomName: self.Chat.rooms[roomJid].name,
@@ -4845,10 +4846,10 @@ Candy.View.Template = (function(self){
 			'{{> roster}}{{> messages}}{{> form}}</div>',
 		subject: '<li><small>{{time}}</small><div class="subject">' +
 				'<span class="label">{{roomName}}</span>' +
-				'<span class="spacer">▸</span>{{_roomSubject}} {{subject}}</div></li>',
+				'<span class="spacer">▸</span>{{_roomSubject}} {{{subject}}}</div></li>',
 		form: '<div class="message-form-wrapper">' +
 				'<form method="post" class="message-form">' +
-				'<input name="message" class="field" type="text" autocomplete="off" maxlength="1000" />' +
+				'<input name="message" class="field" type="text" aria-label="Message Form Text Field" autocomplete="off" maxlength="1000" />' +
 				'<input type="submit" class="submit" name="submit" value="{{_messageSubmit}}" /></form></div>'
 	};
 

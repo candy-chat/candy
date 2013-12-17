@@ -1201,6 +1201,7 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) subject - The new subject
 		 */
 		setSubject: function(roomJid, subject) {
+			subject = Candy.Util.Parser.linkify(Candy.Util.Parser.escape(subject));
 			var html = Mustache.to_html(Candy.View.Template.Room.subject, {
 				subject: subject,
 				roomName: self.Chat.rooms[roomJid].name,

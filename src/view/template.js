@@ -74,7 +74,7 @@ Candy.View.Template = (function(self){
 			'{{> roster}}{{> messages}}{{> form}}</div>',
 		subject: '<li><small>{{time}}</small><div class="subject">' +
 				'<span class="label">{{roomName}}</span>' +
-				'<span class="spacer">▸</span>{{_roomSubject}} {{subject}}</div></li>',
+				'<span class="spacer">▸</span>{{_roomSubject}} {{{subject}}}</div></li>',
 		form: '<div class="message-form-wrapper">' +
 				'<form method="post" class="message-form">' +
 				'<input name="message" class="field" type="text" aria-label="Message Form Text Field" autocomplete="off" maxlength="1000" />' +
