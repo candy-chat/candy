@@ -1633,9 +1633,11 @@ Candy.View.Pane = (function(self, $) {
 
 				if(userElem.length < 1) {
 					var userInserted = false,
-						rosterPane = self.Room.getPane(roomJid, '.roster-pane');
+						rosterPane = self.Room.getPane(roomJid, '.roster-pane'),
+						userCount = rosterPane.children().length,
+						disableSortingThreshold = Candy.View.getOption('bigroomThresholds').disableSorting;
 					// there are already users in the roster
-					if(rosterPane.children().length > 0) {
+					if(userCount > 0 && (disableSortingThreshold === -1 || disableSortingThreshold >= userCount)) {
 						// insert alphabetically
 						var userSortCompare = user.getNick().toUpperCase();
 						rosterPane.children().each(function() {
@@ -1758,7 +1760,7 @@ Candy.View.Pane = (function(self, $) {
 			var roomJid = Candy.View.getCurrent().roomJid;
 			var roomUserCount = Candy.View.Pane.Chat.rooms[roomJid].usercount;
 
-			if(roomUserCount > Candy.View.getOption('bigroomThresholds').disableAnimation) {
+			if(roomUserCount >= Candy.View.getOption('bigroomThresholds').disableAnimation) {
 				$('#' + elementId).show().css("opacity", 1);
 			} else {
 				$('#' + elementId).stop(true).slideDown('normal', function() { $(this).animate({ opacity: 1 }); });
@@ -1775,7 +1777,7 @@ Candy.View.Pane = (function(self, $) {
 			var roomJid = Candy.View.getCurrent().roomJid;
 			var roomUserCount = Candy.View.Pane.Chat.rooms[roomJid].usercount;
 
-			if(roomUserCount > Candy.View.getOption('bigroomThresholds').disableAnimation) {
+			if(roomUserCount >= Candy.View.getOption('bigroomThresholds').disableAnimation) {
 				$('#' + elementId).stop(true).remove();
 			} else {
 				$('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({ opacity: 0 }, {

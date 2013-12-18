@@ -43,7 +43,7 @@ Candy.View = (function(self, $) {
 			},
 			bigroomThresholds: {
 				disableAnimation: 1,
-				disableSorting: -1,
+				disableSorting: 100,
 				batchRosterUpdate: 500
 			}
 		},
