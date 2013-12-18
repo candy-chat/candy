@@ -64,11 +64,11 @@ module.exports = function(grunt) {
 		watch: {
 			bundle: {
 				files: ['src/*.js', 'src/**/*.js'],
-				tasks: ['concat:bundle', 'uglify:bundle']
+				tasks: ['concat:bundle', 'uglify:bundle', 'notify:bundle']
 			},
 			libs: {
 				files: ['libs/*/**/*.js'],
-				tasks: ['concat:libs', 'uglify:libs']
+				tasks: ['concat:libs', 'uglify:libs', 'notify:libs']
 			}
 		},
 		natural_docs: {
@@ -91,6 +91,28 @@ module.exports = function(grunt) {
 					create: ['./docs']
 				}
 			}
+		},
+		notify: {
+			bundle: {
+				options: {
+					message: 'Bundle & Min updated'
+				}
+			},
+			libs: {
+				options: {
+					message: 'Libs updated'
+				}
+			},
+			docs: {
+				options: {
+					message: 'Docs done'
+				}
+			},
+			'default': {
+				options: {
+					message: 'JsHint & bundling done'
+				}
+			}
 		}
 	});
 
@@ -101,11 +123,12 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-natural-docs');
 	grunt.loadNpmTasks('grunt-mkdir');
+	grunt.loadNpmTasks('grunt-notify');
 	grunt.loadNpmTasks('grunt-sync-pkg');
 
 	grunt.registerTask('default', [
 		'jshint', 'concat:libs', 'uglify:libs',
-		'concat:bundle', 'uglify:bundle'
+		'concat:bundle', 'uglify:bundle', 'notify:default'
 	]);
-	grunt.registerTask('docs', ['mkdir:docs', 'natural_docs']);
+	grunt.registerTask('docs', ['mkdir:docs', 'natural_docs', 'notify:docs']);
 };
