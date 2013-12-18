@@ -31,7 +31,7 @@ Candy.View = (function(self, $) {
 		 *   (String) resources - path to resources directory (with trailing slash)
 		 *   (Object) messages - limit: clean up message pane when n is reached / remove: remove n messages after limit has been reached
 		 *   (Object) crop - crop if longer than defined: message.nickname=15, message.body=1000, roster.nickname=15
-		 *   (Object) bigroomThresholds - Thresholds for improving scalability with a big amount of users
+		 *   (Object) bigroom - Thresholds for improving scalability with a big amount of users
 		 */
 		_options = {
 			language: 'en',
@@ -41,10 +41,13 @@ Candy.View = (function(self, $) {
 				message: { nickname: 15, body: 1000 },
 				roster: { nickname: 15 }
 			},
-			bigroomThresholds: {
-				disableAnimation: 1,
-				disableSorting: 100,
-				batchRosterUpdate: 500
+			bigroom: {
+				disableAnimationThreshold: 1,
+				disableSortingThreshold: 100,
+				batchRosterUpdate: {
+					threshold: 500,
+					interval: 100 //ms
+				}
 			}
 		},
 
