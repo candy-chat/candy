@@ -491,8 +491,8 @@ Candy.View = (function(self, $) {
 				roster: { nickname: 15 }
 			},
 			bigroom: {
-				disableAnimationThreshold: 1,
-				disableSortingThreshold: 100,
+				disableAnimationThreshold: 200,
+				disableSortingThreshold: 1000,
 				batchRosterUpdate: {
 					threshold: 500,
 					interval: 100 //ms
