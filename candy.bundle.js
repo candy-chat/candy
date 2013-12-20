@@ -495,7 +495,7 @@ Candy.View = (function(self, $) {
 				disableSortingThreshold: 1000,
 				batchRosterUpdate: {
 					threshold: 500,
-					interval: 100 //ms
+					interval: 200 //ms
 				}
 			}
 		},
@@ -1278,14 +1278,14 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *   (String) password - [optional] Password for the room
 			 */
 			Join: function(roomJid, password) {
+				console.log('JOIN');
 				self.Jabber.Room.Disco(roomJid);
-				Candy.Core.getConnection().muc.join(roomJid, Candy.Core.getUser().getNick(), null, null, password);
 				var conn = Candy.Core.getConnection(),
 					room_nick = conn.muc.test_append_nick(roomJid, Candy.Core.getUser().getNick()),
 					pres = $pres({ from: conn.jid, to: room_nick })
 						.c('x', {xmlns: Strophe.NS.MUC});
-				if (password !== null) {
-					pres.c('password').t(password);
+				if (password) {
+					pres.c('password').t(password).up();
 				}
 				pres.up().c('c', conn.caps.generateCapsAttrs());
 				conn.send(pres.tree());
@@ -4603,7 +4603,7 @@ Candy.View.Pane = (function(self, $) {
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel
  */
 
-/* global Candy */
+/* global Candy, $, Mustache */
 /* jshint unused:false */
 
 /** Class: Candy.View.Pane.Roster
@@ -4613,6 +4613,38 @@ Candy.View.Pane = (function(self, $) {
  *   (Candy.View.Pane.Roster) self - itself
  */
 Candy.View.Pane.Roster = (function(self, parent) {
+	var _batchRosterUpdateTimeout,
+		_batchRosterUpdateList = {},
+
+		_batchRosterUpdateCallback = function _batchRosterUpdateCallback() {
+			var newTimeout = false,
+				batchRosterOpts = Candy.View.getOption('bigroom').batchRosterUpdate,
+				threshold = batchRosterOpts.threshold;
+			console.log('update');
+			var updateList = _batchRosterUpdateList;
+			_batchRosterUpdateList = {};
+			$.each(updateList, function(roomId, users) {
+				console.log('yoo', users);
+				var rosterPane = $('#chat-room-' + roomId + ' .roster-pane');
+				rosterPane.append(users);
+				var children = rosterPane.children();
+				children.sort(function(a, b) {
+					return $(a).attr('data-nick').toUpperCase().localeCompare($(b).attr('data-nick').toUpperCase());
+				});
+				if(children.length > threshold) {
+					newTimeout = true;
+				}
+				children.show().css("opacity", 1);
+			});
+			if(newTimeout) {
+				_batchRosterUpdateTimeout = setTimeout(_batchRosterUpdateCallback,
+					batchRosterOpts.interval);
+			} else {
+				_batchRosterUpdateTimeout = null;
+			}
+		};
+
+
 	/** PrivateFunction: join
 	 * Called by <Candy.View.Pane.Roster.update> if a user joined the room.
 	 *
@@ -4645,27 +4677,42 @@ Candy.View.Pane.Roster = (function(self, parent) {
 			var userInserted = false,
 				rosterPane = parent.Room.getPane(roomJid, '.roster-pane'),
 				userCount = rosterPane.children().length,
-				disableSortingThreshold = Candy.View.getOption('bigroom').disableSortingThreshold;
-			// there are already users in the roster
-			if(userCount > 0 && (disableSortingThreshold === -1 || disableSortingThreshold >= userCount)) {
-				// insert alphabetically
-				var userSortCompare = user.getNick().toUpperCase();
-				rosterPane.children().each(function() {
-					var elem = $(this);
-					if(elem.attr('data-nick').toUpperCase() > userSortCompare) {
-						elem.before(html);
-						userInserted = true;
-						return false;
-					}
-					return true;
-				});
-			}
-			// first user in roster or if sorting is disabled
-			if(!userInserted) {
-				rosterPane.append(html);
+				bigroomOpts = Candy.View.getOption('bigroom'),
+				disableSortingThreshold = bigroomOpts.disableSortingThreshold,
+				batchRosterUpdateThreshold = bigroomOpts.batchRosterUpdate.threshold;
+
+			if(userCount > batchRosterUpdateThreshold) {
+				console.log(user);
+				if(!_batchRosterUpdateList[roomId]) {
+					_batchRosterUpdateList[roomId] = [];
+				}
+				_batchRosterUpdateList[roomId].push(html);
+				if(!_batchRosterUpdateTimeout) {
+					_batchRosterUpdateTimeout = setTimeout(_batchRosterUpdateCallback, bigroomOpts.batchRosterUpdate.interval);
+				}
+			} else {
+				// there are already users in the roster
+				if(userCount > 0 && (disableSortingThreshold === -1 || disableSortingThreshold >= userCount)) {
+					// insert alphabetically
+					var userSortCompare = user.getNick().toUpperCase();
+					rosterPane.children().each(function() {
+						var elem = $(this);
+						if(elem.attr('data-nick').toUpperCase() > userSortCompare) {
+							elem.before(html);
+							userInserted = true;
+							return false;
+						}
+						return true;
+					});
+				}
+				// first user in roster or if sorting is disabled
+				if(!userInserted) {
+					rosterPane.append(html);
+				}
+
+				self.joinAnimation('user-' + roomId + '-' + userId);
 			}
 
-			self.joinAnimation('user-' + roomId + '-' + userId);
 			// only show other users joining & don't show if there's no message in the room.
 			if(currentUser !== undefined && user.getNick() !== currentUser.getNick() && parent.Room.getUser(roomJid)) {
 				// always show join message in private room, even if status messages have been disabled

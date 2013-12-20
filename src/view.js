@@ -46,7 +46,7 @@ Candy.View = (function(self, $) {
 				disableSortingThreshold: 1000,
 				batchRosterUpdate: {
 					threshold: 500,
-					interval: 100 //ms
+					interval: 200 //ms
 				}
 			}
 		},

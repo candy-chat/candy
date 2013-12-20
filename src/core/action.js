@@ -151,14 +151,14 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *   (String) password - [optional] Password for the room
 			 */
 			Join: function(roomJid, password) {
+				console.log('JOIN');
 				self.Jabber.Room.Disco(roomJid);
-				Candy.Core.getConnection().muc.join(roomJid, Candy.Core.getUser().getNick(), null, null, password);
 				var conn = Candy.Core.getConnection(),
 					room_nick = conn.muc.test_append_nick(roomJid, Candy.Core.getUser().getNick()),
 					pres = $pres({ from: conn.jid, to: room_nick })
 						.c('x', {xmlns: Strophe.NS.MUC});
-				if (password !== null) {
-					pres.c('password').t(password);
+				if (password) {
+					pres.c('password').t(password).up();
 				}
 				pres.up().c('c', conn.caps.generateCapsAttrs());
 				conn.send(pres.tree());
