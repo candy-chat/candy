@@ -355,10 +355,7 @@ Candy.Core = (function(self, Strophe, $) {
 	self.onWindowUnload = function() {
 		// Enable synchronous requests because Safari doesn't send asynchronous requests within unbeforeunload events.
 		// Only works properly when following patch is applied to strophejs: https://github.com/metajack/strophejs/issues/16/#issuecomment-600266
-		// FIXME: Is this still needed?
-		//        Strophe.js still didn't implement it and initial tests with
-		//        Safari seemed to work.
-		_connection.sync = true;
+		_connection._options.sync = true;
 		self.disconnect();
 		_connection.flush();
 	};
