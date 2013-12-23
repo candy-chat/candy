@@ -151,7 +151,6 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *   (String) password - [optional] Password for the room
 			 */
 			Join: function(roomJid, password) {
-				console.log('JOIN');
 				self.Jabber.Room.Disco(roomJid);
 				var conn = Candy.Core.getConnection(),
 					room_nick = conn.muc.test_append_nick(roomJid, Candy.Core.getUser().getNick()),

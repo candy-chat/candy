@@ -1307,7 +1307,6 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *   (String) password - [optional] Password for the room
 			 */
 			Join: function(roomJid, password) {
-				console.log('JOIN');
 				self.Jabber.Room.Disco(roomJid);
 				var conn = Candy.Core.getConnection(),
 					room_nick = conn.muc.test_append_nick(roomJid, Candy.Core.getUser().getNick()),
@@ -4649,11 +4648,9 @@ Candy.View.Pane.Roster = (function(self, parent) {
 			var newTimeout = false,
 				batchRosterOpts = Candy.View.getOption('bigroom').batchRosterUpdate,
 				threshold = batchRosterOpts.threshold;
-			console.log('update');
 			var updateList = _batchRosterUpdateList;
 			_batchRosterUpdateList = {};
 			$.each(updateList, function(roomId, users) {
-				console.log('yoo', users);
 				var rosterPane = $('#chat-room-' + roomId + ' .roster-pane');
 				rosterPane.append(users);
 				var children = rosterPane.children();
@@ -4711,7 +4708,6 @@ Candy.View.Pane.Roster = (function(self, parent) {
 				batchRosterUpdateThreshold = bigroomOpts.batchRosterUpdate.threshold;
 
 			if(userCount > batchRosterUpdateThreshold) {
-				console.log(user);
 				if(!_batchRosterUpdateList[roomId]) {
 					_batchRosterUpdateList[roomId] = [];
 				}
