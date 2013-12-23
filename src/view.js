@@ -85,7 +85,11 @@ Candy.View = (function(self, $) {
 		 * jQuery.focus()/.blur() <= 1.5.1 do not work for IE < 9. Fortunately onfocusin/onfocusout will work for them.
 		 */
 		_registerWindowHandlers = function() {
-			$(window).focus(Candy.View.Pane.Window.onFocus).blur(Candy.View.Pane.Window.onBlur);
+			if(Candy.Util.getIeVersion() < 9) {
+				$(document).focusin(Candy.View.Pane.Window.onFocus).focusout(Candy.View.Pane.Window.onBlur);
+			} else {
+				$(window).focus(Candy.View.Pane.Window.onFocus).blur(Candy.View.Pane.Window.onBlur);
+			}
 			$(window).resize(Candy.View.Pane.Chat.fitTabs);
 		},
 

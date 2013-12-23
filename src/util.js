@@ -307,6 +307,34 @@ Candy.Util = (function(self, $){
 		}.bind(elem), 1);
 	};
 
+	/** PrivateVariable: ie
+	 * Checks for IE version
+	 *
+	 * From: http://stackoverflow.com/a/5574871/315242
+	 */
+	var ie = (function(){
+		var undef,
+			v = 3,
+			div = document.createElement('div'),
+			all = div.getElementsByTagName('i');
+		while (
+			// adds innerhtml and continues as long as all[0] is truthy
+			div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+			all[0]
+		);
+		return v > 4 ? v : undef;
+	}());
+
+	/** Function: getIeVersion
+	 * Returns local variable `ie` which you can use to detect which IE version
+	 * is available.
+	 *
+	 * Use e.g. like this: if(Candy.Util.getIeVersion() < 9) alert('kaboom');
+	 */
+	self.getIeVersion = function() {
+		return ie;
+	};
+
 	/** Class: Candy.Util.Parser
 	 * Parser for emoticons, links and also supports escaping.
 	 */

@@ -411,10 +411,7 @@ Candy.Core = (function(self, Strophe, $) {
 	self.onWindowUnload = function() {
 		// Enable synchronous requests because Safari doesn't send asynchronous requests within unbeforeunload events.
 		// Only works properly when following patch is applied to strophejs: https://github.com/metajack/strophejs/issues/16/#issuecomment-600266
-		// FIXME: Is this still needed?
-		//        Strophe.js still didn't implement it and initial tests with
-		//        Safari seemed to work.
-		_connection.sync = true;
+		_connection._options.sync = true;
 		self.disconnect();
 		_connection.flush();
 	};
@@ -534,7 +531,11 @@ Candy.View = (function(self, $) {
 		 * jQuery.focus()/.blur() <= 1.5.1 do not work for IE < 9. Fortunately onfocusin/onfocusout will work for them.
 		 */
 		_registerWindowHandlers = function() {
-			$(window).focus(Candy.View.Pane.Window.onFocus).blur(Candy.View.Pane.Window.onBlur);
+			if(Candy.Util.getIeVersion() < 9) {
+				$(document).focusin(Candy.View.Pane.Window.onFocus).focusout(Candy.View.Pane.Window.onBlur);
+			} else {
+				$(window).focus(Candy.View.Pane.Window.onFocus).blur(Candy.View.Pane.Window.onBlur);
+			}
 			$(window).resize(Candy.View.Pane.Chat.fitTabs);
 		},
 
@@ -934,6 +935,34 @@ Candy.Util = (function(self, $){
 		setTimeout(function() {
 			this.css({display:'block'});
 		}.bind(elem), 1);
+	};
+
+	/** PrivateVariable: ie
+	 * Checks for IE version
+	 *
+	 * From: http://stackoverflow.com/a/5574871/315242
+	 */
+	var ie = (function(){
+		var undef,
+			v = 3,
+			div = document.createElement('div'),
+			all = div.getElementsByTagName('i');
+		while (
+			// adds innerhtml and continues as long as all[0] is truthy
+			div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+			all[0]
+		);
+		return v > 4 ? v : undef;
+	}());
+
+	/** Function: getIeVersion
+	 * Returns local variable `ie` which you can use to detect which IE version
+	 * is available.
+	 *
+	 * Use e.g. like this: if(Candy.Util.getIeVersion() < 9) alert('kaboom');
+	 */
+	self.getIeVersion = function() {
+		return ie;
 	};
 
 	/** Class: Candy.Util.Parser
