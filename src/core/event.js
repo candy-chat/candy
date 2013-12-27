@@ -297,7 +297,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			Leave: function(msg) {
 				Candy.Core.log('[Jabber:Room] Leave');
 				msg = $(msg);
-				var from = msg.attr('from'),
+				var from = Candy.Util.unescapeJid(msg.attr('from')),
 					roomJid = Strophe.getBareJidFromJid(from);
 
 				// if room is not joined yet, ignore.
@@ -361,7 +361,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			Disco: function(msg) {
 				Candy.Core.log('[Jabber:Room] Disco');
 				msg = $(msg);
-				var roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
+				var roomJid = Strophe.getBareJidFromJid(Candy.Util.unescapeJid(msg.attr('from')));
 
 				// Client joined a room
 				if(!Candy.Core.getRooms()[roomJid]) {
@@ -371,7 +371,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				var roomName = msg.find('identity').attr('name'),
 					room = Candy.Core.getRoom(roomJid);
 				if(room.getName() === null) {
-					room.setName(roomName);
+					room.setName(Strophe.unescapeNode(roomName));
 				// Room name changed
 				}/*else if(room.getName() !== roomName && room.getUser() !== null) {
 					// NOTE: We want to notify the View here but jabber doesn't send anything when the room name changes :-(

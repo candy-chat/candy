@@ -52,7 +52,7 @@ Candy.Util = (function(self, $){
 
 		jid = node + '@' + domain;
 		if (resource) {
-			jid += '/' + Strophe.escapeNode(resource);
+			jid += '/' + resource;
 		}
 
 		return jid;
@@ -77,7 +77,7 @@ Candy.Util = (function(self, $){
 
 		jid = node + '@' + domain;
 		if(resource) {
-			jid += '/' + Strophe.unescapeNode(resource);
+			jid += '/' + resource;
 		}
 
 		return jid;
