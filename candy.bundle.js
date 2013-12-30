@@ -1320,7 +1320,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				self.Jabber.Room.Disco(roomJid);
 				roomJid = Candy.Util.escapeJid(roomJid);
 				var conn = Candy.Core.getConnection(),
-					room_nick = conn.muc.test_append_nick(roomJid, Candy.Core.getUser().getNick()),
+					room_nick = roomJid + '/' + Candy.Core.getUser().getNick(),
 					pres = $pres({ from: Candy.Util.escapeJid(conn.jid), to: room_nick })
 						.c('x', {xmlns: Strophe.NS.MUC});
 				if (password) {
