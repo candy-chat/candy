@@ -3541,6 +3541,7 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			showLoginForm: function(message, presetJid) {
 				self.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
+					_labelNickname: $.i18n._('labelNickname'),
 					_labelUsername: $.i18n._('labelUsername'),
 					_labelPassword: $.i18n._('labelPassword'),
 					_loginSubmit: $.i18n._('loginSubmit'),
