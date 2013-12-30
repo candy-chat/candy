@@ -1221,7 +1221,13 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		Autojoin: function() {
 			// Request bookmarks
 			if(Candy.Core.getOptions().autojoin === true) {
-				Candy.Core.getConnection().sendIQ($iq({type: 'get', xmlns: Strophe.NS.CLIENT}).c('query', {xmlns: Strophe.NS.PRIVATE}).c('storage', {xmlns: Strophe.NS.BOOKMARKS}).tree());
+				Candy.Core.getConnection().sendIQ($iq({
+					type: 'get',
+					xmlns: Strophe.NS.CLIENT
+				})
+				.c('query', {xmlns: Strophe.NS.PRIVATE})
+				.c('storage', {xmlns: Strophe.NS.BOOKMARKS})
+				.tree());
 			// Join defined rooms
 			} else if($.isArray(Candy.Core.getOptions().autojoin)) {
 				$.each(Candy.Core.getOptions().autojoin, function() {
@@ -1239,32 +1245,49 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Create new ignore privacy list (and reset the old one, if it exists).
 		 */
 		ResetIgnoreList: function() {
-			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getEscapedJid(), id: 'set1'})
-				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).c('item', {'action': 'allow', 'order': '0'}).tree());
+			Candy.Core.getConnection().sendIQ($iq({
+					type: 'set',
+					from: Candy.Core.getUser().getEscapedJid()
+				})
+				.c('query', {xmlns: Strophe.NS.PRIVACY })
+				.c('list', {name: 'ignore'})
+				.c('item', {'action': 'allow', 'order': '0'})
+				.tree());
 		},
 
 		/** Function: RemoveIgnoreList
 		 * Remove an existing ignore list.
 		 */
 		RemoveIgnoreList: function() {
-			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getEscapedJid(), id: 'remove1'})
-				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).tree());
+			Candy.Core.getConnection().sendIQ($iq({
+					type: 'set',
+					from: Candy.Core.getUser().getEscapedJid()
+				})
+				.c('query', {xmlns: Strophe.NS.PRIVACY })
+				.c('list', {name: 'ignore'}).tree());
 		},
 
 		/** Function: GetIgnoreList
 		 * Get existing ignore privacy list when connecting.
 		 */
 		GetIgnoreList: function() {
-			Candy.Core.getConnection().send($iq({type: 'get', from: Candy.Core.getUser().getEscapedJid(), id: 'get1'})
-				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('list', {name: 'ignore'}).tree());
+			Candy.Core.getConnection().sendIQ($iq({
+					type: 'get',
+					from: Candy.Core.getUser().getEscapedJid()
+				})
+				.c('query', {xmlns: Strophe.NS.PRIVACY})
+				.c('list', {name: 'ignore'}).tree());
 		},
 
 		/** Function: SetIgnoreListActive
 		 * Set ignore privacy list active
 		 */
 		SetIgnoreListActive: function() {
-			Candy.Core.getConnection().send($iq({type: 'set', from: Candy.Core.getUser().getEscapedJid(), id: 'set2'})
-				.c('query', {xmlns: Strophe.NS.PRIVACY }).c('active', {name:'ignore'}).tree());
+			Candy.Core.getConnection().sendIQ($iq({
+					type: 'set',
+					from: Candy.Core.getUser().getEscapedJid()})
+				.c('query', {xmlns: Strophe.NS.PRIVACY })
+				.c('active', {name:'ignore'}).tree());
 		},
 
 		/** Function: GetJidIfAnonymous
@@ -1328,10 +1351,10 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *   (String) roomJid - Room to get info for
 			 */
 			Disco: function(roomJid) {
-				Candy.Core.getConnection().send($iq({
+				Candy.Core.getConnection().sendIQ($iq({
 					type: 'get',
 					from: Candy.Core.getUser().getEscapedJid(),
-					to: Candy.Util.escapeJid(roomJid), id: 'disco3'
+					to: Candy.Util.escapeJid(roomJid)
 				}).c('query', {xmlns: Strophe.NS.DISCO_INFO}).tree());
 			},
 
@@ -1374,7 +1397,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 */
 			UpdatePrivacyList: function() {
 				var currentUser = Candy.Core.getUser(),
-					iq = $iq({type: 'set', from: currentUser.getEscapedJid(), id: 'edit1'})
+					iq = $iq({type: 'set', from: currentUser.getEscapedJid()})
 						.c('query', {xmlns: 'jabber:iq:privacy' })
 							.c('list', {name: 'ignore'}),
 					privacyList = currentUser.getPrivacyList('ignore');
@@ -1386,7 +1409,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				} else {
 					iq.c('item', {action: 'allow', order : '0'});
 				}
-				Candy.Core.getConnection().send(iq.tree());
+				Candy.Core.getConnection().sendIQ(iq.tree());
 			},
 
 			/** Class: Candy.Core.Action.Jabber.Room.Admin
@@ -1408,24 +1431,21 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				UserAction: function(roomJid, userJid, type, reason) {
 					roomJid = Candy.Util.escapeJid(roomJid);
 					userJid = Candy.Util.escapeJid(userJid);
-					var iqId,
-						itemObj = {nick: Strophe.getResourceFromJid(userJid)};
+					var itemObj = {nick: Strophe.getResourceFromJid(userJid)};
 					switch(type) {
 						case 'kick':
-							iqId = 'kick1';
 							itemObj.role = 'none';
 							break;
 						case 'ban':
-							iqId = 'ban1';
 							itemObj.affiliation = 'outcast';
 							break;
 						default:
 							return false;
 					}
-					Candy.Core.getConnection().send($iq({
+					Candy.Core.getConnection().sendIQ($iq({
 						type: 'set',
 						from: Candy.Core.getUser().getEscapedJid(),
-						to: roomJid, id: iqId
+						to: roomJid
 					}).c('query', {xmlns: Strophe.NS.MUC_ADMIN })
 						.c('item', itemObj).c('reason').t(reason).tree());
 					return true;
@@ -2189,14 +2209,17 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
 				}
 				// Room existed but room name was unknown
-				var roomName = msg.find('identity').attr('name'),
-					room = Candy.Core.getRoom(roomJid);
-				if(room.getName() === null) {
-					room.setName(Strophe.unescapeNode(roomName));
-				// Room name changed
-				}/*else if(room.getName() !== roomName && room.getUser() !== null) {
-					// NOTE: We want to notify the View here but jabber doesn't send anything when the room name changes :-(
-				}*/
+				var identity = msg.find('identity');
+				if(identity.length) {
+					var roomName = identity.attr('name'),
+						room = Candy.Core.getRoom(roomJid);
+					if(room.getName() === null) {
+						room.setName(Strophe.unescapeNode(roomName));
+					// Room name changed
+					}/*else if(room.getName() !== roomName && room.getUser() !== null) {
+						// NOTE: We want to notify the View here but jabber doesn't send anything when the room name changes :-(
+					}*/
+				}
 				return true;
 			},
 

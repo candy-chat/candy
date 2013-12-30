@@ -368,14 +368,17 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
 				}
 				// Room existed but room name was unknown
-				var roomName = msg.find('identity').attr('name'),
-					room = Candy.Core.getRoom(roomJid);
-				if(room.getName() === null) {
-					room.setName(Strophe.unescapeNode(roomName));
-				// Room name changed
-				}/*else if(room.getName() !== roomName && room.getUser() !== null) {
-					// NOTE: We want to notify the View here but jabber doesn't send anything when the room name changes :-(
-				}*/
+				var identity = msg.find('identity');
+				if(identity.length) {
+					var roomName = identity.attr('name'),
+						room = Candy.Core.getRoom(roomJid);
+					if(room.getName() === null) {
+						room.setName(Strophe.unescapeNode(roomName));
+					// Room name changed
+					}/*else if(room.getName() !== roomName && room.getUser() !== null) {
+						// NOTE: We want to notify the View here but jabber doesn't send anything when the room name changes :-(
+					}*/
+				}
 				return true;
 			},
 
