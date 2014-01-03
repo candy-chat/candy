@@ -153,7 +153,7 @@ header section {
 	text-align: center;
 }
 
-#download span, .demo-sponsor {
+.license, .demo-sponsor {
 	display: block;
 	color: #777;
 	font-size: .7em;
