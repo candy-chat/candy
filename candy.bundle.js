@@ -1321,7 +1321,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				roomJid = Candy.Util.escapeJid(roomJid);
 				var conn = Candy.Core.getConnection(),
 					room_nick = roomJid + '/' + Candy.Core.getUser().getNick(),
-					pres = $pres({ from: Candy.Util.escapeJid(conn.jid), to: room_nick })
+					pres = $pres({ to: room_nick })
 						.c('x', {xmlns: Strophe.NS.MUC});
 				if (password) {
 					pres.c('password').t(password);
