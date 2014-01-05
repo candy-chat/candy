@@ -27,7 +27,7 @@
 		<header>
 			<div id="download">
 				<!-- if you change the version, change it in the onclick tracker as well -->
-				<a href="http://github.com/candy-chat/candy/tarball/master" onClick="_gaq.push(['_trackEvent', 'Download', $(this).find('.version').text()]);" class="button">
+				<a href="http://github.com/candy-chat/candy/tarball/master" onclick="_gaq.push(['_trackEvent', 'Download', $(this).find('.version').text()]);" class="button">
 					Download candy.tar.gz
 					<small>v<span class="version">1.5</span> &mdash; <time datetime="2013-12-14">December 14th, 2013</time></small>
 				</a>
@@ -351,7 +351,7 @@ $(Candy).on('candy:view.message.before-show', function(evt, args) {
 		</section>
 	</article>
 
-	<a href="http://github.com/candy-chat/candy"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+	<a href="http://github.com/candy-chat/candy" onclick="_gaq.push(['_trackEvent', 'GitHub', 'Ribbon']);"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
 
 </body>
 </html>
