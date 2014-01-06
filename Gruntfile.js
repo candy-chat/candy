@@ -64,7 +64,7 @@ module.exports = function(grunt) {
 		watch: {
 			bundle: {
 				files: ['src/*.js', 'src/**/*.js'],
-				tasks: ['concat:bundle', 'uglify:bundle', 'notify:bundle']
+				tasks: ['jshint', 'concat:bundle', 'uglify:bundle', 'notify:bundle']
 			},
 			libs: {
 				files: ['libs/*/**/*.js'],
