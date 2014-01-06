@@ -193,8 +193,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 */
 		PrivacyList: function(msg) {
 			Candy.Core.log('[Jabber] PrivacyList');
-			var currentUser = Candy.Core.getUser(),
-				msg = $(msg);
+			var currentUser = Candy.Core.getUser();
+			msg = $(msg);
 			if(msg.attr('type') === 'result') {
 				$('list[name="ignore"] item', msg).each(function() {
 					var item = $(this);
