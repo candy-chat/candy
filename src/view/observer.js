@@ -63,12 +63,10 @@ Candy.View.Observer = (function(self, $) {
 				case Strophe.Status.DISCONNECTED:
 					var presetJid = Candy.Core.isAnonymousConnection() ? Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : null;
 					Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'), presetJid);
-					Candy.View.Event.Chat.onDisconnect();
 					break;
 
 				case Strophe.Status.AUTHFAIL:
 					Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusAuthfail'));
-					Candy.View.Event.Chat.onAuthfail();
 					break;
 
 				default:
@@ -145,7 +143,6 @@ Candy.View.Observer = (function(self, $) {
 				}, 5000);
 
 				var evtData = { type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user };
-				Candy.View.Event.Room.onPresenceChange(evtData);
 
 				/** Event: candy:view.presence
 				 * Presence update when kicked or banned

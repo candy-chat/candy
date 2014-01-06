@@ -7,8 +7,9 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global jQuery */
 
@@ -63,8 +64,9 @@ var Candy = (function(self, $) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global Candy, window, Strophe, jQuery */
 
@@ -467,6 +469,7 @@ Candy.Core = (function(self, Strophe, $) {
  *   (c) 2011 Amiado Group AG. All rights reserved.
  *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global jQuery, Candy, window, Mustache, document */
 
@@ -627,8 +630,9 @@ Candy.View = (function(self, $) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global Candy, MD5, Strophe, document, escape, jQuery */
 
@@ -1153,8 +1157,9 @@ Candy.Util = (function(self, $){
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global Candy, $iq, navigator, Candy, $pres, Strophe, jQuery */
 
@@ -1492,8 +1497,9 @@ Candy.Core.Action = (function(self, Strophe, $) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global Candy */
 
@@ -1602,8 +1608,9 @@ Candy.Core.ChatRoom = function(roomJid) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global Candy */
 
@@ -1669,8 +1676,9 @@ Candy.Core.ChatRoster = function () {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global Candy, Strophe */
 
@@ -1863,8 +1871,9 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global Candy, Strophe, jQuery */
 
@@ -2467,208 +2476,6 @@ Candy.Core.Event = (function(self, Strophe, $) {
 	return self;
 }(Candy.Core.Event || {}, Strophe, jQuery));
 
-/** File: event.js
- * Candy - Chats are not dead yet.
- *
- * Authors:
- *   - Patrick Stadler <patrick.stadler@gmail.com>
- *   - Michael Weibel <michael.weibel@gmail.com>
- *
- * Copyright:
- *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel
- */
-
-/* global Candy */
-/* jshint unused:false */
-
-/** Class: Candy.View.Event
- * Empty hooks to capture events and inject custom code.
- *
- * Deprecated:
- *   Don't use this anymore. Bind on the triggered events on Candy.View.*
- *
- * Parameters:
- *   (Candy.View.Event) self - itself
- *   (jQuery) $ - jQuery
- */
-Candy.View.Event = (function(self) {
-	/** Class: Candy.View.Event.Chat
-	 * Chat-related events
-	 */
-	self.Chat = {
-		/** Function: onAdminMessage
-		 * Called when receiving admin messages
-		 *
-		 * Parameters:
-		 *   (Object) args - {subject, message}
-		 */
-		onAdminMessage: function(args) {
-			return;
-		},
-
-		/** Function: onDisconnect
-		 * Called when client disconnects
-		 */
-		onDisconnect: function() {
-			return;
-		},
-
-		/** Function: onAuthfail
-		 * Called when authentication fails
-		 */
-		onAuthfail: function() {
-			return;
-		}
-	};
-
-	/** Class: Candy.View.Event.Room
-	 * Room-related events
-	 */
-	self.Room = {
-		/** Function: onAdd
-		 * Called when a new room gets added
-		 *
-		 * Parameters:
-		 *   (Object) args - {roomJid, type=chat|groupchat, element}
-		 */
-		onAdd: function(args) {
-			return;
-		},
-
-		/** Function: onShow
-		 * Called when a room gets shown
-		 *
-		 * Parameters:
-		 *   (Object) args - {roomJid, element}
-		 */
-		onShow: function(args) {
-			return;
-		},
-
-		/** Function: onHide
-		 * Called when a room gets hidden
-		 *
-		 * Parameters:
-		 *   (Object) args - {roomJid, element}
-		 */
-		onHide: function(args) {
-			return;
-		},
-
-		/** Function: onSubjectChange
-		 * Called when a subject of a room gets changed
-		 *
-		 * Parameters:
-		 *   (Object) args - {roomJid, element, subject}
-		 */
-		onSubjectChange: function(args) {
-			return;
-		},
-
-		/** Function: onClose
-		 * Called after a room has been left/closed
-		 *
-		 * Parameters:
-		 *   (Object) args - {roomJid}
-		 */
-		onClose: function(args) {
-			return;
-		},
-
-		/** Function: onPresenceChange
-		 * Called when presence of user changes (kick, ban)
-		 *
-		 * Parameters:
-		 *   (Object) args - {roomJid, user, reason, type}
-		 */
-		onPresenceChange: function(args) {
-			return;
-		}
-	};
-
-	/** Class: Candy.View.Event.Roster
-	 * Roster-related events
-	 */
-	self.Roster = {
-		/** Function: onUpdate
-		 * Called after a user have been added to the roster
-		 *
-		 * Parameters:
-		 *   (Object) args - {roomJid, user, action, element}
-		 */
-		onUpdate: function(args) {
-			return;
-		},
-
-		/** Function: onContextMenu
-		 * Called when a user clicks on the action menu arrow.
-		 * The return value is getting appended to the menulinks.
-		 *
-		 * Parameters:
-		 *   (Object) args - {roomJid, user}
-		 *
-		 * Returns:
-		 *   (Object) - containing menulinks
-		 */
-		onContextMenu: function(args) {
-			return {};
-		},
-
-		/** Function: afterContextMenu
-		 * Called when after a the context menu is rendered
-		 *
-		 * Parameters:
-		 *   (Object) args - {roomJid, element, user}
-		 */
-		afterContextMenu: function(args) {
-			return;
-		}
-	};
-
-	/** Class: Candy.View.Event.Message
-	 * Message-related events
-	 */
-	self.Message = {
-		/** Function: beforeShow
-		 * Called before a new message will be shown.
-		 *
-		 * Parameters:
-		 *   (Object) args - {roomJid, nick, message}
-		 *
-		 * Returns:
-		 *   (String) message
-		 */
-		beforeShow: function(args) {
-			return args.message;
-		},
-
-		/** Function: onShow
-		 * Called after a new message has been shown
-		 *
-		 * Parameters:
-		 *   (Object) args - {roomJid, element, nick, message}
-		 */
-		onShow: function(args) {
-			return;
-		},
-
-		/** Function: beforeSend
-		 * Called before a message get sent
-		 *
-		 * Parameters:
-		 *   (String) message
-		 *
-		 * Returns:
-		 *   (String) message
-		 */
-		beforeSend: function(message) {
-			return message;
-		}
-	};
-
-	return self;
-}(Candy.View.Event || {}));
 /** File: observer.js
  * Candy - Chats are not dead yet.
  *
@@ -2678,8 +2485,9 @@ Candy.View.Event = (function(self) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel
  */
+'use strict';
 
 /* global Candy, Strophe, Mustache, jQuery */
 
@@ -2733,12 +2541,10 @@ Candy.View.Observer = (function(self, $) {
 				case Strophe.Status.DISCONNECTED:
 					var presetJid = Candy.Core.isAnonymousConnection() ? Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : null;
 					Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'), presetJid);
-					Candy.View.Event.Chat.onDisconnect();
 					break;
 
 				case Strophe.Status.AUTHFAIL:
 					Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusAuthfail'));
-					Candy.View.Event.Chat.onAuthfail();
 					break;
 
 				default:
@@ -2815,7 +2621,6 @@ Candy.View.Observer = (function(self, $) {
 				}, 5000);
 
 				var evtData = { type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user };
-				Candy.View.Event.Room.onPresenceChange(evtData);
 
 				/** Event: candy:view.presence
 				 * Presence update when kicked or banned
@@ -2940,6 +2745,7 @@ Candy.View.Observer = (function(self, $) {
 
 	return self;
 }(Candy.View.Observer || {}, jQuery));
+
 /** File: pane.js
  * Candy - Chats are not dead yet.
  *
@@ -2949,8 +2755,9 @@ Candy.View.Observer = (function(self, $) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global Candy, document, Mustache, Strophe, Audio, jQuery */
 
@@ -3253,18 +3060,16 @@ Candy.View.Pane = (function(self, $) {
 				});
 				self.Room.scrollToBottom(Candy.View.getCurrent().roomJid);
 
-				var evtData = {'subject' : subject, 'message' : message};
-
-				// deprecated
-				Candy.View.Event.Chat.onAdminMessage(evtData);
-
 				/** Event: candy:view.chat.admin-message
 				 * After admin message display
 				 *
 				 * Parameters:
 				 *   (String) presetJid - Preset user JID
 				 */
-				$(Candy).triggerHandler('candy:view.chat.admin-message', evtData);
+				$(Candy).triggerHandler('candy:view.chat.admin-message', {
+					'subject' : subject,
+					'message' : message
+				});
 			}
 		},
 
@@ -3793,11 +3598,6 @@ Candy.View.Pane = (function(self, $) {
 						.addClass(posLeft.backgroundPositionAlignment + '-' + posTop.backgroundPositionAlignment)
 						.fadeIn('fast');
 
-					var evtData = {'roomJid' : roomJid, 'user' : user, 'element': menu};
-
-					// deprecated
-					Candy.View.Event.Roster.afterContextMenu(evtData);
-
 					/** Event: candy:view.roster.after-context-menu
 					 * After context menu display
 					 *
@@ -3806,7 +3606,11 @@ Candy.View.Pane = (function(self, $) {
 					 *   (Candy.Core.ChatUser) user - User
 					 *   (jQuery.Element) element - Menu element
 					 */
-					$(Candy).triggerHandler('candy:view.roster.after-context-menu', evtData);
+					$(Candy).triggerHandler('candy:view.roster.after-context-menu', {
+						'roomJid' : roomJid,
+						'user' : user,
+						'element': menu
+					});
 
 					return true;
 				}
@@ -3827,13 +3631,14 @@ Candy.View.Pane = (function(self, $) {
 			 *   (Object) - object containing the extended menulinks.
 			 */
 			getMenuLinks: function(roomJid, user, elem) {
-				var menulinks, extramenulinks, id;
+				var menulinks, id;
 
-				var evtData = {'roomJid' : roomJid, 'user' : user, 'elem': elem};
-				// deprecated
-				extramenulinks = Candy.View.Event.Roster.onContextMenu(evtData);
-
-				evtData.menulinks = $.extend(this.initialMenuLinks(elem), extramenulinks);
+				var evtData = {
+					'roomJid' : roomJid,
+					'user' : user,
+					'elem': elem,
+					'menulinks': this.initialMenuLinks(elem)
+				};
 
 				/** Event: candy:view.roster.context-menu
 				 * Modify existing menu links (add links)
@@ -4058,11 +3863,6 @@ Candy.View.Pane = (function(self, $) {
 			self.Chat.addTab(roomJid, roomName, roomType);
 			self.Room.getPane(roomJid, '.message-form').submit(self.Message.submit);
 
-			var evtData = {'roomJid': roomJid, 'type': roomType, 'element': self.Room.getPane(roomJid)};
-
-			// deprecated
-			Candy.View.Event.Room.onAdd(evtData);
-
 			/** Event: candy:view.room.after-add
 			 * After initialising a room
 			 *
@@ -4071,7 +3871,11 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) type - Room Type
 			 *   (jQuery.Element) element - Room element
 			 */
-			$(Candy).triggerHandler('candy:view.room.after-add', evtData);
+			$(Candy).triggerHandler('candy:view.room.after-add', {
+				'roomJid': roomJid,
+				'type': roomType,
+				'element': self.Room.getPane(roomJid)
+			});
 
 			return roomId;
 		},
@@ -4092,6 +3896,8 @@ Candy.View.Pane = (function(self, $) {
 
 			$('.room-pane').each(function() {
 				var elem = $(this);
+				evtData = {'roomJid': roomJid, 'element' : elem};
+
 				if(elem.attr('id') === ('chat-room-' + roomId)) {
 					elem.show();
 					Candy.View.getCurrent().roomJid = roomJid;
@@ -4100,11 +3906,6 @@ Candy.View.Pane = (function(self, $) {
 					self.Chat.clearUnreadMessages(roomJid);
 					self.Room.setFocusToForm(roomJid);
 					self.Room.scrollToBottom(roomJid);
-
-					evtData = {'roomJid': roomJid, 'element' : elem};
-
-					// deprecated
-					Candy.View.Event.Room.onShow(evtData);
 
 					/** Event: candy:view.room.after-show
 					 * After showing a room
@@ -4117,10 +3918,6 @@ Candy.View.Pane = (function(self, $) {
 
 				} else {
 					elem.hide();
-
-					evtData = {'roomJid': roomJid, 'element' : elem};
-					// deprecated
-					Candy.View.Event.Room.onHide(evtData);
 
 					/** Event: candy:view.room.after-hide
 					 * After hiding a room
@@ -4155,11 +3952,6 @@ Candy.View.Pane = (function(self, $) {
 			self.Room.appendToMessagePane(roomJid, html);
 			self.Room.scrollToBottom(roomJid);
 
-			var evtData = {'roomJid': roomJid, 'element' : self.Room.getPane(roomJid), 'subject' : subject};
-
-			// deprecated
-			Candy.View.Event.Room.onSubjectChange(evtData);
-
 			/** Event: candy:view.room.after-subject-change
 			 * After changing the subject of a room
 			 *
@@ -4168,7 +3960,11 @@ Candy.View.Pane = (function(self, $) {
 			 *   (jQuery.Element) element - Room element
 			 *   (String) subject - New subject
 			 */
-			$(Candy).triggerHandler('candy:view.room.after-subject-change', evtData);
+			$(Candy).triggerHandler('candy:view.room.after-subject-change', {
+				'roomJid': roomJid,
+				'element' : self.Room.getPane(roomJid),
+				'subject' : subject
+			});
 		},
 
 		/** Function: close
@@ -4204,18 +4000,15 @@ Candy.View.Pane = (function(self, $) {
 			}
 			delete self.Chat.rooms[roomJid];
 
-			var evtData = {'roomJid' : roomJid};
-
-			// deprecated
-			Candy.View.Event.Room.onClose(evtData);
-
 			/** Event: candy:view.room.after-close
 			 * After closing a room
 			 *
 			 * Parameters:
 			 *   (String) roomJid - Room JID
 			 */
-			$(Candy).triggerHandler('candy:view.room.after-close', evtData);
+			$(Candy).triggerHandler('candy:view.room.after-close', {
+				'roomJid' : roomJid
+			});
 		},
 
 		/** Function: appendToMessagePane
@@ -4473,11 +4266,6 @@ Candy.View.Pane = (function(self, $) {
 				self.Chat.infoMessage(roomJid, $.i18n._('presenceUnknownWarningSubject'), $.i18n._('presenceUnknownWarning'));
 			}
 
-			var evtData = {'roomJid': roomJid, type: 'chat', 'element': self.Room.getPane(roomJid)};
-
-			// deprecated
-			Candy.View.Event.Room.onAdd(evtData);
-
 			/** Event: candy:view.private-room.after-open
 			 * After opening a new private room
 			 *
@@ -4486,7 +4274,11 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) type - 'chat'
 			 *   (jQuery.Element) element - User element
 			 */
-			$(Candy).triggerHandler('candy:view.private-room.after-open', evtData);
+			$(Candy).triggerHandler('candy:view.private-room.after-open', {
+				'roomJid': roomJid,
+				'type': 'chat',
+				'element': self.Room.getPane(roomJid)
+			});
 		},
 
 		/** Function: setStatus
@@ -4539,8 +4331,6 @@ Candy.View.Pane = (function(self, $) {
 				userId = Candy.Util.jidToId(user.getJid()),
 				usercountDiff = -1,
 				userElem = $('#user-' + roomId + '-' + userId);
-
-			var evtData = {'roomJid': roomJid, type: null, 'user': user};
 
 			/** Event: candy:view.roster.before-update
 			 * Before updating the roster of a room
@@ -4661,16 +4451,6 @@ Candy.View.Pane = (function(self, $) {
 				Candy.View.Pane.Chat.Toolbar.updateUsercount(Candy.View.Pane.Chat.rooms[roomJid].usercount);
 			}
 
-			evtData = {
-				'roomJid' : roomJid,
-				'user' : user,
-				'action': action,
-				'element': $('#user-' + roomId + '-' + userId)
-			};
-
-			// deprecated
-			Candy.View.Event.Roster.onUpdate(evtData);
-
 			/** Event: candy:view.roster.after-update
 			 * After updating a room's roster
 			 *
@@ -4680,7 +4460,12 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) action - [join, leave, kick, ban]
 			 *   (jQuery.Element) element - User element
 			 */
-			$(Candy).triggerHandler('candy:view.roster.after-update', evtData);
+			$(Candy).triggerHandler('candy:view.roster.after-update', {
+				'roomJid' : roomJid,
+				'user' : user,
+				'action': action,
+				'element': $('#user-' + roomId + '-' + userId)
+			});
 		},
 
 		/** Function: userClick
@@ -4734,9 +4519,6 @@ Candy.View.Pane = (function(self, $) {
 			var roomType = Candy.View.Pane.Chat.rooms[Candy.View.getCurrent().roomJid].type,
 				message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body);
 
-			// deprecated
-			message = Candy.View.Event.Message.beforeSend(message);
-
 			var evtData = {message: message};
 
 			/** Event: candy:view.message.before-send
@@ -4777,8 +4559,6 @@ Candy.View.Pane = (function(self, $) {
 			message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
 
 			var evtData = {'roomJid': roomJid, 'name': name, 'message': message};
-			// deprecated
-			evtData.message = Candy.View.Event.Message.beforeShow(evtData);
 
 			/** Event: candy:view.message.before-show
 			 * Before showing a new message
@@ -4843,10 +4623,12 @@ Candy.View.Pane = (function(self, $) {
 				self.Room.scrollToBottom(roomJid);
 			}
 
-			evtData = {'roomJid': roomJid, 'element': elem, 'name': name, 'message': message};
-
-			// deprecated
-			Candy.View.Event.Message.onShow(evtData);
+			evtData = {
+				'roomJid': roomJid,
+				'element': elem,
+				'name': name,
+				'message': message
+			};
 
 			/** Event: candy:view.message.after-show
 			 * Triggered after showing a message
@@ -4873,8 +4655,9 @@ Candy.View.Pane = (function(self, $) {
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global Candy */
 
@@ -5000,8 +4783,9 @@ Candy.View.Template = (function(self){
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global Candy */
 
