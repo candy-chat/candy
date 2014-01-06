@@ -144,7 +144,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				.c('query', {xmlns: Strophe.NS.PRIVACY})
 				.c('list', {name: 'ignore'}).tree();
 			var iqId = Candy.Core.getConnection().sendIQ(iq);
-			// add handler (#200)
+			// add handler (<#200 at https://github.com/candy-chat/candy/issues/200>)
 			Candy.Core.addHandler(Candy.Core.Event.Jabber.PrivacyList, null, 'iq', null, iqId);
 		},
 

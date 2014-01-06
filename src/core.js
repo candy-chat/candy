@@ -168,6 +168,20 @@ Candy.Core = (function(self, Strophe, $) {
 		// Reset before every connection attempt to make sure reconnections work after authfail, alltabsclosed, ...
 		_connection.reset();
 		self.registerEventHandlers();
+		/** Event: candy:core.before-connect
+		 * Triggered before a connection attempt is made.
+		 *
+		 * Plugins should register their stanza handlers using this event
+		 * to ensure that they are set. 
+		 *
+		 * See also <#84 at https://github.com/candy-chat/candy/issues/84>.
+		 *
+		 * Parameters:
+		 *   (Strophe.Connection) conncetion - Strophe connection
+		 */
+		$(Candy).triggerHandler('candy:core.before-connect', {
+			connection: _connection
+		});
 
 		_anonymousConnection = !_anonymousConnection ? jidOrHost && jidOrHost.indexOf("@") < 0 : true;
 
