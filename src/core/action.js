@@ -137,12 +137,15 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Get existing ignore privacy list when connecting.
 		 */
 		GetIgnoreList: function() {
-			Candy.Core.getConnection().sendIQ($iq({
+			var iq = $iq({
 					type: 'get',
 					from: Candy.Core.getUser().getEscapedJid()
 				})
 				.c('query', {xmlns: Strophe.NS.PRIVACY})
-				.c('list', {name: 'ignore'}).tree());
+				.c('list', {name: 'ignore'}).tree();
+			var iqId = Candy.Core.getConnection().sendIQ(iq);
+			// add handler (#200)
+			Candy.Core.addHandler(Candy.Core.Event.Jabber.PrivacyList, null, 'iq', null, iqId);
 		},
 
 		/** Function: SetIgnoreListActive

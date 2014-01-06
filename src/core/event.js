@@ -193,16 +193,19 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 */
 		PrivacyList: function(msg) {
 			Candy.Core.log('[Jabber] PrivacyList');
-			var currentUser = Candy.Core.getUser();
-
-			$('list[name="ignore"] item', msg).each(function() {
-				var item = $(this);
-				if (item.attr('action') === 'deny') {
-					currentUser.addToOrRemoveFromPrivacyList('ignore', item.attr('value'));
-				}
-			});
-			Candy.Core.Action.Jabber.SetIgnoreListActive();
-			return false;
+			var currentUser = Candy.Core.getUser(),
+				msg = $(msg);
+			if(msg.attr('type') === 'result') {
+				$('list[name="ignore"] item', msg).each(function() {
+					var item = $(this);
+					if (item.attr('action') === 'deny') {
+						currentUser.addToOrRemoveFromPrivacyList('ignore', item.attr('value'));
+					}
+				});
+				Candy.Core.Action.Jabber.SetIgnoreListActive();
+				return false;
+			}
+			return self.Jabber.PrivacyListError(msg);
 		},
 
 		/** Function: PrivacyListError
