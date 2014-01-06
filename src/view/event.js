@@ -7,8 +7,9 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel
  */
+'use strict';
 
 /* global Candy */
 /* jshint unused:false */
