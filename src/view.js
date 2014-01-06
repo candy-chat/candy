@@ -10,7 +10,7 @@
  *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 
-/* global jQuery, Candy, window, Mustache */
+/* global jQuery, Candy, window, Mustache, document */
 
 /** Class: Candy.View
  * The Candy View Class
