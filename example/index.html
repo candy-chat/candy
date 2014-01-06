@@ -6,13 +6,13 @@
 	<link rel="shortcut icon" href="../res/img/favicon.png" type="image/gif" />
 	<link rel="stylesheet" type="text/css" href="../res/default.css" />
 	
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
 	<script type="text/javascript" src="../libs/libs.min.js"></script>
 	<script type="text/javascript" src="../candy.min.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			Candy.init('http-bind/', {
-				core: { debug: false },
+				core: { debug: false, autojoin: true },
 				view: { resources: '../res/' }
 			});
 			

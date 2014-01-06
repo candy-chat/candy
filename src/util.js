@@ -7,7 +7,11 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
+
+/* global Candy, MD5, Strophe, document, escape, jQuery */
 
 /** Class: Candy.Util
  * Candy utils
@@ -29,7 +33,7 @@ Candy.Util = (function(self, $){
 	self.jidToId = function(jid) {
 		return MD5.hexdigest(jid);
 	};
-	
+
 	/** Function: escapeJid
 	 * Escapes a jid (node & resource get escaped)
 	 *
@@ -46,15 +50,15 @@ Candy.Util = (function(self, $){
 		var node = Strophe.escapeNode(Strophe.getNodeFromJid(jid)),
 			domain = Strophe.getDomainFromJid(jid),
 			resource = Strophe.getResourceFromJid(jid);
-			
+
 		jid = node + '@' + domain;
 		if (resource) {
-			jid += '/' + Strophe.escapeNode(resource);
+			jid += '/' + resource;
 		}
-		
+
 		return jid;
 	};
-	
+
 	/** Function: unescapeJid
 	 * Unescapes a jid (node & resource get unescaped)
 	 *
@@ -71,12 +75,12 @@ Candy.Util = (function(self, $){
 		var node = Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
 			domain = Strophe.getDomainFromJid(jid),
 			resource = Strophe.getResourceFromJid(jid);
-		
+
 		jid = node + '@' + domain;
 		if(resource) {
-			jid += '/' + Strophe.unescapeNode(resource);
+			jid += '/' + resource;
 		}
-		
+
 		return jid;
 	};
 
@@ -131,13 +135,13 @@ Candy.Util = (function(self, $){
 	 *   Cookie value or undefined
 	 */
 	self.getCookie = function(name) {
-	    if(document.cookie)	{
-				var regex = new RegExp(escape(name) + '=([^;]*)', 'gm'),
-					matches = regex.exec(document.cookie);
-					if(matches) {
-						return matches[1];
-					}
-	    }
+		if(document.cookie)	{
+			var regex = new RegExp(escape(name) + '=([^;]*)', 'gm'),
+				matches = regex.exec(document.cookie);
+			if(matches) {
+				return matches[1];
+			}
+		}
 	};
 
 	/** Function: deleteCookie
@@ -251,23 +255,25 @@ Candy.Util = (function(self, $){
 	 *   Date-Object
 	 */
 	self.iso8601toDate = function(date) {
-        var timestamp = Date.parse(date), minutesOffset = 0;
-        if(isNaN(timestamp)) {
+		var timestamp = Date.parse(date);
+		if(isNaN(timestamp)) {
 			var struct = /^(\d{4}|[+\-]\d{6})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3,}))?)?(?:(Z)|([+\-])(\d{2})(?::?(\d{2}))?))?/.exec(date);
 			if(struct) {
+				var minutesOffset = 0;
 				if(struct[8] !== 'Z') {
 					minutesOffset = +struct[10] * 60 + (+struct[11]);
 					if(struct[9] === '+') {
 						minutesOffset = -minutesOffset;
 					}
 				}
+				minutesOffset -= new Date().getTimezoneOffset();
 				return new Date(+struct[1], +struct[2] - 1, +struct[3], +struct[4], +struct[5] + minutesOffset, +struct[6], struct[7] ? +struct[7].substr(0, 3) : 0);
 			} else {
 				// XEP-0091 date
 				timestamp = Date.parse(date.replace(/^(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') + 'Z');
 			}
-        }
-        return new Date(timestamp);
+		}
+		return new Date(timestamp);
 	};
 
 	/** Function: isEmptyObject
@@ -302,6 +308,34 @@ Candy.Util = (function(self, $){
 		}.bind(elem), 1);
 	};
 
+	/** PrivateVariable: ie
+	 * Checks for IE version
+	 *
+	 * From: http://stackoverflow.com/a/5574871/315242
+	 */
+	var ie = (function(){
+		var undef,
+			v = 3,
+			div = document.createElement('div'),
+			all = div.getElementsByTagName('i');
+		while (
+			// adds innerhtml and continues as long as all[0] is truthy
+			div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+			all[0]
+		) {}
+		return v > 4 ? v : undef;
+	}());
+
+	/** Function: getIeVersion
+	 * Returns local variable `ie` which you can use to detect which IE version
+	 * is available.
+	 *
+	 * Use e.g. like this: if(Candy.Util.getIeVersion() < 9) alert('kaboom');
+	 */
+	self.getIeVersion = function() {
+		return ie;
+	};
+
 	/** Class: Candy.Util.Parser
 	 * Parser for emoticons, links and also supports escaping.
 	 */
@@ -312,7 +346,7 @@ Candy.Util = (function(self, $){
 		 * Use setEmoticonPath() to change it
 		 */
 		_emoticonPath: '',
-		
+
 		/** Function: setEmoticonPath
 		 * Set emoticons location.
 		 *
@@ -455,6 +489,19 @@ Candy.Util = (function(self, $){
 			return $('<div/>').text(text).html();
 		},
 
+		/** Function: nl2br
+		 * replaces newline characters with a <br/> to make multi line messages look nice
+		 *
+		 * Parameters:
+		 *   (String) text - Text to process
+		 *
+		 * Returns:
+		 *   Processed text
+		 */
+		nl2br: function(text) {
+			return text.replace(/\r\n|\r|\n/g, '<br />');
+		},
+
 		/** Function: all
 		 * Does everything of the parser: escaping, linkifying and emotifying.
 		 *
@@ -469,6 +516,7 @@ Candy.Util = (function(self, $){
 				text = this.escape(text);
 				text = this.linkify(text);
 				text = this.emotify(text);
+				text = this.nl2br(text);
 			}
 			return text;
 		}
@@ -476,69 +524,3 @@ Candy.Util = (function(self, $){
 
 	return self;
 }(Candy.Util || {}, jQuery));
-
-
-/** Class: Candy.Util.Observable
- * A class can be extended with the observable to be able to notify observers
- */
-Candy.Util.Observable = (function(self) {
-	/** PrivateObject: _observers
-	 * List of observers
-	 */
-	var _observers = {};
-
-	/** Function: addObserver
-	 * Add an observer to the observer list
-	 *
-	 * Parameters:
-	 *   (String) key - The key the observer listens to
-	 *   (Callback) obj - The observer callback
-	 */
-	self.addObserver = function(key, obj) {
-		if (_observers[key] === undefined) {
-			_observers[key] = [];
-		}
-		_observers[key].push(obj);
-	};
-
-	/** Function: deleteObserver
-	 * Delete observer from list
-	 *
-	 * Parameters:
-	 *   (String) key - Key in which the observer lies
-	 *   (Callback) obj - The observer callback to be deleted
-	 */
-	self.deleteObserver = function(key, obj) {
-		delete _observers[key][obj];
-	};
-
-	/** Function: clearObservers
-	 * Deletes all observers in list
-	 *
-	 * Parameters:
-	 *   (String) key - If defined, remove observers of this key, otherwise remove all including all keys.
-	 */
-	self.clearObservers = function(key) {
-		if (key !== undefined) {
-			_observers[key] = [];
-		} else {
-			_observers = {};
-		}
-	};
-
-	/** Function: notifyObservers
-	 * Notify all of its observers of a certain event.
-	 *
-	 * Parameters:
-	 *   (String) key - Key to notify
-	 *   (Object) arg - An argument passed to the update-method of the observers
-	 */
-	self.notifyObservers = function(key, arg) {
-		var observer = _observers[key], i;
-		for(i = observer.length-1; i >= 0; i--) {
-			observer[i].update(self, arg);
-		}
-	};
-
-	return self;
-}(Candy.Util.Observable || {}));

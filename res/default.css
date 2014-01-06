@@ -3,12 +3,14 @@
  *
  * @author Michael <michael.weibel@gmail.com>
  * @author Patrick <patrick.stadler@gmail.com>
+
  * @copyright 2011 Amiado Group AG, All rights reserved.
+ * @copyright 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
  */
 html, body {
 	margin: 0;
 	padding: 0;
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: 'Helvetica Neue', Helvetica, sans-serif;
 }
 
 #candy {
@@ -17,7 +19,7 @@ html, body {
 	bottom: 0;
 	right: 0;
 	left: 0;
-	background-color: #ccc;
+	background-color: #444;
 	color: #333;
 	overflow: hidden;
 }
@@ -45,24 +47,25 @@ ul {
 	margin: 0;
 	float: left;
 	position: relative;
-	border-right: 1px solid #aaa;
 	white-space: nowrap;
+	margin: 3px 0 0 3px;
 }
 
-#chat-tabs li a {
-	background-color: #ddd;
-	padding: 6px 50px 4px 10px;
+#chat-tabs a {
+	padding: 4px 50px 4px 10px;
 	display: inline-block;
-	color: #666;
+	color: #ccc;
 	height: 20px;
+	background-color: #666;
+	border-radius: 3px 3px 0 0;
 }
 
-#chat-tabs li.active a {
-	background-color: white;
+#chat-tabs .active a {
+	background-color: #eee;
 	color: black;
 }
 
-#chat-tabs li a.transition {
+#chat-tabs .transition {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -70,41 +73,41 @@ ul {
 	width: 35px;
 	height: 30px;
 	background: url(img/tab-transitions.png) repeat-y left;
+	border-radius: 0 3px 0 0;
 }
 
-#chat-tabs li a.close {
+#chat-tabs a.close {
 	background-color: transparent;
 	position: absolute;
-	top: 0;
-	right: 0;
+	right: -2px;
+	top: -3px;
 	height: auto;
 	padding: 5px;
-	margin: 1px 5px 0 2px;
+	margin: 0 5px 0 2px;
 	color: #999;
 }
 
-#chat-tabs li.active a.transition {
-	color: gray;
+#chat-tabs .active .transition {
 	background: url(img/tab-transitions.png) repeat-y -50px;
 }
 
-#chat-tabs li a.close:hover, #chat-tabs li.active a.close:hover {
+#chat-tabs .close:hover {
 	color: black;
 }
 
-#chat-tabs li .unread {
+#chat-tabs .unread {
 	color: white;
 	background-color: #9b1414;
 	padding: 2px 4px;
 	font-weight: bold;
 	font-size: 10px;
 	position: absolute;
-	top: 6px;
+	top: 5px;
 	right: 22px;
 	border-radius: 3px;
 }
 
-#chat-tabs li.offline a.label {
+#chat-tabs .offline .label {
 	text-decoration: line-through;
 }
 
@@ -117,9 +120,10 @@ ul {
 	width: 200px;
 	height: 24px;
 	padding-top: 7px;
-	border-top: 1px solid #aaa;
-	background-color: #d9d9d9;
+	background-color: #444;
 	display: none;
+	border-top: 1px solid black;
+	box-shadow: 0 1px 0 0 #555 inset;
 }
 
 #chat-toolbar li {
@@ -182,9 +186,10 @@ ul {
 .usercount span {
 	display: inline-block;
 	padding: 1px 3px;
-	background-color: #ccc;
+	background-color: #666;
 	font-weight: bold;
 	border-radius: 3px;
+	color: #ccc;
 }
 
 .room-pane {
@@ -199,23 +204,26 @@ ul {
 	bottom: 0;
 	width: 200px;
 	margin: 30px 0 32px 0;
+	background-color: #333;
+	border-top: 1px solid black;
+	box-shadow: inset 0 1px 0 0 #555;
 }
 
 .roster-pane .user {
 	cursor: pointer;
-	padding: 4px 7px;
+	padding: 7px 10px;
 	font-size: 12px;
-	margin: 0 4px 2px 4px;
 	opacity: 0;
 	display: none;
-	color: #666;
+	color: #ccc;
 	clear: both;
-	height: 15px;
-	background-color: #ddd;
+	height: 14px;
+	border-bottom: 1px solid black;
+	box-shadow: 0 1px 0 0 #555;
 }
-	
+
 .roster-pane .user:hover {
-	background-color: #eee;
+	background-color: #222;
 }
 
 .roster-pane .user.status-ignored {
@@ -228,7 +236,7 @@ ul {
 }
 
 .roster-pane .user.me:hover {
-	background-color: #ddd;
+	background-color: transparent;
 }
 
 .roster-pane .label {
@@ -236,6 +244,7 @@ ul {
 	width: 110px;
 	overflow: hidden;
 	white-space: nowrap;
+	text-shadow: 1px 1px black;
 }
 
 .roster-pane li {
@@ -272,18 +281,19 @@ ul {
 	display: block;
 }
 
-.roster-pane .me li.context {
-	display: none;
-}
-
 .roster-pane li.context {
-	background-image: url(img/action/menu.png);
+	color: #999;
+	text-align: center;
 	cursor: pointer;
 }
 
 .roster-pane li.context:hover {
-	background-color: #ccc;
+	background-color: #666;
 	border-radius: 4px;
+}
+
+.roster-pane .me li.context {
+	display: none;
 }
 
 .message-pane-wrapper {
@@ -296,44 +306,71 @@ ul {
 	left: 0;
 	height: auto;
 	width: auto;
-	margin: 30px 200px 32px 0;
-	background-color: white;
+	margin: 30px 200px 31px 0;
+	background-color: #eee;
 	font-size: 13px;
+	padding: 0 5px;
 }
 
 .message-pane {
-	margin: 0;
-	padding: 5px 10px 2px 10px;
+	padding-top: 1px;
 }
 
-.message-pane dt {
-	width: 55px;
-	float: left;
-	color: #888;
+.message-pane li {
+	cursor: default;
+	border-bottom: 1px solid #ccc;
+	box-shadow: 0 1px 0 0 white;
+}
+
+.message-pane small {
+	display: none;
+	color: #a00;
 	font-size: 10px;
-	text-align: right;
-	padding-top: 4px;
+	position: absolute;
+	background-color: #f7f7f7;
+	text-align: center;
+	line-height: 20px;
+	margin: 4px 0;
+	padding: 0 5px;
+	right: 5px;
 }
 
-.message-pane dd {
+.message-pane li:hover {
+	background-color: #f7f7f7;
+}
+
+.message-pane li:hover small {
+	display: block;
+}
+
+.message-pane li>div {
 	overflow: auto;
-	padding: 2px 0 1px 130px;
-	margin: 0 0 2px 0;
+	padding: 2px 0 2px 130px;
+	line-height: 24px;
 	white-space: -o-pre-wrap; /* Opera */
 	word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
 
-.message-pane dd .label {
+.message-pane .label {
 	font-weight: bold;
 	white-space: nowrap;
 	display: block;
-	margin-left: -125px;
-	width: 120px;
+	margin-left: -130px;
+	width: 110px;
 	float: left;
 	overflow: hidden;
+	text-align: right;
+	color: black;
 }
 
-.message-pane .subject {
+.message-pane .spacer {
+	color: #aaa;
+	font-weight: bold;
+	margin-left: -14px;
+	float: left;
+}
+
+.message-pane .subject, .message-pane .subject .label {
 	color: #a00;
 	font-weight: bold;
 }
@@ -346,7 +383,14 @@ ul {
 .message-pane .infomessage {
 	color: #888;
 	font-style: italic;
-	padding-left: 5px;
+}
+
+.message-pane div>a {
+	color: #a00;
+}
+
+.message-pane a:hover {
+	text-decoration: underline;
 }
 
 .message-pane .emoticon {
@@ -363,7 +407,7 @@ ul {
 	width: auto;
 	margin-right: 200px;
 	border-top: 1px solid #ccc;
-	background-color: #f2f2f2;
+	background-color: white;
 	height: 31px;
 }
 
@@ -383,7 +427,7 @@ ul {
 	width: 100%;
 	display: block;
 	outline-width: 0;
-	background-color: #f2f2f2;
+	background-color: white;
 }
 
 .message-form input.submit {
@@ -400,41 +444,73 @@ ul {
 	line-height: 12px;
 	height: 25px;
 	font-weight: bold;
-	border-radius: 10px;
+	border-radius: 3px;
 }
 
 #tooltip {
 	position: absolute;
 	z-index: 10;
 	display: none;
-	margin: 18px -18px 2px -2px;
-	color: white;
+	margin: 13px -18px -3px -2px;
+	color: #333;
 	font-size: 11px;
 	padding: 5px 0;
-	background: url(img/tooltip-arrows.gif) no-repeat left bottom;
 }
 
 #tooltip div {
-	background-color: black;
+	background-color: #f7f7f7;
 	padding: 2px 5px;
 	zoom: 1;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, .75);
+}
+
+.arrow {
+	background: url(img/tooltip-arrows.gif) no-repeat left bottom;
+	height: 5px;
+	display: block;
+	position: relative;
+	z-index: 11;
+}
+
+.right-bottom .arrow-bottom {
+	background-position: right bottom;
+}
+
+.arrow-top {
+	display: none;
+	background-position: left top;
+}
+
+.right-top .arrow-top {
+	display: block;
+	background-position: right top;
+}
+
+.left-top .arrow-top {
+	display: block;
+}
+
+
+.left-top .arrow-bottom,
+.right-top .arrow-bottom {
+	display: none;
 }
 
 #context-menu {
 	position: absolute;
 	z-index: 10;
 	display: none;
-	padding: 15px 10px;
-	margin: 8px -28px -8px -12px;
-	background: url(img/context-arrows.gif) no-repeat left bottom;
+	padding: 5px 10px;
+	margin: 13px -28px -3px -12px;
 }
 
 #context-menu ul {
-	background-color: black;
-	color: white;
+	background-color: #f7f7f7;
+	color: #333;
 	font-size: 12px;
 	padding: 2px;
 	zoom: 1;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, .75);
 }
 
 #context-menu li {
@@ -447,7 +523,7 @@ ul {
 }
 
 #context-menu li:hover {
-	background-color: #666;
+	background-color: #ccc;
 }
 
 #context-menu li:last-child {
@@ -496,20 +572,22 @@ ul {
 }
 
 #chat-modal {
-	background: url(img/modal-bg.png);
+	background: #eee;
 	width: 300px;
 	padding: 20px 5px;
-	color: white;
+	color: #333;
 	font-size: 16px;
 	position: fixed;
 	left: 50%;
 	top: 50%;
-	margin-left: -155px;
+	margin-left: -160px;
 	margin-top: -45px;
 	text-align: center;
 	display: none;
 	z-index: 100;
+	border: 5px solid #888;
 	border-radius: 5px;
+	box-shadow: 0 0 5px black;
 }
 
 #chat-modal-overlay {
@@ -550,6 +628,15 @@ ul {
 	width: 150px;
 }
 
+#chat-modal input[type='text'],
+#chat-modal input[type='password'] {
+	background-color: white;
+	border: 1px solid #ccc;
+	padding: 4px;
+	font-size: 14px;
+	color: #333;
+}
+
 #chat-modal label {
 	 text-align: right;
 	 padding-right: 1em;
@@ -573,10 +660,11 @@ ul {
 	display: none;
 	padding: 0 5px;
 	margin: -17px 3px 0 0;
-	color: white;
+	color: #999;
 	border-radius: 3px;
 }
 
 #chat-modal .close:hover {
-	background-color: #333;
+	color: #333;
+	background-color: #aaa;
 }

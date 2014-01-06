@@ -7,7 +7,11 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
+
+/* global Candy, Strophe */
 
 /** Class: Candy.Core.ChatUser
  * Chat User
@@ -41,7 +45,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 		customData: {},
 		oldNick: undefined
 	};
-	
+
 	/** Function: getJid
 	 * Gets an unescaped user jid
 	 *
@@ -57,7 +61,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 		}
 		return;
 	};
-	
+
 	/** Function: getEscapedJid
 	 * Escapes the user's jid (node & resource get escaped)
 	 *
@@ -70,7 +74,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	this.getEscapedJid = function() {
 		return Candy.Util.escapeJid(this.data.jid);
 	};
-	
+
 	/** Function: setJid
 	 * Sets a user's jid
 	 *
@@ -90,7 +94,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	this.getNick = function() {
 		return Strophe.unescapeNode(this.data.nick);
 	};
-	
+
 	/** Function: setNick
 	 * Sets a user's nick
 	 *
@@ -171,7 +175,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 		}
 		return this.data.privacyLists[list];
 	};
-	
+
 	/** Function: setPrivacyLists
 	 * Sets privacy lists.
 	 *
@@ -180,7 +184,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
 	this.setPrivacyLists = function(lists) {
 		this.data.privacyLists = lists;
-	}
+	};
 
 	/** Function: isInPrivacyList
 	 * Tests if this user ignores the user provided by jid.
@@ -202,8 +206,8 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	/** Function: setCustomData
 	 * Stores custom data
 	 *
-	 *	Parameter:
-	 *	  (Object) data - Object containing custom data
+	 * Parameter:
+	 *   (Object) data - Object containing custom data
 	 */
 	this.setCustomData = function(data) {
 		this.data.customData = data;
@@ -212,13 +216,13 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	/** Function: getCustomData
 	 * Retrieve custom data
 	 *
-	 *	Returns:
-	 *	  (Object) - Object containing custom data
+	 * Returns:
+	 *   (Object) - Object containing custom data
 	 */
 	this.getCustomData = function() {
 		return this.data.customData;
 	};
-	
+
 	/** Function: setOldNick
 	 * If user has nickname changed, set old nick.
 	 *
@@ -228,7 +232,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	this.setOldNick = function(oldNick) {
 		this.data.oldNick = oldNick;
 	};
-	
+
 	/** Function: hasNicknameChanged
 	 * Gets the old nick if available.
 	 *
@@ -238,8 +242,8 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	this.getOldNick = function() {
 		return this.data.oldNick;
 	};
-	
-	/** Function: clone 
+
+	/** Function: clone
 	 * Clones current user and returns a new user
 	 *
 	 * Returns:
@@ -249,7 +253,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 		var newUser = new Candy.Core.ChatUser(this.getJid(), this.getNick(), this.getAffiliation(), this.getRole());
 		newUser.setPrivacyLists(this.data.privacyLists);
 		newUser.setCustomData(this.getCustomData());
-		
+
 		return newUser;
 	};
 };
