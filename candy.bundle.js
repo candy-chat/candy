@@ -4554,7 +4554,7 @@ Candy.View.Pane = (function(self, $) {
 						rosterPane.append(html);
 					}
 
-					self.showJoinAnimation(user, userId, roomId, roomJid, currentUser);
+					self.Roster.showJoinAnimation(user, userId, roomId, roomJid, currentUser);
 				// user is in room but maybe the affiliation/role has changed
 				} else {
 					usercountDiff = 0;
