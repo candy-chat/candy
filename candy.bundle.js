@@ -513,7 +513,7 @@ Candy.View = (function(self, $) {
 		 *   (String) language - Language identifier
 		 */
 		_setupTranslation = function(language) {
-			$.i18n.setDictionary(self.Translation[language]);
+			$.i18n.load(self.Translation[language]);
 		},
 
 		/** PrivateFunction: _registerObservers
