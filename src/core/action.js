@@ -56,7 +56,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		SetNickname: function(nickname, rooms) {
 			rooms = rooms instanceof Array ? rooms : Candy.Core.getRooms();
 			var roomNick, presence;
-			$.each(rooms, function(roomJid, room) {
+			$.each(rooms, function(roomJid) {
 				roomNick = Candy.Util.escapeJid(roomJid + '/' + nickname);
 				presence = $pres({
 					to: roomNick,
@@ -64,7 +64,6 @@ Candy.Core.Action = (function(self, Strophe, $) {
 					id: 'pres:' + Candy.Core.getConnection().getUniqueId()
 				});
 				Candy.Core.getConnection().send(presence);
-				room.getUser().setNick(nickname);
 			});
 		},
 

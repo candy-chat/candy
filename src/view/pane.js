@@ -1755,9 +1755,7 @@ Candy.View.Pane = (function(self, $) {
 
 			} else if(action === 'nickchange') {
 				usercountDiff = 0;
-				var transParams = [user.data.oldNick];
-				transParams.push(user.data.nick);
-				var infoMessage = $.i18n._('userChangedNick', transParams);
+				var infoMessage = $.i18n._('userChangedNick', [user.getOldNick(), user.getNick()]);
 				if (self.Chat.rooms[roomJid].type === 'chat') {
 					self.Chat.onInfoMessage(roomJid, infoMessage);
 				} else {
