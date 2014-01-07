@@ -1,6 +1,6 @@
 [submodule "libs/jquery-i18n"]
 	path = libs/jquery-i18n
-	url = git://github.com/mweibel/jquery-i18n.git
+	url = git://github.com/recurser/jquery-i18n.git
 [submodule "libs/strophejs"]
 	path = libs/strophejs
 	url = git://github.com/candy-chat/strophejs.git
