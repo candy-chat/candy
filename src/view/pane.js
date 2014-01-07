@@ -1579,6 +1579,7 @@ Candy.View.Pane = (function(self, $) {
 		 *   (Candy.Core.ChatUser) user - User which changes his nick
 		 */
 		changeNick: function(roomJid, user) {
+			Candy.Core.log('[View:Pane:PrivateRoom] changeNick');
 			var oldPrivateRoomJid = roomJid + '/' + user.getOldNick(),
 				newPrivateRoomJid = roomJid + '/' + user.getNick(),
 				oldPrivateRoomId = Candy.Util.jidToId(oldPrivateRoomJid),
@@ -1619,12 +1620,12 @@ Candy.View.Pane = (function(self, $) {
 				}
 			} else { /* I changed the nick */
 				roomElement = $('.room-pane.roomtype-chat[data-userjid="' + oldPrivateRoomJid + '"]');
-				if (roomElement) {
+				if (roomElement.length) {
 					oldPrivateRoomId = Candy.Util.jidToId(roomElement.attr('data-roomjid'));
 					roomElement.attr('data-userjid', newPrivateRoomJid);
 				}
 			}
-			if (roomElement) {
+			if (roomElement && roomElement.length) {
 				self.Roster.changeNick(oldPrivateRoomId, user);
 			}
 		}
@@ -1651,6 +1652,7 @@ Candy.View.Pane = (function(self, $) {
 		 *   candy:view.roster.after-update using {roomJid, user, action, element}
 		 */
 		update: function(roomJid, user, action, currentUser) {
+			Candy.Core.log('[View:Pane:Roster] ' + action);
 			var roomId = self.Chat.rooms[roomJid].id,
 				userId = Candy.Util.jidToId(user.getJid()),
 				usercountDiff = -1,
@@ -1691,6 +1693,7 @@ Candy.View.Pane = (function(self, $) {
 				if(userElem.length < 1) {
 					var userInserted = false,
 						rosterPane = self.Room.getPane(roomJid, '.roster-pane');
+
 					// there are already users in the roster
 					if(rosterPane.children().length > 0) {
 						// insert alphabetically
@@ -1751,13 +1754,17 @@ Candy.View.Pane = (function(self, $) {
 				}
 
 			} else if(action === 'nickchange') {
+				usercountDiff = 0;
+				var transParams = [user.data.oldNick];
+				transParams.push(user.data.nick);
+				var infoMessage = $.i18n._('userChangedNick', transParams);
 				if (self.Chat.rooms[roomJid].type === 'chat') {
-					self.Chat.onInfoMessage(roomJid, $.i18n._('userChangedNick', [user.getNick()]));
+					self.Chat.onInfoMessage(roomJid, infoMessage);
 				} else {
 					self.Roster.changeNick(roomId, user);
 					self.Room.changeDataUserJidIfUserIsMe(roomId, user);
 					self.PrivateRoom.changeNick(roomJid, user);
-					self.Chat.infoMessage(roomJid, $.i18n._('userChangedNick', [user.getNick()]));
+					self.Chat.onInfoMessage(roomJid, infoMessage);
 				}
 			// user has been kicked
 			} else if(action === 'kick') {
@@ -1830,7 +1837,9 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) elementId - Specific element to do the animation on
 		 */
 		joinAnimation: function(elementId) {
-			$('#' + elementId).stop(true).slideDown('normal', function() {$(this).animate({opacity: 1});});
+			$('#' + elementId).stop(true).slideDown('normal', function() {
+				$(this).animate({opacity: 1});
+			});
 		},
 
 		/** Function: leaveAnimation
@@ -1842,7 +1851,9 @@ Candy.View.Pane = (function(self, $) {
 		leaveAnimation: function(elementId) {
 			$('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({opacity: 0}, {
 				complete: function() {
-					$(this).slideUp('normal', function() {$(this).remove();});
+					$(this).slideUp('normal', function() {
+						$(this).remove();
+					});
 				}
 			});
 		},

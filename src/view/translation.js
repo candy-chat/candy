@@ -56,6 +56,7 @@ Candy.View.Translation = {
 		'userLeftRoom'             : '%s left the room.',
 		'userHasBeenKickedFromRoom': '%s has been kicked from the room.',
 		'userHasBeenBannedFromRoom': '%s has been banned from the room.',
+		'userChangedNick': '%1$s has changed his nickname to %2$s.',
 
 		'presenceUnknownWarningSubject': 'Notice:',
 		'presenceUnknownWarning'       : 'This user might be offline. We can\'t track his presence.',
@@ -123,6 +124,7 @@ Candy.View.Translation = {
 		'userLeftRoom'             : '%s hat soeben den Raum verlassen.',
 		'userHasBeenKickedFromRoom': '%s ist aus dem Raum gekickt worden.',
 		'userHasBeenBannedFromRoom': '%s ist aus dem Raum verbannt worden.',
+		'userChangedNick': '%1$s hat den Nicknamen zu %2$s geändert.',
 
 		'presenceUnknownWarningSubject': 'Hinweis:',
 		'presenceUnknownWarning'       : 'Dieser Benutzer könnte bereits abgemeldet sein. Wir können seine Anwesenheit nicht verfolgen.',

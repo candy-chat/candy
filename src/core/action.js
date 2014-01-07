@@ -44,7 +44,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				os: navigator.userAgent
 			}));
 		},
-		
+
 		/** Function: SetNickname
 		 * Sets the supplied nickname for all rooms (if parameter "room" is not specified) or
 		 * sets it only for the specified rooms
@@ -55,8 +55,15 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 */
 		SetNickname: function(nickname, rooms) {
 			rooms = rooms instanceof Array ? rooms : Candy.Core.getRooms();
+			var roomNick, presence;
 			$.each(rooms, function(roomJid, room) {
-				Candy.Core.getConnection().muc.changeNick(roomJid, nickname);
+				roomNick = Candy.Util.escapeJid(roomJid + '/' + nickname);
+				presence = $pres({
+					to: roomNick,
+					from: Candy.Core.getConnection().jid,
+					id: 'pres:' + Candy.Core.getConnection().getUniqueId()
+				});
+				Candy.Core.getConnection().send(presence);
 				room.getUser().setNick(nickname);
 			});
 		},
@@ -206,8 +213,8 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				self.Jabber.Room.Disco(roomJid);
 				roomJid = Candy.Util.escapeJid(roomJid);
 				var conn = Candy.Core.getConnection(),
-					room_nick = roomJid + '/' + Candy.Core.getUser().getNick(),
-					pres = $pres({ to: room_nick })
+					roomNick = roomJid + '/' + Candy.Core.getUser().getNick(),
+					pres = $pres({ to: roomNick })
 						.c('x', {xmlns: Strophe.NS.MUC});
 				if (password) {
 					pres.c('password').t(password);

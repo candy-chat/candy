@@ -306,7 +306,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 
 				// if room is not joined yet, ignore.
 				if (!Candy.Core.getRoom(roomJid)) {
-					return false;
+					return true;
 				}
 
 				var roomName = Candy.Core.getRoom(roomJid).getName(),
@@ -404,13 +404,13 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					roomJid = Strophe.getBareJidFromJid(from),
 					presenceType = msg.attr('type');
 
-				// Client left a room
+				// Current User left a room
 				if(Strophe.getResourceFromJid(from) === Candy.Core.getUser().getNick() && presenceType === 'unavailable') {
 					self.Jabber.Room.Leave(msg);
 					return true;
 				}
 
-				// Client joined a room
+				// Current User joined a room
 				var room = Candy.Core.getRoom(roomJid);
 				if(!room) {
 					Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
@@ -425,7 +425,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				if(presenceType !== 'unavailable') {
 					if (roster.get(from)) {
 						// user changed nick before
-						return false;
+						return true;
 					}
 					nick = Strophe.getResourceFromJid(from);
 					user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
@@ -455,10 +455,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						user.setNick(nick);
 						user.setJid(Strophe.getBareJidFromJid(from) + '/' + nick);
 						roster.add(user);
-					} else {
 					}
 				}
-
 				/** Event: candy:core.presence.room
 				 * Room presence updates
 				 *
@@ -517,6 +515,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					'roomJid': roomJid,
 					'roomName': roomName
 				});
+				return true;
 			},
 
 			/** Function: Message
