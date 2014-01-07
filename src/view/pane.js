@@ -1813,8 +1813,9 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		showJoinAnimation: function(user, userId, roomId, roomJid, currentUser) {
 			// don't show if the user has recently changed the nickname.
-			var rosterUserId = 'user-' + roomId + '-' + userId;
-			if (!user.getOldNick() || !$('#' + rosterUserId)) {
+			var rosterUserId = 'user-' + roomId + '-' + userId,
+				$rosterUserElem = $('#' + rosterUserId);
+			if (!user.getOldNick() || !$rosterUserElem || $rosterUserElem.is(':visible') === false) {
 				self.Roster.joinAnimation(rosterUserId);
 				// only show other users joining & don't show if there's no message in the room.
 				if(currentUser !== undefined && user.getNick() !== currentUser.getNick() && self.Room.getUser(roomJid)) {
