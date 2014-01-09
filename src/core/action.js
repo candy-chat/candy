@@ -131,7 +131,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		},
 
 		/** Function: ResetIgnoreList
-		 * Create new ignore privacy list (and reset the old one, if it exists).
+		 * Create new ignore privacy list (and reset the previous one, if it exists).
 		 */
 		ResetIgnoreList: function() {
 			Candy.Core.getConnection().sendIQ($iq({

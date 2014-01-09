@@ -224,20 +224,20 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	};
 
 	/** Function: setPreviousNick
-	 * If user has nickname changed, set old nick.
+	 * If user has nickname changed, set previous nickname.
 	 *
 	 * Parameters:
-	 *   (String) previousNick - the old nick
+	 *   (String) previousNick - the previous nickname
 	 */
 	this.setPreviousNick = function(previousNick) {
 		this.data.previousNick = previousNick;
 	};
 
 	/** Function: hasNicknameChanged
-	 * Gets the old nick if available.
+	 * Gets the previous nickname if available.
 	 *
 	 * Returns:
-	 *   (String) - old nickname
+	 *   (String) - previous nickname
 	 */
 	this.getPreviousNick = function() {
 		return this.data.previousNick;

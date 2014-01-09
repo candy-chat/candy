@@ -1580,11 +1580,11 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		changeNick: function(roomJid, user) {
 			Candy.Core.log('[View:Pane:PrivateRoom] changeNick');
-			var oldPrivateRoomJid = roomJid + '/' + user.getPreviousNick(),
+			var previousPrivateRoomJid = roomJid + '/' + user.getPreviousNick(),
 				newPrivateRoomJid = roomJid + '/' + user.getNick(),
-				oldPrivateRoomId = Candy.Util.jidToId(oldPrivateRoomJid),
+				previousPrivateRoomId = Candy.Util.jidToId(previousPrivateRoomJid),
 				newPrivateRoomId = Candy.Util.jidToId(newPrivateRoomJid),
-				room = self.Chat.rooms[oldPrivateRoomJid],
+				room = self.Chat.rooms[previousPrivateRoomJid],
 				roomElement,
 				roomTabElement;
 
@@ -1599,14 +1599,14 @@ Candy.View.Pane = (function(self, $) {
 				room.id   = newPrivateRoomId;
 
 				self.Chat.rooms[newPrivateRoomJid] = room;
-				delete self.Chat.rooms[oldPrivateRoomJid];
+				delete self.Chat.rooms[previousPrivateRoomJid];
 
-				roomElement = $('#chat-room-' + oldPrivateRoomId);
+				roomElement = $('#chat-room-' + previousPrivateRoomId);
 				if (roomElement) {
 					roomElement.attr('data-roomjid', newPrivateRoomJid);
 					roomElement.attr('id', 'chat-room-' + newPrivateRoomId);
 
-					roomTabElement = $('#chat-tabs li[data-roomjid="' + oldPrivateRoomJid + '"]');
+					roomTabElement = $('#chat-tabs li[data-roomjid="' + previousPrivateRoomJid + '"]');
 					roomTabElement.attr('data-roomjid', newPrivateRoomJid);
 
 					/* TODO: The '@' is defined in the template. Somehow we should
@@ -1614,19 +1614,19 @@ Candy.View.Pane = (function(self, $) {
 					 */
 					roomTabElement.children('a.label').text('@' + user.getNick());
 
-					if (Candy.View.getCurrent().roomJid === oldPrivateRoomJid) {
+					if (Candy.View.getCurrent().roomJid === previousPrivateRoomJid) {
 						Candy.View.getCurrent().roomJid = newPrivateRoomJid;
 					}
 				}
 			} else { /* I changed the nick */
-				roomElement = $('.room-pane.roomtype-chat[data-userjid="' + oldPrivateRoomJid + '"]');
+				roomElement = $('.room-pane.roomtype-chat[data-userjid="' + previousPrivateRoomJid + '"]');
 				if (roomElement.length) {
-					oldPrivateRoomId = Candy.Util.jidToId(roomElement.attr('data-roomjid'));
+					previousPrivateRoomId = Candy.Util.jidToId(roomElement.attr('data-roomjid'));
 					roomElement.attr('data-userjid', newPrivateRoomJid);
 				}
 			}
 			if (roomElement && roomElement.length) {
-				self.Roster.changeNick(oldPrivateRoomId, user);
+				self.Roster.changeNick(previousPrivateRoomId, user);
 			}
 		}
 	};
@@ -1864,8 +1864,8 @@ Candy.View.Pane = (function(self, $) {
 		 *   (Candy.Core.ChatUser) user - User object
 		 */
 		changeNick: function(roomId, user) {
-			var oldUserJid = Strophe.getBareJidFromJid(user.getJid()) + '/' + user.getPreviousNick(),
-				elementId = 'user-' + roomId + '-' + Candy.Util.jidToId(oldUserJid),
+			var previousUserJid = Strophe.getBareJidFromJid(user.getJid()) + '/' + user.getPreviousNick(),
+				elementId = 'user-' + roomId + '-' + Candy.Util.jidToId(previousUserJid),
 				el = $('#' + elementId);
 
 			el.attr('data-nick', user.getNick());
