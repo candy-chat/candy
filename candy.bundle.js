@@ -4618,15 +4618,11 @@ Candy.View.Pane = (function(self, $) {
 
 			} else if(action === 'nickchange') {
 				usercountDiff = 0;
+				self.Roster.changeNick(roomId, user);
+				self.Room.changeDataUserJidIfUserIsMe(roomId, user);
+				self.PrivateRoom.changeNick(roomJid, user);
 				var infoMessage = $.i18n._('userChangedNick', [user.getOldNick(), user.getNick()]);
-				if (self.Chat.rooms[roomJid].type === 'chat') {
-					self.Chat.onInfoMessage(roomJid, infoMessage);
-				} else {
-					self.Roster.changeNick(roomId, user);
-					self.Room.changeDataUserJidIfUserIsMe(roomId, user);
-					self.PrivateRoom.changeNick(roomJid, user);
-					self.Chat.onInfoMessage(roomJid, infoMessage);
-				}
+				self.Chat.onInfoMessage(roomJid, infoMessage);
 			// user has been kicked
 			} else if(action === 'kick') {
 				self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
