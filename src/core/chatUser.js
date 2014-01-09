@@ -43,7 +43,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 		role: role,
 		privacyLists: {},
 		customData: {},
-		oldNick: undefined
+		previousNick: undefined
 	};
 
 	/** Function: getJid
@@ -223,14 +223,14 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 		return this.data.customData;
 	};
 
-	/** Function: setOldNick
+	/** Function: setPreviousNick
 	 * If user has nickname changed, set old nick.
 	 *
 	 * Parameters:
-	 *   (String) oldNick - the old nick
+	 *   (String) previousNick - the old nick
 	 */
-	this.setOldNick = function(oldNick) {
-		this.data.oldNick = oldNick;
+	this.setPreviousNick = function(previousNick) {
+		this.data.previousNick = previousNick;
 	};
 
 	/** Function: hasNicknameChanged
@@ -239,8 +239,8 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 * Returns:
 	 *   (String) - old nickname
 	 */
-	this.getOldNick = function() {
-		return this.data.oldNick;
+	this.getPreviousNick = function() {
+		return this.data.previousNick;
 	};
 
 	/** Function: clone

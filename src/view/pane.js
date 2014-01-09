@@ -1580,7 +1580,7 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		changeNick: function(roomJid, user) {
 			Candy.Core.log('[View:Pane:PrivateRoom] changeNick');
-			var oldPrivateRoomJid = roomJid + '/' + user.getOldNick(),
+			var oldPrivateRoomJid = roomJid + '/' + user.getPreviousNick(),
 				newPrivateRoomJid = roomJid + '/' + user.getNick(),
 				oldPrivateRoomId = Candy.Util.jidToId(oldPrivateRoomJid),
 				newPrivateRoomId = Candy.Util.jidToId(newPrivateRoomJid),
@@ -1758,7 +1758,7 @@ Candy.View.Pane = (function(self, $) {
 				self.Roster.changeNick(roomId, user);
 				self.Room.changeDataUserJidIfUserIsMe(roomId, user);
 				self.PrivateRoom.changeNick(roomJid, user);
-				var infoMessage = $.i18n._('userChangedNick', [user.getOldNick(), user.getNick()]);
+				var infoMessage = $.i18n._('userChangedNick', [user.getPreviousNick(), user.getNick()]);
 				self.Chat.onInfoMessage(roomJid, infoMessage);
 			// user has been kicked
 			} else if(action === 'kick') {
@@ -1811,7 +1811,7 @@ Candy.View.Pane = (function(self, $) {
 			// don't show if the user has recently changed the nickname.
 			var rosterUserId = 'user-' + roomId + '-' + userId,
 				$rosterUserElem = $('#' + rosterUserId);
-			if (!user.getOldNick() || !$rosterUserElem || $rosterUserElem.is(':visible') === false) {
+			if (!user.getPreviousNick() || !$rosterUserElem || $rosterUserElem.is(':visible') === false) {
 				self.Roster.joinAnimation(rosterUserId);
 				// only show other users joining & don't show if there's no message in the room.
 				if(currentUser !== undefined && user.getNick() !== currentUser.getNick() && self.Room.getUser(roomJid)) {
@@ -1864,7 +1864,7 @@ Candy.View.Pane = (function(self, $) {
 		 *   (Candy.Core.ChatUser) user - User object
 		 */
 		changeNick: function(roomId, user) {
-			var oldUserJid = Strophe.getBareJidFromJid(user.getJid()) + '/' + user.getOldNick(),
+			var oldUserJid = Strophe.getBareJidFromJid(user.getJid()) + '/' + user.getPreviousNick(),
 				elementId = 'user-' + roomId + '-' + Candy.Util.jidToId(oldUserJid),
 				el = $('#' + elementId);
 

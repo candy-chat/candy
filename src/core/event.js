@@ -456,7 +456,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						// user changed nick
 						nick = item.attr('nick');
 						action = 'nickchange';
-						user.setOldNick(user.getNick());
+						user.setPreviousNick(user.getNick());
 						user.setNick(nick);
 						user.setJid(Strophe.getBareJidFromJid(from) + '/' + nick);
 						roster.add(user);
