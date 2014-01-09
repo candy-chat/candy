@@ -164,13 +164,13 @@ Candy.View.Observer = (function(self, $) {
 					Candy.View.Pane.Room.show(args.roomJid);
 				}
 				Candy.View.Pane.Roster.update(args.roomJid, args.user, args.action, args.currentUser);
-				// Notify private user chats if existing
-				if(Candy.View.Pane.Chat.rooms[args.user.getJid()]) {
+				// Notify private user chats if existing, but not in case the action is nickchange
+				// -- this is because the nickchange presence already contains the new
+				// user jid
+				if(Candy.View.Pane.Chat.rooms[args.user.getJid()] && args.action !== 'nickchange') {
 					Candy.View.Pane.Roster.update(args.user.getJid(), args.user, args.action, args.currentUser);
 					Candy.View.Pane.PrivateRoom.setStatus(args.user.getJid(), args.action);
 				}
-			} else {
-				// Unhandled type of presence
 			}
 		},
 

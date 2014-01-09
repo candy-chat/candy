@@ -1578,8 +1578,9 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) roomJid - Public room jid
 		 *   (Candy.Core.ChatUser) user - User which changes his nick
 		 */
-		changeNick: function(roomJid, user) {
+		changeNick: function changeNick(roomJid, user) {
 			Candy.Core.log('[View:Pane:PrivateRoom] changeNick');
+
 			var previousPrivateRoomJid = roomJid + '/' + user.getPreviousNick(),
 				newPrivateRoomJid = roomJid + '/' + user.getNick(),
 				previousPrivateRoomId = Candy.Util.jidToId(previousPrivateRoomJid),
@@ -1864,6 +1865,7 @@ Candy.View.Pane = (function(self, $) {
 		 *   (Candy.Core.ChatUser) user - User object
 		 */
 		changeNick: function(roomId, user) {
+			Candy.Core.log('[View:Pane:Roster] changeNick');
 			var previousUserJid = Strophe.getBareJidFromJid(user.getJid()) + '/' + user.getPreviousNick(),
 				elementId = 'user-' + roomId + '-' + Candy.Util.jidToId(previousUserJid),
 				el = $('#' + elementId);
