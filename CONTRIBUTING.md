@@ -25,8 +25,9 @@ A few hopefully helpful hints to contributing to Candy
 4. Install [Grunt](http://gruntjs.com/) (`npm install -g grunt-cli`)
 5. Install npm dependencies (`npm install` in candy root directory)
 6. Create a branch based on the `dev` branch (`git checkout -B my-awesome-feature`)
-7. Make your changes & push them back to your fork
-8. Run `grunt jshint` and fix errors
-9. Create a [pull request](https://help.github.com/articles/using-pull-requests)
+7. Run `grunt watch` to automatically run jshint (syntax checker) and the build of `candy.bundle.js` and `candy.min.js` while developing.
+8. Make your changes & push them back to your fork
+9. Run `grunt jshint` and fix errors
+10. Create a [pull request](https://help.github.com/articles/using-pull-requests)
 
 In case you have any questions, don't hesitate to ask on the [Mailing list](http://groups.google.com/group/candy-chat).
