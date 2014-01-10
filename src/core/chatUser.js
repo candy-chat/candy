@@ -42,7 +42,8 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 		affiliation: affiliation,
 		role: role,
 		privacyLists: {},
-		customData: {}
+		customData: {},
+		previousNick: undefined
 	};
 
 	/** Function: getJid
@@ -74,6 +75,16 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 		return Candy.Util.escapeJid(this.data.jid);
 	};
 
+	/** Function: setJid
+	 * Sets a user's jid
+	 *
+	 * Parameters:
+	 *   (String) jid - New Jid
+	 */
+	this.setJid = function(jid) {
+		this.data.jid = jid;
+	};
+
 	/** Function: getNick
 	 * Gets user nick
 	 *
@@ -82,6 +93,16 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
 	this.getNick = function() {
 		return Strophe.unescapeNode(this.data.nick);
+	};
+
+	/** Function: setNick
+	 * Sets a user's nick
+	 *
+	 * Parameters:
+	 *   (String) nick - New nick
+	 */
+	this.setNick = function(nick) {
+		this.data.nick = nick;
 	};
 
 	/** Function: getRole
@@ -155,6 +176,16 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 		return this.data.privacyLists[list];
 	};
 
+	/** Function: setPrivacyLists
+	 * Sets privacy lists.
+	 *
+	 * Parameters:
+	 *   (Object) lists - List object
+	 */
+	this.setPrivacyLists = function(lists) {
+		this.data.privacyLists = lists;
+	};
+
 	/** Function: isInPrivacyList
 	 * Tests if this user ignores the user provided by jid.
 	 *
@@ -190,5 +221,39 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
 	this.getCustomData = function() {
 		return this.data.customData;
+	};
+
+	/** Function: setPreviousNick
+	 * If user has nickname changed, set previous nickname.
+	 *
+	 * Parameters:
+	 *   (String) previousNick - the previous nickname
+	 */
+	this.setPreviousNick = function(previousNick) {
+		this.data.previousNick = previousNick;
+	};
+
+	/** Function: hasNicknameChanged
+	 * Gets the previous nickname if available.
+	 *
+	 * Returns:
+	 *   (String) - previous nickname
+	 */
+	this.getPreviousNick = function() {
+		return this.data.previousNick;
+	};
+
+	/** Function: clone
+	 * Clones current user and returns a new user
+	 *
+	 * Returns:
+	 *   (Candy.Core.ChatUser) - User
+	 */
+	this.clone = function() {
+		var newUser = new Candy.Core.ChatUser(this.getJid(), this.getNick(), this.getAffiliation(), this.getRole());
+		newUser.setPrivacyLists(this.data.privacyLists);
+		newUser.setCustomData(this.getCustomData());
+
+		return newUser;
 	};
 };

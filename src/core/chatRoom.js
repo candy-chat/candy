@@ -11,7 +11,7 @@
  */
 'use strict';
 
-/* global Candy */
+/* global Candy, Strophe */
 
 /** Class: Candy.Core.ChatRoom
  * Candy Chat Room
@@ -25,7 +25,7 @@ Candy.Core.ChatRoom = function(roomJid) {
 	 */
 	this.room = {
 		jid: roomJid,
-		name: null
+		name: Strophe.getNodeFromJid(roomJid)
 	};
 
 	/** Variable: user

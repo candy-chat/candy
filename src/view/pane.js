@@ -1473,6 +1473,20 @@ Candy.View.Pane = (function(self, $) {
 					return $('#chat-room-' + self.Chat.rooms[roomJid].id);
 				}
 			}
+		},
+
+		/** Function: changeDataUserJidIfUserIsMe
+		 * Changes the room's data-userjid attribute if the specified user is the current user.
+		 *
+		 * Parameters:
+		 *   (String) roomId - Id of the room
+		 *   (Candy.Core.ChatUser) user - User
+		 */
+		changeDataUserJidIfUserIsMe: function(roomId, user) {
+			if (user.getNick() === Candy.Core.getUser().getNick()) {
+				var roomElement = $('#chat-room-' + roomId);
+				roomElement.attr('data-userjid', Strophe.getBareJidFromJid(roomElement.attr('data-userjid')) + '/' + user.getNick());
+			}
 		}
 	};
 
@@ -1549,11 +1563,71 @@ Candy.View.Pane = (function(self, $) {
 				messageForm.children('.submit').removeAttr('disabled');
 
 				self.Chat.getTab(roomJid);
-			} else {
+			} else if(status === 'leave') {
 				self.Chat.getTab(roomJid).addClass('offline').removeClass('online');
 
 				messageForm.children('.field').attr('disabled', true);
 				messageForm.children('.submit').attr('disabled', true);
+			}
+		},
+
+		/** Function: changeNick
+		 * Changes the nick for every private room opened with this roomJid.
+		 *
+		 * Parameters:
+		 *   (String) roomJid - Public room jid
+		 *   (Candy.Core.ChatUser) user - User which changes his nick
+		 */
+		changeNick: function changeNick(roomJid, user) {
+			Candy.Core.log('[View:Pane:PrivateRoom] changeNick');
+
+			var previousPrivateRoomJid = roomJid + '/' + user.getPreviousNick(),
+				newPrivateRoomJid = roomJid + '/' + user.getNick(),
+				previousPrivateRoomId = Candy.Util.jidToId(previousPrivateRoomJid),
+				newPrivateRoomId = Candy.Util.jidToId(newPrivateRoomJid),
+				room = self.Chat.rooms[previousPrivateRoomJid],
+				roomElement,
+				roomTabElement;
+
+			// it could happen that the new private room is already existing -> close it first.
+			// if this is not done, errors appear as two rooms would have the same id
+			if (self.Chat.rooms[newPrivateRoomJid]) {
+				self.Room.close(newPrivateRoomJid);
+			}
+
+			if (room) { /* someone I talk with, changed nick */
+				room.name = user.getNick();
+				room.id   = newPrivateRoomId;
+
+				self.Chat.rooms[newPrivateRoomJid] = room;
+				delete self.Chat.rooms[previousPrivateRoomJid];
+
+				roomElement = $('#chat-room-' + previousPrivateRoomId);
+				if (roomElement) {
+					roomElement.attr('data-roomjid', newPrivateRoomJid);
+					roomElement.attr('id', 'chat-room-' + newPrivateRoomId);
+
+					roomTabElement = $('#chat-tabs li[data-roomjid="' + previousPrivateRoomJid + '"]');
+					roomTabElement.attr('data-roomjid', newPrivateRoomJid);
+
+					/* TODO: The '@' is defined in the template. Somehow we should
+					 * extract both things into our CSS or do something else to prevent that.
+					 */
+					roomTabElement.children('a.label').text('@' + user.getNick());
+
+					if (Candy.View.getCurrent().roomJid === previousPrivateRoomJid) {
+						Candy.View.getCurrent().roomJid = newPrivateRoomJid;
+					}
+				}
+			} else { /* I changed the nick */
+				roomElement = $('.room-pane.roomtype-chat[data-userjid="' + previousPrivateRoomJid + '"]');
+				if (roomElement.length) {
+					previousPrivateRoomId = Candy.Util.jidToId(roomElement.attr('data-roomjid'));
+					roomElement.attr('data-userjid', newPrivateRoomJid);
+				}
+			}
+			if (roomElement && roomElement.length) {
+				self.Roster.changeNick(previousPrivateRoomId, user);
 			}
 		}
 	};
@@ -1579,6 +1653,7 @@ Candy.View.Pane = (function(self, $) {
 		 *   candy:view.roster.after-update using {roomJid, user, action, element}
 		 */
 		update: function(roomJid, user, action, currentUser) {
+			Candy.Core.log('[View:Pane:Roster] ' + action);
 			var roomId = self.Chat.rooms[roomJid].id,
 				userId = Candy.Util.jidToId(user.getJid()),
 				usercountDiff = -1,
@@ -1619,6 +1694,7 @@ Candy.View.Pane = (function(self, $) {
 				if(userElem.length < 1) {
 					var userInserted = false,
 						rosterPane = self.Room.getPane(roomJid, '.roster-pane');
+
 					// there are already users in the roster
 					if(rosterPane.children().length > 0) {
 						// insert alphabetically
@@ -1638,16 +1714,7 @@ Candy.View.Pane = (function(self, $) {
 						rosterPane.append(html);
 					}
 
-					self.Roster.joinAnimation('user-' + roomId + '-' + userId);
-					// only show other users joining & don't show if there's no message in the room.
-					if(currentUser !== undefined && user.getNick() !== currentUser.getNick() && self.Room.getUser(roomJid)) {
-						// always show join message in private room, even if status messages have been disabled
-						if (self.Chat.rooms[roomJid].type === 'chat') {
-							self.Chat.onInfoMessage(roomJid, $.i18n._('userJoinedRoom', [user.getNick()]));
-						} else {
-							self.Chat.infoMessage(roomJid, $.i18n._('userJoinedRoom', [user.getNick()]));
-						}
-					}
+					self.Roster.showJoinAnimation(user, userId, roomId, roomJid, currentUser);
 				// user is in room but maybe the affiliation/role has changed
 				} else {
 					usercountDiff = 0;
@@ -1686,6 +1753,14 @@ Candy.View.Pane = (function(self, $) {
 				} else {
 					self.Chat.infoMessage(roomJid, $.i18n._('userLeftRoom', [user.getNick()]));
 				}
+
+			} else if(action === 'nickchange') {
+				usercountDiff = 0;
+				self.Roster.changeNick(roomId, user);
+				self.Room.changeDataUserJidIfUserIsMe(roomId, user);
+				self.PrivateRoom.changeNick(roomJid, user);
+				var infoMessage = $.i18n._('userChangedNick', [user.getPreviousNick(), user.getNick()]);
+				self.Chat.onInfoMessage(roomJid, infoMessage);
 			// user has been kicked
 			} else if(action === 'kick') {
 				self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
@@ -1728,6 +1803,29 @@ Candy.View.Pane = (function(self, $) {
 			self.PrivateRoom.open(elem.attr('data-jid'), elem.attr('data-nick'), true);
 		},
 
+		/** Function: showJoinAnimation
+		 * Shows join animation if needed
+		 *
+		 * FIXME: Refactor. Part of this will be done by the big room improvements
+		 */
+		showJoinAnimation: function(user, userId, roomId, roomJid, currentUser) {
+			// don't show if the user has recently changed the nickname.
+			var rosterUserId = 'user-' + roomId + '-' + userId,
+				$rosterUserElem = $('#' + rosterUserId);
+			if (!user.getPreviousNick() || !$rosterUserElem || $rosterUserElem.is(':visible') === false) {
+				self.Roster.joinAnimation(rosterUserId);
+				// only show other users joining & don't show if there's no message in the room.
+				if(currentUser !== undefined && user.getNick() !== currentUser.getNick() && self.Room.getUser(roomJid)) {
+					// always show join message in private room, even if status messages have been disabled
+					if (self.Chat.rooms[roomJid].type === 'chat') {
+						self.Chat.onInfoMessage(roomJid, $.i18n._('userJoinedRoom', [user.getNick()]));
+					} else {
+						self.Chat.infoMessage(roomJid, $.i18n._('userJoinedRoom', [user.getNick()]));
+					}
+				}
+			}
+		},
+
 		/** Function: joinAnimation
 		 * Animates specified elementId on join
 		 *
@@ -1735,7 +1833,9 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) elementId - Specific element to do the animation on
 		 */
 		joinAnimation: function(elementId) {
-			$('#' + elementId).stop(true).slideDown('normal', function() {$(this).animate({opacity: 1});});
+			$('#' + elementId).stop(true).slideDown('normal', function() {
+				$(this).animate({opacity: 1});
+			});
 		},
 
 		/** Function: leaveAnimation
@@ -1747,9 +1847,33 @@ Candy.View.Pane = (function(self, $) {
 		leaveAnimation: function(elementId) {
 			$('#' + elementId).stop(true).attr('id', '#' + elementId + '-leaving').animate({opacity: 0}, {
 				complete: function() {
-					$(this).slideUp('normal', function() {$(this).remove();});
+					$(this).slideUp('normal', function() {
+						$(this).remove();
+					});
 				}
 			});
+		},
+
+		/** Function: changeNick
+		 * Change nick of an existing user in the roster
+		 *
+		 * UserId has to be recalculated from the user because at the time of this call,
+		 * the user is already set with the new jid & nick.
+		 *
+		 * Parameters:
+		 *   (String) roomId - Id of the room
+		 *   (Candy.Core.ChatUser) user - User object
+		 */
+		changeNick: function(roomId, user) {
+			Candy.Core.log('[View:Pane:Roster] changeNick');
+			var previousUserJid = Strophe.getBareJidFromJid(user.getJid()) + '/' + user.getPreviousNick(),
+				elementId = 'user-' + roomId + '-' + Candy.Util.jidToId(previousUserJid),
+				el = $('#' + elementId);
+
+			el.attr('data-nick', user.getNick());
+			el.attr('data-jid', user.getJid());
+			el.children('div.label').text(user.getNick());
+			el.attr('id', 'user-' + roomId + '-' + Candy.Util.jidToId(user.getJid()));
 		}
 	};
 
