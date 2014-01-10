@@ -30,7 +30,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.5.1-dev'
+		version: '1.6.0-beta1'
 	};
 
 	/** Function: init
@@ -153,7 +153,7 @@ Candy.Core = (function(self, Strophe, $) {
 	 * Initialize Core.
 	 *
 	 * Parameters:
-	 *   (String) service - URL of BOSH service
+	 *   (String) service - URL of BOSH/Websocket service
 	 *   (Object) options - Options for candy
 	 */
 	self.init = function(service, options) {
@@ -174,10 +174,14 @@ Candy.Core = (function(self, Strophe, $) {
 		}
 
 		_addNamespaces();
-		// Connect to BOSH service
+
+		// Connect to BOSH/Websocket service
 		_connection = new Strophe.Connection(_service);
 		_connection.rawInput = self.rawInput.bind(self);
 		_connection.rawOutput = self.rawOutput.bind(self);
+
+		// set caps node
+		_connection.caps.node = 'https://candy-chat.github.io/candy/';
 
 		// Window unload handler... works on all browsers but Opera. There is NO workaround.
 		// Opera clients getting disconnected 1-2 minutes delayed.
@@ -230,7 +234,7 @@ Candy.Core = (function(self, Strophe, $) {
 		 * Triggered before a connection attempt is made.
 		 *
 		 * Plugins should register their stanza handlers using this event
-		 * to ensure that they are set. 
+		 * to ensure that they are set.
 		 *
 		 * See also <#84 at https://github.com/candy-chat/candy/issues/84>.
 		 *
@@ -425,7 +429,7 @@ Candy.Core = (function(self, Strophe, $) {
 	self.onWindowUnload = function() {
 		// Enable synchronous requests because Safari doesn't send asynchronous requests within unbeforeunload events.
 		// Only works properly when following patch is applied to strophejs: https://github.com/metajack/strophejs/issues/16/#issuecomment-600266
-		_connection._options.sync = true;
+		_connection.options.sync = true;
 		self.disconnect();
 		_connection.flush();
 	};

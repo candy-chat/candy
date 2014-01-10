@@ -725,7 +725,7 @@ Strophe = {
      *  The version of the Strophe library. Unreleased builds will have
      *  a version of head-HASH where HASH is a partial revision.
      */
-    VERSION: "d79e10c",
+    VERSION: "a1f13b2",
 
     /** Constants: XMPP Namespace Constants
      *  Common namespace constants from the XMPP RFCs and XEPs.
@@ -2060,6 +2060,8 @@ Strophe.TimedHandler.prototype = {
  *
  *  > var conn = new Strophe.Connection("/http-bind/");
  *
+ *  WebSocket options:
+ *
  *  If you want to connect to the current host with a WebSocket connection you
  *  can tell Strophe to use WebSockets through a "protocol" attribute in the
  *  optional options parameter. Valid values are "ws" for WebSocket and "wss"
@@ -2068,12 +2070,22 @@ Strophe.TimedHandler.prototype = {
  *
  *  > var conn = new Strophe.Connection("/xmpp-websocket/", {protocol: "wss"});
  *
- *  Note that relative URLs starting _NOT_ with a "/" will also include the path
+ *  Note that relative URLs _NOT_ starting with a "/" will also include the path
  *  of the current site.
  *
  *  Also because downgrading security is not permitted by browsers, when using
  *  relative URLs both BOSH and WebSocket connections will use their secure
  *  variants if the current connection to the site is also secure (https).
+ *
+ *  BOSH options:
+ *
+ *  by adding "sync" to the options, you can control if requests will
+ *  be made synchronously or not. The default behaviour is asynchronous.
+ *  If you want to make requests synchronous, make "sync" evaluate to true:
+ *  > var conn = new Strophe.Connection("/http-bind/", {sync: true});
+ *  You can also toggle this on an already established connection:
+ *  > conn.options.sync = true;
+ *
  *
  *  Parameters:
  *    (String) service - The BOSH or WebSocket service URL.
@@ -2088,8 +2100,8 @@ Strophe.Connection = function (service, options)
     this.service = service;
 
     // Configuration options
-    this._options = options || {};
-    var proto = this._options.protocol || "";
+    this.options = options || {};
+    var proto = this.options.protocol || "";
 
     // Select protocal based on service or options
     if (service.indexOf("ws:") === 0 || service.indexOf("wss:") === 0 ||
@@ -4480,7 +4492,7 @@ Strophe.Bosh.prototype = {
                           "." + req.sends + " posting");
 
             try {
-                req.xhr.open("POST", this._conn.service, this._conn._options.sync ? false : true);
+                req.xhr.open("POST", this._conn.service, this._conn.options.sync ? false : true);
             } catch (e2) {
                 Strophe.error("XHR open failed.");
                 if (!this._conn.connected) {
@@ -4495,8 +4507,8 @@ Strophe.Bosh.prototype = {
             // or on a gradually expanding retry window for reconnects
             var sendFunc = function () {
                 req.date = new Date();
-                if (self._conn._options.customHeaders){
-                    var headers = self._conn._options.customHeaders;
+                if (self._conn.options.customHeaders){
+                    var headers = self._conn.options.customHeaders;
                     for (var header in headers) {
                         if (headers.hasOwnProperty(header)) {
                             req.xhr.setRequestHeader(header, headers[header]);
@@ -4728,7 +4740,7 @@ Strophe.Websocket = function(connection) {
         // URL together from options, current URL and the path.
         var new_service = "";
 
-        if (connection._options.protocol === "ws" && window.location.protocol !== "https:") {
+        if (connection.options.protocol === "ws" && window.location.protocol !== "https:") {
             new_service += "ws";
         } else {
             new_service += "wss";
