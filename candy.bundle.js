@@ -1937,20 +1937,6 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	this.getPreviousNick = function() {
 		return this.data.previousNick;
 	};
-
-	/** Function: clone
-	 * Clones current user and returns a new user
-	 *
-	 * Returns:
-	 *   (Candy.Core.ChatUser) - User
-	 */
-	this.clone = function() {
-		var newUser = new Candy.Core.ChatUser(this.getJid(), this.getNick(), this.getAffiliation(), this.getRole());
-		newUser.setPrivacyLists(this.data.privacyLists);
-		newUser.setCustomData(this.getCustomData());
-
-		return newUser;
-	};
 };
 
 /** File: event.js
