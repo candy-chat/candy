@@ -405,22 +405,19 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					roomJid = Strophe.getBareJidFromJid(from),
 					presenceType = msg.attr('type'),
 					status = msg.find('status'),
+					nickAssign = false,
 					nickChange = false;
 
 				if(status.length) {
-					// check if status code indicates a nick change
+					// check if status code indicates a nick assignment or nick change
 					for(var i = 0, l = status.length; i < l; i++) {
 						var $status = $(status[i]);
-						if($status.attr('code') === '303') {
+						if($status.attr('code') === '210') {
+							nickAssign = true;
+						} else if($status.attr('code') === '303') {
 							nickChange = true;
 						}
 					}
-				}
-
-				// Current User left a room
-				if(Strophe.getResourceFromJid(from) === Candy.Core.getUser().getNick() && presenceType === 'unavailable' && nickChange === false) {
-					self.Jabber.Room.Leave(msg);
-					return true;
 				}
 
 				// Current User joined a room
@@ -428,6 +425,13 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				if(!room) {
 					Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
 					room = Candy.Core.getRoom(roomJid);
+				}
+
+				// Current User left a room
+				var currentUser = room.getUser() ? room.getUser() : Candy.Core.getUser();
+				if(Strophe.getResourceFromJid(from) === currentUser.getNick() && presenceType === 'unavailable' && nickChange === false) {
+					self.Jabber.Room.Leave(msg);
+					return true;
 				}
 
 				var roster = room.getRoster(),
@@ -443,8 +447,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					nick = Strophe.getResourceFromJid(from);
 					user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
 					// Room existed but client (myself) is not yet registered
-					if(room.getUser() === null && Candy.Core.getUser().getNick() === nick) {
+					if(room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
 						room.setUser(user);
+						currentUser = user;
 					}
 					roster.add(user);
 					action = 'join';
@@ -486,7 +491,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					'roomName': room.getName(),
 					'user': user,
 					'action': action,
-					'currentUser': Candy.Core.getUser()
+					'currentUser': currentUser
 				});
 				return true;
 			},
