@@ -119,7 +119,12 @@ Candy.Core = (function(self, Strophe, $) {
 			/** Integer: presencePriority
 			 * Default priority for presence messages in order to receive messages across different resources
 			 */
-			presencePriority: 1
+			presencePriority: 1,
+			/** String: resource
+			 * JID resource to use when connecting to the server.
+			 * Specify `''` (an empty string) to request a random resource.
+			 */
+			resource: Candy.about.name
 		},
 
 		/** PrivateFunction: _addNamespace
@@ -249,7 +254,7 @@ Candy.Core = (function(self, Strophe, $) {
 
 		if(jidOrHost && password) {
 			// authentication
-			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
+			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + _options.resource, password, Candy.Core.Event.Strophe.Connect);
 			if (nick) {
 				_user = new self.ChatUser(jidOrHost, nick);
 			} else {
@@ -257,7 +262,7 @@ Candy.Core = (function(self, Strophe, $) {
 			}
 		} else if(jidOrHost && nick) {
 			// anonymous connect
-			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, null, Candy.Core.Event.Strophe.Connect);
+			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + _options.resource, null, Candy.Core.Event.Strophe.Connect);
 			_user = new self.ChatUser(null, nick); // set jid to null because we'll later receive it
 		} else if(jidOrHost) {
 			Candy.Core.Event.Login(jidOrHost);
