@@ -411,11 +411,12 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				if(status.length) {
 					// check if status code indicates a nick assignment or nick change
 					for(var i = 0, l = status.length; i < l; i++) {
-						var $status = $(status[i]);
-						if($status.attr('code') === '210') {
-							nickAssign = true;
-						} else if($status.attr('code') === '303') {
+						var $status = $(status[i]),
+							code = $status.attr('code');
+						if(code === '303') {
 							nickChange = true;
+						} else if(code === '210') {
+							nickAssign = true;
 						}
 					}
 				}
