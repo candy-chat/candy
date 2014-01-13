@@ -7,8 +7,9 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global Candy, MD5, Strophe, document, escape, jQuery */
 
@@ -52,7 +53,7 @@ Candy.Util = (function(self, $){
 
 		jid = node + '@' + domain;
 		if (resource) {
-			jid += '/' + Strophe.escapeNode(resource);
+			jid += '/' + resource;
 		}
 
 		return jid;
@@ -77,7 +78,7 @@ Candy.Util = (function(self, $){
 
 		jid = node + '@' + domain;
 		if(resource) {
-			jid += '/' + Strophe.unescapeNode(resource);
+			jid += '/' + resource;
 		}
 
 		return jid;
@@ -321,7 +322,7 @@ Candy.Util = (function(self, $){
 			// adds innerhtml and continues as long as all[0] is truthy
 			div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
 			all[0]
-		);
+		) {}
 		return v > 4 ? v : undef;
 	}());
 

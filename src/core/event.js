@@ -7,8 +7,9 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global Candy, Strophe, jQuery */
 
@@ -194,15 +195,18 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		PrivacyList: function(msg) {
 			Candy.Core.log('[Jabber] PrivacyList');
 			var currentUser = Candy.Core.getUser();
-
-			$('list[name="ignore"] item', msg).each(function() {
-				var item = $(this);
-				if (item.attr('action') === 'deny') {
-					currentUser.addToOrRemoveFromPrivacyList('ignore', item.attr('value'));
-				}
-			});
-			Candy.Core.Action.Jabber.SetIgnoreListActive();
-			return false;
+			msg = $(msg);
+			if(msg.attr('type') === 'result') {
+				$('list[name="ignore"] item', msg).each(function() {
+					var item = $(this);
+					if (item.attr('action') === 'deny') {
+						currentUser.addToOrRemoveFromPrivacyList('ignore', item.attr('value'));
+					}
+				});
+				Candy.Core.Action.Jabber.SetIgnoreListActive();
+				return false;
+			}
+			return self.Jabber.PrivacyListError(msg);
 		},
 
 		/** Function: PrivacyListError
@@ -297,12 +301,12 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			Leave: function(msg) {
 				Candy.Core.log('[Jabber:Room] Leave');
 				msg = $(msg);
-				var from = msg.attr('from'),
+				var from = Candy.Util.unescapeJid(msg.attr('from')),
 					roomJid = Strophe.getBareJidFromJid(from);
 
 				// if room is not joined yet, ignore.
 				if (!Candy.Core.getRoom(roomJid)) {
-					return false;
+					return true;
 				}
 
 				var roomName = Candy.Core.getRoom(roomJid).getName(),
@@ -314,9 +318,10 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				delete Candy.Core.getRooms()[roomJid];
 				// if user gets kicked, role is none and there's a status code 307
 				if(item.attr('role') === 'none') {
-					if(msg.find('status').attr('code') === '307') {
+					var code = msg.find('status').attr('code');
+					if(code === '307') {
 						type = 'kick';
-					} else if(msg.find('status').attr('code') === '301') {
+					} else if(code === '301') {
 						type = 'ban';
 					}
 					reason = item.find('reason').text();
@@ -361,21 +366,24 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			Disco: function(msg) {
 				Candy.Core.log('[Jabber:Room] Disco');
 				msg = $(msg);
-				var roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
+				var roomJid = Strophe.getBareJidFromJid(Candy.Util.unescapeJid(msg.attr('from')));
 
 				// Client joined a room
 				if(!Candy.Core.getRooms()[roomJid]) {
 					Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
 				}
 				// Room existed but room name was unknown
-				var roomName = msg.find('identity').attr('name'),
-					room = Candy.Core.getRoom(roomJid);
-				if(room.getName() === null) {
-					room.setName(roomName);
-				// Room name changed
-				}/*else if(room.getName() !== roomName && room.getUser() !== null) {
-					// NOTE: We want to notify the View here but jabber doesn't send anything when the room name changes :-(
-				}*/
+				var identity = msg.find('identity');
+				if(identity.length) {
+					var roomName = identity.attr('name'),
+						room = Candy.Core.getRoom(roomJid);
+					if(room.getName() === null) {
+						room.setName(Strophe.unescapeNode(roomName));
+					// Room name changed
+					}/*else if(room.getName() !== roomName && room.getUser() !== null) {
+						// NOTE: We want to notify the View here but jabber doesn't send anything when the room name changes :-(
+					}*/
+				}
 				return true;
 			},
 
@@ -395,48 +403,80 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				Candy.Core.log('[Jabber:Room] Presence');
 				var from = Candy.Util.unescapeJid(msg.attr('from')),
 					roomJid = Strophe.getBareJidFromJid(from),
-					presenceType = msg.attr('type');
+					presenceType = msg.attr('type'),
+					status = msg.find('status'),
+					nickAssign = false,
+					nickChange = false;
 
-				// Client left a room
-				if(Strophe.getResourceFromJid(from) === Candy.Core.getUser().getNick() && presenceType === 'unavailable') {
-					self.Jabber.Room.Leave(msg);
-					return true;
+				if(status.length) {
+					// check if status code indicates a nick assignment or nick change
+					for(var i = 0, l = status.length; i < l; i++) {
+						var $status = $(status[i]),
+							code = $status.attr('code');
+						if(code === '303') {
+							nickChange = true;
+						} else if(code === '210') {
+							nickAssign = true;
+						}
+					}
 				}
 
-				// Client joined a room
+				// Current User joined a room
 				var room = Candy.Core.getRoom(roomJid);
 				if(!room) {
 					Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
 					room = Candy.Core.getRoom(roomJid);
 				}
 
+				// Current User left a room
+				var currentUser = room.getUser() ? room.getUser() : Candy.Core.getUser();
+				if(Strophe.getResourceFromJid(from) === currentUser.getNick() && presenceType === 'unavailable' && nickChange === false) {
+					self.Jabber.Room.Leave(msg);
+					return true;
+				}
+
 				var roster = room.getRoster(),
 					action, user,
+					nick,
 					item = msg.find('item');
 				// User joined a room
 				if(presenceType !== 'unavailable') {
-					var nick = Strophe.getResourceFromJid(from);
+					if (roster.get(from)) {
+						// user changed nick before
+						return true;
+					}
+					nick = Strophe.getResourceFromJid(from);
 					user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
 					// Room existed but client (myself) is not yet registered
-					if(room.getUser() === null && Candy.Core.getUser().getNick() === nick) {
+					if(room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
 						room.setUser(user);
+						currentUser = user;
 					}
 					roster.add(user);
 					action = 'join';
 				// User left a room
 				} else {
-					action = 'leave';
-					if(item.attr('role') === 'none') {
-						if(msg.find('status').attr('code') === '307') {
-							action = 'kick';
-						} else if(msg.find('status').attr('code') === '301') {
-							action = 'ban';
-						}
-					}
 					user = roster.get(from);
 					roster.remove(from);
+					if(nickChange) {
+						// user changed nick
+						nick = item.attr('nick');
+						action = 'nickchange';
+						user.setPreviousNick(user.getNick());
+						user.setNick(nick);
+						user.setJid(Strophe.getBareJidFromJid(from) + '/' + nick);
+						roster.add(user);
+					} else {
+						action = 'leave';
+						if(item.attr('role') === 'none') {
+							if(msg.find('status').attr('code') === '307') {
+								action = 'kick';
+							} else if(msg.find('status').attr('code') === '301') {
+								action = 'ban';
+							}
+						}
+					}
 				}
-
 				/** Event: candy:core.presence.room
 				 * Room presence updates
 				 *
@@ -452,7 +492,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					'roomName': room.getName(),
 					'user': user,
 					'action': action,
-					'currentUser': Candy.Core.getUser()
+					'currentUser': currentUser
 				});
 				return true;
 			},
@@ -495,6 +535,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					'roomJid': roomJid,
 					'roomName': roomName
 				});
+				return true;
 			},
 
 			/** Function: Message

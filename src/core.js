@@ -7,8 +7,9 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global Candy, window, Strophe, jQuery */
 
@@ -61,7 +62,12 @@ Candy.Core = (function(self, Strophe, $) {
 			/** Integer: presencePriority
 			 * Default priority for presence messages in order to receive messages across different resources
 			 */
-			presencePriority: 1
+			presencePriority: 1,
+			/** String: resource
+			 * JID resource to use when connecting to the server.
+			 * Specify `''` (an empty string) to request a random resource.
+			 */
+			resource: Candy.about.name
 		},
 
 		/** PrivateFunction: _addNamespace
@@ -95,7 +101,7 @@ Candy.Core = (function(self, Strophe, $) {
 	 * Initialize Core.
 	 *
 	 * Parameters:
-	 *   (String) service - URL of BOSH service
+	 *   (String) service - URL of BOSH/Websocket service
 	 *   (Object) options - Options for candy
 	 */
 	self.init = function(service, options) {
@@ -116,10 +122,14 @@ Candy.Core = (function(self, Strophe, $) {
 		}
 
 		_addNamespaces();
-		// Connect to BOSH service
+
+		// Connect to BOSH/Websocket service
 		_connection = new Strophe.Connection(_service);
 		_connection.rawInput = self.rawInput.bind(self);
 		_connection.rawOutput = self.rawOutput.bind(self);
+
+		// set caps node
+		_connection.caps.node = 'https://candy-chat.github.io/candy/';
 
 		// Window unload handler... works on all browsers but Opera. There is NO workaround.
 		// Opera clients getting disconnected 1-2 minutes delayed.
@@ -139,8 +149,6 @@ Candy.Core = (function(self, Strophe, $) {
 		self.addHandler(self.Event.Jabber.Message, null, 'message');
 		self.addHandler(self.Event.Jabber.Bookmarks, Strophe.NS.PRIVATE, 'iq');
 		self.addHandler(self.Event.Jabber.Room.Disco, Strophe.NS.DISCO_INFO, 'iq', 'result');
-		self.addHandler(self.Event.Jabber.PrivacyList, Strophe.NS.PRIVACY, 'iq', 'result');
-		self.addHandler(self.Event.Jabber.PrivacyListError, Strophe.NS.PRIVACY, 'iq', 'error');
 
 		self.addHandler(_connection.disco._onDiscoInfo.bind(_connection.disco), Strophe.NS.DISCO_INFO, 'iq', 'get');
 		self.addHandler(_connection.disco._onDiscoItems.bind(_connection.disco), Strophe.NS.DISCO_ITEMS, 'iq', 'get');
@@ -170,12 +178,26 @@ Candy.Core = (function(self, Strophe, $) {
 		// Reset before every connection attempt to make sure reconnections work after authfail, alltabsclosed, ...
 		_connection.reset();
 		self.registerEventHandlers();
+		/** Event: candy:core.before-connect
+		 * Triggered before a connection attempt is made.
+		 *
+		 * Plugins should register their stanza handlers using this event
+		 * to ensure that they are set.
+		 *
+		 * See also <#84 at https://github.com/candy-chat/candy/issues/84>.
+		 *
+		 * Parameters:
+		 *   (Strophe.Connection) conncetion - Strophe connection
+		 */
+		$(Candy).triggerHandler('candy:core.before-connect', {
+			connection: _connection
+		});
 
 		_anonymousConnection = !_anonymousConnection ? jidOrHost && jidOrHost.indexOf("@") < 0 : true;
 
 		if(jidOrHost && password) {
 			// authentication
-			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, password, Candy.Core.Event.Strophe.Connect);
+			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + _options.resource, password, Candy.Core.Event.Strophe.Connect);
 			if (nick) {
 				_user = new self.ChatUser(jidOrHost, nick);
 			} else {
@@ -183,7 +205,7 @@ Candy.Core = (function(self, Strophe, $) {
 			}
 		} else if(jidOrHost && nick) {
 			// anonymous connect
-			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + Candy.about.name, null, Candy.Core.Event.Strophe.Connect);
+			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + _options.resource, null, Candy.Core.Event.Strophe.Connect);
 			_user = new self.ChatUser(null, nick); // set jid to null because we'll later receive it
 		} else if(jidOrHost) {
 			Candy.Core.Event.Login(jidOrHost);
@@ -355,7 +377,7 @@ Candy.Core = (function(self, Strophe, $) {
 	self.onWindowUnload = function() {
 		// Enable synchronous requests because Safari doesn't send asynchronous requests within unbeforeunload events.
 		// Only works properly when following patch is applied to strophejs: https://github.com/metajack/strophejs/issues/16/#issuecomment-600266
-		_connection._options.sync = true;
+		_connection.options.sync = true;
 		self.disconnect();
 		_connection.flush();
 	};

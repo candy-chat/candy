@@ -7,10 +7,11 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
-/* global Candy */
+/* global Candy, Strophe */
 
 /** Class: Candy.Core.ChatRoom
  * Candy Chat Room
@@ -24,7 +25,7 @@ Candy.Core.ChatRoom = function(roomJid) {
 	 */
 	this.room = {
 		jid: roomJid,
-		name: null
+		name: Strophe.getNodeFromJid(roomJid)
 	};
 
 	/** Variable: user

@@ -7,8 +7,9 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
 /* global Candy */
 
@@ -55,6 +56,7 @@ Candy.View.Translation = {
 		'userLeftRoom'             : '%s left the room.',
 		'userHasBeenKickedFromRoom': '%s has been kicked from the room.',
 		'userHasBeenBannedFromRoom': '%s has been banned from the room.',
+		'userChangedNick': '%1$s has changed his nickname to %2$s.',
 
 		'presenceUnknownWarningSubject': 'Notice:',
 		'presenceUnknownWarning'       : 'This user might be offline. We can\'t track his presence.',
@@ -122,6 +124,7 @@ Candy.View.Translation = {
 		'userLeftRoom'             : '%s hat soeben den Raum verlassen.',
 		'userHasBeenKickedFromRoom': '%s ist aus dem Raum gekickt worden.',
 		'userHasBeenBannedFromRoom': '%s ist aus dem Raum verbannt worden.',
+		'userChangedNick': '%1$s hat den Nicknamen zu %2$s geändert.',
 
 		'presenceUnknownWarningSubject': 'Hinweis:',
 		'presenceUnknownWarning'       : 'Dieser Benutzer könnte bereits abgemeldet sein. Wir können seine Anwesenheit nicht verfolgen.',

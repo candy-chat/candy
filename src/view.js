@@ -7,10 +7,11 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
  */
+'use strict';
 
-/* global jQuery, Candy, window, Mustache */
+/* global jQuery, Candy, window, Mustache, document */
 
 /** Class: Candy.View
  * The Candy View Class
@@ -61,7 +62,7 @@ Candy.View = (function(self, $) {
 		 *   (String) language - Language identifier
 		 */
 		_setupTranslation = function(language) {
-			$.i18n.setDictionary(self.Translation[language]);
+			$.i18n.load(self.Translation[language]);
 		},
 
 		/** PrivateFunction: _registerObservers

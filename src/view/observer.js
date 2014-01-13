@@ -7,8 +7,9 @@
  *
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012, 2013 Patrick Stadler & Michael Weibel
+ *   (c) 2012-2014 Patrick Stadler & Michael Weibel
  */
+'use strict';
 
 /* global Candy, Strophe, Mustache, jQuery */
 
@@ -62,12 +63,10 @@ Candy.View.Observer = (function(self, $) {
 				case Strophe.Status.DISCONNECTED:
 					var presetJid = Candy.Core.isAnonymousConnection() ? Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : null;
 					Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'), presetJid);
-					Candy.View.Event.Chat.onDisconnect();
 					break;
 
 				case Strophe.Status.AUTHFAIL:
 					Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusAuthfail'));
-					Candy.View.Event.Chat.onAuthfail();
 					break;
 
 				default:
@@ -144,7 +143,6 @@ Candy.View.Observer = (function(self, $) {
 				}, 5000);
 
 				var evtData = { type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user };
-				Candy.View.Event.Room.onPresenceChange(evtData);
 
 				/** Event: candy:view.presence
 				 * Presence update when kicked or banned
@@ -159,19 +157,20 @@ Candy.View.Observer = (function(self, $) {
 
 			// A user changed presence
 			} else if(args.roomJid) {
+				args.roomJid = Candy.Util.unescapeJid(args.roomJid);
 				// Initialize room if not yet existing
 				if(!Candy.View.Pane.Chat.rooms[args.roomJid]) {
 					Candy.View.Pane.Room.init(args.roomJid, args.roomName);
 					Candy.View.Pane.Room.show(args.roomJid);
 				}
 				Candy.View.Pane.Roster.update(args.roomJid, args.user, args.action, args.currentUser);
-				// Notify private user chats if existing
-				if(Candy.View.Pane.Chat.rooms[args.user.getJid()]) {
+				// Notify private user chats if existing, but not in case the action is nickchange
+				// -- this is because the nickchange presence already contains the new
+				// user jid
+				if(Candy.View.Pane.Chat.rooms[args.user.getJid()] && args.action !== 'nickchange') {
 					Candy.View.Pane.Roster.update(args.user.getJid(), args.user, args.action, args.currentUser);
 					Candy.View.Pane.PrivateRoom.setStatus(args.user.getJid(), args.action);
 				}
-			} else {
-				// Unhandled type of presence
 			}
 		},
 
