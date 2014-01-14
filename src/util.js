@@ -534,24 +534,6 @@ Candy.Util = (function(self, $){
 				text = this.nl2br(text);
 			}
 			return text;
-		},
-
-		/** Function: xhtml
-		 * Does parsing of text within xhtml formatted tags (linkify, emotify, nl2br).
-		 *
-		 * Parameters:
-		 *   (String) text - Text to parse
-		 *
-		 * Returns:
-		 *   (String) parsed text
-		 */
-		xhtml: function(text) {
-			if(text) {
-				text = this.linkify(text);
-				text = this.emotify(text);
-				text = this.nl2br(text);
-			}
-			return text;
 		}
 	};
 
@@ -638,7 +620,7 @@ Candy.Util = (function(self, $){
 			if(maxLength && currentLength > maxLength) {
 				text = text.substring(0, maxLength);
 			}
-			text = Candy.Util.Parser.xhtml(text);
+			text = Candy.Util.Parser.all(text);
 			el = $.parseHTML(text);
 		}
 

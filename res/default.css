@@ -351,6 +351,10 @@ ul {
 	word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
 
+.message-pane li>div p {
+	margin: 0;
+}
+
 .message-pane .label {
 	font-weight: bold;
 	white-space: nowrap;
