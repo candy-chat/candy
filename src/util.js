@@ -637,7 +637,6 @@ Candy.Util = (function(self, $){
 				text = text.substring(0, maxLength);
 			}
 			text = Candy.Util.Parser.xhtml(text);
-			// to prevent double substring, don't call createHTML with maxLength again
 			el = $.parseHTML(text);
 		}
 
