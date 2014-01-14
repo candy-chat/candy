@@ -1960,7 +1960,7 @@ Candy.View.Pane = (function(self, $) {
 
 			message = evtData.message;
 			xhtmlMessage = evtData.xhtmlMessage;
-			if(xhtmlMessage !== undefined) {
+			if(xhtmlMessage !== undefined && xhtmlMessage.length > 0) {
 				message = xhtmlMessage;
 			}
 

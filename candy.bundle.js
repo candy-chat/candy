@@ -1249,6 +1249,8 @@ Candy.Util = (function(self, $){
 						$el.append(self.createHtml(elem.childNodes[i], maxLength, currentLength));
 					}
 				} catch(e) { // invalid elements
+					Candy.Core.log("[Util:createHtml] Error while parsing XHTML:");
+					Candy.Core.log(e);
 					el = Strophe.xmlTextNode('');
 				}
 			} else {
@@ -4954,7 +4956,7 @@ Candy.View.Pane = (function(self, $) {
 
 			message = evtData.message;
 			xhtmlMessage = evtData.xhtmlMessage;
-			if(xhtmlMessage !== undefined) {
+			if(xhtmlMessage !== undefined && xhtmlMessage.length > 0) {
 				message = xhtmlMessage;
 			}
 

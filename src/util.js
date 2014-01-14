@@ -617,6 +617,8 @@ Candy.Util = (function(self, $){
 						$el.append(self.createHtml(elem.childNodes[i], maxLength, currentLength));
 					}
 				} catch(e) { // invalid elements
+					Candy.Core.log("[Util:createHtml] Error while parsing XHTML:");
+					Candy.Core.log(e);
 					el = Strophe.xmlTextNode('');
 				}
 			} else {
