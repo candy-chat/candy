@@ -687,7 +687,7 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			showNicknameConflictForm: function(roomJid) {
 				self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.nicknameConflictForm, {
-					_labelNickname: $.i18n._('labelUsername'),
+					_labelNickname: $.i18n._('labelNickname'),
 					_label: $.i18n._('nicknameConflict'),
 					_loginSubmit: $.i18n._('loginSubmit')
 				}));
