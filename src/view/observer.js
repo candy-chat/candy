@@ -242,7 +242,7 @@ Candy.View.Observer = (function(self, $) {
 			if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
 				Candy.View.Pane.PrivateRoom.open(args.roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
 			}
-			Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.timestamp);
+			Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.message.xhtmlMessage, args.timestamp);
 		}
 	};
 

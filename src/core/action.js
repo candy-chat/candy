@@ -257,17 +257,18 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *   (String) roomJid - Room to which send the message into
 			 *   (String) msg - Message
 			 *   (String) type - "groupchat" or "chat" ("chat" is for private messages)
+			 *   (String) xhtmlMsg - XHTML formatted message [optional]
 			 *
 			 * Returns:
 			 *   (Boolean) - true if message is not empty after trimming, false otherwise.
 			 */
-			Message: function(roomJid, msg, type) {
+			Message: function(roomJid, msg, type, xhtmlMsg) {
 				// Trim message
 				msg = $.trim(msg);
 				if(msg === '') {
 					return false;
 				}
-				Candy.Core.getConnection().muc.message(Candy.Util.escapeJid(roomJid), null, msg, null, type);
+				Candy.Core.getConnection().muc.message(Candy.Util.escapeJid(roomJid), null, msg, xhtmlMsg, type);
 				return true;
 			},
 

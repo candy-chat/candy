@@ -1893,21 +1893,24 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		submit: function(event) {
 			var roomType = Candy.View.Pane.Chat.rooms[Candy.View.getCurrent().roomJid].type,
-				message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body);
+				message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body),
+				xhtmlMessage;
 
-			var evtData = {message: message};
+			var evtData = {message: message, xhtmlMessage: xhtmlMessage};
 
 			/** Event: candy:view.message.before-send
 			 * Before sending a message
 			 *
 			 * Parameters:
 			 *   (String) message - Message text
+			 *   (String) xhtmlMessage - XHTML formatted message [default: undefined]
 			 */
 			$(Candy).triggerHandler('candy:view.message.before-send', evtData);
 
 			message = evtData.message;
+			xhtmlMessage = evtData.xhtmlMessage;
 
-			Candy.Core.Action.Jabber.Room.Message(Candy.View.getCurrent().roomJid, message, roomType);
+			Candy.Core.Action.Jabber.Room.Message(Candy.View.getCurrent().roomJid, message, roomType, xhtmlMessage);
 			// Private user chat. Jabber won't notify the user who has sent the message. Just show it as the user hits the button...
 			if(roomType === 'chat' && message) {
 				self.Message.show(Candy.View.getCurrent().roomJid, self.Room.getUser(Candy.View.getCurrent().roomJid).getNick(), message);
@@ -1924,6 +1927,7 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) roomJid - room in which the message has been sent to
 		 *   (String) name - Name of the user which sent the message
 		 *   (String) message - Message
+		 *   (String) xhtmlMessage - XHTML formatted message [if options enableXHTML is true]
 		 *   (String) timestamp - [optional] Timestamp of the message, if not present, current date.
 		 *
 		 * Triggers:
@@ -1931,10 +1935,18 @@ Candy.View.Pane = (function(self, $) {
 		 *   candy.view.message.before-render using {template, templateData}
 		 *   candy:view.message.after-show using {roomJid, name, message, element}
 		 */
-		show: function(roomJid, name, message, timestamp) {
+		show: function(roomJid, name, message, xhtmlMessage, timestamp) {
 			message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
+			if(xhtmlMessage) {
+				xhtmlMessage = Candy.Util.parseAndCropXhtml(xhtmlMessage, Candy.View.getOptions().crop.message.body);
+			}
 
-			var evtData = {'roomJid': roomJid, 'name': name, 'message': message};
+			var evtData = {
+				'roomJid': roomJid,
+				'name': name,
+				'message': message,
+				'xhtmlMessage': xhtmlMessage
+			};
 
 			/** Event: candy:view.message.before-show
 			 * Before showing a new message
@@ -1947,6 +1959,10 @@ Candy.View.Pane = (function(self, $) {
 			$(Candy).triggerHandler('candy:view.message.before-show', evtData);
 
 			message = evtData.message;
+			xhtmlMessage = evtData.xhtmlMessage;
+			if(xhtmlMessage !== undefined) {
+				message = xhtmlMessage;
+			}
 
 			if(!message) {
 				return;

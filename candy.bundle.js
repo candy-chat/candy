@@ -730,6 +730,21 @@ Candy.Util = (function(self, $){
 		return str;
 	};
 
+	/** Function: parseAndCropXhtml
+	 * Parses the XHTML and applies various Candy related filters to it.
+	 *
+	 *  - Ensures it contains only valid XHTML
+	 *  - Crops text to a max length
+	 *  - Parses the text in order to display html
+	 *
+	 * Parameters:
+	 *   (String) str - String containing XHTML
+	 *   (Integer) len - Max text length
+	 */
+	self.parseAndCropXhtml = function(str, len) {
+		return $('<div/>').append(self.createHtml($(str).get(0), len)).html();
+	};
+
 	/** Function: setCookie
 	 * Sets a new cookie
 	 *
@@ -1141,7 +1156,7 @@ Candy.Util = (function(self, $){
 		 *   (String) text - Text to parse
 		 *
 		 * Returns:
-		 *   Parsed text
+		 *   (String) Parsed text
 		 */
 		all: function(text) {
 			if(text) {
@@ -1151,7 +1166,115 @@ Candy.Util = (function(self, $){
 				text = this.nl2br(text);
 			}
 			return text;
+		},
+
+		/** Function: xhtml
+		 * Does parsing of text within xhtml formatted tags (linkify, emotify, nl2br).
+		 *
+		 * Parameters:
+		 *   (String) text - Text to parse
+		 *
+		 * Returns:
+		 *   (String) parsed text
+		 */
+		xhtml: function(text) {
+			if(text) {
+				text = this.linkify(text);
+				text = this.emotify(text);
+				text = this.nl2br(text);
+			}
+			return text;
 		}
+	};
+
+	/** Function: createHtml
+	 * Copy an HTML DOM element into an XML DOM.
+	 *
+	 * This function copies a DOM element and all its descendants and returns
+	 * the new copy.
+	 *
+	 * It's a function copied & adapted from [Strophe.js core.js](https://github.com/strophe/strophejs/blob/master/src/core.js).
+	 *
+	 * Parameters:
+	 *   (HTMLElement) elem - A DOM element.
+	 *   (Integer) maxLength - Max length of text
+	 *   (Integer) currentLength - Current accumulated text length
+	 *
+	 * Returns:
+	 *   A new, copied DOM element tree.
+	 */
+	self.createHtml = function(elem, maxLength, currentLength) {
+		/* jshint -W073 */
+		currentLength = currentLength || 0;
+		var i, el, j, tag, attribute, value, css, cssAttrs, attr, cssName, cssValue;
+		if (elem.nodeType === Strophe.ElementType.NORMAL) {
+			tag = elem.nodeName.toLowerCase();
+			if(Strophe.XHTML.validTag(tag)) {
+				try {
+					el = Strophe.xmlElement(tag);
+					for(i = 0; i < Strophe.XHTML.attributes[tag].length; i++) {
+						attribute = Strophe.XHTML.attributes[tag][i];
+						value = elem.getAttribute(attribute);
+						if(typeof value === 'undefined' || value === null || value === '' || value === false || value === 0) {
+							continue;
+						}
+						if(attribute === 'style' && typeof value === 'object') {
+							if(typeof value.cssText !== 'undefined') {
+								value = value.cssText; // we're dealing with IE, need to get CSS out
+							}
+						}
+						// filter out invalid css styles
+						if(attribute === 'style') {
+							css = [];
+							cssAttrs = value.split(';');
+							for(j = 0; j < cssAttrs.length; j++) {
+								attr = cssAttrs[j].split(':');
+								cssName = attr[0].replace(/^\s*/, "").replace(/\s*$/, "").toLowerCase();
+								if(Strophe.XHTML.validCSS(cssName)) {
+									cssValue = attr[1].replace(/^\s*/, "").replace(/\s*$/, "");
+									css.push(cssName + ': ' + cssValue);
+								}
+							}
+							if(css.length > 0) {
+								value = css.join('; ');
+								el.setAttribute(attribute, value);
+							}
+						} else {
+							el.setAttribute(attribute, value);
+						}
+					}
+
+					var $el = $(el);
+					for (i = 0; i < elem.childNodes.length; i++) {
+						$el.append(self.createHtml(elem.childNodes[i], maxLength, currentLength));
+					}
+				} catch(e) { // invalid elements
+					el = Strophe.xmlTextNode('');
+				}
+			} else {
+				el = Strophe.xmlGenerator().createDocumentFragment();
+				for (i = 0; i < elem.childNodes.length; i++) {
+					el.appendChild(self.createHtml(elem.childNodes[i], maxLength, currentLength));
+				}
+			}
+		} else if (elem.nodeType === Strophe.ElementType.FRAGMENT) {
+			el = Strophe.xmlGenerator().createDocumentFragment();
+			for (i = 0; i < elem.childNodes.length; i++) {
+				el.appendChild(self.createHtml(elem.childNodes[i], maxLength, currentLength));
+			}
+		} else if (elem.nodeType === Strophe.ElementType.TEXT) {
+			var text = elem.nodeValue;
+			currentLength += text.length;
+			if(maxLength && currentLength > maxLength) {
+				text = text.substring(0, maxLength);
+			}
+			text = Candy.Util.Parser.xhtml(text);
+			// to prevent double substring, don't call createHTML with maxLength again
+			el = $.parseHTML(text);
+		}
+
+		return el;
+		/* jshint +W073 */
 	};
 
 	return self;
@@ -1416,17 +1539,18 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *   (String) roomJid - Room to which send the message into
 			 *   (String) msg - Message
 			 *   (String) type - "groupchat" or "chat" ("chat" is for private messages)
+			 *   (String) xhtmlMsg - XHTML formatted message [optional]
 			 *
 			 * Returns:
 			 *   (Boolean) - true if message is not empty after trimming, false otherwise.
 			 */
-			Message: function(roomJid, msg, type) {
+			Message: function(roomJid, msg, type, xhtmlMsg) {
 				// Trim message
 				msg = $.trim(msg);
 				if(msg === '') {
 					return false;
 				}
-				Candy.Core.getConnection().muc.message(Candy.Util.escapeJid(roomJid), null, msg, null, type);
+				Candy.Core.getConnection().muc.message(Candy.Util.escapeJid(roomJid), null, msg, xhtmlMsg, type);
 				return true;
 			},
 
@@ -2538,6 +2662,13 @@ Candy.Core.Event = (function(self, Strophe, $) {
 							message = { name: '', body: msg.children('body').text(), type: 'info' };
 						}
 					}
+
+					var xhtmlChild = msg.children('html[xmlns="' + Strophe.NS.XHTML_IM + '"]');
+					if(Candy.View.getOptions().enableXHTML === true && xhtmlChild.length > 0) {
+						var xhtmlMessage = xhtmlChild.children('body[xmlns="' + Strophe.NS.XHTML + '"]').first().html();
+						message.xhtmlMessage = xhtmlMessage;
+					}
+
 				// Unhandled message
 				} else {
 					return true;
@@ -2836,7 +2967,7 @@ Candy.View.Observer = (function(self, $) {
 			if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
 				Candy.View.Pane.PrivateRoom.open(args.roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
 			}
-			Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.timestamp);
+			Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.message.xhtmlMessage, args.timestamp);
 		}
 	};
 
@@ -4757,21 +4888,24 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		submit: function(event) {
 			var roomType = Candy.View.Pane.Chat.rooms[Candy.View.getCurrent().roomJid].type,
-				message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body);
+				message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body),
+				xhtmlMessage;
 
-			var evtData = {message: message};
+			var evtData = {message: message, xhtmlMessage: xhtmlMessage};
 
 			/** Event: candy:view.message.before-send
 			 * Before sending a message
 			 *
 			 * Parameters:
 			 *   (String) message - Message text
+			 *   (String) xhtmlMessage - XHTML formatted message [default: undefined]
 			 */
 			$(Candy).triggerHandler('candy:view.message.before-send', evtData);
 
 			message = evtData.message;
+			xhtmlMessage = evtData.xhtmlMessage;
 
-			Candy.Core.Action.Jabber.Room.Message(Candy.View.getCurrent().roomJid, message, roomType);
+			Candy.Core.Action.Jabber.Room.Message(Candy.View.getCurrent().roomJid, message, roomType, xhtmlMessage);
 			// Private user chat. Jabber won't notify the user who has sent the message. Just show it as the user hits the button...
 			if(roomType === 'chat' && message) {
 				self.Message.show(Candy.View.getCurrent().roomJid, self.Room.getUser(Candy.View.getCurrent().roomJid).getNick(), message);
@@ -4788,6 +4922,7 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) roomJid - room in which the message has been sent to
 		 *   (String) name - Name of the user which sent the message
 		 *   (String) message - Message
+		 *   (String) xhtmlMessage - XHTML formatted message [if options enableXHTML is true]
 		 *   (String) timestamp - [optional] Timestamp of the message, if not present, current date.
 		 *
 		 * Triggers:
@@ -4795,10 +4930,18 @@ Candy.View.Pane = (function(self, $) {
 		 *   candy.view.message.before-render using {template, templateData}
 		 *   candy:view.message.after-show using {roomJid, name, message, element}
 		 */
-		show: function(roomJid, name, message, timestamp) {
+		show: function(roomJid, name, message, xhtmlMessage, timestamp) {
 			message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
+			if(xhtmlMessage) {
+				xhtmlMessage = Candy.Util.parseAndCropXhtml(xhtmlMessage, Candy.View.getOptions().crop.message.body);
+			}
 
-			var evtData = {'roomJid': roomJid, 'name': name, 'message': message};
+			var evtData = {
+				'roomJid': roomJid,
+				'name': name,
+				'message': message,
+				'xhtmlMessage': xhtmlMessage
+			};
 
 			/** Event: candy:view.message.before-show
 			 * Before showing a new message
@@ -4811,6 +4954,10 @@ Candy.View.Pane = (function(self, $) {
 			$(Candy).triggerHandler('candy:view.message.before-show', evtData);
 
 			message = evtData.message;
+			xhtmlMessage = evtData.xhtmlMessage;
+			if(xhtmlMessage !== undefined) {
+				message = xhtmlMessage;
+			}
 
 			if(!message) {
 				return;
