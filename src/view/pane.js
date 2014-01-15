@@ -1893,7 +1893,7 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		submit: function(event) {
 			var roomType = Candy.View.Pane.Chat.rooms[Candy.View.getCurrent().roomJid].type,
-				message = Candy.Util.Parser.escape($(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body)),
+				message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body),
 				xhtmlMessage;
 
 			var evtData = {message: message, xhtmlMessage: xhtmlMessage};
