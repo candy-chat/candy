@@ -39,7 +39,7 @@
   },
   "homepage": "http://candy-chat.github.io/candy/",
   "devDependencies": {
-    "jshint-stylish": "~0.1.4",
+    "jshint-stylish": "~0.1.5",
     "grunt-contrib-jshint": "~0.7.2",
     "grunt": "~0.4.2",
     "grunt-sync-pkg": "~0.1.2",
@@ -49,6 +49,6 @@
     "grunt-natural-docs": "~0.1.1",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-mkdir": "~0.1.1",
-    "grunt-notify": "~0.2.16"
+    "grunt-notify": "~0.2.17"
   }
 }
