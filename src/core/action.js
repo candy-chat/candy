@@ -11,7 +11,7 @@
  */
 'use strict';
 
-/* global Candy, $iq, navigator, Candy, $pres, Strophe, jQuery */
+/* global Candy, $iq, navigator, Candy, $pres, Strophe, jQuery, $msg */
 
 /** Class: Candy.Core.Action
  * Chat Actions (basicly a abstraction of Jabber commands)
@@ -71,7 +71,10 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Sends a request for a roster
 		 */
 		Roster: function() {
-			Candy.Core.getConnection().send($iq({type: 'get', xmlns: Strophe.NS.CLIENT}).c('query', {xmlns: Strophe.NS.ROSTER}).tree());
+			Candy.Core.getConnection().send($iq({
+				type: 'get',
+				xmlns: Strophe.NS.CLIENT
+			}).c('query', {xmlns: Strophe.NS.ROSTER}).tree());
 		},
 
 		/** Function: Presence
@@ -95,7 +98,10 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Sends a request for disco items
 		 */
 		Services: function() {
-			Candy.Core.getConnection().send($iq({type: 'get', xmlns: Strophe.NS.CLIENT}).c('query', {xmlns: Strophe.NS.DISCO_ITEMS}).tree());
+			Candy.Core.getConnection().send($iq({
+				type: 'get',
+				xmlns: Strophe.NS.CLIENT
+			}).c('query', {xmlns: Strophe.NS.DISCO_ITEMS}).tree());
 		},
 
 		/** Function: Autojoin
@@ -135,8 +141,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 */
 		ResetIgnoreList: function() {
 			Candy.Core.getConnection().sendIQ($iq({
-					type: 'set',
-					from: Candy.Core.getUser().getEscapedJid()
+					type: 'set'
 				})
 				.c('query', {xmlns: Strophe.NS.PRIVACY })
 				.c('list', {name: 'ignore'})
@@ -149,8 +154,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 */
 		RemoveIgnoreList: function() {
 			Candy.Core.getConnection().sendIQ($iq({
-					type: 'set',
-					from: Candy.Core.getUser().getEscapedJid()
+					type: 'set'
 				})
 				.c('query', {xmlns: Strophe.NS.PRIVACY })
 				.c('list', {name: 'ignore'}).tree());
@@ -161,8 +165,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 */
 		GetIgnoreList: function() {
 			var iq = $iq({
-					type: 'get',
-					from: Candy.Core.getUser().getEscapedJid()
+					type: 'get'
 				})
 				.c('query', {xmlns: Strophe.NS.PRIVACY})
 				.c('list', {name: 'ignore'}).tree();
@@ -176,8 +179,8 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 */
 		SetIgnoreListActive: function() {
 			Candy.Core.getConnection().sendIQ($iq({
-					type: 'set',
-					from: Candy.Core.getUser().getEscapedJid()})
+					type: 'set'
+				})
 				.c('query', {xmlns: Strophe.NS.PRIVACY })
 				.c('active', {name:'ignore'}).tree());
 		},
@@ -189,7 +192,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		GetJidIfAnonymous: function() {
 			if (!Candy.Core.getUser().getJid()) {
 				Candy.Core.log("[Jabber] Anonymous login");
-				Candy.Core.getUser().data.jid = Candy.Core.getConnection().jid;
+				Candy.Core.getUser().data.jid = Candy.Util.unescapeJid(Candy.Core.getConnection().jid);
 			}
 		},
 
@@ -232,7 +235,12 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				var user = Candy.Core.getRoom(roomJid).getUser();
 				roomJid = Candy.Util.escapeJid(roomJid);
 				if (user) {
-					Candy.Core.getConnection().muc.leave(roomJid, user.getNick(), function() {});
+					var conn = Candy.Core.getConnection();
+					conn.send($pres({
+						type: 'unavailable',
+						id: 'pres:' + conn.getUniqueId(),
+						to: roomJid + '/' + user.getNick()
+					}));
 				}
 			},
 
@@ -245,7 +253,6 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			Disco: function(roomJid) {
 				Candy.Core.getConnection().sendIQ($iq({
 					type: 'get',
-					from: Candy.Core.getUser().getEscapedJid(),
 					to: Candy.Util.escapeJid(roomJid)
 				}).c('query', {xmlns: Strophe.NS.DISCO_INFO}).tree());
 			},
@@ -255,19 +262,51 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *
 			 * Parameters:
 			 *   (String) roomJid - Room to which send the message into
-			 *   (String) msg - Message
+			 *   (String) message - Message text
 			 *   (String) type - "groupchat" or "chat" ("chat" is for private messages)
+			 *   (String) xhtmlMessage - XHTML formatted message [optional]
 			 *
 			 * Returns:
 			 *   (Boolean) - true if message is not empty after trimming, false otherwise.
 			 */
-			Message: function(roomJid, msg, type) {
+			Message: function(roomJid, message, type, xhtmlMessage) {
 				// Trim message
-				msg = $.trim(msg);
-				if(msg === '') {
+				message = $.trim(message);
+				if(message === '') {
 					return false;
 				}
-				Candy.Core.getConnection().muc.message(Candy.Util.escapeJid(roomJid), null, msg, null, type);
+				roomJid = Candy.Util.escapeJid(roomJid);
+				var conn = Candy.Core.getConnection(),
+					msg = $msg({
+						to: roomJid,
+						from: conn.jid,
+						type: type,
+						id: 'msg:' + conn.getUniqueId()
+					});
+
+				msg.c('body', {
+					xmlns: Strophe.NS.CLIENT
+				}).t(message).up();
+
+				if(xhtmlMessage && xhtmlMessage.length) {
+					msg.c('html', {
+						xmlns: Strophe.NS.XHTML_IM
+					}).c('body', {
+						xmlns: Strophe.NS.XHTML
+					}).h(xhtmlMessage);
+
+					// ported from strophe.muc.js
+					// TODO: necessary?
+					if(msg.node.childNodes.length === 0) {
+						var parent = msg.node.parentNode;
+						msg.up().up();
+						msg.node.removeChild(parent);
+					} else {
+						msg.up().up();
+					}
+				}
+				conn.send(msg);
+
 				return true;
 			},
 
@@ -289,7 +328,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 */
 			UpdatePrivacyList: function() {
 				var currentUser = Candy.Core.getUser(),
-					iq = $iq({type: 'set', from: currentUser.getEscapedJid()})
+					iq = $iq({type: 'set'})
 						.c('query', {xmlns: 'jabber:iq:privacy' })
 							.c('list', {name: 'ignore'}),
 					privacyList = currentUser.getPrivacyList('ignore');
@@ -336,7 +375,6 @@ Candy.Core.Action = (function(self, Strophe, $) {
 					}
 					Candy.Core.getConnection().sendIQ($iq({
 						type: 'set',
-						from: Candy.Core.getUser().getEscapedJid(),
 						to: roomJid
 					}).c('query', {xmlns: Strophe.NS.MUC_ADMIN })
 						.c('item', itemObj).c('reason').t(reason).tree());
@@ -351,7 +389,18 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				 *   (String) subject - Subject to set
 				 */
 				SetSubject: function(roomJid, subject) {
-					Candy.Core.getConnection().muc.setTopic(Candy.Util.escapeJid(roomJid), subject);
+					var conn = Candy.Core.getConnection(),
+						id = 'sbjc:' + conn.getUniqueId();
+					conn.send($msg({
+						to: Candy.Util.escapeJid(roomJid),
+						id: id,
+						from: conn.jid,
+						type: "groupchat"
+					}).c('subject', {
+						xmlns: Strophe.NS.CLIENT
+					}).t(subject));
+
+					return id;
 				}
 			}
 		}

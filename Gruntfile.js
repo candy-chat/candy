@@ -38,7 +38,6 @@ module.exports = function(grunt) {
 			libs: {
 				src: [
 					'libs/strophejs/strophe.js',
-					'libs/strophejs-plugins/muc/strophe.muc.js',
 					'libs/strophejs-plugins/disco/strophe.disco.js',
 					'libs/strophejs-plugins/caps/strophe.caps.jsonly.js',
 					'libs/mustache.js/mustache.js',
