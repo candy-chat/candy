@@ -89,6 +89,7 @@ Candy.Core = (function(self, Strophe, $) {
 			_addNamespace('BOOKMARKS', 'storage:bookmarks');
 			_addNamespace('PRIVACY', 'jabber:iq:privacy');
 			_addNamespace('DELAY', 'jabber:x:delay');
+			_addNamespace('MUC_ADMIN', Strophe.NS.MUC + '#admin');
 		},
 
 		_getEscapedJidFromJid = function(jid) {
