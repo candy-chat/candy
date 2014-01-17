@@ -84,6 +84,39 @@ Candy.Util = (function(self, $){
 		return jid;
 	};
 
+	/** PrivateFunction: _unescapeAttrJid
+	 * Unescapes an attr if attr is not undefined.
+	 *
+	 * See <Candy.Util.unescapeAttrJids>
+	 *
+	 * Parameters:
+	 *   (int) i - Index of attr in element
+	 *   (String) val - Value
+	 */
+	var _unescapeAttrJid = function(i, val) {
+		if(!val) {
+			return undefined;
+		}
+		return self.unescapeJid(val);
+	};
+
+	/** Function: unescapeAttrJids
+	 * Unescapes jids in attrs of a stanza (to and from attrs currently)
+	 *
+	 * Uses:
+	 *   <Candy.Util.unescapeJid>
+	 * Parameters:
+	 *   (jQuery.Element) $stanza - Stanza
+	 *
+	 * Returns:
+	 *   (jQuery.Element) modified stanza
+	 */
+	self.unescapeAttrJids = function($stanza) {
+		$stanza.attr('to', _unescapeAttrJid);
+		$stanza.attr('from', _unescapeAttrJid);
+		return $stanza;
+	};
+
 	/** Function: crop
 	 * Crop a string with the specified length
 	 *

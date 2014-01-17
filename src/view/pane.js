@@ -1093,7 +1093,6 @@ Candy.View.Pane = (function(self, $) {
 			if(Candy.Util.isEmptyObject(self.Chat.rooms)) {
 				self.Chat.Toolbar.show();
 			}
-			roomJid = Candy.Util.unescapeJid(roomJid);
 			var roomId = Candy.Util.jidToId(roomJid);
 			self.Chat.rooms[roomJid] = {id: roomId, usercount: 0, name: roomName, type: roomType, messageCount: 0, scrollPosition: -1};
 

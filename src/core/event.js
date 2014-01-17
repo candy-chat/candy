@@ -140,7 +140,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 */
 		Presence: function(msg) {
 			Candy.Core.log('[Jabber] Presence');
-			msg = $(msg);
+			msg = Candy.Util.unescapeAttrJids($(msg));
 			if(msg.children('x[xmlns^="' + Strophe.NS.MUC + '"]').length > 0) {
 				if (msg.attr('type') === 'error') {
 					self.Jabber.Room.PresenceError(msg);
@@ -171,11 +171,12 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 */
 		Bookmarks: function(msg) {
 			Candy.Core.log('[Jabber] Bookmarks');
+			msg = Candy.Util.unescapeAttrJids($(msg));
 			// Autojoin bookmarks (Openfire)
 			$('conference', msg).each(function() {
 				var item = $(this);
 				if(item.attr('autojoin')) {
-					Candy.Core.Action.Jabber.Room.Join(item.attr('jid'));
+					Candy.Core.Action.Jabber.Room.Join(Candy.Util.unescapeJid(item.attr('jid')));
 				}
 			});
 			return true;
@@ -195,12 +196,12 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		PrivacyList: function(msg) {
 			Candy.Core.log('[Jabber] PrivacyList');
 			var currentUser = Candy.Core.getUser();
-			msg = $(msg);
+			msg = Candy.Util.unescapeAttrJids($(msg));
 			if(msg.attr('type') === 'result') {
 				$('list[name="ignore"] item', msg).each(function() {
 					var item = $(this);
 					if (item.attr('action') === 'deny') {
-						currentUser.addToOrRemoveFromPrivacyList('ignore', item.attr('value'));
+						currentUser.addToOrRemoveFromPrivacyList('ignore', Candy.Util.unescapeJid(item.attr('value')));
 					}
 				});
 				Candy.Core.Action.Jabber.SetIgnoreListActive();
@@ -245,8 +246,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 */
 		Message: function(msg) {
 			Candy.Core.log('[Jabber] Message');
-			msg = $(msg);
-
+			msg = Candy.Util.unescapeAttrJids($(msg));
 			var fromJid = msg.attr('from'),
 				type = msg.attr('type'),
 				toJid = msg.attr('to');
@@ -300,8 +300,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 */
 			Leave: function(msg) {
 				Candy.Core.log('[Jabber:Room] Leave');
-				msg = $(msg);
-				var from = Candy.Util.unescapeJid(msg.attr('from')),
+				var from = msg.attr('from'),
 					roomJid = Strophe.getBareJidFromJid(from);
 
 				// if room is not joined yet, ignore.
@@ -365,8 +364,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 */
 			Disco: function(msg) {
 				Candy.Core.log('[Jabber:Room] Disco');
-				msg = $(msg);
-				var roomJid = Strophe.getBareJidFromJid(Candy.Util.unescapeJid(msg.attr('from')));
+				msg = Candy.Util.unescapeAttrJids($(msg));
+				var roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
 
 				// Client joined a room
 				if(!Candy.Core.getRooms()[roomJid]) {
@@ -401,7 +400,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 */
 			Presence: function(msg) {
 				Candy.Core.log('[Jabber:Room] Presence');
-				var from = Candy.Util.unescapeJid(msg.attr('from')),
+				var from = msg.attr('from'),
 					roomJid = Strophe.getBareJidFromJid(from),
 					presenceType = msg.attr('type'),
 					status = msg.find('status'),
@@ -511,7 +510,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 */
 			PresenceError: function(msg) {
 				Candy.Core.log('[Jabber:Room] Presence Error');
-				var from = Candy.Util.unescapeJid(msg.attr('from')),
+				var from = msg.attr('from'),
 					roomJid = Strophe.getBareJidFromJid(from),
 					room = Candy.Core.getRooms()[roomJid],
 					roomName = room.getName();
@@ -556,7 +555,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				// Room subject
 				var roomJid, message;
 				if(msg.children('subject').length > 0) {
-					roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
+					roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
 					message = { name: Strophe.getNodeFromJid(roomJid), body: msg.children('subject').text(), type: 'subject' };
 				// Error messsage
 				} else if(msg.attr('type') === 'error') {
@@ -569,7 +568,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				} else if(msg.children('body').length > 0) {
 					// Private chat message
 					if(msg.attr('type') === 'chat' || msg.attr('type') === 'normal') {
-						roomJid = Candy.Util.unescapeJid(msg.attr('from'));
+						roomJid = msg.attr('from');
 						var bareRoomJid = Strophe.getBareJidFromJid(roomJid),
 							// if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
 							isNoConferenceRoomJid = !Candy.Core.getRoom(bareRoomJid),
@@ -577,7 +576,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						message = { name: name, body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
 					// Multi-user chat message
 					} else {
-						roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
+						roomJid = Strophe.getBareJidFromJid(msg.attr('from'));
 						var resource = Strophe.getResourceFromJid(msg.attr('from'));
 						// Message from a user
 						if(resource) {

@@ -90,12 +90,6 @@ Candy.Core = (function(self, Strophe, $) {
 			_addNamespace('PRIVACY', 'jabber:iq:privacy');
 			_addNamespace('DELAY', 'jabber:x:delay');
 			_addNamespace('MUC_ADMIN', Strophe.NS.MUC + '#admin');
-		},
-
-		_getEscapedJidFromJid = function(jid) {
-			var node = Strophe.getNodeFromJid(jid),
-				domain = Strophe.getDomainFromJid(jid);
-			return node ? Strophe.escapeNode(node) + '@' + domain : domain;
 		};
 
 	/** Function: init
@@ -198,7 +192,7 @@ Candy.Core = (function(self, Strophe, $) {
 
 		if(jidOrHost && password) {
 			// authentication
-			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + _options.resource, password, Candy.Core.Event.Strophe.Connect);
+			_connection.connect(Candy.Util.escapeJid(jidOrHost) + '/' + _options.resource, password, Candy.Core.Event.Strophe.Connect);
 			if (nick) {
 				_user = new self.ChatUser(jidOrHost, nick);
 			} else {
@@ -206,7 +200,7 @@ Candy.Core = (function(self, Strophe, $) {
 			}
 		} else if(jidOrHost && nick) {
 			// anonymous connect
-			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + _options.resource, null, Candy.Core.Event.Strophe.Connect);
+			_connection.connect(Candy.Util.escapeJid(jidOrHost) + '/' + _options.resource, null, Candy.Core.Event.Strophe.Connect);
 			_user = new self.ChatUser(null, nick); // set jid to null because we'll later receive it
 		} else if(jidOrHost) {
 			Candy.Core.Event.Login(jidOrHost);

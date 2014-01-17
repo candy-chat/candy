@@ -47,32 +47,16 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	};
 
 	/** Function: getJid
-	 * Gets an unescaped user jid
-	 *
-	 * See:
-	 *   <Candy.Util.unescapeJid>
+	 * Gets the user jid
 	 *
 	 * Returns:
 	 *   (String) - jid
 	 */
 	this.getJid = function() {
 		if(this.data.jid) {
-			return Candy.Util.unescapeJid(this.data.jid);
+			return this.data.jid;
 		}
 		return;
-	};
-
-	/** Function: getEscapedJid
-	 * Escapes the user's jid (node & resource get escaped)
-	 *
-	 * See:
-	 *   <Candy.Util.escapeJid>
-	 *
-	 * Returns:
-	 *   (String) - escaped jid
-	 */
-	this.getEscapedJid = function() {
-		return Candy.Util.escapeJid(this.data.jid);
 	};
 
 	/** Function: setJid
@@ -92,7 +76,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 *   (String) - nick
 	 */
 	this.getNick = function() {
-		return Strophe.unescapeNode(this.data.nick);
+		return this.data.nick;
 	};
 
 	/** Function: setNick
@@ -102,7 +86,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 *   (String) nick - New nick
 	 */
 	this.setNick = function(nick) {
-		this.data.nick = nick;
+		this.data.nick = Strophe.unescapeNode(nick);
 	};
 
 	/** Function: getRole
@@ -230,7 +214,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 *   (String) previousNick - the previous nickname
 	 */
 	this.setPreviousNick = function(previousNick) {
-		this.data.previousNick = previousNick;
+		this.data.previousNick = Strophe.unescapeNode(previousNick);
 	};
 
 	/** Function: hasNicknameChanged

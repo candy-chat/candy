@@ -157,7 +157,6 @@ Candy.View.Observer = (function(self, $) {
 
 			// A user changed presence
 			} else if(args.roomJid) {
-				args.roomJid = Candy.Util.unescapeJid(args.roomJid);
 				// Initialize room if not yet existing
 				if(!Candy.View.Pane.Chat.rooms[args.roomJid]) {
 					Candy.View.Pane.Room.init(args.roomJid, args.roomName);
