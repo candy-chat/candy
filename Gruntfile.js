@@ -23,38 +23,53 @@ module.exports = function(grunt) {
 				]
 			}
 		},
-		concat: {
-			bundle: {
-				src: [
-					'src/candy.js', 'src/core.js', 'src/view.js',
-					'src/util.js', 'src/core/action.js',
-					'src/core/chatRoom.js', 'src/core/chatRoster.js',
-					'src/core/chatUser.js', 'src/core/event.js',
-					'src/view/observer.js', 'src/view/pane.js',
-					'src/view/template.js', 'src/view/translation.js'
-				],
-				dest: 'candy.bundle.js'
-			},
-			libs: {
-				src: [
-					'libs/strophejs/strophe.js',
-					'libs/strophejs-plugins/muc/strophe.muc.js',
-					'libs/strophejs-plugins/disco/strophe.disco.js',
-					'libs/strophejs-plugins/caps/strophe.caps.jsonly.js',
-					'libs/mustache.js/mustache.js',
-					'libs/jquery-i18n/jquery.i18n.js',
-					'libs/dateformat/dateFormat.js'
-				],
-				dest: 'libs/libs.bundle.js'
-			}
-		},
 		uglify: {
 			bundle: {
+				files: {
+					'candy.bundle.js': [
+						'src/candy.js', 'src/core.js', 'src/view.js',
+						'src/util.js', 'src/core/action.js',
+						'src/core/chatRoom.js', 'src/core/chatRoster.js',
+						'src/core/chatUser.js', 'src/core/event.js',
+						'src/view/observer.js', 'src/view/pane.js',
+						'src/view/template.js', 'src/view/translation.js',
+						'src/view/translation/*.js'
+					]
+				},
+				options: {
+					sourceMap: true,
+					mangle: false,
+					compress: false,
+					beautify: true,
+					preserveComments: 'all'
+				}
+			},
+			min: {
 				files: {
 					'candy.min.js': ['candy.bundle.js']
 				}
 			},
 			libs: {
+				files: {
+					'libs/libs.bundle.js': [
+						'libs/strophejs/strophe.js',
+						'libs/strophejs-plugins/muc/strophe.muc.js',
+						'libs/strophejs-plugins/disco/strophe.disco.js',
+						'libs/strophejs-plugins/caps/strophe.caps.jsonly.js',
+						'libs/mustache.js/mustache.js',
+						'libs/jquery-i18n/jquery.i18n.js',
+						'libs/dateformat/dateFormat.js'
+					]
+				},
+				options: {
+					sourceMap: true,
+					mangle: false,
+					compress: false,
+					beautify: true,
+					preserveComments: 'all'
+				}
+			},
+			'libs-min': {
 				files: {
 					'libs/libs.min.js': ['libs/libs.bundle.js']
 				}
@@ -63,11 +78,11 @@ module.exports = function(grunt) {
 		watch: {
 			bundle: {
 				files: ['src/*.js', 'src/**/*.js'],
-				tasks: ['jshint', 'concat:bundle', 'uglify:bundle', 'notify:bundle']
+				tasks: ['jshint', 'uglify:bundle', 'uglify:min', 'notify:bundle']
 			},
 			libs: {
 				files: ['libs/*/**/*.js'],
-				tasks: ['concat:libs', 'uglify:libs', 'notify:libs']
+				tasks: ['uglify:libs', 'uglify:libs-min', 'notify:libs']
 			}
 		},
 		natural_docs: {
@@ -80,8 +95,8 @@ module.exports = function(grunt) {
 			}
 		},
 		clean: {
-			bundle: ['./candy.bundle.js', './candy.min.js'],
-			libs: ['./libs/libs.bundle.js', './libs/libs.min.js'],
+			bundle: ['./candy.bundle.js', './candy.bundle.map', './candy.min.js'],
+			libs: ['./libs/libs.bundle.js', './libs/libs.bundle.map', './libs/libs.min.js'],
 			docs: ['./docs']
 		},
 		mkdir: {
@@ -117,7 +132,6 @@ module.exports = function(grunt) {
 
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-natural-docs');
@@ -126,8 +140,8 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-sync-pkg');
 
 	grunt.registerTask('default', [
-		'jshint', 'concat:libs', 'uglify:libs',
-		'concat:bundle', 'uglify:bundle', 'notify:default'
+		'jshint', 'uglify:libs', 'uglify:libs-min',
+		'uglify:bundle', 'uglify:min', 'notify:default'
 	]);
 	grunt.registerTask('docs', ['mkdir:docs', 'natural_docs', 'notify:docs']);
 };

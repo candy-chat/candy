@@ -41,6 +41,47 @@ Candy.View.Observer = (function(self, $) {
 		 *   (Object) args - {status (Strophe.Status.*)}
 		 */
 		Connection: function(event, args) {
+			var eventName = 'candy:view.connection.status-' + args.status;
+			/** Event: candy:view.connection.status-<STROPHE-STATUS>
+			 * Using this event, you can alter the default Candy (View) behaviour when reacting
+			 * to connection updates.
+			 *
+			 * STROPHE-STATUS has to be replaced by one of <Strophe.Status at https://github.com/strophe/strophejs/blob/master/src/core.js#L276>:
+			 *   - ERROR: 0,
+			 *   - CONNECTING: 1,
+			 *   - CONNFAIL: 2,
+			 *   - AUTHENTICATING: 3,
+			 *   - AUTHFAIL: 4,
+			 *   - CONNECTED: 5,
+			 *   - DISCONNECTED: 6,
+			 *   - DISCONNECTING: 7,
+			 *   - ATTACHED: 8
+			 *
+			 *
+			 * If your event handler returns `false`, no View changes will take place.
+			 * You can, of course, also return `true` and do custom things but still
+			 * let Candy (View) do it's job.
+			 *
+			 * This event has been implemented due to <issue #202 at https://github.com/candy-chat/candy/issues/202>
+			 * and here's an example use-case for it:
+			 *
+			 * (start code)
+			 *   // react to DISCONNECTED event
+			 *   $(Candy).on('candy:view.connection.status-6', function() {
+			 *     // on next browser event loop
+			 *     setTimeout(function() {
+			 *       // reload page to automatically reattach on disconnect
+			 *       window.location.reload();
+			 *     }, 0);
+			 *     // stop view changes right here.
+			 *     return false;
+			 *   });
+			 * (end code)
+			 */
+			if($(Candy).triggerHandler(eventName) === false) {
+				return false;
+			}
+
 			switch(args.status) {
 				case Strophe.Status.CONNECTING:
 				case Strophe.Status.AUTHENTICATING:
