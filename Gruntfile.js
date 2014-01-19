@@ -32,7 +32,8 @@ module.exports = function(grunt) {
 						'src/core/chatRoom.js', 'src/core/chatRoster.js',
 						'src/core/chatUser.js', 'src/core/event.js',
 						'src/view/observer.js', 'src/view/pane.js',
-						'src/view/template.js', 'src/view/translation.js'
+						'src/view/template.js', 'src/view/translation.js',
+						'src/view/translation/*.js'
 					]
 				},
 				options: {
