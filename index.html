@@ -27,11 +27,11 @@
 		<header>
 			<div id="download">
 				<!-- if you change the version, change it in the onclick tracker as well -->
-				<a href="http://github.com/candy-chat/candy/tarball/master" onclick="_gaq.push(['_trackEvent', 'Download', $(this).find('.version').text()]);" class="button">
+				<a href="https://github.com/candy-chat/candy/archive/v1.6.0.tar.gz" onclick="_gaq.push(['_trackEvent', 'Download', $(this).find('.version').text()]);" class="button">
 					Download candy.tar.gz
-					<small>v<span class="version">1.5</span> &mdash; <time datetime="2013-12-14">December 14th, 2013</time></small>
+					<small>v<span class="version">1.6.0</span> &mdash; <time datetime="2013-12-14">January 20th, 2014</time></small>
 				</a>
-				<span class="license">Released under the <a href="http://github.com/candy-chat/candy/blob/master/LICENSE">MIT Licence</a></span>
+				<span class="changelog"><a href="https://github.com/candy-chat/candy/releases/tag/v1.6.0">Changelog</a></span><span class="license">Released under the <a href="https://github.com/candy-chat/candy/blob/master/LICENSE">MIT Licence</a></span>
 			</div>
 			<h1>Candy</h1>
 		 	<em>&mdash; a JavaScript-based multi-user chat client</em>
@@ -106,7 +106,7 @@
 			<h2>Setup &amp; Usage</h2>
 			<h3>Prerequisites</h3>
 			<p>
-				Install and configure a XMPP server with HTTP binding enabled. <a href="https://github.com/candy-chat/candy/wiki/Installing-a-XMPP-server">Read our setup guides for ejabberd and Openfire</a>.
+				Install and configure a XMPP server with HTTP binding enabled. <a href="https://github.com/candy-chat/candy/wiki/Installing-a-XMPP-server">Read our setup guides</a>.
 			</p>
 			<p>
 				Due to the nature of AJAX you need to proxy the HTTP requests to the XMPP service which usually runs on a different port. The source code contains a sample <code>.htaccess</code> file to be used with Apache. We cover the configuration for the most used web servers <a href="https://github.com/candy-chat/candy/wiki/HTTP-Proxy-Configuration">here</a>.
@@ -135,7 +135,14 @@ RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
 			<p>
 				 You can configure Candy by passing an object containing following options to <code>Candy.init</code>:
 			</p>
-			<code>Candy.init( BOSH_URL, <strong>{ core: <mark>{ CORE_OPTIONS }</mark>, view: <mark>{ VIEW_OPTIONS }</mark> }</strong> );</code>
+			<code>Candy.init(SERVICE, <strong>{ core: <mark>{ CORE_OPTIONS }</mark>, view: <mark>{ VIEW_OPTIONS }</mark> }</strong>);</code>
+			<h4>Service</h4>
+			<dl>
+				<dt><code><strong>'http-bind/'</strong></code></dt>
+				<dd>BOSH URL of your server/proxy</dd>
+				<dt><code><strong>'ws://example.com:5280/http-bind'</strong></code></dt>
+				<dd>Websocket URL of your server (preferably <em>wss://</em> to prevent MITM)</dd>
+			</dl>
 			<h4>Core Options</h4>
 			<dl>
 				<dt><code><strong>debug</strong> &mdash; true or <u>false</u></code></dt>
@@ -147,13 +154,30 @@ RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
 					If set to <strong>true</strong>, Candy will follow <a href="http://xmpp.org/extensions/xep-0048.html">XEP-0048</a> and auto-join rooms based on the bookmarks configuration of your XMPP server.<br />Please note: <mark>Bookmarks are supported by Openfire, but not by ejabberd.</mark><br />
 					You need to tell ejabberd which rooms to join by passing an array such as <strong>['jid1', 'jid2', ...]</strong>
 				</dd>
+				<dt><code><strong>resource</strong> &mdash; string</code></dt>
+				<dd>
+					Set a custom resource. If not set, default is <em>Candy</em>.
+				</dd>
 			</dl>
 			<h4>View Options</h4>
 			<dl>
 				<dt><code><strong>language</strong> &mdash; language identifier, default: '<u>en</u>'</code></dt>
 				<dd>
-					Tell Candy which language pack to use. Following languages are currently delivered with the package:<br />
-					English (<strong>en</strong>), German (<strong>de</strong>), French (<strong>fr</strong>), Spanish (<strong>es</strong>), Dutch (<strong>nl</strong>), Chinese (<strong>cn</strong>) and Japanese (<strong>ja</strong>).
+					Tell Candy which language pack to use. Following languages are currently delivered with the package:
+					<ul class="translations">
+						<li>English (<strong>en</strong>)</li>
+						<li>German (<strong>de</strong>)</li>
+						<li>French (<strong>fr</strong>)</li>
+						<li>Italian (<strong>it</strong>)</li>
+						<li>Spanish (<strong>es</strong>)</li>
+						<li>Portuguese (<strong>pt</strong>)</li>
+						<li>Brazilian portuguese (<strong>pt_br</strong>)</li>
+						<li>Dutch (<strong>nl</strong>)</li>
+						<li>Chinese (<strong>cn</strong>)</li>
+						<li>Japanese (<strong>ja</strong>)</li>
+						<li>Russian (<strong>ru</strong>)</li>
+						<li>Swedish (<strong>sv</strong>)</li>
+					</ul>
 					<p><mark>Please contribute your translations to the project.</mark></p>
 				</dd>
 				<dt><code><strong>resources</strong> &mdash; path to resources folder, default: '<u>res/</u>'</code></dt>

@@ -153,7 +153,7 @@ header section {
 	text-align: center;
 }
 
-.license, .demo-sponsor {
+.changelog, .license, .demo-sponsor {
 	display: block;
 	color: #777;
 	font-size: .7em;
@@ -297,4 +297,11 @@ section div {
 
 .demo-sponsor a {
 	padding: 0;
+}
+
+ul.translations li {
+	padding: 0 0 0 4px;
+}
+ul.translations li:before {
+	padding-right: 4px;
 }
