@@ -1081,7 +1081,7 @@ Candy.Core.Action = function(self, Strophe, $) {
 		 *   (jQuery.element) msg - jQuery element
 		 */
         Version: function(msg) {
-            Candy.Core.getConnection().send($iq({
+            Candy.Core.getConnection().sendIQ($iq({
                 type: "result",
                 to: Candy.Util.escapeJid(msg.attr("from")),
                 from: Candy.Util.escapeJid(msg.attr("to")),
@@ -1102,13 +1102,13 @@ Candy.Core.Action = function(self, Strophe, $) {
 		 */
         SetNickname: function(nickname, rooms) {
             rooms = rooms instanceof Array ? rooms : Candy.Core.getRooms();
-            var roomNick, presence;
+            var roomNick, presence, conn = Candy.Core.getConnection();
             $.each(rooms, function(roomJid) {
                 roomNick = Candy.Util.escapeJid(roomJid + "/" + nickname);
                 presence = $pres({
                     to: roomNick,
-                    from: Candy.Core.getConnection().jid,
-                    id: "pres:" + Candy.Core.getConnection().getUniqueId()
+                    from: conn.jid,
+                    id: "pres:" + conn.getUniqueId()
                 });
                 Candy.Core.getConnection().send(presence);
             });
@@ -1117,7 +1117,7 @@ Candy.Core.Action = function(self, Strophe, $) {
 		 * Sends a request for a roster
 		 */
         Roster: function() {
-            Candy.Core.getConnection().send($iq({
+            Candy.Core.getConnection().sendIQ($iq({
                 type: "get",
                 xmlns: Strophe.NS.CLIENT
             }).c("query", {
@@ -1132,17 +1132,22 @@ Candy.Core.Action = function(self, Strophe, $) {
 		 *   (Strophe.Builder) el - Optional element to include in presence stanza
 		 */
         Presence: function(attr, el) {
-            var pres = $pres(attr).c("priority").t(Candy.Core.getOptions().presencePriority.toString()).up().c("c", Candy.Core.getConnection().caps.generateCapsAttrs()).up();
+            var conn = Candy.Core.getConnection();
+            attr = attr || {};
+            if (!attr.id) {
+                attr.id = "pres:" + conn.getUniqueId();
+            }
+            var pres = $pres(attr).c("priority").t(Candy.Core.getOptions().presencePriority.toString()).up().c("c", conn.caps.generateCapsAttrs()).up();
             if (el) {
                 pres.node.appendChild(el.node);
             }
-            Candy.Core.getConnection().send(pres.tree());
+            conn.send(pres.tree());
         },
         /** Function: Services
 		 * Sends a request for disco items
 		 */
         Services: function() {
-            Candy.Core.getConnection().send($iq({
+            Candy.Core.getConnection().sendIQ($iq({
                 type: "get",
                 xmlns: Strophe.NS.CLIENT
             }).c("query", {
@@ -1267,7 +1272,8 @@ Candy.Core.Action = function(self, Strophe, $) {
                 self.Jabber.Room.Disco(roomJid);
                 roomJid = Candy.Util.escapeJid(roomJid);
                 var conn = Candy.Core.getConnection(), roomNick = roomJid + "/" + Candy.Core.getUser().getNick(), pres = $pres({
-                    to: roomNick
+                    to: roomNick,
+                    id: "pres:" + conn.getUniqueId()
                 }).c("x", {
                     xmlns: Strophe.NS.MUC
                 });
