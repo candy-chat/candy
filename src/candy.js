@@ -30,7 +30,7 @@ var Candy = (function(self, $) {
 	 */
 	self.about = {
 		name: 'Candy',
-		version: '1.6.0'
+		version: '1.6.1-dev'
 	};
 
 	/** Function: init
