@@ -795,6 +795,24 @@ Candy.Util = function(self, $) {
             backgroundPositionAlignment: backgroundPositionAlignment
         };
     };
+    /** Function: parseStatusCodes
+	 * Takes a stanza and translates them to an object with the status code as keys
+	 * and the status child as value.
+	 *
+	 * Parameters:
+	 *   (jQuery.Element) $stanza - jQuery parsed element
+	 *
+	 * Returns:
+	 *   (Object) code -> child node
+	 */
+    self.parseStatusCodes = function($stanza) {
+        var statuses = {};
+        $stanza.find("status").each(function() {
+            var $el = $(this);
+            statuses[$el.attr("code")] = $el;
+        });
+        return statuses;
+    };
     /** Function: localizedTime
 	 * Localizes ISO-8610 Date with the time/dateformat specified in the translation.
 	 *
@@ -1110,7 +1128,7 @@ Candy.Core.Action = function(self, Strophe, $) {
 		 *   (jQuery.element) msg - jQuery element
 		 */
         Version: function(msg) {
-            Candy.Core.getConnection().send($iq({
+            Candy.Core.getConnection().sendIQ($iq({
                 type: "result",
                 to: Candy.Util.escapeJid(msg.attr("from")),
                 from: Candy.Util.escapeJid(msg.attr("to")),
@@ -1131,13 +1149,13 @@ Candy.Core.Action = function(self, Strophe, $) {
 		 */
         SetNickname: function(nickname, rooms) {
             rooms = rooms instanceof Array ? rooms : Candy.Core.getRooms();
-            var roomNick, presence;
+            var roomNick, presence, conn = Candy.Core.getConnection();
             $.each(rooms, function(roomJid) {
                 roomNick = Candy.Util.escapeJid(roomJid + "/" + nickname);
                 presence = $pres({
                     to: roomNick,
-                    from: Candy.Core.getConnection().jid,
-                    id: "pres:" + Candy.Core.getConnection().getUniqueId()
+                    from: conn.jid,
+                    id: "pres:" + conn.getUniqueId()
                 });
                 Candy.Core.getConnection().send(presence);
             });
@@ -1146,7 +1164,7 @@ Candy.Core.Action = function(self, Strophe, $) {
 		 * Sends a request for a roster
 		 */
         Roster: function() {
-            Candy.Core.getConnection().send($iq({
+            Candy.Core.getConnection().sendIQ($iq({
                 type: "get",
                 xmlns: Strophe.NS.CLIENT
             }).c("query", {
@@ -1161,17 +1179,22 @@ Candy.Core.Action = function(self, Strophe, $) {
 		 *   (Strophe.Builder) el - Optional element to include in presence stanza
 		 */
         Presence: function(attr, el) {
-            var pres = $pres(attr).c("priority").t(Candy.Core.getOptions().presencePriority.toString()).up().c("c", Candy.Core.getConnection().caps.generateCapsAttrs()).up();
+            var conn = Candy.Core.getConnection();
+            attr = attr || {};
+            if (!attr.id) {
+                attr.id = "pres:" + conn.getUniqueId();
+            }
+            var pres = $pres(attr).c("priority").t(Candy.Core.getOptions().presencePriority.toString()).up().c("c", conn.caps.generateCapsAttrs()).up();
             if (el) {
                 pres.node.appendChild(el.node);
             }
-            Candy.Core.getConnection().send(pres.tree());
+            conn.send(pres.tree());
         },
         /** Function: Services
 		 * Sends a request for disco items
 		 */
         Services: function() {
-            Candy.Core.getConnection().send($iq({
+            Candy.Core.getConnection().sendIQ($iq({
                 type: "get",
                 xmlns: Strophe.NS.CLIENT
             }).c("query", {
@@ -1292,7 +1315,8 @@ Candy.Core.Action = function(self, Strophe, $) {
                 self.Jabber.Room.Disco(roomJid);
                 roomJid = Candy.Util.escapeJid(roomJid);
                 var conn = Candy.Core.getConnection(), roomNick = roomJid + "/" + Candy.Core.getUser().getNick(), pres = $pres({
-                    to: roomNick
+                    to: roomNick,
+                    id: "pres:" + conn.getUniqueId()
                 }).c("x", {
                     xmlns: Strophe.NS.MUC
                 });
@@ -2157,28 +2181,22 @@ Candy.Core.Event = function(self, Strophe, $) {
 			 *   (String) msg - Raw XML Message
 			 *
 			 * Triggers:
-			 *   candy:core.presence.leave using {roomJid, roomName, type, reason, actor, user}
+			 *   candy:core.presence.leave using {roomJid, roomName, action, reason, actor, user}
 			 *
 			 * Returns:
 			 *   (Boolean) - true
 			 */
-            Leave: function(msg) {
+            Leave: function($msg) {
                 Candy.Core.log("[Jabber:Room] Leave");
-                var from = msg.attr("from"), roomJid = Strophe.getBareJidFromJid(from);
+                var from = $msg.attr("from"), roomJid = Strophe.getBareJidFromJid(from), statuses = Candy.Util.parseStatusCodes($msg), isMe = statuses[110] !== undefined, isKick = statuses[307] !== undefined, isBan = statuses[301] !== undefined;
                 // if room is not joined yet, ignore.
                 if (!Candy.Core.getRoom(roomJid)) {
                     return true;
                 }
-                var roomName = Candy.Core.getRoom(roomJid).getName(), item = msg.find("item"), type = "leave", reason, actor;
+                var roomName = Candy.Core.getRoom(roomJid).getName(), item = $msg.find("item"), action = "leave", reason, actor;
                 delete Candy.Core.getRooms()[roomJid];
                 // if user gets kicked, role is none and there's a status code 307
-                if (item.attr("role") === "none") {
-                    var code = msg.find("status").attr("code");
-                    if (code === "307") {
-                        type = "kick";
-                    } else if (code === "301") {
-                        type = "ban";
-                    }
+                if (isKick || isBan) {
                     reason = item.find("reason").text();
                     actor = item.find("actor").attr("jid");
                 }
@@ -2191,16 +2209,17 @@ Candy.Core.Event = function(self, Strophe, $) {
 				 * Parameters:
 				 *   (String) roomJid - Room
 				 *   (String) roomName - Name of room
-				 *   (String) type - Presence type [kick, ban, leave]
-				 *   (String) reason - When type equals kick|ban, this is the reason the moderator has supplied.
-				 *   (String) actor - When type equals kick|ban, this is the moderator which did the kick
+				 *   (String) action - Presence type [kick, ban, leave]
+				 *   (String) reason - When action equals kick|ban, this is the reason the moderator has supplied.
+				 *   (String) actor - When action equals kick|ban, this is the moderator which did the kick
 				 *   (Candy.Core.ChatUser) user - user which leaves the room
 				 */
                 $(Candy).triggerHandler("candy:core.presence.leave", {
                     roomJid: roomJid,
                     roomName: roomName,
-                    type: type,
+                    action: action,
                     reason: reason,
+                    isMe: isMe,
                     actor: actor,
                     user: user
                 });
@@ -2237,7 +2256,7 @@ Candy.Core.Event = function(self, Strophe, $) {
 			 * Acts on various presence messages (room leaving, room joining, error presence) and notifies view.
 			 *
 			 * Parameters:
-			 *   (Object) msg - jQuery object of XML message
+			 *   (jQuery.Element) $msg - jQuery object of XML message
 			 *
 			 * Triggers:
 			 *   candy:core.presence.room using {roomJid, roomName, user, action, currentUser}
@@ -2245,20 +2264,9 @@ Candy.Core.Event = function(self, Strophe, $) {
 			 * Returns:
 			 *   (Boolean) - true
 			 */
-            Presence: function(msg) {
+            Presence: function($msg) {
                 Candy.Core.log("[Jabber:Room] Presence");
-                var from = msg.attr("from"), roomJid = Strophe.getBareJidFromJid(from), presenceType = msg.attr("type"), status = msg.find("status"), nickAssign = false, nickChange = false;
-                if (status.length) {
-                    // check if status code indicates a nick assignment or nick change
-                    for (var i = 0, l = status.length; i < l; i++) {
-                        var $status = $(status[i]), code = $status.attr("code");
-                        if (code === "303") {
-                            nickChange = true;
-                        } else if (code === "210") {
-                            nickAssign = true;
-                        }
-                    }
-                }
+                var from = $msg.attr("from"), roomJid = Strophe.getBareJidFromJid(from), presenceType = $msg.attr("type"), statuses = Candy.Util.parseStatusCodes($msg), isMe = statuses[110] !== undefined, isNickChange = statuses[303] !== undefined, isNickAssign = statuses[210] !== undefined, isKick = statuses[307] !== undefined, isBan = statuses[301] !== undefined;
                 // Current User joined a room
                 var room = Candy.Core.getRoom(roomJid);
                 if (!room) {
@@ -2267,11 +2275,11 @@ Candy.Core.Event = function(self, Strophe, $) {
                 }
                 // Current User left a room
                 var currentUser = room.getUser() ? room.getUser() : Candy.Core.getUser();
-                if (Strophe.getResourceFromJid(from) === currentUser.getNick() && presenceType === "unavailable" && nickChange === false) {
-                    self.Jabber.Room.Leave(msg);
+                if (isMe && presenceType === "unavailable" && !isNickChange) {
+                    self.Jabber.Room.Leave($msg);
                     return true;
                 }
-                var roster = room.getRoster(), action, user, nick, item = msg.find("item");
+                var roster = room.getRoster(), action, user, nick, item = $msg.find("item");
                 // User joined a room
                 if (presenceType !== "unavailable") {
                     if (roster.get(from)) {
@@ -2281,7 +2289,7 @@ Candy.Core.Event = function(self, Strophe, $) {
                     nick = Strophe.getResourceFromJid(from);
                     user = new Candy.Core.ChatUser(from, nick, item.attr("affiliation"), item.attr("role"));
                     // Room existed but client (myself) is not yet registered
-                    if (room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
+                    if (room.getUser() === null && (isMe || isNickAssign)) {
                         room.setUser(user);
                         currentUser = user;
                     }
@@ -2290,7 +2298,7 @@ Candy.Core.Event = function(self, Strophe, $) {
                 } else {
                     user = roster.get(from);
                     roster.remove(from);
-                    if (nickChange) {
+                    if (isNickChange) {
                         // user changed nick
                         nick = item.attr("nick");
                         action = "nickchange";
@@ -2299,13 +2307,12 @@ Candy.Core.Event = function(self, Strophe, $) {
                         user.setJid(Strophe.getBareJidFromJid(from) + "/" + nick);
                         roster.add(user);
                     } else {
-                        action = "leave";
-                        if (item.attr("role") === "none") {
-                            if (msg.find("status").attr("code") === "307") {
-                                action = "kick";
-                            } else if (msg.find("status").attr("code") === "301") {
-                                action = "ban";
-                            }
+                        if (isKick) {
+                            action = "kick";
+                        } else if (isBan) {
+                            action = "ban";
+                        } else {
+                            action = "leave";
                         }
                     }
                 }
@@ -2324,6 +2331,7 @@ Candy.Core.Event = function(self, Strophe, $) {
                     roomName: room.getName(),
                     user: user,
                     action: action,
+                    isMe: isMe,
                     currentUser: currentUser
                 });
                 return true;
@@ -2627,16 +2635,17 @@ Candy.View.Observer = function(self, $) {
 		 */
         update: function(event, args) {
             // Client left
-            if (args.type === "leave") {
+            Candy.Core.log("[View:Observer:Presence] update " + args.action);
+            if (args.action === "leave" && args.isMe) {
                 var user = Candy.View.Pane.Room.getUser(args.roomJid);
                 Candy.View.Pane.Room.close(args.roomJid);
-                self.Presence.notifyPrivateChats(user, args.type);
-            } else if (args.type === "kick" || args.type === "ban") {
+                self.Presence.notifyPrivateChats(user, args.action);
+            } else if (args.action === "kick" || args.action === "ban") {
                 var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : null, actionLabel, translationParams = [ args.roomName ];
                 if (actorName) {
                     translationParams.push(actorName);
                 }
-                switch (args.type) {
+                switch (args.action) {
                   case "kick":
                     actionLabel = $.i18n._(actorName ? "youHaveBeenKickedBy" : "youHaveBeenKicked", translationParams);
                     break;
@@ -2653,11 +2662,11 @@ Candy.View.Observer = function(self, $) {
                 setTimeout(function() {
                     Candy.View.Pane.Chat.Modal.hide(function() {
                         Candy.View.Pane.Room.close(args.roomJid);
-                        self.Presence.notifyPrivateChats(args.user, args.type);
+                        self.Presence.notifyPrivateChats(args.user, args.action);
                     });
                 }, 5e3);
                 var evtData = {
-                    type: args.type,
+                    type: args.action,
                     reason: args.reason,
                     roomJid: args.roomJid,
                     user: args.user

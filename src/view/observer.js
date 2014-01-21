@@ -149,12 +149,14 @@ Candy.View.Observer = (function(self, $) {
 		 */
 		update: function(event, args) {
 			// Client left
-			if(args.type === 'leave') {
+			Candy.Core.log('[View:Observer:Presence] update ' + args.action);
+
+			if(args.action === 'leave' && args.isMe) {
 				var user = Candy.View.Pane.Room.getUser(args.roomJid);
 				Candy.View.Pane.Room.close(args.roomJid);
-				self.Presence.notifyPrivateChats(user, args.type);
+				self.Presence.notifyPrivateChats(user, args.action);
 			// Client has been kicked or banned
-			} else if (args.type === 'kick' || args.type === 'ban') {
+			} else if (args.action === 'kick' || args.action === 'ban') {
 				var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : null,
 					actionLabel,
 					translationParams = [args.roomName];
@@ -163,7 +165,7 @@ Candy.View.Observer = (function(self, $) {
 					translationParams.push(actorName);
 				}
 
-				switch(args.type) {
+				switch(args.action) {
 					case 'kick':
 						actionLabel = $.i18n._((actorName ? 'youHaveBeenKickedBy' : 'youHaveBeenKicked'), translationParams);
 						break;
@@ -179,11 +181,11 @@ Candy.View.Observer = (function(self, $) {
 				setTimeout(function() {
 					Candy.View.Pane.Chat.Modal.hide(function() {
 						Candy.View.Pane.Room.close(args.roomJid);
-						self.Presence.notifyPrivateChats(args.user, args.type);
+						self.Presence.notifyPrivateChats(args.user, args.action);
 					});
 				}, 5000);
 
-				var evtData = { type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user };
+				var evtData = { type: args.action, reason: args.reason, roomJid: args.roomJid, user: args.user };
 
 				/** Event: candy:view.presence
 				 * Presence update when kicked or banned

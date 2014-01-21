@@ -243,6 +243,26 @@ Candy.Util = (function(self, $){
 		return { px: pos, backgroundPositionAlignment: backgroundPositionAlignment };
 	};
 
+	/** Function: parseStatusCodes
+	 * Takes a stanza and translates them to an object with the status code as keys
+	 * and the status child as value.
+	 *
+	 * Parameters:
+	 *   (jQuery.Element) $stanza - jQuery parsed element
+	 *
+	 * Returns:
+	 *   (Object) code -> child node
+	 */
+	self.parseStatusCodes = function($stanza) {
+		var statuses = {};
+		$stanza.find('status').each(function() {
+			var $el = $(this);
+			statuses[$el.attr('code')] = $el;
+		});
+
+		return statuses;
+	};
+
 	/** Function: localizedTime
 	 * Localizes ISO-8610 Date with the time/dateformat specified in the translation.
 	 *
