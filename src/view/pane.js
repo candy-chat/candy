@@ -435,7 +435,7 @@ Candy.View.Pane = (function(self, $) {
 			onPlaySound: function() {
 				try {
 					if(self.Chat.Toolbar._supportsNativeAudio) {
-						new Audio(Candy.View.getOptions().resources + 'notify.mp3').play();
+						new Audio(Candy.View.getOptions().assets + 'notify.mp3').play();
 					} else {
 						var chatSoundPlayer = document.getElementById('chat-sound-player');
 						chatSoundPlayer.SetVariable('method:stop', '');
