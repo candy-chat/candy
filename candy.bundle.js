@@ -1082,7 +1082,7 @@ Candy.Util = function(self, $) {
             tag = elem.nodeName.toLowerCase();
             if (Strophe.XHTML.validTag(tag)) {
                 try {
-                    el = Strophe.xmlElement(tag);
+                    el = $("<" + tag + "/>");
                     for (i = 0; i < Strophe.XHTML.attributes[tag].length; i++) {
                         attribute = Strophe.XHTML.attributes[tag][i];
                         value = elem.getAttribute(attribute);
@@ -1108,15 +1108,14 @@ Candy.Util = function(self, $) {
                             }
                             if (css.length > 0) {
                                 value = css.join("; ");
-                                el.setAttribute(attribute, value);
+                                el.attr(attribute, value);
                             }
                         } else {
-                            el.setAttribute(attribute, value);
+                            el.attr(attribute, value);
                         }
                     }
-                    var $el = $(el);
                     for (i = 0; i < elem.childNodes.length; i++) {
-                        $el.append(self.createHtml(elem.childNodes[i], maxLength, currentLength));
+                        el.append(self.createHtml(elem.childNodes[i], maxLength, currentLength));
                     }
                 } catch (e) {
                     // invalid elements
