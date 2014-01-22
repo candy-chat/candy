@@ -556,6 +556,8 @@ var MD5 = function() {
  *  This extension already exists in some browsers (namely, Firefox 3), but
  *  we provide it to support those that don't.
  *
+ *  This polyfill code is from MDN (linked bind() documentation)
+ *
  *  Parameters:
  *    (Object) obj - The object that will become 'this' in the bound function.
  *    (Object) argN - An option argument that will be prepended to the
@@ -565,14 +567,17 @@ var MD5 = function() {
  *    The bound function.
  */
 if (!Function.prototype.bind) {
-    Function.prototype.bind = function(obj) {
-        var func = this;
-        var _slice = Array.prototype.slice;
-        var _concat = Array.prototype.concat;
-        var _args = _slice.call(arguments, 1);
-        return function() {
-            return func.apply(obj ? obj : this, _concat.call(_args, _slice.call(arguments, 0)));
+    Function.prototype.bind = function(oThis) {
+        if (typeof this !== "function") {
+            // closest thing possible to the ECMAScript 5 internal IsCallable function
+            throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+        }
+        var aArgs = Array.prototype.slice.call(arguments, 1), fToBind = this, fNOP = function() {}, fBound = function() {
+            return fToBind.apply(this instanceof fNOP && oThis ? this : oThis, aArgs.concat(Array.prototype.slice.call(arguments)));
         };
+        fNOP.prototype = this.prototype;
+        fBound.prototype = new fNOP();
+        return fBound;
     };
 }
 
