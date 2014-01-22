@@ -34,7 +34,7 @@ Candy.View.Template = (function(self){
 				'<small class="unread"></small></li>',
 		modal: '<div id="chat-modal"><a id="admin-message-cancel" class="close" href="#">\u00D7</a>' +
 				'<span id="chat-modal-body"></span>' +
-				'<img src="{{resourcesPath}}img/modal-spinner.gif" id="chat-modal-spinner" />' +
+				'<img src="{{assetsPath}}img/modal-spinner.gif" id="chat-modal-spinner" />' +
 				'</div><div id="chat-modal-overlay"></div>',
 		adminMessage: '<li><small>{{time}}</small><div class="adminmessage">' +
 				'<span class="label">{{sender}}</span>' +
@@ -51,9 +51,9 @@ Candy.View.Template = (function(self){
 				'<span id="chat-usercount"></span></li></ul>',
 		soundcontrol: '<script type="text/javascript">var audioplayerListener = new Object();' +
 						' audioplayerListener.onInit = function() { };' +
-						'</script><object id="chat-sound-player" type="application/x-shockwave-flash" data="{{resourcesPath}}audioplayer.swf"' +
-						' width="0" height="0"><param name="movie" value="{{resourcesPath}}audioplayer.swf" /><param name="AllowScriptAccess"' +
-						' value="always" /><param name="FlashVars" value="listener=audioplayerListener&amp;mp3={{resourcesPath}}notify.mp3" />' +
+						'</script><object id="chat-sound-player" type="application/x-shockwave-flash" data="{{assetsPath}}audioplayer.swf"' +
+						' width="0" height="0"><param name="movie" value="{{assetsPath}}audioplayer.swf" /><param name="AllowScriptAccess"' +
+						' value="always" /><param name="FlashVars" value="listener=audioplayerListener&amp;mp3={{assetsPath}}notify.mp3" />' +
 						'</object>',
 		Context: {
 			menu: '<div id="context-menu"><i class="arrow arrow-top"></i>' +

@@ -455,13 +455,13 @@ Candy.View = function(self, $) {
 		 *
 		 * Options:
 		 *   (String) language - language to use
-		 *   (String) resources - path to resources directory (with trailing slash)
+		 *   (String) assets - path to assets (res) directory (with trailing slash)
 		 *   (Object) messages - limit: clean up message pane when n is reached / remove: remove n messages after limit has been reached
 		 *   (Object) crop - crop if longer than defined: message.nickname=15, message.body=1000, roster.nickname=15
 		 */
     _options = {
         language: "en",
-        resources: "res/",
+        assets: "res/",
         messages: {
             limit: 2e3,
             remove: 500
@@ -530,10 +530,17 @@ Candy.View = function(self, $) {
 	 *   (Object) options - Options: see _options field (value passed here gets extended by the default value in _options field)
 	 */
     self.init = function(container, options) {
+        // #216
+        // Rename `resources` to `assets` but prevent installations from failing
+        // after upgrade
+        if (options.resources) {
+            options.assets = options.resources;
+        }
+        delete options.resources;
         $.extend(true, _options, options);
         _setupTranslation(_options.language);
         // Set path to emoticons
-        Candy.Util.Parser.setEmoticonPath(this.getOptions().resources + "img/emoticons/");
+        Candy.Util.Parser.setEmoticonPath(this.getOptions().assets + "img/emoticons/");
         // Start DOMination...
         _current.container = container;
         _current.container.html(Mustache.to_html(Candy.View.Template.Chat.pane, {
@@ -543,7 +550,7 @@ Candy.View = function(self, $) {
             tooltipStatusmessage: $.i18n._("tooltipStatusmessage"),
             tooltipAdministration: $.i18n._("tooltipAdministration"),
             tooltipUsercount: $.i18n._("tooltipUsercount"),
-            resourcesPath: this.getOptions().resources
+            assetsPath: this.getOptions().assets
         }, {
             tabs: Candy.View.Template.Chat.tabs,
             rooms: Candy.View.Template.Chat.rooms,
@@ -3143,7 +3150,7 @@ Candy.View.Pane = function(self, $) {
             onPlaySound: function() {
                 try {
                     if (self.Chat.Toolbar._supportsNativeAudio) {
-                        new Audio(Candy.View.getOptions().resources + "notify.mp3").play();
+                        new Audio(Candy.View.getOptions().assets + "notify.mp3").play();
                     } else {
                         var chatSoundPlayer = document.getElementById("chat-sound-player");
                         chatSoundPlayer.SetVariable("method:stop", "");
@@ -4606,11 +4613,11 @@ Candy.View.Template = function(self) {
         rooms: '<div id="chat-rooms" class="rooms"></div>',
         tabs: '<ul id="chat-tabs"></ul>',
         tab: '<li class="roomtype-{{roomType}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">' + '<a href="#" class="label">{{#privateUserChat}}@{{/privateUserChat}}{{name}}</a>' + '<a href="#" class="transition"></a><a href="#" class="close">×</a>' + '<small class="unread"></small></li>',
-        modal: '<div id="chat-modal"><a id="admin-message-cancel" class="close" href="#">×</a>' + '<span id="chat-modal-body"></span>' + '<img src="{{resourcesPath}}img/modal-spinner.gif" id="chat-modal-spinner" />' + '</div><div id="chat-modal-overlay"></div>',
+        modal: '<div id="chat-modal"><a id="admin-message-cancel" class="close" href="#">×</a>' + '<span id="chat-modal-body"></span>' + '<img src="{{assetsPath}}img/modal-spinner.gif" id="chat-modal-spinner" />' + '</div><div id="chat-modal-overlay"></div>',
         adminMessage: '<li><small>{{time}}</small><div class="adminmessage">' + '<span class="label">{{sender}}</span>' + '<span class="spacer">▸</span>{{subject}} {{message}}</div></li>',
         infoMessage: '<li><small>{{time}}</small><div class="infomessage">' + '<span class="spacer">•</span>{{subject}} {{message}}</div></li>',
         toolbar: '<ul id="chat-toolbar">' + '<li id="emoticons-icon" data-tooltip="{{tooltipEmoticons}}"></li>' + '<li id="chat-sound-control" class="checked" data-tooltip="{{tooltipSound}}">{{> soundcontrol}}</li>' + '<li id="chat-autoscroll-control" class="checked" data-tooltip="{{tooltipAutoscroll}}"></li>' + '<li class="checked" id="chat-statusmessage-control" data-tooltip="{{tooltipStatusmessage}}">' + '</li><li class="context" data-tooltip="{{tooltipAdministration}}"></li>' + '<li class="usercount" data-tooltip="{{tooltipUsercount}}">' + '<span id="chat-usercount"></span></li></ul>',
-        soundcontrol: '<script type="text/javascript">var audioplayerListener = new Object();' + " audioplayerListener.onInit = function() { };" + '</script><object id="chat-sound-player" type="application/x-shockwave-flash" data="{{resourcesPath}}audioplayer.swf"' + ' width="0" height="0"><param name="movie" value="{{resourcesPath}}audioplayer.swf" /><param name="AllowScriptAccess"' + ' value="always" /><param name="FlashVars" value="listener=audioplayerListener&amp;mp3={{resourcesPath}}notify.mp3" />' + "</object>",
+        soundcontrol: '<script type="text/javascript">var audioplayerListener = new Object();' + " audioplayerListener.onInit = function() { };" + '</script><object id="chat-sound-player" type="application/x-shockwave-flash" data="{{assetsPath}}audioplayer.swf"' + ' width="0" height="0"><param name="movie" value="{{assetsPath}}audioplayer.swf" /><param name="AllowScriptAccess"' + ' value="always" /><param name="FlashVars" value="listener=audioplayerListener&amp;mp3={{assetsPath}}notify.mp3" />' + "</object>",
         Context: {
             menu: '<div id="context-menu"><i class="arrow arrow-top"></i>' + '<ul></ul><i class="arrow arrow-bottom"></i></div>',
             menulinks: '<li class="{{class}}" id="context-menu-{{id}}">{{label}}</li>',

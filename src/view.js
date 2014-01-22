@@ -29,13 +29,13 @@ Candy.View = (function(self, $) {
 		 *
 		 * Options:
 		 *   (String) language - language to use
-		 *   (String) resources - path to resources directory (with trailing slash)
+		 *   (String) assets - path to assets (res) directory (with trailing slash)
 		 *   (Object) messages - limit: clean up message pane when n is reached / remove: remove n messages after limit has been reached
 		 *   (Object) crop - crop if longer than defined: message.nickname=15, message.body=1000, roster.nickname=15
 		 */
 		_options = {
 			language: 'en',
-			resources: 'res/',
+			assets: 'res/',
 			messages: { limit: 2000, remove: 500 },
 			crop: {
 				message: { nickname: 15, body: 1000 },
@@ -107,11 +107,19 @@ Candy.View = (function(self, $) {
 	 *   (Object) options - Options: see _options field (value passed here gets extended by the default value in _options field)
 	 */
 	self.init = function(container, options) {
+		// #216
+		// Rename `resources` to `assets` but prevent installations from failing
+		// after upgrade
+		if(options.resources) {
+			options.assets = options.resources;
+		}
+		delete options.resources;
+
 		$.extend(true, _options, options);
 		_setupTranslation(_options.language);
 
 		// Set path to emoticons
-		Candy.Util.Parser.setEmoticonPath(this.getOptions().resources + 'img/emoticons/');
+		Candy.Util.Parser.setEmoticonPath(this.getOptions().assets + 'img/emoticons/');
 
 		// Start DOMination...
 		_current.container = container;
@@ -122,7 +130,7 @@ Candy.View = (function(self, $) {
 			tooltipStatusmessage : $.i18n._('tooltipStatusmessage'),
 			tooltipAdministration : $.i18n._('tooltipAdministration'),
 			tooltipUsercount : $.i18n._('tooltipUsercount'),
-			resourcesPath : this.getOptions().resources
+			assetsPath : this.getOptions().assets
 		}, {
 			tabs: Candy.View.Template.Chat.tabs,
 			rooms: Candy.View.Template.Chat.rooms,
