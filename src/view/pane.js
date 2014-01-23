@@ -1657,7 +1657,13 @@ Candy.View.Pane = (function(self, $) {
 			var roomId = self.Chat.rooms[roomJid].id,
 				userId = Candy.Util.jidToId(user.getJid()),
 				usercountDiff = -1,
-				userElem = $('#user-' + roomId + '-' + userId);
+				userElem = $('#user-' + roomId + '-' + userId),
+				evtData = {
+					'roomJid' : roomJid,
+					'user' : user,
+					'action': action,
+					'element': userElem
+				};
 
 			/** Event: candy:view.roster.before-update
 			 * Before updating the roster of a room
@@ -1668,12 +1674,7 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) action - [join, leave, kick, ban]
 			 *   (jQuery.Element) element - User element
 			 */
-			$(Candy).triggerHandler('candy:view.roster.before-update', {
-				'roomJid' : roomJid,
-				'user' : user,
-				'action': action,
-				'element': userElem
-			});
+			$(Candy).triggerHandler('candy:view.roster.before-update', evtData);
 
 			// a user joined the room
 			if(action === 'join') {
@@ -1778,6 +1779,9 @@ Candy.View.Pane = (function(self, $) {
 				Candy.View.Pane.Chat.Toolbar.updateUsercount(Candy.View.Pane.Chat.rooms[roomJid].usercount);
 			}
 
+
+			// in case there's been a join, the element is now there (previously not)
+			evtData.element = $('#user-' + roomId + '-' + userId);
 			/** Event: candy:view.roster.after-update
 			 * After updating a room's roster
 			 *
@@ -1787,12 +1791,7 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) action - [join, leave, kick, ban]
 			 *   (jQuery.Element) element - User element
 			 */
-			$(Candy).triggerHandler('candy:view.roster.after-update', {
-				'roomJid' : roomJid,
-				'user' : user,
-				'action': action,
-				'element': $('#user-' + roomId + '-' + userId)
-			});
+			$(Candy).triggerHandler('candy:view.roster.after-update', evtData);
 		},
 
 		/** Function: userClick
@@ -1999,12 +1998,7 @@ Candy.View.Pane = (function(self, $) {
 				self.Room.scrollToBottom(roomJid);
 			}
 
-			evtData = {
-				'roomJid': roomJid,
-				'element': elem,
-				'name': name,
-				'message': message
-			};
+			evtData.element = elem;
 
 			/** Event: candy:view.message.after-show
 			 * Triggered after showing a message

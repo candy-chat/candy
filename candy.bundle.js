@@ -4259,7 +4259,12 @@ Candy.View.Pane = function(self, $) {
 		 */
         update: function(roomJid, user, action, currentUser) {
             Candy.Core.log("[View:Pane:Roster] " + action);
-            var roomId = self.Chat.rooms[roomJid].id, userId = Candy.Util.jidToId(user.getJid()), usercountDiff = -1, userElem = $("#user-" + roomId + "-" + userId);
+            var roomId = self.Chat.rooms[roomJid].id, userId = Candy.Util.jidToId(user.getJid()), usercountDiff = -1, userElem = $("#user-" + roomId + "-" + userId), evtData = {
+                roomJid: roomJid,
+                user: user,
+                action: action,
+                element: userElem
+            };
             /** Event: candy:view.roster.before-update
 			 * Before updating the roster of a room
 			 *
@@ -4269,12 +4274,7 @@ Candy.View.Pane = function(self, $) {
 			 *   (String) action - [join, leave, kick, ban]
 			 *   (jQuery.Element) element - User element
 			 */
-            $(Candy).triggerHandler("candy:view.roster.before-update", {
-                roomJid: roomJid,
-                user: user,
-                action: action,
-                element: userElem
-            });
+            $(Candy).triggerHandler("candy:view.roster.before-update", evtData);
             // a user joined the room
             if (action === "join") {
                 usercountDiff = 1;
@@ -4363,6 +4363,8 @@ Candy.View.Pane = function(self, $) {
             if (roomJid === Candy.View.getCurrent().roomJid) {
                 Candy.View.Pane.Chat.Toolbar.updateUsercount(Candy.View.Pane.Chat.rooms[roomJid].usercount);
             }
+            // in case there's been a join, the element is now there (previously not)
+            evtData.element = $("#user-" + roomId + "-" + userId);
             /** Event: candy:view.roster.after-update
 			 * After updating a room's roster
 			 *
@@ -4372,12 +4374,7 @@ Candy.View.Pane = function(self, $) {
 			 *   (String) action - [join, leave, kick, ban]
 			 *   (jQuery.Element) element - User element
 			 */
-            $(Candy).triggerHandler("candy:view.roster.after-update", {
-                roomJid: roomJid,
-                user: user,
-                action: action,
-                element: $("#user-" + roomId + "-" + userId)
-            });
+            $(Candy).triggerHandler("candy:view.roster.after-update", evtData);
         },
         /** Function: userClick
 		 * Click handler for opening a private room
@@ -4569,12 +4566,7 @@ Candy.View.Pane = function(self, $) {
             if (Candy.View.getCurrent().roomJid === roomJid) {
                 self.Room.scrollToBottom(roomJid);
             }
-            evtData = {
-                roomJid: roomJid,
-                element: elem,
-                name: name,
-                message: message
-            };
+            evtData.element = elem;
             /** Event: candy:view.message.after-show
 			 * Triggered after showing a message
 			 *
