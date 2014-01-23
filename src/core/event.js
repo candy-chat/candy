@@ -366,6 +366,12 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			Disco: function(msg) {
 				Candy.Core.log('[Jabber:Room] Disco');
 				msg = $(msg);
+				// Temp fix for #219
+				// Don't go further if it's no conference disco reply
+				// FIXME: Do this in a more beautiful way
+				if(!msg.find('identity[category="conference"]').length) {
+					return true;
+				}
 				var roomJid = Strophe.getBareJidFromJid(Candy.Util.unescapeJid(msg.attr('from')));
 
 				// Client joined a room
