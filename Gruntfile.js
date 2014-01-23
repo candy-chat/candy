@@ -47,6 +47,9 @@ module.exports = function(grunt) {
 			min: {
 				files: {
 					'candy.min.js': ['candy.bundle.js']
+				},
+				options: {
+					sourceMap: true
 				}
 			},
 			libs: {
