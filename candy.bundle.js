@@ -2181,90 +2181,6 @@ Candy.Core.Event = function(self, Strophe, $) {
 		 * Room specific events
 		 */
         Room: {
-            /** Function: Leave
-			 * Leaves a room and cleans up related data and notifies view.
-			 *
-			 * Parameters:
-			 *   (String) msg - Raw XML Message
-			 *
-			 * Triggers:
-			 *   candy:core.presence.leave using {roomJid, roomName, action, reason, actor, user}
-			 *
-			 * Returns:
-			 *   (Boolean) - true
-			 */
-            Leave: function($msg) {
-                Candy.Core.log("[Jabber:Room] Leave");
-                var from = $msg.attr("from"), roomJid = Strophe.getBareJidFromJid(from), statuses = Candy.Util.parseStatusCodes($msg), isMe = statuses[110] !== undefined, isKick = statuses[307] !== undefined, isBan = statuses[301] !== undefined;
-                // if room is not joined yet, ignore.
-                if (!Candy.Core.getRoom(roomJid)) {
-                    return true;
-                }
-                var roomName = Candy.Core.getRoom(roomJid).getName(), item = $msg.find("item"), action = "leave", reason, actor;
-                delete Candy.Core.getRooms()[roomJid];
-                // if user gets kicked, role is none and there's a status code 307
-                if (isKick || isBan) {
-                    reason = item.find("reason").text();
-                    actor = item.find("actor").attr("jid");
-                }
-                var user = new Candy.Core.ChatUser(from, Strophe.getResourceFromJid(from), item.attr("affiliation"), item.attr("role"));
-                /** Event: candy:core.presence.leave
-				 * When the local client leaves a room
-				 *
-				 * Also triggered when the local client gets kicked or banned from a room.
-				 *
-				 * Parameters:
-				 *   (String) roomJid - Room
-				 *   (String) roomName - Name of room
-				 *   (String) action - Presence type [kick, ban, leave]
-				 *   (String) reason - When action equals kick|ban, this is the reason the moderator has supplied.
-				 *   (String) actor - When action equals kick|ban, this is the moderator which did the kick
-				 *   (Candy.Core.ChatUser) user - user which leaves the room
-				 */
-                $(Candy).triggerHandler("candy:core.presence.leave", {
-                    roomJid: roomJid,
-                    roomName: roomName,
-                    action: action,
-                    reason: reason,
-                    isMe: isMe,
-                    actor: actor,
-                    user: user
-                });
-                return true;
-            },
-            /** Function: Disco
-			 * Sets informations to rooms according to the disco info received.
-			 *
-			 * Parameters:
-			 *   (String) msg - Raw XML Message
-			 *
-			 * Returns:
-			 *   (Boolean) - true
-			 */
-            Disco: function(msg) {
-                Candy.Core.log("[Jabber:Room] Disco");
-                msg = Candy.Util.unescapeAttrJids($(msg));
-                // Temp fix for #219
-                // Don't go further if it's no conference disco reply
-                // FIXME: Do this in a more beautiful way
-                if (!msg.find('identity[category="conference"]').length) {
-                    return true;
-                }
-                var roomJid = Strophe.getBareJidFromJid(msg.attr("from"));
-                // Client joined a room
-                if (!Candy.Core.getRooms()[roomJid]) {
-                    Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
-                }
-                // Room existed but room name was unknown
-                var identity = msg.find("identity");
-                if (identity.length) {
-                    var roomName = identity.attr("name"), room = Candy.Core.getRoom(roomJid);
-                    if (room.getName() === null) {
-                        room.setName(Strophe.unescapeNode(roomName));
-                    }
-                }
-                return true;
-            },
             /** Function: Presence
 			 * Acts on various presence messages (room leaving, room joining, error presence) and notifies view.
 			 *
@@ -2279,22 +2195,54 @@ Candy.Core.Event = function(self, Strophe, $) {
 			 */
             Presence: function($msg) {
                 Candy.Core.log("[Jabber:Room] Presence");
-                var from = $msg.attr("from"), roomJid = Strophe.getBareJidFromJid(from), presenceType = $msg.attr("type"), statuses = Candy.Util.parseStatusCodes($msg), isMe = statuses[110] !== undefined, isNickChange = statuses[303] !== undefined, isNickAssign = statuses[210] !== undefined, isKick = statuses[307] !== undefined, isBan = statuses[301] !== undefined;
+                var from = $msg.attr("from"), roomJid = Strophe.getBareJidFromJid(from), presenceType = $msg.attr("type"), isJoin = presenceType !== "unavailable", isLeave = !isJoin, statuses = Candy.Util.parseStatusCodes($msg), isMe = statuses[110] !== undefined, isNickChange = statuses[303] !== undefined, isNickAssign = statuses[210] !== undefined, isKick = statuses[307] !== undefined, isBan = statuses[301] !== undefined, item = $msg.find("item"), user, reason, actor, action;
                 // Current User joined a room
                 var room = Candy.Core.getRoom(roomJid);
                 if (!room) {
                     Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
                     room = Candy.Core.getRoom(roomJid);
                 }
-                // Current User left a room
                 var currentUser = room.getUser() ? room.getUser() : Candy.Core.getUser();
-                if (isMe && presenceType === "unavailable" && !isNickChange) {
-                    self.Jabber.Room.Leave($msg);
+                // on kick/ban, presence stanza doesn't contain code '110' even if
+                // it's directed to myself - therefore, check for 'from' equality as well.
+                isMe = isMe || currentUser.getJid() === from;
+                if (isMe && isLeave && !isNickChange) {
+                    Candy.Core.log("[Jabber:Room] Leave");
+                    var roomName = room.getName();
+                    action = "leave";
+                    delete Candy.Core.getRooms()[roomJid];
+                    // if user gets kicked, role is none and there's a status code 307
+                    if (isKick || isBan) {
+                        reason = item.find("reason").text();
+                        actor = item.find("actor").attr("jid");
+                    }
+                    user = new Candy.Core.ChatUser(from, Strophe.getResourceFromJid(from), item.attr("affiliation"), item.attr("role"));
+                    /** Event: candy:core.presence.leave
+					 * When the local client leaves a room
+					 *
+					 * Also triggered when the local client gets kicked or banned from a room.
+					 *
+					 * Parameters:
+					 *   (String) roomJid - Room
+					 *   (String) roomName - Name of room
+					 *   (String) action - Presence type [kick, ban, leave]
+					 *   (String) reason - When action equals kick|ban, this is the reason the moderator has supplied.
+					 *   (String) actor - When action equals kick|ban, this is the moderator which did the kick
+					 *   (Candy.Core.ChatUser) user - user which leaves the room
+					 */
+                    $(Candy).triggerHandler("candy:core.presence.leave", {
+                        roomJid: roomJid,
+                        roomName: roomName,
+                        action: action,
+                        reason: reason,
+                        isMe: isMe,
+                        actor: actor,
+                        user: user
+                    });
                     return true;
                 }
-                var roster = room.getRoster(), action, user, nick, item = $msg.find("item");
-                // User joined a room
-                if (presenceType !== "unavailable") {
+                var roster = room.getRoster(), nick;
+                if (isJoin) {
                     if (roster.get(from)) {
                         // user changed nick before
                         return true;
@@ -2382,6 +2330,39 @@ Candy.Core.Event = function(self, Strophe, $) {
                     roomJid: roomJid,
                     roomName: roomName
                 });
+                return true;
+            },
+            /** Function: Disco
+			 * Sets informations to rooms according to the disco info received.
+			 *
+			 * Parameters:
+			 *   (String) msg - Raw XML Message
+			 *
+			 * Returns:
+			 *   (Boolean) - true
+			 */
+            Disco: function(msg) {
+                Candy.Core.log("[Jabber:Room] Disco");
+                msg = Candy.Util.unescapeAttrJids($(msg));
+                // Temp fix for #219
+                // Don't go further if it's no conference disco reply
+                // FIXME: Do this in a more beautiful way
+                if (!msg.find('identity[category="conference"]').length) {
+                    return true;
+                }
+                var roomJid = Strophe.getBareJidFromJid(msg.attr("from"));
+                // Client joined a room
+                if (!Candy.Core.getRooms()[roomJid]) {
+                    Candy.Core.getRooms()[roomJid] = new Candy.Core.ChatRoom(roomJid);
+                }
+                // Room existed but room name was unknown
+                var identity = msg.find("identity");
+                if (identity.length) {
+                    var roomName = identity.attr("name"), room = Candy.Core.getRoom(roomJid);
+                    if (room.getName() === null) {
+                        room.setName(Strophe.unescapeNode(roomName));
+                    }
+                }
                 return true;
             },
             /** Function: Message
@@ -2653,7 +2634,7 @@ Candy.View.Observer = function(self, $) {
                 var user = Candy.View.Pane.Room.getUser(args.roomJid);
                 Candy.View.Pane.Room.close(args.roomJid);
                 self.Presence.notifyPrivateChats(user, args.action);
-            } else if (args.action === "kick" || args.action === "ban") {
+            } else if (args.isMe && [ "kick", "ban" ].indexOf(args.action) !== -1) {
                 var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : null, actionLabel, translationParams = [ args.roomName ];
                 if (actorName) {
                     translationParams.push(actorName);

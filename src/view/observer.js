@@ -156,7 +156,7 @@ Candy.View.Observer = (function(self, $) {
 				Candy.View.Pane.Room.close(args.roomJid);
 				self.Presence.notifyPrivateChats(user, args.action);
 			// Client has been kicked or banned
-			} else if (args.action === 'kick' || args.action === 'ban') {
+			} else if (args.isMe && ['kick', 'ban'].indexOf(args.action) !== -1) {
 				var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : null,
 					actionLabel,
 					translationParams = [args.roomName];
