@@ -2697,7 +2697,9 @@ Candy.View.Observer = function(self, $) {
             } else if (args.roomJid) {
                 // Initialize room if not yet existing
                 if (!Candy.View.Pane.Chat.rooms[args.roomJid]) {
-                    Candy.View.Pane.Room.init(args.roomJid, args.roomName);
+                    if (Candy.View.Pane.Room.init(args.roomJid, args.roomName) === false) {
+                        return false;
+                    }
                     Candy.View.Pane.Room.show(args.roomJid);
                 }
                 Candy.View.Pane.Roster.update(args.roomJid, args.user, args.action, args.currentUser);
@@ -4225,7 +4227,9 @@ Candy.View.Pane = function(self, $) {
                 return false;
             }
             if (!self.Chat.rooms[roomJid]) {
-                self.Room.init(roomJid, roomName, "chat");
+                if (self.Room.init(roomJid, roomName, "chat") === false) {
+                    return false;
+                }
             }
             if (switchToRoom) {
                 self.Room.show(roomJid);
@@ -4648,7 +4652,9 @@ Candy.View.Pane = function(self, $) {
                 // Check if user is online and not myself
                 var room = Candy.Core.getRoom(roomJid);
                 if (room && name !== self.Room.getUser(Candy.View.getCurrent().roomJid).getNick() && room.getRoster().get(roomJid + "/" + name)) {
-                    Candy.View.Pane.PrivateRoom.open(roomJid + "/" + name, name, true);
+                    if (Candy.View.Pane.PrivateRoom.open(roomJid + "/" + name, name, true) === false) {
+                        return false;
+                    }
                 }
             });
             // Notify the user about a new private message
