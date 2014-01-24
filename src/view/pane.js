@@ -1554,7 +1554,9 @@ Candy.View.Pane = (function(self, $) {
 				return false;
 			}
 			if(!self.Chat.rooms[roomJid]) {
-				self.Room.init(roomJid, roomName, 'chat');
+				if(self.Room.init(roomJid, roomName, 'chat') === false) {
+					return false;
+				}
 			}
 			if(switchToRoom) {
 				self.Room.show(roomJid);
@@ -2054,7 +2056,9 @@ Candy.View.Pane = (function(self, $) {
 				// Check if user is online and not myself
 				var room = Candy.Core.getRoom(roomJid);
 				if(room && name !== self.Room.getUser(Candy.View.getCurrent().roomJid).getNick() && room.getRoster().get(roomJid + '/' + name)) {
-					Candy.View.Pane.PrivateRoom.open(roomJid + '/' + name, name, true);
+					if(Candy.View.Pane.PrivateRoom.open(roomJid + '/' + name, name, true) === false) {
+						return false;
+					}
 				}
 			});
 
