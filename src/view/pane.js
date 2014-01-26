@@ -1782,7 +1782,6 @@ Candy.View.Pane = (function(self, $) {
 				if (currentUser !== undefined && currentUser.isInPrivacyList('ignore', user.getJid())) {
 					Candy.View.Pane.Room.addIgnoreIcon(roomJid, user.getJid());
 				}
-
 			// a user left the room
 			} else if(action === 'leave') {
 				self.Roster.leaveAnimation('user-' + roomId + '-' + userId);

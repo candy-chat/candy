@@ -1709,6 +1709,24 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
     this.getRole = function() {
         return this.data.role;
     };
+    /** Function: setRole
+	 * Sets user role
+	 *
+	 * Parameters:
+	 *   (String) role - Role
+	 */
+    this.setRole = function(role) {
+        this.data.role = role;
+    };
+    /** Function: setAffiliation
+	 * Sets user affiliation
+	 *
+	 * Parameters:
+	 *   (String) affiliation - new affiliation
+	 */
+    this.setAffiliation = function(affiliation) {
+        this.data.affiliation = affiliation;
+    };
     /** Function: getAffiliation
 	 * Gets user affiliation
 	 *
@@ -2246,18 +2264,24 @@ Candy.Core.Event = function(self, Strophe, $) {
                 // User joined a room
                 if (presenceType !== "unavailable") {
                     if (roster.get(from)) {
-                        // user changed nick before
-                        return true;
+                        // role/affiliation change
+                        user = roster.get(from);
+                        var role = item.attr("role"), affiliation = item.attr("affiliation");
+                        user.setRole(role);
+                        user.setAffiliation(affiliation);
+                        // FIXME: currently role/affilation changes are handled with this action
+                        action = "join";
+                    } else {
+                        nick = Strophe.getResourceFromJid(from);
+                        user = new Candy.Core.ChatUser(from, nick, item.attr("affiliation"), item.attr("role"));
+                        // Room existed but client (myself) is not yet registered
+                        if (room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
+                            room.setUser(user);
+                            currentUser = user;
+                        }
+                        roster.add(user);
+                        action = "join";
                     }
-                    nick = Strophe.getResourceFromJid(from);
-                    user = new Candy.Core.ChatUser(from, nick, item.attr("affiliation"), item.attr("role"));
-                    // Room existed but client (myself) is not yet registered
-                    if (room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
-                        room.setUser(user);
-                        currentUser = user;
-                    }
-                    roster.add(user);
-                    action = "join";
                 } else {
                     user = roster.get(from);
                     roster.remove(from);
