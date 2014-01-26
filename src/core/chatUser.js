@@ -99,6 +99,26 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 		return this.data.role;
 	};
 
+	/** Function: setRole
+	 * Sets user role
+	 *
+	 * Parameters:
+	 *   (String) role - Role
+	 */
+	this.setRole = function(role) {
+		this.data.role = role;
+	};
+
+	/** Function: setAffiliation
+	 * Sets user affiliation
+	 *
+	 * Parameters:
+	 *   (String) affiliation - new affiliation
+	 */
+	this.setAffiliation = function(affiliation) {
+		this.data.affiliation = affiliation;
+	};
+
 	/** Function: getAffiliation
 	 * Gets user affiliation
 	 *
