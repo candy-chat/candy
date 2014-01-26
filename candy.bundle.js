@@ -4389,6 +4389,7 @@ Candy.View.Pane = function(self, $) {
                 // Presence of client
                 if (currentUser !== undefined && currentUser.getNick() === user.getNick()) {
                     self.Room.setUser(roomJid, user);
+                    self.Chat.Toolbar.update(roomJid);
                 } else {
                     $("#user-" + roomId + "-" + userId).click(self.Roster.userClick);
                 }

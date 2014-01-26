@@ -371,9 +371,10 @@ Candy.View.Pane = (function(self, $) {
 			 */
 			init: function() {
 				$('#emoticons-icon').click(function(e) {
-				self.Chat.Context.showEmoticonsMenu(e.currentTarget);
-					e.stopPropagation();
-				});
+					self.Chat.Context.showEmoticonsMenu(e.currentTarget);
+						e.stopPropagation();
+					}
+				);
 				$('#chat-autoscroll-control').click(self.Chat.Toolbar.onAutoscrollControlClick);
 
 				var a = document.createElement('audio');
@@ -408,6 +409,7 @@ Candy.View.Pane = (function(self, $) {
 			update: function(roomJid) {
 				var context = $('#chat-toolbar').find('.context'),
 					me = self.Room.getUser(roomJid);
+
 				if(!me || !me.isModerator()) {
 					context.hide();
 				} else {
@@ -1768,6 +1770,7 @@ Candy.View.Pane = (function(self, $) {
 				// Presence of client
 				if (currentUser !== undefined && currentUser.getNick() === user.getNick()) {
 					self.Room.setUser(roomJid, user);
+					self.Chat.Toolbar.update(roomJid);
 				// add click handler for private chat
 				} else {
 					$('#user-' + roomId + '-' + userId).click(self.Roster.userClick);
