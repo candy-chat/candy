@@ -148,9 +148,9 @@ Candy.View.Observer = (function(self, $) {
 		 *   - <notifyPrivateChats>
 		 */
 		update: function(event, args) {
-			// Client left
 			Candy.Core.log('[View:Observer:Presence] update ' + args.action);
 
+			// Client left
 			if(args.action === 'leave' && args.isMe) {
 				var user = Candy.View.Pane.Room.getUser(args.roomJid);
 				Candy.View.Pane.Room.close(args.roomJid);
