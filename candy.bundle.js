@@ -492,7 +492,7 @@ Candy.View = function(self, $) {
         $(Candy).on("candy:core.chat.message", self.Observer.Chat.Message);
         $(Candy).on("candy:core.login", self.Observer.Login);
         $(Candy).on("candy:core.autojoin-missing", self.Observer.AutojoinMissing);
-        $(Candy).on("candy:core.presence.leave", self.Observer.Presence.update);
+        $(Candy).on("candy:core.presence.me.leave", self.Observer.Presence.leave);
         $(Candy).on("candy:core.presence.room", self.Observer.Presence.update);
         $(Candy).on("candy:core.presence.error", self.Observer.PresenceError);
         $(Candy).on("candy:core.message", self.Observer.Message);
@@ -2335,6 +2335,7 @@ Candy.Core.Event = function(self, Strophe, $) {
                 if (args.isKick || args.isBan) {
                     reason = args.item.find("reason").text();
                     actor = args.item.find("actor").attr("jid");
+                    action = args.isKick ? "kick" : "ban";
                 }
                 // FIXME: why?
                 var user = new Candy.Core.ChatUser(args.from, Strophe.getResourceFromJid(args.from), args.item.attr("affiliation"), args.item.attr("role"));
@@ -2351,7 +2352,7 @@ Candy.Core.Event = function(self, Strophe, $) {
 				 *   (String) actor - When action equals kick|ban, this is the moderator which did the kick
 				 *   (Candy.Core.ChatUser) user - user which leaves the room
 				 */
-                $(Candy).triggerHandler("candy:core.presence.leave", {
+                $(Candy).triggerHandler("candy:core.presence.me.leave", {
                     roomJid: args.roomJid,
                     roomName: roomName,
                     action: action,
@@ -2694,7 +2695,33 @@ Candy.View.Observer = function(self, $) {
 	 */
     self.Presence = {
         /** Function: update
-		 * Every presence update gets dispatched from this method.
+		 * Presence changes (join, nickchange, change affiliation)
+		 * get dispatched from this method to the view
+		 *
+		 * Parameters:
+		 *   (jQuery.Event) event - jQuery.Event object
+		 *   (Object) args - Arguments differ on each type
+		 */
+        update: function(event, args) {
+            Candy.Core.log("[View:Observer:Presence] update " + args.action);
+            // Initialize room if not yet existing
+            if (!Candy.View.Pane.Chat.rooms[args.roomJid]) {
+                if (Candy.View.Pane.Room.init(args.roomJid, args.roomName) === false) {
+                    return false;
+                }
+                Candy.View.Pane.Room.show(args.roomJid);
+            }
+            Candy.View.Pane.Roster.update(args.roomJid, args.user, args.action, args.currentUser);
+            // Notify private user chats if existing, but not in case the action is nickchange
+            // -- this is because the nickchange presence already contains the new
+            // user jid
+            if (Candy.View.Pane.Chat.rooms[args.user.getJid()] && args.action !== "nickchange") {
+                Candy.View.Pane.Roster.update(args.user.getJid(), args.user, args.action, args.currentUser);
+                Candy.View.Pane.PrivateRoom.setStatus(args.user.getJid(), args.action);
+            }
+        },
+        /** Function: leave
+		 * Own presence updates get dispatched from this method.
 		 *
 		 * Parameters:
 		 *   (jQuery.Event) event - jQuery.Event object
@@ -2703,71 +2730,57 @@ Candy.View.Observer = function(self, $) {
 		 * Uses:
 		 *   - <notifyPrivateChats>
 		 */
-        update: function(event, args) {
-            Candy.Core.log("[View:Observer:Presence] update " + args.action);
+        leave: function(event, args) {
             // Client left
-            if (args.action === "leave" && args.isMe) {
+            if (args.action === "leave") {
                 var user = Candy.View.Pane.Room.getUser(args.roomJid);
                 Candy.View.Pane.Room.close(args.roomJid);
                 self.Presence.notifyPrivateChats(user, args.action);
-            } else if (args.isMe && [ "kick", "ban" ].indexOf(args.action) !== -1) {
-                var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : null, actionLabel, translationParams = [ args.roomName ];
-                if (actorName) {
-                    translationParams.push(actorName);
-                }
-                switch (args.action) {
-                  case "kick":
-                    actionLabel = $.i18n._(actorName ? "youHaveBeenKickedBy" : "youHaveBeenKicked", translationParams);
-                    break;
-
-                  case "ban":
-                    actionLabel = $.i18n._(actorName ? "youHaveBeenBannedBy" : "youHaveBeenBanned", translationParams);
-                    break;
-                }
-                Candy.View.Pane.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.adminMessageReason, {
-                    reason: args.reason,
-                    _action: actionLabel,
-                    _reason: $.i18n._("reasonWas", [ args.reason ])
-                }));
-                setTimeout(function() {
-                    Candy.View.Pane.Chat.Modal.hide(function() {
-                        Candy.View.Pane.Room.close(args.roomJid);
-                        self.Presence.notifyPrivateChats(args.user, args.action);
-                    });
-                }, 5e3);
-                var evtData = {
-                    type: args.action,
-                    reason: args.reason,
-                    roomJid: args.roomJid,
-                    user: args.user
-                };
-                /** Event: candy:view.presence
-				 * Presence update when kicked or banned
-				 *
-				 * Parameters:
-				 *   (String) type - Presence type [kick, ban]
-				 *   (String) reason - Reason for the kick|ban [optional]
-				 *   (String) roomJid - Room JID
-				 *   (Candy.Core.ChatUser) user - User which has been kicked or banned
-				 */
-                $(Candy).triggerHandler("candy:view.presence", [ evtData ]);
-            } else if (args.roomJid) {
-                // Initialize room if not yet existing
-                if (!Candy.View.Pane.Chat.rooms[args.roomJid]) {
-                    if (Candy.View.Pane.Room.init(args.roomJid, args.roomName) === false) {
-                        return false;
-                    }
-                    Candy.View.Pane.Room.show(args.roomJid);
-                }
-                Candy.View.Pane.Roster.update(args.roomJid, args.user, args.action, args.currentUser);
-                // Notify private user chats if existing, but not in case the action is nickchange
-                // -- this is because the nickchange presence already contains the new
-                // user jid
-                if (Candy.View.Pane.Chat.rooms[args.user.getJid()] && args.action !== "nickchange") {
-                    Candy.View.Pane.Roster.update(args.user.getJid(), args.user, args.action, args.currentUser);
-                    Candy.View.Pane.PrivateRoom.setStatus(args.user.getJid(), args.action);
-                }
+            } else if ([ "kick", "ban" ].indexOf(args.action) !== -1) {
+                self.Presence.kickOrBan(args);
             }
+        },
+        kickOrBan: function(args) {
+            var actorName = args.actor ? Strophe.getNodeFromJid(args.actor) : null, actionLabel, translationParams = [ args.roomName ];
+            if (actorName) {
+                translationParams.push(actorName);
+            }
+            switch (args.action) {
+              case "kick":
+                actionLabel = $.i18n._(actorName ? "youHaveBeenKickedBy" : "youHaveBeenKicked", translationParams);
+                break;
+
+              case "ban":
+                actionLabel = $.i18n._(actorName ? "youHaveBeenBannedBy" : "youHaveBeenBanned", translationParams);
+                break;
+            }
+            Candy.View.Pane.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.adminMessageReason, {
+                reason: args.reason,
+                _action: actionLabel,
+                _reason: $.i18n._("reasonWas", [ args.reason ])
+            }));
+            setTimeout(function() {
+                Candy.View.Pane.Chat.Modal.hide(function() {
+                    Candy.View.Pane.Room.close(args.roomJid);
+                    self.Presence.notifyPrivateChats(args.user, args.action);
+                });
+            }, 5e3);
+            var evtData = {
+                type: args.action,
+                reason: args.reason,
+                roomJid: args.roomJid,
+                user: args.user
+            };
+            /** Event: candy:view.presence
+			 * Presence update when kicked or banned
+			 *
+			 * Parameters:
+			 *   (String) type - Presence type [kick, ban]
+			 *   (String) reason - Reason for the kick|ban [optional]
+			 *   (String) roomJid - Room JID
+			 *   (Candy.Core.ChatUser) user - User which has been kicked or banned
+			 */
+            $(Candy).triggerHandler("candy:view.presence", [ evtData ]);
         },
         /** Function: notifyPrivateChats
 		 * Notify private user chats if existing

@@ -449,6 +449,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				if(args.isKick || args.isBan) {
 					reason = args.item.find('reason').text();
 					actor  = args.item.find('actor').attr('jid');
+
+					action = args.isKick ? 'kick' : 'ban';
 				}
 
 				// FIXME: why?
@@ -470,7 +472,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) actor - When action equals kick|ban, this is the moderator which did the kick
 				 *   (Candy.Core.ChatUser) user - user which leaves the room
 				 */
-				$(Candy).triggerHandler('candy:core.presence.leave', {
+				$(Candy).triggerHandler('candy:core.presence.me.leave', {
 					'roomJid': args.roomJid,
 					'roomName': roomName,
 					'action': action,
