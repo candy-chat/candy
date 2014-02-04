@@ -194,7 +194,7 @@ Candy.Core = function(self, Strophe, $) {
 	 * // connect as registered user
 	 * Candy.Core.connect({
 	 *   jid: 'foo@example.com',
-	 *   password: 'your hopefully highly sophistcated password'
+	 *   password: 'your hopefully highly sophisticated password'
 	 * });
 	 *
 	 * // connect anonymously to server (prompt for nickname)
