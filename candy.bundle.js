@@ -2294,6 +2294,16 @@ Candy.Core.Event = function(self, Strophe, $) {
                 });
                 return true;
             },
+            /** Function: JoinPresence
+			 * Acts on joins and returns the newly created user as well as
+			 * the current user (might change in case it's myself who joined).
+			 *
+			 * Parameters:
+			 *   (Object) args - Various arguments from the dispatcher
+			 *
+			 * Returns:
+			 *   (Object) - user & currentUser
+			 */
             JoinPresence: function(args) {
                 var nick = Strophe.getResourceFromJid(args.from);
                 var user = new Candy.Core.ChatUser(args.from, nick, args.item.attr("affiliation"), args.item.attr("role"));
@@ -2352,6 +2362,12 @@ Candy.Core.Event = function(self, Strophe, $) {
                 });
                 return true;
             },
+            /** Function: ChangePresence
+			 * Updates role & affiliation of the user.
+			 *
+			 * Parameters:
+			 *   (Object) args - Various arguments from the dispatcher
+			 */
             ChangePresence: function(args) {
                 var role = args.item.attr("role"), affiliation = args.item.attr("affiliation");
                 args.user.setRole(role);
