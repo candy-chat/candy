@@ -2352,8 +2352,6 @@ Candy.Core.Event = function(self, Strophe, $) {
                 });
                 return true;
             },
-            KickPresence: function() {},
-            BanPresence: function() {},
             ChangePresence: function(args) {
                 var role = args.item.attr("role"), affiliation = args.item.attr("affiliation");
                 args.user.setRole(role);
