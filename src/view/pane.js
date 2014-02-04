@@ -136,7 +136,7 @@ Candy.View.Pane = (function(self, $) {
 					roomJid: roomJid,
 					roomId: roomId,
 					name: roomName || Strophe.getNodeFromJid(roomJid),
-					privateUserChat: function() {return roomType === 'chat';},
+					privateUserChat: roomType === 'chat',
 					roomType: roomType
 				}),
 				tab = $(html).appendTo('#chat-tabs');
