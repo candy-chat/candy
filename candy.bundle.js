@@ -187,25 +187,43 @@ Candy.Core = function(self, Strophe, $) {
         self.addHandler(_connection.caps._delegateCapabilities.bind(_connection.caps), Strophe.NS.CAPS);
     };
     /** Function: connect
-	 * Connect to the jabber host.
+	 * Connect to the xmpp host.
 	 *
-	 * There are four different procedures to login:
-	 *   connect('JID', 'password') - Connect a registered user
-	 *   connect('domain') - Connect anonymously to the domain. The user should receive a random JID.
-	 *   connect('domain', null, 'nick') - Connect anonymously to the domain. The user should receive a random JID but with a nick set.
-	 *   connect('JID') - Show login form and prompt for password. JID input is hidden.
-	 *   connect() - Show login form and prompt for JID and password.
+	 * There are five different procedures to login:
+	 * (start code)
+	 * // connect as registered user
+	 * Candy.Core.connect({
+	 *   jid: 'foo@example.com',
+	 *   password: 'your hopefully highly sophistcated password'
+	 * });
+	 *
+	 * // connect anonymously to server (prompt for nickname)
+	 * Candy.Core.connect({
+	 *   hostname: 'xmpp.example.com'
+	 * });
+	 *
+	 * // connect anonymous, with nickname set
+	 * Candy.Core.connect({
+	 *   hostname: 'xmpp.example.com',
+	 *   nickname: 'test'
+	 * });
+	 *
+	 * // connect with jid, but user has to enter password
+	 * Candy.Core.connect({
+	 *   jid: 'foo@xmpp.example.com',
+	 * });
+	 *
+	 * // just show loginform and prompt for JID and password
+	 * Candy.Core.connect();
+	 * (end code)
 	 *
 	 * See:
 	 *   <Candy.Core.attach()> for attaching an already established session.
 	 *
 	 * Parameters:
-	 *   (String) jidOrHost - JID or Host
-	 *   (String) password  - Password of the user
-	 *   (String) nick      - Nick of the user. Set one if you want to anonymously connect but preset a nick. If jidOrHost is a domain
-	 *                        and this param is not set, Candy will prompt for a nick.
+	 *   (Object) options - Options
 	 */
-    self.connect = function(jidOrHost, password, nick) {
+    self.connect = function(options) {
         // Reset before every connection attempt to make sure reconnections work after authfail, alltabsclosed, ...
         _connection.reset();
         self.registerEventHandlers();
@@ -223,6 +241,61 @@ Candy.Core = function(self, Strophe, $) {
         $(Candy).triggerHandler("candy:core.before-connect", {
             connection: _connection
         });
+        // call deprecated connect function in case argument is not an object
+        if (options !== undefined && typeof options !== "object") {
+            Candy.Core.log("[Warning] you use a deprecated connect() function. Please update.");
+            return self.deprecatedConnect.apply(self, arguments);
+        }
+        if (options === undefined) {
+            Candy.Core.Event.Login();
+            return true;
+        }
+        if (options.jid && options.password) {
+            // authentication
+            _connection.connect(Candy.Util.escapeJid(options.jid) + "/" + _options.resource, options.password, Candy.Core.Event.Strophe.Connect);
+            if (options.nickname) {
+                _user = new self.ChatUser(options.jid, options.nickname);
+            } else {
+                _user = new self.ChatUser(options.jid, Strophe.getNodeFromJid(options.jid));
+            }
+            return true;
+        }
+        if (options.hostname) {
+            _anonymousConnection = true;
+            if (options.nickname) {
+                _connection.connect(options.hostname + "/" + _options.resource, null, Candy.Core.Event.Strophe.Connect);
+                _user = new self.ChatUser(null, options.nickname);
+                // set jid to null because we'll later receive it
+                return true;
+            }
+            Candy.Core.Event.Login(options.hostname);
+            return true;
+        }
+        if (options.jid) {
+            Candy.Core.Event.Login(options.jid);
+            return true;
+        }
+    };
+    /** Function: deprecatedConnect
+	 * DEPRECATED: Connect to the xmpp host.
+	 *
+	 * There are four different procedures to login:
+	 *   connect('JID', 'password') - Connect a registered user
+	 *   connect('domain') - Connect anonymously to the domain. The user should receive a random JID.
+	 *   connect('domain', null, 'nick') - Connect anonymously to the domain. The user should receive a random JID but with a nick set.
+	 *   connect('JID') - Show login form and prompt for password. JID input is hidden.
+	 *   connect() - Show login form and prompt for JID and password.
+	 *
+	 * See:
+	 *   <Candy.Core.attach()> for attaching an already established session.
+	 *
+	 * Parameters:
+	 *   (String) jidOrHost - JID or Host
+	 *   (String) password  - Password of the user
+	 *   (String) nick      - Nick of the user. Set one if you want to anonymously connect but preset a nick. If jidOrHost is a domain
+	 *                        and this param is not set, Candy will prompt for a nick.
+	 */
+    self.deprecatedConnect = function(jidOrHost, password, nick) {
         _anonymousConnection = !_anonymousConnection ? jidOrHost && jidOrHost.indexOf("@") < 0 : true;
         if (jidOrHost && password) {
             // authentication
@@ -234,7 +307,7 @@ Candy.Core = function(self, Strophe, $) {
             }
         } else if (jidOrHost && nick) {
             // anonymous connect
-            _connection.connect(Candy.Util.escapeJid(jidOrHost) + "/" + _options.resource, null, Candy.Core.Event.Strophe.Connect);
+            _connection.connect(jidOrHost + "/" + _options.resource, null, Candy.Core.Event.Strophe.Connect);
             _user = new self.ChatUser(null, nick);
         } else if (jidOrHost) {
             Candy.Core.Event.Login(jidOrHost);
@@ -3464,12 +3537,17 @@ Candy.View.Pane = function(self, $) {
                         if (jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
                             Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._("loginInvalid"));
                         } else {
-                            //Candy.View.Pane.Chat.Modal.hide();
-                            Candy.Core.connect(jid, password);
+                            Candy.Core.connect({
+                                jid: jid,
+                                password: password
+                            });
                         }
                     } else {
                         // anonymous login
-                        Candy.Core.connect(presetJid, null, username);
+                        Candy.Core.connect({
+                            hostname: presetJid,
+                            nickname: username
+                        });
                     }
                     return false;
                 });

@@ -642,11 +642,16 @@ Candy.View.Pane = (function(self, $) {
 						if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
 							Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('loginInvalid'));
 						} else {
-							//Candy.View.Pane.Chat.Modal.hide();
-							Candy.Core.connect(jid, password);
+							Candy.Core.connect({
+								jid: jid,
+								password: password
+							});
 						}
 					} else { // anonymous login
-						Candy.Core.connect(presetJid, null, username);
+						Candy.Core.connect({
+							hostname: presetJid,
+							nickname: username
+						});
 					}
 					return false;
 				});
