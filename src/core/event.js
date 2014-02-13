@@ -608,6 +608,13 @@ Candy.Core.Event = (function(self, Strophe, $) {
 							message = { name: '', body: msg.children('body').text(), type: 'info' };
 						}
 					}
+
+					var xhtmlChild = msg.children('html[xmlns="' + Strophe.NS.XHTML_IM + '"]');
+					if(Candy.View.getOptions().enableXHTML === true && xhtmlChild.length > 0) {
+						var xhtmlMessage = xhtmlChild.children('body[xmlns="' + Strophe.NS.XHTML + '"]').first().html();
+						message.xhtmlMessage = xhtmlMessage;
+					}
+
 				// Unhandled message
 				} else {
 					return true;

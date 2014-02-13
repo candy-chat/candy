@@ -1933,12 +1933,13 @@ Candy.View.Pane = (function(self, $) {
 		submit: function(event) {
 			var roomJid = Candy.View.getCurrent().roomJid,
 				roomType = Candy.View.Pane.Chat.rooms[roomJid].type,
-				message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body);
-
-			var evtData = {
-				roomJid: roomJid,
-				message: message
-			};
+				message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body),
+				xhtmlMessage,
+				evtData = {
+					roomJid: roomJid,
+					message: message,
+					xhtmlMessage: xhtmlMessage
+				};
 
 			/** Event: candy:view.message.before-send
 			 * Before sending a message
@@ -1946,6 +1947,7 @@ Candy.View.Pane = (function(self, $) {
 			 * Parameters:
 			 *   (String) roomJid - room to which the message should be sent
 			 *   (String) message - Message text
+			 *   (String) xhtmlMessage - XHTML formatted message [default: undefined]
 			 *
 			 * Returns:
 			 *   Boolean|undefined - if you like to stop sending the message, return false.
@@ -1956,8 +1958,9 @@ Candy.View.Pane = (function(self, $) {
 			}
 
 			message = evtData.message;
+			xhtmlMessage = evtData.xhtmlMessage;
 
-			Candy.Core.Action.Jabber.Room.Message(Candy.View.getCurrent().roomJid, message, roomType);
+			Candy.Core.Action.Jabber.Room.Message(Candy.View.getCurrent().roomJid, message, roomType, xhtmlMessage);
 			// Private user chat. Jabber won't notify the user who has sent the message. Just show it as the user hits the button...
 			if(roomType === 'chat' && message) {
 				self.Message.show(Candy.View.getCurrent().roomJid, self.Room.getUser(Candy.View.getCurrent().roomJid).getNick(), message);
@@ -1974,6 +1977,7 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) roomJid - room in which the message has been sent to
 		 *   (String) name - Name of the user which sent the message
 		 *   (String) message - Message
+		 *   (String) xhtmlMessage - XHTML formatted message [if options enableXHTML is true]
 		 *   (String) timestamp - [optional] Timestamp of the message, if not present, current date.
 		 *
 		 * Triggers:
@@ -1981,10 +1985,18 @@ Candy.View.Pane = (function(self, $) {
 		 *   candy.view.message.before-render using {template, templateData}
 		 *   candy:view.message.after-show using {roomJid, name, message, element}
 		 */
-		show: function(roomJid, name, message, timestamp) {
+		show: function(roomJid, name, message, xhtmlMessage, timestamp) {
 			message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
+			if(xhtmlMessage) {
+				xhtmlMessage = Candy.Util.parseAndCropXhtml(xhtmlMessage, Candy.View.getOptions().crop.message.body);
+			}
 
-			var evtData = {'roomJid': roomJid, 'name': name, 'message': message};
+			var evtData = {
+				'roomJid': roomJid,
+				'name': name,
+				'message': message,
+				'xhtmlMessage': xhtmlMessage
+			};
 
 			/** Event: candy:view.message.before-show
 			 * Before showing a new message
@@ -2002,6 +2014,10 @@ Candy.View.Pane = (function(self, $) {
 			}
 
 			message = evtData.message;
+			xhtmlMessage = evtData.xhtmlMessage;
+			if(xhtmlMessage !== undefined && xhtmlMessage.length > 0) {
+				message = xhtmlMessage;
+			}
 
 			if(!message) {
 				return;
