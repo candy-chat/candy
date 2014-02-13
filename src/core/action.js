@@ -280,7 +280,13 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				if(msg === '') {
 					return false;
 				}
-				Candy.Core.getConnection().muc.message(Candy.Util.escapeJid(roomJid), null, msg, xhtmlMsg, type);
+				var nick = null;
+				if(type === 'chat') {
+					nick = Strophe.getResourceFromJid(roomJid);
+					roomJid = Strophe.getBareJidFromJid(roomJid);
+				}
+				// muc takes care of the escaping now.
+				Candy.Core.getConnection().muc.message(roomJid, nick, msg, xhtmlMsg, type);
 				return true;
 			},
 
