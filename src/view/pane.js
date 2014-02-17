@@ -1166,7 +1166,10 @@ Candy.View.Pane = (function(self, $) {
 
 			$('.room-pane').each(function() {
 				var elem = $(this);
-				evtData = {'roomJid': elem.attr('data-roomjid'), 'element' : elem};
+				evtData = {
+					'roomJid': elem.attr('data-roomjid'),
+					'element' : elem
+				};
 
 				if(elem.attr('id') === ('chat-room-' + roomId)) {
 					elem.show();
