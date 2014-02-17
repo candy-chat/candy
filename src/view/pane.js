@@ -1166,7 +1166,7 @@ Candy.View.Pane = (function(self, $) {
 
 			$('.room-pane').each(function() {
 				var elem = $(this);
-				evtData = {'roomJid': roomJid, 'element' : elem};
+				evtData = {'roomJid': elem.attr('data-roomjid'), 'element' : elem};
 
 				if(elem.attr('id') === ('chat-room-' + roomId)) {
 					elem.show();
@@ -1186,7 +1186,7 @@ Candy.View.Pane = (function(self, $) {
 					 */
 					$(Candy).triggerHandler('candy:view.room.after-show', evtData);
 
-				} else {
+				} else if(elem.is(':visible')) {
 					elem.hide();
 
 					/** Event: candy:view.room.after-hide
