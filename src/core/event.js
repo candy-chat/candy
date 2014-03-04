@@ -278,7 +278,21 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					subject: msg.children('subject').text(),
 					message: msg.children('body').text()
 				});
+			} else if (typeof type === 'undefined') {
+				/** Event: candy:core.chat.message.other
+				 * Messages without a type attribute.
+				 * (e.g. MUC invites.)
+				 *
+				 * Parameter:
+				 *   (String) type - Message type [default: other]
+				 *   (Object) message - Message object. 
+				 */
+				$(Candy).triggerHandler('candy:core.chat.message.other', {
+					type: 'other',
+					message: msg
+				});
 			}
+			
 			return true;
 		},
 
