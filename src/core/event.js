@@ -273,7 +273,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) subject - Subject text
 				 *   (String) message - Message text
 				 */
-				$(Candy).triggerHandler('candy:core.chat.message.server', {
+				$(Candy).triggerHandler('candy:core:chat:message:server', {
 					type: (type || 'message'),
 					subject: msg.children('subject').text(),
 					message: msg.children('body').text()
@@ -287,7 +287,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) type - Message type [default: other]
 				 *   (Object) message - Message object. 
 				 */
-				$(Candy).triggerHandler('candy:core.chat.message.other', {
+				$(Candy).triggerHandler('candy:core:chat:message:other', {
 					type: 'other',
 					message: msg
 				});
