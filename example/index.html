@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>Candy - Chats are not dead yet</title>
 	<link rel="shortcut icon" href="../res/img/favicon.png" type="image/gif" />
 	<link rel="stylesheet" type="text/css" href="../res/default.css" />
@@ -26,6 +27,11 @@
 			});
 
 			Candy.Core.connect();
+
+			// Click on the usercount icon to show the roster
+                        $(".usercount").click(function() {
+                                $(".roster-pane").toggle();
+                        });
 
 			/**
 			 * Thanks for trying Candy!
