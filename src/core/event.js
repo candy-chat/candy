@@ -279,7 +279,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					message: msg.children('body').text()
 				});
 			} else if (typeof type === 'undefined') {
-				/** Event: candy:core.chat.message.other
+				/** Event: candy:core:chat:message:other
 				 * Messages without a type attribute.
 				 * (e.g. MUC invites.)
 				 *
