@@ -71,37 +71,17 @@ var Base64 = function() {
  * Distributed under the BSD License
  * See http://pajhome.org.uk/crypt/md5 for details.
  */
-/*
- * Configurable variables. You may need to tweak these to be compatible with
- * the server-side, but the defaults work in most cases.
- */
-var hexcase = 0;
-
-/* hex output format. 0 - lowercase; 1 - uppercase        */
-var b64pad = "=";
-
-/* base-64 pad character. "=" for strict RFC compliance   */
-var chrsz = 8;
-
-/* bits per input character. 8 - ASCII; 16 - Unicode      */
+/* Some functions and variables have been stripped for use with Strophe */
 /*
  * These are the functions you'll usually want to call
  * They take string arguments and return either hex or base-64 encoded strings
  */
-function hex_sha1(s) {
-    return binb2hex(core_sha1(str2binb(s), s.length * chrsz));
-}
-
 function b64_sha1(s) {
-    return binb2b64(core_sha1(str2binb(s), s.length * chrsz));
+    return binb2b64(core_sha1(str2binb(s), s.length * 8));
 }
 
 function str_sha1(s) {
-    return binb2str(core_sha1(str2binb(s), s.length * chrsz));
-}
-
-function hex_hmac_sha1(key, data) {
-    return binb2hex(core_hmac_sha1(key, data));
+    return binb2str(core_sha1(str2binb(s), s.length * 8));
 }
 
 function b64_hmac_sha1(key, data) {
@@ -110,13 +90,6 @@ function b64_hmac_sha1(key, data) {
 
 function str_hmac_sha1(key, data) {
     return binb2str(core_hmac_sha1(key, data));
-}
-
-/*
- * Perform a simple self-test to see if the VM is working
- */
-function sha1_vm_test() {
-    return hex_sha1("abc") == "a9993e364706816aba3e25717850c26c9cd0d89d";
 }
 
 /*
@@ -191,14 +164,14 @@ function sha1_kt(t) {
 function core_hmac_sha1(key, data) {
     var bkey = str2binb(key);
     if (bkey.length > 16) {
-        bkey = core_sha1(bkey, key.length * chrsz);
+        bkey = core_sha1(bkey, key.length * 8);
     }
     var ipad = new Array(16), opad = new Array(16);
     for (var i = 0; i < 16; i++) {
         ipad[i] = bkey[i] ^ 909522486;
         opad[i] = bkey[i] ^ 1549556828;
     }
-    var hash = core_sha1(ipad.concat(str2binb(data)), 512 + data.length * chrsz);
+    var hash = core_sha1(ipad.concat(str2binb(data)), 512 + data.length * 8);
     return core_sha1(opad.concat(hash), 512 + 160);
 }
 
@@ -225,9 +198,9 @@ function rol(num, cnt) {
  */
 function str2binb(str) {
     var bin = [];
-    var mask = (1 << chrsz) - 1;
-    for (var i = 0; i < str.length * chrsz; i += chrsz) {
-        bin[i >> 5] |= (str.charCodeAt(i / chrsz) & mask) << 32 - chrsz - i % 32;
+    var mask = 255;
+    for (var i = 0; i < str.length * 8; i += 8) {
+        bin[i >> 5] |= (str.charCodeAt(i / 8) & mask) << 24 - i % 32;
     }
     return bin;
 }
@@ -237,21 +210,9 @@ function str2binb(str) {
  */
 function binb2str(bin) {
     var str = "";
-    var mask = (1 << chrsz) - 1;
-    for (var i = 0; i < bin.length * 32; i += chrsz) {
-        str += String.fromCharCode(bin[i >> 5] >>> 32 - chrsz - i % 32 & mask);
-    }
-    return str;
-}
-
-/*
- * Convert an array of big-endian words to a hex string.
- */
-function binb2hex(binarray) {
-    var hex_tab = hexcase ? "0123456789ABCDEF" : "0123456789abcdef";
-    var str = "";
-    for (var i = 0; i < binarray.length * 4; i++) {
-        str += hex_tab.charAt(binarray[i >> 2] >> (3 - i % 4) * 8 + 4 & 15) + hex_tab.charAt(binarray[i >> 2] >> (3 - i % 4) * 8 & 15);
+    var mask = 255;
+    for (var i = 0; i < bin.length * 32; i += 8) {
+        str += String.fromCharCode(bin[i >> 5] >>> 24 - i % 32 & mask);
     }
     return str;
 }
@@ -267,7 +228,7 @@ function binb2b64(binarray) {
         triplet = (binarray[i >> 2] >> 8 * (3 - i % 4) & 255) << 16 | (binarray[i + 1 >> 2] >> 8 * (3 - (i + 1) % 4) & 255) << 8 | binarray[i + 2 >> 2] >> 8 * (3 - (i + 2) % 4) & 255;
         for (j = 0; j < 4; j++) {
             if (i * 8 + j * 6 > binarray.length * 32) {
-                str += b64pad;
+                str += "=";
             } else {
                 str += tab.charAt(triplet >> 6 * (3 - j) & 63);
             }
@@ -284,17 +245,10 @@ function binb2b64(binarray) {
  * Distributed under the BSD License
  * See http://pajhome.org.uk/crypt/md5 for more info.
  */
+/*
+ * Everything that isn't used by Strophe has been stripped here!
+ */
 var MD5 = function() {
-    /*
-     * Configurable variables. You may need to tweak these to be compatible with
-     * the server-side, but the defaults work in most cases.
-     */
-    var hexcase = 0;
-    /* hex output format. 0 - lowercase; 1 - uppercase */
-    var b64pad = "";
-    /* base-64 pad character. "=" for strict RFC compliance */
-    var chrsz = 8;
-    /* bits per input character. 8 - ASCII; 16 - Unicode */
     /*
      * Add integers, wrapping at 2^32. This uses 16-bit operations internally
      * to work around bugs in some JS interpreters.
@@ -312,13 +266,11 @@ var MD5 = function() {
     };
     /*
      * Convert a string to an array of little-endian words
-     * If chrsz is ASCII, characters >255 have their hi-byte silently ignored.
      */
     var str2binl = function(str) {
         var bin = [];
-        var mask = (1 << chrsz) - 1;
-        for (var i = 0; i < str.length * chrsz; i += chrsz) {
-            bin[i >> 5] |= (str.charCodeAt(i / chrsz) & mask) << i % 32;
+        for (var i = 0; i < str.length * 8; i += 8) {
+            bin[i >> 5] |= (str.charCodeAt(i / 8) & 255) << i % 32;
         }
         return bin;
     };
@@ -327,9 +279,8 @@ var MD5 = function() {
      */
     var binl2str = function(bin) {
         var str = "";
-        var mask = (1 << chrsz) - 1;
-        for (var i = 0; i < bin.length * 32; i += chrsz) {
-            str += String.fromCharCode(bin[i >> 5] >>> i % 32 & mask);
+        for (var i = 0; i < bin.length * 32; i += 8) {
+            str += String.fromCharCode(bin[i >> 5] >>> i % 32 & 255);
         }
         return str;
     };
@@ -337,29 +288,10 @@ var MD5 = function() {
      * Convert an array of little-endian words to a hex string.
      */
     var binl2hex = function(binarray) {
-        var hex_tab = hexcase ? "0123456789ABCDEF" : "0123456789abcdef";
+        var hex_tab = "0123456789abcdef";
         var str = "";
         for (var i = 0; i < binarray.length * 4; i++) {
             str += hex_tab.charAt(binarray[i >> 2] >> i % 4 * 8 + 4 & 15) + hex_tab.charAt(binarray[i >> 2] >> i % 4 * 8 & 15);
-        }
-        return str;
-    };
-    /*
-     * Convert an array of little-endian words to a base-64 string
-     */
-    var binl2b64 = function(binarray) {
-        var tab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-        var str = "";
-        var triplet, j;
-        for (var i = 0; i < binarray.length * 4; i += 3) {
-            triplet = (binarray[i >> 2] >> 8 * (i % 4) & 255) << 16 | (binarray[i + 1 >> 2] >> 8 * ((i + 1) % 4) & 255) << 8 | binarray[i + 2 >> 2] >> 8 * ((i + 2) % 4) & 255;
-            for (j = 0; j < 4; j++) {
-                if (i * 8 + j * 6 > binarray.length * 32) {
-                    str += b64pad;
-                } else {
-                    str += tab.charAt(triplet >> 6 * (3 - j) & 63);
-                }
-            }
         }
         return str;
     };
@@ -469,22 +401,6 @@ var MD5 = function() {
         }
         return [ a, b, c, d ];
     };
-    /*
-     * Calculate the HMAC-MD5, of a key and some data
-     */
-    var core_hmac_md5 = function(key, data) {
-        var bkey = str2binl(key);
-        if (bkey.length > 16) {
-            bkey = core_md5(bkey, key.length * chrsz);
-        }
-        var ipad = new Array(16), opad = new Array(16);
-        for (var i = 0; i < 16; i++) {
-            ipad[i] = bkey[i] ^ 909522486;
-            opad[i] = bkey[i] ^ 1549556828;
-        }
-        var hash = core_md5(ipad.concat(str2binl(data)), 512 + data.length * chrsz);
-        return core_md5(opad.concat(hash), 512 + 128);
-    };
     var obj = {
         /*
          * These are the functions you'll usually want to call.
@@ -492,28 +408,10 @@ var MD5 = function() {
          * strings.
          */
         hexdigest: function(s) {
-            return binl2hex(core_md5(str2binl(s), s.length * chrsz));
-        },
-        b64digest: function(s) {
-            return binl2b64(core_md5(str2binl(s), s.length * chrsz));
+            return binl2hex(core_md5(str2binl(s), s.length * 8));
         },
         hash: function(s) {
-            return binl2str(core_md5(str2binl(s), s.length * chrsz));
-        },
-        hmac_hexdigest: function(key, data) {
-            return binl2hex(core_hmac_md5(key, data));
-        },
-        hmac_b64digest: function(key, data) {
-            return binl2b64(core_hmac_md5(key, data));
-        },
-        hmac_hash: function(key, data) {
-            return binl2str(core_hmac_md5(key, data));
-        },
-        /*
-         * Perform a simple self-test to see if the VM is working
-         */
-        test: function() {
-            return MD5.hexdigest("abc") === "900150983cd24fb0d6963f7d28e17f72";
+            return binl2str(core_md5(str2binl(s), s.length * 8));
         }
     };
     return obj;
@@ -525,11 +423,11 @@ var MD5 = function() {
 
     Copyright 2006-2008, OGG, LLC
 */
-/* jslint configuration: */
+/* jshint undef: true, unused: true:, noarg: true, latedef: true */
 /*global document, window, setTimeout, clearTimeout, console,
-    XMLHttpRequest, ActiveXObject,
-    Base64, MD5,
-    Strophe, $build, $msg, $iq, $pres */
+    ActiveXObject, Base64, MD5, DOMParser */
+// from sha1.js
+/*global core_hmac_sha1, binb2str, str_hmac_sha1, str_sha1, b64_hmac_sha1*/
 /** File: strophe.js
  *  A JavaScript library for XMPP BOSH/XMPP over Websocket.
  *
@@ -676,7 +574,7 @@ if (!Array.prototype.indexOf) {
      *  The version of the Strophe library. Unreleased builds will have
      *  a version of head-HASH where HASH is a partial revision.
      */
-        VERSION: "a1f13b2",
+        VERSION: "02c798f",
         /** Constants: XMPP Namespace Constants
      *  Common namespace constants from the XMPP RFCs and XEPs.
      *
@@ -1037,9 +935,10 @@ if (!Array.prototype.indexOf) {
      *    A new XML DOM text node.
      */
         xmlHtmlNode: function(html) {
+            var node;
             //ensure text is escaped
             if (window.DOMParser) {
-                parser = new DOMParser();
+                var parser = new DOMParser();
                 node = parser.parseFromString(html, "text/xml");
             } else {
                 node = new ActiveXObject("Microsoft.XMLDOM");
@@ -1112,7 +1011,7 @@ if (!Array.prototype.indexOf) {
      *    A new, copied DOM element tree.
      */
         createHtml: function(elem) {
-            var i, el, j, tag, attribute, value, css, cssAttrs, attr, cssName, cssValue, children, child;
+            var i, el, j, tag, attribute, value, css, cssAttrs, attr, cssName, cssValue;
             if (elem.nodeType == Strophe.ElementType.NORMAL) {
                 tag = elem.nodeName.toLowerCase();
                 if (Strophe.XHTML.validTag(tag)) {
@@ -1288,9 +1187,11 @@ if (!Array.prototype.indexOf) {
      *      be one of the values in Strophe.LogLevel.
      *    (String) msg - The log message.
      */
+        /* jshint ignore:start */
         log: function(level, msg) {
             return;
         },
+        /* jshint ignore:end */
         /** Function: debug
      *  Log a message at the Strophe.LogLevel.DEBUG level.
      *
@@ -1921,6 +1822,7 @@ if (!Array.prototype.indexOf) {
                 var ptype = Strophe._connectionPlugins[k];
                 // jslint complaints about the below line, but this is fine
                 var F = function() {};
+                // jshint ignore:line
                 F.prototype = ptype;
                 this[k] = new F();
                 this[k].init(this);
@@ -2055,8 +1957,8 @@ if (!Array.prototype.indexOf) {
             this.connected = false;
             this.authenticated = false;
             this.errors = 0;
-            // parse jid for domain and resource
-            this.domain = this.domain || Strophe.getDomainFromJid(this.jid);
+            // parse jid for domain
+            this.domain = Strophe.getDomainFromJid(this.jid);
             this._changeConnectStatus(Strophe.Status.CONNECTING, null);
             this._proto._connect(wait, hold, route);
         },
@@ -2105,9 +2007,11 @@ if (!Array.prototype.indexOf) {
      *  Parameters:
      *    (XMLElement) elem - The XML data received by the connection.
      */
+        /* jshint unused:false */
         xmlInput: function(elem) {
             return;
         },
+        /* jshint unused:true */
         /** Function: xmlOutput
      *  User overrideable function that receives XML data sent to the
      *  connection.
@@ -2126,9 +2030,11 @@ if (!Array.prototype.indexOf) {
      *  Parameters:
      *    (XMLElement) elem - The XMLdata sent by the connection.
      */
+        /* jshint unused:false */
         xmlOutput: function(elem) {
             return;
         },
+        /* jshint unused:true */
         /** Function: rawInput
      *  User overrideable function that receives raw data coming into the
      *  connection.
@@ -2141,9 +2047,11 @@ if (!Array.prototype.indexOf) {
      *  Parameters:
      *    (String) data - The data received by the connection.
      */
+        /* jshint unused:false */
         rawInput: function(data) {
             return;
         },
+        /* jshint unused:true */
         /** Function: rawOutput
      *  User overrideable function that receives raw data sent to the
      *  connection.
@@ -2156,9 +2064,11 @@ if (!Array.prototype.indexOf) {
      *  Parameters:
      *    (String) data - The data sent by the connection.
      */
+        /* jshint unused:false */
         rawOutput: function(data) {
             return;
         },
+        /* jshint unused:true */
         /** Function: send
      *  Send a stanza.
      *
@@ -2627,7 +2537,7 @@ if (!Array.prototype.indexOf) {
             }
             var mechanisms = bodyWrap.getElementsByTagName("mechanism");
             var matched = [];
-            var i, mech, auth_str, hashed_auth_str, found_authentication = false;
+            var i, mech, found_authentication = false;
             if (!hasFeatures) {
                 this._proto._no_auth_received(_callback);
                 return;
@@ -2740,6 +2650,7 @@ if (!Array.prototype.indexOf) {
      *  Returns:
      *    false to remove the handler.
      */
+        /* jshint unused:false */
         _auth1_cb: function(elem) {
             // build plaintext auth iq
             var iq = $iq({
@@ -2759,6 +2670,7 @@ if (!Array.prototype.indexOf) {
             this.send(iq.tree());
             return false;
         },
+        /* jshint unused:true */
         /** PrivateFunction: _sasl_success_cb
      *  _Private_ handler for succesful SASL authentication.
      *
@@ -2773,7 +2685,7 @@ if (!Array.prototype.indexOf) {
                 var serverSignature;
                 var success = Base64.decode(Strophe.getText(elem));
                 var attribMatch = /([a-z]+)=([^,]+)(,|$)/;
-                matches = success.match(attribMatch);
+                var matches = success.match(attribMatch);
                 if (matches[1] == "v") {
                     serverSignature = matches[2];
                 }
@@ -2927,6 +2839,7 @@ if (!Array.prototype.indexOf) {
      *  Returns:
      *    false to remove the handler.
      */
+        /* jshint unused:false */
         _sasl_failure_cb: function(elem) {
             // delete unneeded handlers
             if (this._sasl_success_handler) {
@@ -2941,6 +2854,7 @@ if (!Array.prototype.indexOf) {
             this._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
             return false;
         },
+        /* jshint unused:true */
         /** PrivateFunction: _auth2_cb
      *  _Private_ handler to finish legacy authentication.
      *
@@ -3055,7 +2969,6 @@ if (!Array.prototype.indexOf) {
                 }
             }
             this.timedHandlers = newList;
-            var body, time_elapsed;
             clearTimeout(this._idleTimeout);
             this._proto._onIdle();
             // reactivate the timer only if connected
@@ -3122,7 +3035,6 @@ if (!Array.prototype.indexOf) {
         this.priority = priority;
     };
     Strophe.SASLMechanism.prototype = {
-        _sasl_data: {},
         /**
    *  Function: test
    *  Checks if mechanism able to run.
@@ -3141,9 +3053,11 @@ if (!Array.prototype.indexOf) {
    *  Returns:
    *    (Boolean) If mechanism was able to run.
    */
+        /* jshint unused:false */
         test: function(connection) {
             return true;
         },
+        /* jshint unused:true */
         /** PrivateFunction: onStart
    *  Called before starting mechanism on some connection.
    *
@@ -3164,9 +3078,11 @@ if (!Array.prototype.indexOf) {
    *  Returns:
    *    (String) Mechanism response.
    */
+        /* jshint unused:false */
         onChallenge: function(connection, challenge) {
             throw new Error("You should implement challenge handling!");
         },
+        /* jshint unused:true */
         /** PrivateFunction: onFailure
    *  Protocol informs mechanism implementation about SASL failure.
    */
@@ -3206,7 +3122,7 @@ if (!Array.prototype.indexOf) {
     Strophe.SASLPlain.test = function(connection) {
         return connection.authcid !== null;
     };
-    Strophe.SASLPlain.prototype.onChallenge = function(connection, challenge) {
+    Strophe.SASLPlain.prototype.onChallenge = function(connection) {
         var auth_str = connection.authzid;
         auth_str = auth_str + "\x00";
         auth_str = auth_str + connection.authcid;
@@ -3241,18 +3157,18 @@ if (!Array.prototype.indexOf) {
         var auth_str = "n=" + connection.authcid;
         auth_str += ",r=";
         auth_str += cnonce;
-        this._sasl_data.cnonce = cnonce;
-        this._sasl_data["client-first-message-bare"] = auth_str;
+        connection._sasl_data.cnonce = cnonce;
+        connection._sasl_data["client-first-message-bare"] = auth_str;
         auth_str = "n,," + auth_str;
         this.onChallenge = function(connection, challenge) {
-            var nonce, salt, iter, Hi, U, U_old;
+            var nonce, salt, iter, Hi, U, U_old, i, k;
             var clientKey, serverKey, clientSignature;
             var responseText = "c=biws,";
-            var authMessage = this._sasl_data["client-first-message-bare"] + "," + challenge + ",";
-            var cnonce = this._sasl_data.cnonce;
+            var authMessage = connection._sasl_data["client-first-message-bare"] + "," + challenge + ",";
+            var cnonce = connection._sasl_data.cnonce;
             var attribMatch = /([a-z]+)=([^,]+)(,|$)/;
             while (challenge.match(attribMatch)) {
-                matches = challenge.match(attribMatch);
+                var matches = challenge.match(attribMatch);
                 challenge = challenge.replace(matches[0], "");
                 switch (matches[1]) {
                   case "r":
@@ -3269,7 +3185,7 @@ if (!Array.prototype.indexOf) {
                 }
             }
             if (nonce.substr(0, cnonce.length) !== cnonce) {
-                this._sasl_data = {};
+                connection._sasl_data = {};
                 return connection._sasl_failure_cb();
             }
             responseText += "r=" + nonce;
@@ -3364,7 +3280,7 @@ if (!Array.prototype.indexOf) {
         responseText += "digest-uri=" + this._quote(digest_uri) + ",";
         responseText += "response=" + MD5.hexdigest(MD5.hexdigest(A1) + ":" + nonce + ":00000001:" + cnonce + ":auth:" + MD5.hexdigest(A2)) + ",";
         responseText += "qop=auth";
-        this.onChallenge = function(connection, challenge) {
+        this.onChallenge = function() {
             return "";
         }.bind(this);
         return responseText;
@@ -3384,11 +3300,10 @@ if (!Array.prototype.indexOf) {
 
     Copyright 2006-2008, OGG, LLC
 */
-/* jslint configuration: */
-/*global document, window, setTimeout, clearTimeout, console,
+/* jshint undef: true, unused: true:, noarg: true, latedef: true */
+/*global window, setTimeout, clearTimeout,
     XMLHttpRequest, ActiveXObject,
-    Base64, MD5,
-    Strophe, $build, $msg, $iq, $pres */
+    Strophe, $build */
 /** PrivateClass: Strophe.Request
  *  _Private_ helper class that provides a cross implementation abstraction
  *  for a BOSH related XMLHttpRequest.
@@ -3763,8 +3678,8 @@ Strophe.Bosh.prototype = {
             data.push(null);
         }
         if (this._requests.length < 2 && data.length > 0 && !this._conn.paused) {
-            body = this._buildBody();
-            for (i = 0; i < data.length; i++) {
+            var body = this._buildBody();
+            for (var i = 0; i < data.length; i++) {
                 if (data[i] !== null) {
                     if (data[i] === "restart") {
                         body.attrs({
@@ -3784,7 +3699,7 @@ Strophe.Bosh.prototype = {
             this._processRequest(this._requests.length - 1);
         }
         if (this._requests.length > 0) {
-            time_elapsed = this._requests[0].age();
+            var time_elapsed = this._requests[0].age();
             if (this._requests[0].dead !== null) {
                 if (this._requests[0].timeDead() > Math.floor(Strophe.SECONDARY_TIMEOUT * this.wait)) {
                     this._throttledRequestHandler();
@@ -4080,10 +3995,9 @@ Strophe.Bosh.prototype = {
 
     Copyright 2006-2008, OGG, LLC
 */
-/*global document, window, setTimeout, clearTimeout, console,
-    XMLHttpRequest, ActiveXObject,
-    Base64, MD5,
-    Strophe, $build, $msg, $iq, $pres */
+/* jshint undef: true, unused: true:, noarg: true, latedef: true */
+/*global document, window, clearTimeout, WebSocket,
+    DOMParser, Strophe, $build */
 /** Class: Strophe.WebSocket
  *  _Private_ helper class that handles WebSocket Connections
  *
@@ -4166,9 +4080,9 @@ Strophe.Websocket.prototype = {
         var error = errors[0];
         var condition = "";
         var text = "";
-        ns = "urn:ietf:params:xml:ns:xmpp-streams";
-        for (i = 0; i < error.childNodes.length; i++) {
-            e = error.childNodes[i];
+        var ns = "urn:ietf:params:xml:ns:xmpp-streams";
+        for (var i = 0; i < error.childNodes.length; i++) {
+            var e = error.childNodes[i];
             if (e.getAttribute("xmlns") !== ns) {
                 break;
             }
@@ -4178,7 +4092,7 @@ Strophe.Websocket.prototype = {
                 condition = e.nodeName;
             }
         }
-        errorString = "WebSocket stream error: ";
+        var errorString = "WebSocket stream error: ";
         if (condition) {
             errorString += condition;
         } else {
@@ -4294,7 +4208,7 @@ Strophe.Websocket.prototype = {
         } else if (message.data === "</stream:stream>") {
             this._conn.rawInput(message.data);
             this._conn.xmlInput(document.createElement("stream:stream"));
-            this._conn._changeConnectStatus(Strophe.Status.CONNFAIL, error);
+            this._conn._changeConnectStatus(Strophe.Status.CONNFAIL, "Received closing stream");
             this._conn._doDisconnect();
             return;
         } else {
@@ -4371,7 +4285,7 @@ Strophe.Websocket.prototype = {
      *
      * Nothing to do here for WebSockets
      */
-    _onClose: function(event) {
+    _onClose: function() {
         if (this._conn.connected && !this._conn.disconnecting) {
             Strophe.error("Websocket closed unexcectedly");
             this._conn._doDisconnect();
@@ -4418,7 +4332,7 @@ Strophe.Websocket.prototype = {
     _onIdle: function() {
         var data = this._conn._data;
         if (data.length > 0 && !this._conn.paused) {
-            for (i = 0; i < data.length; i++) {
+            for (var i = 0; i < data.length; i++) {
                 if (data[i] !== null) {
                     var stanza, rawStanza;
                     if (data[i] === "restart") {
@@ -4450,7 +4364,7 @@ Strophe.Websocket.prototype = {
      * (string) message - The websocket message.
      */
     _onMessage: function(message) {
-        var elem;
+        var elem, data;
         // check for closing stream
         if (message.data === "</stream:stream>") {
             var close = "</stream:stream>";
@@ -4543,7 +4457,7 @@ Strophe.Websocket.prototype = {
     }
 };
 
-// Generated by CoffeeScript 1.6.3
+// Generated by CoffeeScript 1.7.1
 /*
  *Plugin to implement the MUC extension.
    http://xmpp.org/extensions/xep-0045.html
@@ -4551,7 +4465,7 @@ Strophe.Websocket.prototype = {
     Nathan Zorn <nathan.zorn@gmail.com>
  *Complete CoffeeScript rewrite:
     Andreas Guth <guth@dbis.rwth-aachen.de>
-*/
+ */
 (function() {
     var Occupant, RoomConfig, XmppRoom, __bind = function(fn, me) {
         return function() {
@@ -4565,7 +4479,7 @@ Strophe.Websocket.prototype = {
         /*Function
     Initialize the MUC plugin. Sets the correct connection object and
     extends the namesace.
-    */
+     */
         init: function(conn) {
             this._connection = conn;
             this._muc_handler = null;
@@ -4588,9 +4502,9 @@ Strophe.Websocket.prototype = {
     rooms only)
     (Object) history_attrs - Optional attributes for retrieving history
     (XML DOM Element) extended_presence - Optional XML for extending presence
-    */
+     */
         join: function(room, nick, msg_handler_cb, pres_handler_cb, roster_cb, password, history_attrs) {
-            var msg, room_nick, _this = this;
+            var msg, room_nick;
             room_nick = this.test_append_nick(room, nick);
             msg = $pres({
                 from: this._connection.jid,
@@ -4608,41 +4522,43 @@ Strophe.Websocket.prototype = {
                 msg.up.cnode(extended_presence);
             }
             if (this._muc_handler == null) {
-                this._muc_handler = this._connection.addHandler(function(stanza) {
-                    var from, handler, handlers, id, roomname, x, xmlns, xquery, _i, _len;
-                    from = stanza.getAttribute("from");
-                    if (!from) {
-                        return true;
-                    }
-                    roomname = from.split("/")[0];
-                    if (!_this.rooms[roomname]) {
-                        return true;
-                    }
-                    room = _this.rooms[roomname];
-                    handlers = {};
-                    if (stanza.nodeName === "message") {
-                        handlers = room._message_handlers;
-                    } else if (stanza.nodeName === "presence") {
-                        xquery = stanza.getElementsByTagName("x");
-                        if (xquery.length > 0) {
-                            for (_i = 0, _len = xquery.length; _i < _len; _i++) {
-                                x = xquery[_i];
-                                xmlns = x.getAttribute("xmlns");
-                                if (xmlns && xmlns.match(Strophe.NS.MUC)) {
-                                    handlers = room._presence_handlers;
-                                    break;
+                this._muc_handler = this._connection.addHandler(function(_this) {
+                    return function(stanza) {
+                        var from, handler, handlers, id, roomname, x, xmlns, xquery, _i, _len;
+                        from = stanza.getAttribute("from");
+                        if (!from) {
+                            return true;
+                        }
+                        roomname = from.split("/")[0];
+                        if (!_this.rooms[roomname]) {
+                            return true;
+                        }
+                        room = _this.rooms[roomname];
+                        handlers = {};
+                        if (stanza.nodeName === "message") {
+                            handlers = room._message_handlers;
+                        } else if (stanza.nodeName === "presence") {
+                            xquery = stanza.getElementsByTagName("x");
+                            if (xquery.length > 0) {
+                                for (_i = 0, _len = xquery.length; _i < _len; _i++) {
+                                    x = xquery[_i];
+                                    xmlns = x.getAttribute("xmlns");
+                                    if (xmlns && xmlns.match(Strophe.NS.MUC)) {
+                                        handlers = room._presence_handlers;
+                                        break;
+                                    }
                                 }
                             }
                         }
-                    }
-                    for (id in handlers) {
-                        handler = handlers[id];
-                        if (!handler(stanza, room)) {
-                            delete handlers[id];
+                        for (id in handlers) {
+                            handler = handlers[id];
+                            if (!handler(stanza, room)) {
+                                delete handlers[id];
+                            }
                         }
-                    }
-                    return true;
-                });
+                        return true;
+                    };
+                }(this));
             }
             if (!this.rooms.hasOwnProperty(room)) {
                 this.rooms[room] = new XmppRoom(this, room, nick, password);
@@ -4668,7 +4584,7 @@ Strophe.Websocket.prototype = {
     (String) exit_msg - optional exit message.
     Returns:
     iqid - The unique id for the room leave.
-    */
+     */
         leave: function(room, nick, handler_cb, exit_msg) {
             var id, presence, presenceid, room_nick;
             id = this.roomNames.indexOf(room);
@@ -4707,7 +4623,7 @@ Strophe.Websocket.prototype = {
                     "chat" for private chat messages
     Returns:
     msgiq - the unique id used to send the message
-    */
+     */
         message: function(room, nick, message, html_message, type) {
             var msg, msgid, parent, room_nick;
             room_nick = this.test_append_nick(room, nick);
@@ -4727,7 +4643,7 @@ Strophe.Websocket.prototype = {
                     xmlns: Strophe.NS.XHTML_IM
                 }).c("body", {
                     xmlns: Strophe.NS.XHTML
-                }).t(html_message);
+                }).h(html_message);
                 if (msg.node.childNodes.length === 0) {
                     parent = msg.node.parentNode;
                     msg.up().up();
@@ -4750,7 +4666,7 @@ Strophe.Websocket.prototype = {
     (String) html_message - The message to send to the room with html markup.
     Returns:
     msgiq - the unique id used to send the message
-    */
+     */
         groupchat: function(room, message, html_message) {
             return this.message(room, null, message, html_message);
         },
@@ -4762,7 +4678,7 @@ Strophe.Websocket.prototype = {
     (String) reason - Optional reason for joining the room.
     Returns:
     msgiq - the unique id used to send the invitation
-    */
+     */
         invite: function(room, receiver, reason) {
             var invitation, msgid;
             msgid = this._connection.getUniqueId();
@@ -4790,7 +4706,7 @@ Strophe.Websocket.prototype = {
     (String) password - Optional password for the room.
     Returns:
     msgiq - the unique id used to send the invitation
-    */
+     */
         directInvite: function(room, receiver, reason, password) {
             var attrs, invitation, msgid;
             msgid = this._connection.getUniqueId();
@@ -4819,7 +4735,7 @@ Strophe.Websocket.prototype = {
     (Function) error_cb - Optional function to handle an error.
     Returns:
     id - the unique id used to send the info request
-    */
+     */
         queryOccupants: function(room, success_cb, error_cb) {
             var attrs, info;
             attrs = {
@@ -4839,7 +4755,7 @@ Strophe.Websocket.prototype = {
     (Function) handler_cb - Optional function to handle the config form.
     Returns:
     id - the unique id used to send the configuration request
-    */
+     */
         configure: function(room, handler_cb, error_cb) {
             var config, stanza;
             config = $iq({
@@ -4857,7 +4773,7 @@ Strophe.Websocket.prototype = {
     (String) room - The multi-user chat room name.
     Returns:
     id - the unique id used to cancel the configuration.
-    */
+     */
         cancelConfigure: function(room) {
             var config, stanza;
             config = $iq({
@@ -4879,7 +4795,7 @@ Strophe.Websocket.prototype = {
     (Array) config- Form Object or an array of form elements used to configure the room.
     Returns:
     id - the unique id used to save the configuration.
-    */
+     */
         saveConfiguration: function(room, config, success_cb, error_cb) {
             var conf, iq, stanza, _i, _len;
             iq = $iq({
@@ -4909,7 +4825,7 @@ Strophe.Websocket.prototype = {
     (String) room - The multi-user chat room name.
     Returns:
     id - the unique id used to create the chat room.
-    */
+     */
         createInstantRoom: function(room, success_cb, error_cb) {
             var roomiq;
             roomiq = $iq({
@@ -4928,7 +4844,7 @@ Strophe.Websocket.prototype = {
     Parameters:
     (String) room - The multi-user chat room name.
     (String) topic - Topic message.
-    */
+     */
         setTopic: function(room, topic) {
             var msg;
             msg = $msg({
@@ -4953,7 +4869,7 @@ Strophe.Websocket.prototype = {
     (Function) error_cb - Optional callback for error
     Returns:
     iq - the id of the mode change request.
-    */
+     */
         _modifyPrivilege: function(room, item, reason, handler_cb, error_cb) {
             var iq;
             iq = $iq({
@@ -4981,7 +4897,7 @@ Strophe.Websocket.prototype = {
     (Function) error_cb - Optional callback for error
     Returns:
     iq - the id of the mode change request.
-    */
+     */
         modifyRole: function(room, nick, role, reason, handler_cb, error_cb) {
             var item;
             item = $build("item", {
@@ -5018,7 +4934,7 @@ Strophe.Websocket.prototype = {
     (Function) error_cb - Optional callback for error
     Returns:
     iq - the id of the mode change request.
-    */
+     */
         modifyAffiliation: function(room, jid, affiliation, reason, handler_cb, error_cb) {
             var item;
             item = $build("item", {
@@ -5047,7 +4963,7 @@ Strophe.Websocket.prototype = {
     Parameters:
     (String) room - The multi-user chat room name.
     (String) user - The new nick name.
-    */
+     */
         changeNick: function(room, user) {
             var presence, room_nick;
             room_nick = this.test_append_nick(room, user);
@@ -5065,7 +4981,7 @@ Strophe.Websocket.prototype = {
     (String) user - The current nick.
     (String) show - The new show-text.
     (String) status - The new status-text.
-    */
+     */
         setStatus: function(room, user, show, status) {
             var presence, room_nick;
             room_nick = this.test_append_nick(room, user);
@@ -5087,7 +5003,7 @@ Strophe.Websocket.prototype = {
     (String) server - name of chat server.
     (String) handle_cb - Function to call for room list return.
     (String) error_cb - Function to call on error.
-    */
+     */
         listRooms: function(server, handle_cb, error_cb) {
             var iq;
             iq = $iq({
@@ -5100,7 +5016,10 @@ Strophe.Websocket.prototype = {
             return this._connection.sendIQ(iq, handle_cb, error_cb);
         },
         test_append_nick: function(room, nick) {
-            return room + (nick != null ? "/" + Strophe.escapeNode(nick) : "");
+            var domain, node;
+            node = Strophe.escapeNode(Strophe.getNodeFromJid(room));
+            domain = Strophe.getDomainFromJid(room);
+            return node + "@" + domain + (nick != null ? "/" + nick : "");
         }
     });
     XmppRoom = function() {
@@ -5206,7 +5125,7 @@ Strophe.Websocket.prototype = {
     (Function) handler - The handler function.
     Returns:
     id - the id of handler.
-    */
+     */
         XmppRoom.prototype.addHandler = function(handler_type, handler) {
             var id;
             id = this._handler_ids++;
@@ -5236,7 +5155,7 @@ Strophe.Websocket.prototype = {
     may brake things!
       Parameters:
     (number) id - the id of the handler
-    */
+     */
         XmppRoom.prototype.removeHandler = function(id) {
             delete this._presence_handlers[id];
             delete this._message_handlers[id];
@@ -5248,7 +5167,7 @@ Strophe.Websocket.prototype = {
     (Object) data - the data the Occupant is filled with
     Returns:
     occ - the created Occupant.
-    */
+     */
         XmppRoom.prototype._addOccupant = function(data) {
             var occ;
             occ = new Occupant(data, this);
@@ -5259,7 +5178,7 @@ Strophe.Websocket.prototype = {
     The standard handler that managed the Room Roster.
       Parameters:
     (Object) pres - the presence stanza containing user information
-    */
+     */
         XmppRoom.prototype._roomRosterHandler = function(pres) {
             var data, handler, id, newnick, nick, _ref;
             data = XmppRoom._parsePresence(pres);
@@ -5303,7 +5222,7 @@ Strophe.Websocket.prototype = {
     Parses a presence stanza
       Parameters:
     (Object) data - the data extracted from the presence stanza
-    */
+     */
         XmppRoom._parsePresence = function(pres) {
             var a, c, c2, data, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
             data = {};

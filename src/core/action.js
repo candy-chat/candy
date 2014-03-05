@@ -33,7 +33,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 *   (jQuery.element) msg - jQuery element
 		 */
 		Version: function(msg) {
-			Candy.Core.getConnection().send($iq({
+			Candy.Core.getConnection().sendIQ($iq({
 				type: 'result',
 				to: Candy.Util.escapeJid(msg.attr('from')),
 				from: Candy.Util.escapeJid(msg.attr('to')),
@@ -55,13 +55,14 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 */
 		SetNickname: function(nickname, rooms) {
 			rooms = rooms instanceof Array ? rooms : Candy.Core.getRooms();
-			var roomNick, presence;
+			var roomNick, presence,
+				conn = Candy.Core.getConnection();
 			$.each(rooms, function(roomJid) {
 				roomNick = Candy.Util.escapeJid(roomJid + '/' + nickname);
 				presence = $pres({
 					to: roomNick,
-					from: Candy.Core.getConnection().jid,
-					id: 'pres:' + Candy.Core.getConnection().getUniqueId()
+					from: conn.jid,
+					id: 'pres:' + conn.getUniqueId()
 				});
 				Candy.Core.getConnection().send(presence);
 			});
@@ -71,7 +72,10 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Sends a request for a roster
 		 */
 		Roster: function() {
-			Candy.Core.getConnection().send($iq({type: 'get', xmlns: Strophe.NS.CLIENT}).c('query', {xmlns: Strophe.NS.ROSTER}).tree());
+			Candy.Core.getConnection().sendIQ($iq({
+				type: 'get',
+				xmlns: Strophe.NS.CLIENT
+			}).c('query', {xmlns: Strophe.NS.ROSTER}).tree());
 		},
 
 		/** Function: Presence
@@ -82,20 +86,28 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 *   (Strophe.Builder) el - Optional element to include in presence stanza
 		 */
 		Presence: function(attr, el) {
+			var conn = Candy.Core.getConnection();
+			attr = attr || {};
+			if(!attr.id) {
+				attr.id = 'pres:' + conn.getUniqueId();
+			}
 			var pres = $pres(attr).c('priority').t(Candy.Core.getOptions().presencePriority.toString())
-				.up().c('c', Candy.Core.getConnection().caps.generateCapsAttrs())
+				.up().c('c', conn.caps.generateCapsAttrs())
 				.up();
 			if(el) {
 				pres.node.appendChild(el.node);
 			}
-			Candy.Core.getConnection().send(pres.tree());
+			conn.send(pres.tree());
 		},
 
 		/** Function: Services
 		 * Sends a request for disco items
 		 */
 		Services: function() {
-			Candy.Core.getConnection().send($iq({type: 'get', xmlns: Strophe.NS.CLIENT}).c('query', {xmlns: Strophe.NS.DISCO_ITEMS}).tree());
+			Candy.Core.getConnection().sendIQ($iq({
+				type: 'get',
+				xmlns: Strophe.NS.CLIENT
+			}).c('query', {xmlns: Strophe.NS.DISCO_ITEMS}).tree());
 		},
 
 		/** Function: Autojoin
@@ -213,7 +225,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				roomJid = Candy.Util.escapeJid(roomJid);
 				var conn = Candy.Core.getConnection(),
 					roomNick = roomJid + '/' + Candy.Core.getUser().getNick(),
-					pres = $pres({ to: roomNick })
+					pres = $pres({ to: roomNick, id: 'pres:' + conn.getUniqueId() })
 						.c('x', {xmlns: Strophe.NS.MUC});
 				if (password) {
 					pres.c('password').t(password);
@@ -257,17 +269,24 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 *   (String) roomJid - Room to which send the message into
 			 *   (String) msg - Message
 			 *   (String) type - "groupchat" or "chat" ("chat" is for private messages)
+			 *   (String) xhtmlMsg - XHTML formatted message [optional]
 			 *
 			 * Returns:
 			 *   (Boolean) - true if message is not empty after trimming, false otherwise.
 			 */
-			Message: function(roomJid, msg, type) {
+			Message: function(roomJid, msg, type, xhtmlMsg) {
 				// Trim message
 				msg = $.trim(msg);
 				if(msg === '') {
 					return false;
 				}
-				Candy.Core.getConnection().muc.message(Candy.Util.escapeJid(roomJid), null, msg, null, type);
+				var nick = null;
+				if(type === 'chat') {
+					nick = Strophe.getResourceFromJid(roomJid);
+					roomJid = Strophe.getBareJidFromJid(roomJid);
+				}
+				// muc takes care of the escaping now.
+				Candy.Core.getConnection().muc.message(roomJid, nick, msg, xhtmlMsg, type);
 				return true;
 			},
 

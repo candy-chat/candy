@@ -273,12 +273,26 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (String) subject - Subject text
 				 *   (String) message - Message text
 				 */
-				$(Candy).triggerHandler('candy:core.chat.message.server', {
+				$(Candy).triggerHandler('candy:core:chat:message:server', {
 					type: (type || 'message'),
 					subject: msg.children('subject').text(),
 					message: msg.children('body').text()
 				});
+			} else if (typeof type === 'undefined') {
+				/** Event: candy:core:chat:message:other
+				 * Messages without a type attribute.
+				 * (e.g. MUC invites.)
+				 *
+				 * Parameter:
+				 *   (String) type - Message type [default: other]
+				 *   (Object) message - Message object. 
+				 */
+				$(Candy).triggerHandler('candy:core:chat:message:other', {
+					type: 'other',
+					message: msg
+				});
 			}
+			
 			return true;
 		},
 
@@ -366,6 +380,12 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			Disco: function(msg) {
 				Candy.Core.log('[Jabber:Room] Disco');
 				msg = $(msg);
+				// Temp fix for #219
+				// Don't go further if it's no conference disco reply
+				// FIXME: Do this in a more beautiful way
+				if(!msg.find('identity[category="conference"]').length) {
+					return true;
+				}
 				var roomJid = Strophe.getBareJidFromJid(Candy.Util.unescapeJid(msg.attr('from')));
 
 				// Client joined a room
@@ -442,18 +462,28 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				// User joined a room
 				if(presenceType !== 'unavailable') {
 					if (roster.get(from)) {
-						// user changed nick before
-						return true;
+						// role/affiliation change
+						user = roster.get(from);
+
+						var role = item.attr('role'),
+							affiliation = item.attr('affiliation');
+
+						user.setRole(role);
+						user.setAffiliation(affiliation);
+
+						// FIXME: currently role/affilation changes are handled with this action
+						action = 'join';
+					} else {
+						nick = Strophe.getResourceFromJid(from);
+						user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
+						// Room existed but client (myself) is not yet registered
+						if(room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
+							room.setUser(user);
+							currentUser = user;
+						}
+						roster.add(user);
+						action = 'join';
 					}
-					nick = Strophe.getResourceFromJid(from);
-					user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
-					// Room existed but client (myself) is not yet registered
-					if(room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
-						room.setUser(user);
-						currentUser = user;
-					}
-					roster.add(user);
-					action = 'join';
 				// User left a room
 				} else {
 					user = roster.get(from);
@@ -592,6 +622,13 @@ Candy.Core.Event = (function(self, Strophe, $) {
 							message = { name: '', body: msg.children('body').text(), type: 'info' };
 						}
 					}
+
+					var xhtmlChild = msg.children('html[xmlns="' + Strophe.NS.XHTML_IM + '"]');
+					if(Candy.View.getOptions().enableXHTML === true && xhtmlChild.length > 0) {
+						var xhtmlMessage = xhtmlChild.children('body[xmlns="' + Strophe.NS.XHTML + '"]').first().html();
+						message.xhtmlMessage = xhtmlMessage;
+					}
+
 				// Unhandled message
 				} else {
 					return true;

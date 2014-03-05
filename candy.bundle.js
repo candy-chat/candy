@@ -29,7 +29,7 @@ var Candy = function(self, $) {
 	 */
     self.about = {
         name: "Candy",
-        version: "1.6.0"
+        version: "1.6.1-dev"
     };
     /** Function: init
 	 * Init view & core
@@ -455,13 +455,13 @@ Candy.View = function(self, $) {
 		 *
 		 * Options:
 		 *   (String) language - language to use
-		 *   (String) resources - path to resources directory (with trailing slash)
+		 *   (String) assets - path to assets (res) directory (with trailing slash)
 		 *   (Object) messages - limit: clean up message pane when n is reached / remove: remove n messages after limit has been reached
 		 *   (Object) crop - crop if longer than defined: message.nickname=15, message.body=1000, roster.nickname=15
 		 */
     _options = {
         language: "en",
-        resources: "res/",
+        assets: "res/",
         messages: {
             limit: 2e3,
             remove: 500
@@ -530,10 +530,17 @@ Candy.View = function(self, $) {
 	 *   (Object) options - Options: see _options field (value passed here gets extended by the default value in _options field)
 	 */
     self.init = function(container, options) {
+        // #216
+        // Rename `resources` to `assets` but prevent installations from failing
+        // after upgrade
+        if (options.resources) {
+            options.assets = options.resources;
+        }
+        delete options.resources;
         $.extend(true, _options, options);
         _setupTranslation(_options.language);
         // Set path to emoticons
-        Candy.Util.Parser.setEmoticonPath(this.getOptions().resources + "img/emoticons/");
+        Candy.Util.Parser.setEmoticonPath(this.getOptions().assets + "img/emoticons/");
         // Start DOMination...
         _current.container = container;
         _current.container.html(Mustache.to_html(Candy.View.Template.Chat.pane, {
@@ -543,7 +550,7 @@ Candy.View = function(self, $) {
             tooltipStatusmessage: $.i18n._("tooltipStatusmessage"),
             tooltipAdministration: $.i18n._("tooltipAdministration"),
             tooltipUsercount: $.i18n._("tooltipUsercount"),
-            resourcesPath: this.getOptions().resources
+            assetsPath: this.getOptions().assets
         }, {
             tabs: Candy.View.Template.Chat.tabs,
             rooms: Candy.View.Template.Chat.rooms,
@@ -664,6 +671,20 @@ Candy.Util = function(self, $) {
             str = str.substr(0, len - 3) + "...";
         }
         return str;
+    };
+    /** Function: parseAndCropXhtml
+	 * Parses the XHTML and applies various Candy related filters to it.
+	 *
+	 *  - Ensures it contains only valid XHTML
+	 *  - Crops text to a max length
+	 *  - Parses the text in order to display html
+	 *
+	 * Parameters:
+	 *   (String) str - String containing XHTML
+	 *   (Integer) len - Max text length
+	 */
+    self.parseAndCropXhtml = function(str, len) {
+        return $("<div/>").append(self.createHtml($(str).get(0), len)).html();
     };
     /** Function: setCookie
 	 * Sets a new cookie
@@ -1032,7 +1053,7 @@ Candy.Util = function(self, $) {
 		 *   (String) text - Text to parse
 		 *
 		 * Returns:
-		 *   Parsed text
+		 *   (String) Parsed text
 		 */
         all: function(text) {
             if (text) {
@@ -1043,6 +1064,93 @@ Candy.Util = function(self, $) {
             }
             return text;
         }
+    };
+    /** Function: createHtml
+	 * Copy an HTML DOM element into an XML DOM.
+	 *
+	 * This function copies a DOM element and all its descendants and returns
+	 * the new copy.
+	 *
+	 * It's a function copied & adapted from [Strophe.js core.js](https://github.com/strophe/strophejs/blob/master/src/core.js).
+	 *
+	 * Parameters:
+	 *   (HTMLElement) elem - A DOM element.
+	 *   (Integer) maxLength - Max length of text
+	 *   (Integer) currentLength - Current accumulated text length
+	 *
+	 * Returns:
+	 *   A new, copied DOM element tree.
+	 */
+    self.createHtml = function(elem, maxLength, currentLength) {
+        /* jshint -W073 */
+        currentLength = currentLength || 0;
+        var i, el, j, tag, attribute, value, css, cssAttrs, attr, cssName, cssValue;
+        if (elem.nodeType === Strophe.ElementType.NORMAL) {
+            tag = elem.nodeName.toLowerCase();
+            if (Strophe.XHTML.validTag(tag)) {
+                try {
+                    el = $("<" + tag + "/>");
+                    for (i = 0; i < Strophe.XHTML.attributes[tag].length; i++) {
+                        attribute = Strophe.XHTML.attributes[tag][i];
+                        value = elem.getAttribute(attribute);
+                        if (typeof value === "undefined" || value === null || value === "" || value === false || value === 0) {
+                            continue;
+                        }
+                        if (attribute === "style" && typeof value === "object") {
+                            if (typeof value.cssText !== "undefined") {
+                                value = value.cssText;
+                            }
+                        }
+                        // filter out invalid css styles
+                        if (attribute === "style") {
+                            css = [];
+                            cssAttrs = value.split(";");
+                            for (j = 0; j < cssAttrs.length; j++) {
+                                attr = cssAttrs[j].split(":");
+                                cssName = attr[0].replace(/^\s*/, "").replace(/\s*$/, "").toLowerCase();
+                                if (Strophe.XHTML.validCSS(cssName)) {
+                                    cssValue = attr[1].replace(/^\s*/, "").replace(/\s*$/, "");
+                                    css.push(cssName + ": " + cssValue);
+                                }
+                            }
+                            if (css.length > 0) {
+                                value = css.join("; ");
+                                el.attr(attribute, value);
+                            }
+                        } else {
+                            el.attr(attribute, value);
+                        }
+                    }
+                    for (i = 0; i < elem.childNodes.length; i++) {
+                        el.append(self.createHtml(elem.childNodes[i], maxLength, currentLength));
+                    }
+                } catch (e) {
+                    // invalid elements
+                    Candy.Core.log("[Util:createHtml] Error while parsing XHTML:");
+                    Candy.Core.log(e);
+                    el = Strophe.xmlTextNode("");
+                }
+            } else {
+                el = Strophe.xmlGenerator().createDocumentFragment();
+                for (i = 0; i < elem.childNodes.length; i++) {
+                    el.appendChild(self.createHtml(elem.childNodes[i], maxLength, currentLength));
+                }
+            }
+        } else if (elem.nodeType === Strophe.ElementType.FRAGMENT) {
+            el = Strophe.xmlGenerator().createDocumentFragment();
+            for (i = 0; i < elem.childNodes.length; i++) {
+                el.appendChild(self.createHtml(elem.childNodes[i], maxLength, currentLength));
+            }
+        } else if (elem.nodeType === Strophe.ElementType.TEXT) {
+            var text = elem.nodeValue;
+            currentLength += text.length;
+            if (maxLength && currentLength > maxLength) {
+                text = text.substring(0, maxLength);
+            }
+            text = Candy.Util.Parser.all(text);
+            el = $.parseHTML(text);
+        }
+        return el;
     };
     return self;
 }(Candy.Util || {}, jQuery);
@@ -1081,7 +1189,7 @@ Candy.Core.Action = function(self, Strophe, $) {
 		 *   (jQuery.element) msg - jQuery element
 		 */
         Version: function(msg) {
-            Candy.Core.getConnection().send($iq({
+            Candy.Core.getConnection().sendIQ($iq({
                 type: "result",
                 to: Candy.Util.escapeJid(msg.attr("from")),
                 from: Candy.Util.escapeJid(msg.attr("to")),
@@ -1102,13 +1210,13 @@ Candy.Core.Action = function(self, Strophe, $) {
 		 */
         SetNickname: function(nickname, rooms) {
             rooms = rooms instanceof Array ? rooms : Candy.Core.getRooms();
-            var roomNick, presence;
+            var roomNick, presence, conn = Candy.Core.getConnection();
             $.each(rooms, function(roomJid) {
                 roomNick = Candy.Util.escapeJid(roomJid + "/" + nickname);
                 presence = $pres({
                     to: roomNick,
-                    from: Candy.Core.getConnection().jid,
-                    id: "pres:" + Candy.Core.getConnection().getUniqueId()
+                    from: conn.jid,
+                    id: "pres:" + conn.getUniqueId()
                 });
                 Candy.Core.getConnection().send(presence);
             });
@@ -1117,7 +1225,7 @@ Candy.Core.Action = function(self, Strophe, $) {
 		 * Sends a request for a roster
 		 */
         Roster: function() {
-            Candy.Core.getConnection().send($iq({
+            Candy.Core.getConnection().sendIQ($iq({
                 type: "get",
                 xmlns: Strophe.NS.CLIENT
             }).c("query", {
@@ -1132,17 +1240,22 @@ Candy.Core.Action = function(self, Strophe, $) {
 		 *   (Strophe.Builder) el - Optional element to include in presence stanza
 		 */
         Presence: function(attr, el) {
-            var pres = $pres(attr).c("priority").t(Candy.Core.getOptions().presencePriority.toString()).up().c("c", Candy.Core.getConnection().caps.generateCapsAttrs()).up();
+            var conn = Candy.Core.getConnection();
+            attr = attr || {};
+            if (!attr.id) {
+                attr.id = "pres:" + conn.getUniqueId();
+            }
+            var pres = $pres(attr).c("priority").t(Candy.Core.getOptions().presencePriority.toString()).up().c("c", conn.caps.generateCapsAttrs()).up();
             if (el) {
                 pres.node.appendChild(el.node);
             }
-            Candy.Core.getConnection().send(pres.tree());
+            conn.send(pres.tree());
         },
         /** Function: Services
 		 * Sends a request for disco items
 		 */
         Services: function() {
-            Candy.Core.getConnection().send($iq({
+            Candy.Core.getConnection().sendIQ($iq({
                 type: "get",
                 xmlns: Strophe.NS.CLIENT
             }).c("query", {
@@ -1267,7 +1380,8 @@ Candy.Core.Action = function(self, Strophe, $) {
                 self.Jabber.Room.Disco(roomJid);
                 roomJid = Candy.Util.escapeJid(roomJid);
                 var conn = Candy.Core.getConnection(), roomNick = roomJid + "/" + Candy.Core.getUser().getNick(), pres = $pres({
-                    to: roomNick
+                    to: roomNick,
+                    id: "pres:" + conn.getUniqueId()
                 }).c("x", {
                     xmlns: Strophe.NS.MUC
                 });
@@ -1312,17 +1426,24 @@ Candy.Core.Action = function(self, Strophe, $) {
 			 *   (String) roomJid - Room to which send the message into
 			 *   (String) msg - Message
 			 *   (String) type - "groupchat" or "chat" ("chat" is for private messages)
+			 *   (String) xhtmlMsg - XHTML formatted message [optional]
 			 *
 			 * Returns:
 			 *   (Boolean) - true if message is not empty after trimming, false otherwise.
 			 */
-            Message: function(roomJid, msg, type) {
+            Message: function(roomJid, msg, type, xhtmlMsg) {
                 // Trim message
                 msg = $.trim(msg);
                 if (msg === "") {
                     return false;
                 }
-                Candy.Core.getConnection().muc.message(Candy.Util.escapeJid(roomJid), null, msg, null, type);
+                var nick = null;
+                if (type === "chat") {
+                    nick = Strophe.getResourceFromJid(roomJid);
+                    roomJid = Strophe.getBareJidFromJid(roomJid);
+                }
+                // muc takes care of the escaping now.
+                Candy.Core.getConnection().muc.message(roomJid, nick, msg, xhtmlMsg, type);
                 return true;
             },
             /** Function: IgnoreUnignore
@@ -1695,6 +1816,24 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
     this.getRole = function() {
         return this.data.role;
+    };
+    /** Function: setRole
+	 * Sets user role
+	 *
+	 * Parameters:
+	 *   (String) role - Role
+	 */
+    this.setRole = function(role) {
+        this.data.role = role;
+    };
+    /** Function: setAffiliation
+	 * Sets user affiliation
+	 *
+	 * Parameters:
+	 *   (String) affiliation - new affiliation
+	 */
+    this.setAffiliation = function(affiliation) {
+        this.data.affiliation = affiliation;
     };
     /** Function: getAffiliation
 	 * Gets user affiliation
@@ -2170,6 +2309,12 @@ Candy.Core.Event = function(self, Strophe, $) {
             Disco: function(msg) {
                 Candy.Core.log("[Jabber:Room] Disco");
                 msg = $(msg);
+                // Temp fix for #219
+                // Don't go further if it's no conference disco reply
+                // FIXME: Do this in a more beautiful way
+                if (!msg.find('identity[category="conference"]').length) {
+                    return true;
+                }
                 var roomJid = Strophe.getBareJidFromJid(Candy.Util.unescapeJid(msg.attr("from")));
                 // Client joined a room
                 if (!Candy.Core.getRooms()[roomJid]) {
@@ -2227,18 +2372,24 @@ Candy.Core.Event = function(self, Strophe, $) {
                 // User joined a room
                 if (presenceType !== "unavailable") {
                     if (roster.get(from)) {
-                        // user changed nick before
-                        return true;
+                        // role/affiliation change
+                        user = roster.get(from);
+                        var role = item.attr("role"), affiliation = item.attr("affiliation");
+                        user.setRole(role);
+                        user.setAffiliation(affiliation);
+                        // FIXME: currently role/affilation changes are handled with this action
+                        action = "join";
+                    } else {
+                        nick = Strophe.getResourceFromJid(from);
+                        user = new Candy.Core.ChatUser(from, nick, item.attr("affiliation"), item.attr("role"));
+                        // Room existed but client (myself) is not yet registered
+                        if (room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
+                            room.setUser(user);
+                            currentUser = user;
+                        }
+                        roster.add(user);
+                        action = "join";
                     }
-                    nick = Strophe.getResourceFromJid(from);
-                    user = new Candy.Core.ChatUser(from, nick, item.attr("affiliation"), item.attr("role"));
-                    // Room existed but client (myself) is not yet registered
-                    if (room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
-                        room.setUser(user);
-                        currentUser = user;
-                    }
-                    roster.add(user);
-                    action = "join";
                 } else {
                     user = roster.get(from);
                     roster.remove(from);
@@ -2382,6 +2533,11 @@ Candy.Core.Event = function(self, Strophe, $) {
                                 type: "info"
                             };
                         }
+                    }
+                    var xhtmlChild = msg.children('html[xmlns="' + Strophe.NS.XHTML_IM + '"]');
+                    if (Candy.View.getOptions().enableXHTML === true && xhtmlChild.length > 0) {
+                        var xhtmlMessage = xhtmlChild.children('body[xmlns="' + Strophe.NS.XHTML + '"]').first().html();
+                        message.xhtmlMessage = xhtmlMessage;
                     }
                 } else {
                     return true;
@@ -2628,7 +2784,9 @@ Candy.View.Observer = function(self, $) {
                 args.roomJid = Candy.Util.unescapeJid(args.roomJid);
                 // Initialize room if not yet existing
                 if (!Candy.View.Pane.Chat.rooms[args.roomJid]) {
-                    Candy.View.Pane.Room.init(args.roomJid, args.roomName);
+                    if (Candy.View.Pane.Room.init(args.roomJid, args.roomName) === false) {
+                        return false;
+                    }
                     Candy.View.Pane.Room.show(args.roomJid);
                 }
                 Candy.View.Pane.Roster.update(args.roomJid, args.user, args.action, args.currentUser);
@@ -2710,7 +2868,7 @@ Candy.View.Observer = function(self, $) {
             if (args.message.type === "chat" && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
                 Candy.View.Pane.PrivateRoom.open(args.roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
             }
-            Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.timestamp);
+            Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.message.xhtmlMessage, args.timestamp);
         }
     };
     /** Function: Candy.View.Observer.Login
@@ -3137,7 +3295,7 @@ Candy.View.Pane = function(self, $) {
             onPlaySound: function() {
                 try {
                     if (self.Chat.Toolbar._supportsNativeAudio) {
-                        new Audio(Candy.View.getOptions().resources + "notify.mp3").play();
+                        new Audio(Candy.View.getOptions().assets + "notify.mp3").play();
                     } else {
                         var chatSoundPlayer = document.getElementById("chat-sound-player");
                         chatSoundPlayer.SetVariable("method:stop", "");
@@ -3722,11 +3880,28 @@ Candy.View.Pane = function(self, $) {
 		 */
         init: function(roomJid, roomName, roomType) {
             roomType = roomType || "groupchat";
+            roomJid = Candy.Util.unescapeJid(roomJid);
+            var evtData = {
+                roomJid: roomJid,
+                type: roomType
+            };
+            /** Event: candy:view.room.before-add
+			 * Before initialising a room
+			 *
+			 * Parameters:
+			 *   (String) roomJid - Room JID
+			 *   (String) type - Room Type
+			 *
+			 * Returns:
+			 *   Boolean - if you don't want to initialise the room, return false.
+			 */
+            if ($(Candy).triggerHandler("candy:view.room.before-add", evtData) === false) {
+                return false;
+            }
             // First room, show sound control
             if (Candy.Util.isEmptyObject(self.Chat.rooms)) {
                 self.Chat.Toolbar.show();
             }
-            roomJid = Candy.Util.unescapeJid(roomJid);
             var roomId = Candy.Util.jidToId(roomJid);
             self.Chat.rooms[roomJid] = {
                 id: roomId,
@@ -3753,6 +3928,7 @@ Candy.View.Pane = function(self, $) {
             }));
             self.Chat.addTab(roomJid, roomName, roomType);
             self.Room.getPane(roomJid, ".message-form").submit(self.Message.submit);
+            evtData.element = self.Room.getPane(roomJid);
             /** Event: candy:view.room.after-add
 			 * After initialising a room
 			 *
@@ -3761,11 +3937,7 @@ Candy.View.Pane = function(self, $) {
 			 *   (String) type - Room Type
 			 *   (jQuery.Element) element - Room element
 			 */
-            $(Candy).triggerHandler("candy:view.room.after-add", {
-                roomJid: roomJid,
-                type: roomType,
-                element: self.Room.getPane(roomJid)
-            });
+            $(Candy).triggerHandler("candy:view.room.after-add", evtData);
             return roomId;
         },
         /** Function: show
@@ -3783,7 +3955,7 @@ Candy.View.Pane = function(self, $) {
             $(".room-pane").each(function() {
                 var elem = $(this);
                 evtData = {
-                    roomJid: roomJid,
+                    roomJid: elem.attr("data-roomjid"),
                     element: elem
                 };
                 if (elem.attr("id") === "chat-room-" + roomId) {
@@ -3802,7 +3974,7 @@ Candy.View.Pane = function(self, $) {
 					 *   (jQuery.Element) element - Room element
 					 */
                     $(Candy).triggerHandler("candy:view.room.after-show", evtData);
-                } else {
+                } else if (elem.is(":visible")) {
                     elem.hide();
                     /** Event: candy:view.room.after-hide
 					 * After hiding a room
@@ -4118,13 +4290,33 @@ Candy.View.Pane = function(self, $) {
 		 *   candy:view.private-room.after-open using {roomJid, type, element}
 		 */
         open: function(roomJid, roomName, switchToRoom, isNoConferenceRoomJid) {
-            var user = isNoConferenceRoomJid ? Candy.Core.getUser() : self.Room.getUser(Strophe.getBareJidFromJid(roomJid));
+            var user = isNoConferenceRoomJid ? Candy.Core.getUser() : self.Room.getUser(Strophe.getBareJidFromJid(roomJid)), evtData = {
+                roomJid: roomJid,
+                roomName: roomName,
+                type: "chat"
+            };
+            /** Event: candy:view.private-room.before-open
+			 * Before opening a new private room
+			 *
+			 * Parameters:
+			 *   (String) roomJid - Room JID
+			 *   (String) roomName - Room name
+			 *   (String) type - 'chat'
+			 *
+			 * Returns:
+			 *   Boolean - if you don't want to open the private room, return false
+			 */
+            if ($(Candy).triggerHandler("candy:view.private-room.before-open", evtData) === false) {
+                return false;
+            }
             // if target user is in privacy list, don't open the private chat.
             if (Candy.Core.getUser().isInPrivacyList("ignore", roomJid)) {
                 return false;
             }
             if (!self.Chat.rooms[roomJid]) {
-                self.Room.init(roomJid, roomName, "chat");
+                if (self.Room.init(roomJid, roomName, "chat") === false) {
+                    return false;
+                }
             }
             if (switchToRoom) {
                 self.Room.show(roomJid);
@@ -4136,6 +4328,7 @@ Candy.View.Pane = function(self, $) {
             if (isNoConferenceRoomJid) {
                 self.Chat.infoMessage(roomJid, $.i18n._("presenceUnknownWarningSubject"), $.i18n._("presenceUnknownWarning"));
             }
+            evtData.element = self.Room.getPane(roomJid);
             /** Event: candy:view.private-room.after-open
 			 * After opening a new private room
 			 *
@@ -4144,11 +4337,7 @@ Candy.View.Pane = function(self, $) {
 			 *   (String) type - 'chat'
 			 *   (jQuery.Element) element - User element
 			 */
-            $(Candy).triggerHandler("candy:view.private-room.after-open", {
-                roomJid: roomJid,
-                type: "chat",
-                element: self.Room.getPane(roomJid)
-            });
+            $(Candy).triggerHandler("candy:view.private-room.after-open", evtData);
         },
         /** Function: setStatus
 		 * Set offline or online status for private rooms (when one of the participants leaves the room)
@@ -4240,7 +4429,12 @@ Candy.View.Pane = function(self, $) {
 		 */
         update: function(roomJid, user, action, currentUser) {
             Candy.Core.log("[View:Pane:Roster] " + action);
-            var roomId = self.Chat.rooms[roomJid].id, userId = Candy.Util.jidToId(user.getJid()), usercountDiff = -1, userElem = $("#user-" + roomId + "-" + userId);
+            var roomId = self.Chat.rooms[roomJid].id, userId = Candy.Util.jidToId(user.getJid()), usercountDiff = -1, userElem = $("#user-" + roomId + "-" + userId), evtData = {
+                roomJid: roomJid,
+                user: user,
+                action: action,
+                element: userElem
+            };
             /** Event: candy:view.roster.before-update
 			 * Before updating the roster of a room
 			 *
@@ -4250,12 +4444,7 @@ Candy.View.Pane = function(self, $) {
 			 *   (String) action - [join, leave, kick, ban]
 			 *   (jQuery.Element) element - User element
 			 */
-            $(Candy).triggerHandler("candy:view.roster.before-update", {
-                roomJid: roomJid,
-                user: user,
-                action: action,
-                element: userElem
-            });
+            $(Candy).triggerHandler("candy:view.roster.before-update", evtData);
             // a user joined the room
             if (action === "join") {
                 usercountDiff = 1;
@@ -4344,6 +4533,8 @@ Candy.View.Pane = function(self, $) {
             if (roomJid === Candy.View.getCurrent().roomJid) {
                 Candy.View.Pane.Chat.Toolbar.updateUsercount(Candy.View.Pane.Chat.rooms[roomJid].usercount);
             }
+            // in case there's been a join, the element is now there (previously not)
+            evtData.element = $("#user-" + roomId + "-" + userId);
             /** Event: candy:view.roster.after-update
 			 * After updating a room's roster
 			 *
@@ -4353,12 +4544,7 @@ Candy.View.Pane = function(self, $) {
 			 *   (String) action - [join, leave, kick, ban]
 			 *   (jQuery.Element) element - User element
 			 */
-            $(Candy).triggerHandler("candy:view.roster.after-update", {
-                roomJid: roomJid,
-                user: user,
-                action: action,
-                element: $("#user-" + roomId + "-" + userId)
-            });
+            $(Candy).triggerHandler("candy:view.roster.after-update", evtData);
         },
         /** Function: userClick
 		 * Click handler for opening a private room
@@ -4450,24 +4636,37 @@ Candy.View.Pane = function(self, $) {
 		 *
 		 * Triggers:
 		 *   candy:view.message.before-send using {message}
+		 *
+		 * FIXME: as everywhere, `roomJid` might be slightly incorrect in this case
+		 *        - maybe rename this as part of a refactoring.
 		 */
         submit: function(event) {
-            var roomType = Candy.View.Pane.Chat.rooms[Candy.View.getCurrent().roomJid].type, message = $(this).children(".field").val().substring(0, Candy.View.getOptions().crop.message.body);
-            var evtData = {
-                message: message
+            var roomJid = Candy.View.getCurrent().roomJid, roomType = Candy.View.Pane.Chat.rooms[roomJid].type, message = $(this).children(".field").val().substring(0, Candy.View.getOptions().crop.message.body), xhtmlMessage, evtData = {
+                roomJid: roomJid,
+                message: message,
+                xhtmlMessage: xhtmlMessage
             };
             /** Event: candy:view.message.before-send
 			 * Before sending a message
 			 *
 			 * Parameters:
+			 *   (String) roomJid - room to which the message should be sent
 			 *   (String) message - Message text
+			 *   (String) xhtmlMessage - XHTML formatted message [default: undefined]
+			 *
+			 * Returns:
+			 *   Boolean|undefined - if you like to stop sending the message, return false.
 			 */
-            $(Candy).triggerHandler("candy:view.message.before-send", evtData);
+            if ($(Candy).triggerHandler("candy:view.message.before-send", evtData) === false) {
+                event.preventDefault();
+                return;
+            }
             message = evtData.message;
-            Candy.Core.Action.Jabber.Room.Message(Candy.View.getCurrent().roomJid, message, roomType);
+            xhtmlMessage = evtData.xhtmlMessage;
+            Candy.Core.Action.Jabber.Room.Message(roomJid, message, roomType, xhtmlMessage);
             // Private user chat. Jabber won't notify the user who has sent the message. Just show it as the user hits the button...
             if (roomType === "chat" && message) {
-                self.Message.show(Candy.View.getCurrent().roomJid, self.Room.getUser(Candy.View.getCurrent().roomJid).getNick(), message);
+                self.Message.show(roomJid, self.Room.getUser(roomJid).getNick(), message);
             }
             // Clear input and set focus to it
             $(this).children(".field").val("").focus();
@@ -4480,6 +4679,7 @@ Candy.View.Pane = function(self, $) {
 		 *   (String) roomJid - room in which the message has been sent to
 		 *   (String) name - Name of the user which sent the message
 		 *   (String) message - Message
+		 *   (String) xhtmlMessage - XHTML formatted message [if options enableXHTML is true]
 		 *   (String) timestamp - [optional] Timestamp of the message, if not present, current date.
 		 *
 		 * Triggers:
@@ -4487,12 +4687,16 @@ Candy.View.Pane = function(self, $) {
 		 *   candy.view.message.before-render using {template, templateData}
 		 *   candy:view.message.after-show using {roomJid, name, message, element}
 		 */
-        show: function(roomJid, name, message, timestamp) {
+        show: function(roomJid, name, message, xhtmlMessage, timestamp) {
             message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
+            if (xhtmlMessage) {
+                xhtmlMessage = Candy.Util.parseAndCropXhtml(xhtmlMessage, Candy.View.getOptions().crop.message.body);
+            }
             var evtData = {
                 roomJid: roomJid,
                 name: name,
-                message: message
+                message: message,
+                xhtmlMessage: xhtmlMessage
             };
             /** Event: candy:view.message.before-show
 			 * Before showing a new message
@@ -4501,9 +4705,18 @@ Candy.View.Pane = function(self, $) {
 			 *   (String) roomJid - Room JID
 			 *   (String) name - Name of the sending user
 			 *   (String) message - Message text
+			 *
+			 * Returns:
+			 *   Boolean - if you don't want to show the message, return false
 			 */
-            $(Candy).triggerHandler("candy:view.message.before-show", evtData);
+            if ($(Candy).triggerHandler("candy:view.message.before-show", evtData) === false) {
+                return;
+            }
             message = evtData.message;
+            xhtmlMessage = evtData.xhtmlMessage;
+            if (xhtmlMessage !== undefined && xhtmlMessage.length > 0) {
+                message = xhtmlMessage;
+            }
             if (!message) {
                 return;
             }
@@ -4537,7 +4750,9 @@ Candy.View.Pane = function(self, $) {
                 // Check if user is online and not myself
                 var room = Candy.Core.getRoom(roomJid);
                 if (room && name !== self.Room.getUser(Candy.View.getCurrent().roomJid).getNick() && room.getRoster().get(roomJid + "/" + name)) {
-                    Candy.View.Pane.PrivateRoom.open(roomJid + "/" + name, name, true);
+                    if (Candy.View.Pane.PrivateRoom.open(roomJid + "/" + name, name, true) === false) {
+                        return false;
+                    }
                 }
             });
             // Notify the user about a new private message
@@ -4550,12 +4765,7 @@ Candy.View.Pane = function(self, $) {
             if (Candy.View.getCurrent().roomJid === roomJid) {
                 self.Room.scrollToBottom(roomJid);
             }
-            evtData = {
-                roomJid: roomJid,
-                element: elem,
-                name: name,
-                message: message
-            };
+            evtData.element = elem;
             /** Event: candy:view.message.after-show
 			 * Triggered after showing a message
 			 *
@@ -4600,11 +4810,11 @@ Candy.View.Template = function(self) {
         rooms: '<div id="chat-rooms" class="rooms"></div>',
         tabs: '<ul id="chat-tabs"></ul>',
         tab: '<li class="roomtype-{{roomType}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">' + '<a href="#" class="label">{{#privateUserChat}}@{{/privateUserChat}}{{name}}</a>' + '<a href="#" class="transition"></a><a href="#" class="close">×</a>' + '<small class="unread"></small></li>',
-        modal: '<div id="chat-modal"><a id="admin-message-cancel" class="close" href="#">×</a>' + '<span id="chat-modal-body"></span>' + '<img src="{{resourcesPath}}img/modal-spinner.gif" id="chat-modal-spinner" />' + '</div><div id="chat-modal-overlay"></div>',
+        modal: '<div id="chat-modal"><a id="admin-message-cancel" class="close" href="#">×</a>' + '<span id="chat-modal-body"></span>' + '<img src="{{assetsPath}}img/modal-spinner.gif" id="chat-modal-spinner" />' + '</div><div id="chat-modal-overlay"></div>',
         adminMessage: '<li><small>{{time}}</small><div class="adminmessage">' + '<span class="label">{{sender}}</span>' + '<span class="spacer">▸</span>{{subject}} {{message}}</div></li>',
         infoMessage: '<li><small>{{time}}</small><div class="infomessage">' + '<span class="spacer">•</span>{{subject}} {{message}}</div></li>',
         toolbar: '<ul id="chat-toolbar">' + '<li id="emoticons-icon" data-tooltip="{{tooltipEmoticons}}"></li>' + '<li id="chat-sound-control" class="checked" data-tooltip="{{tooltipSound}}">{{> soundcontrol}}</li>' + '<li id="chat-autoscroll-control" class="checked" data-tooltip="{{tooltipAutoscroll}}"></li>' + '<li class="checked" id="chat-statusmessage-control" data-tooltip="{{tooltipStatusmessage}}">' + '</li><li class="context" data-tooltip="{{tooltipAdministration}}"></li>' + '<li class="usercount" data-tooltip="{{tooltipUsercount}}">' + '<span id="chat-usercount"></span></li></ul>',
-        soundcontrol: '<script type="text/javascript">var audioplayerListener = new Object();' + " audioplayerListener.onInit = function() { };" + '</script><object id="chat-sound-player" type="application/x-shockwave-flash" data="{{resourcesPath}}audioplayer.swf"' + ' width="0" height="0"><param name="movie" value="{{resourcesPath}}audioplayer.swf" /><param name="AllowScriptAccess"' + ' value="always" /><param name="FlashVars" value="listener=audioplayerListener&amp;mp3={{resourcesPath}}notify.mp3" />' + "</object>",
+        soundcontrol: '<script type="text/javascript">var audioplayerListener = new Object();' + " audioplayerListener.onInit = function() { };" + '</script><object id="chat-sound-player" type="application/x-shockwave-flash" data="{{assetsPath}}audioplayer.swf"' + ' width="0" height="0"><param name="movie" value="{{assetsPath}}audioplayer.swf" /><param name="AllowScriptAccess"' + ' value="always" /><param name="FlashVars" value="listener=audioplayerListener&amp;mp3={{assetsPath}}notify.mp3" />' + "</object>",
         Context: {
             menu: '<div id="context-menu"><i class="arrow arrow-top"></i>' + '<ul></ul><i class="arrow arrow-bottom"></i></div>',
             menulinks: '<li class="{{class}}" id="context-menu-{{id}}">{{label}}</li>',
