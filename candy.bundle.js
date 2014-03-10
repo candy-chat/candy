@@ -2203,9 +2203,42 @@ Candy.Core.Event = function(self, Strophe, $) {
         Message: function(msg) {
             Candy.Core.log("[Jabber] Message");
             msg = $(msg);
-            var fromJid = msg.attr("from"), type = msg.attr("type"), toJid = msg.attr("to");
+            var fromJid = msg.attr("from"), type = msg.attr("type") || "undefined", toJid = msg.attr("to");
+            // Inspect the message type.
+            if (type === "normal" || type === "undefined") {
+                /** Event: candy:core:chat:message:normal
+				 * Messages with the type attribute of normal or those
+				 * that do not have the optional type attribute.
+				 * 
+				 * Parameters:
+				 *   (String) type - Type of the message [default: message]
+				 *   (Object) message - Message object.
+				 */
+                // Detect message with type normal or with no type.
+                $(Candy).triggerHandler("candy:core:chat:message:normal", {
+                    type: type || "normal",
+                    message: msg
+                });
+                return true;
+            } else if (type !== "groupchat" && type !== "chat" && type !== "error" && type !== "headline") {
+                /** Event: candy:core:chat:message:other
+				 * Messages with a type other than the ones listed in RFC3921
+				 * section 2.1.1. This allows plugins to catch custom message
+				 * types.
+				 * 
+				 * Parameters:
+				 *   (String) type - Type of the message [default: message]
+				 *   (Object) message - Message object.
+				 */
+                // Detect message with type normal or with no type.
+                $(Candy).triggerHandler("candy:core:chat:message:other", {
+                    type: type,
+                    message: msg
+                });
+                return true;
+            }
             // Room message
-            if (fromJid !== Strophe.getDomainFromJid(fromJid) && (type === "groupchat" || type === "chat" || type === "error" || type === "normal")) {
+            if (fromJid !== Strophe.getDomainFromJid(fromJid) && (type === "groupchat" || type === "chat" || type === "error")) {
                 self.Jabber.Room.Message(msg);
             } else if (!toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
                 /** Event: candy:core.chat.message.admin
@@ -2232,19 +2265,6 @@ Candy.Core.Event = function(self, Strophe, $) {
                     type: type || "message",
                     subject: msg.children("subject").text(),
                     message: msg.children("body").text()
-                });
-            } else if (typeof type === "undefined") {
-                /** Event: candy:core:chat:message:other
-				 * Messages without a type attribute.
-				 * (e.g. MUC invites.)
-				 *
-				 * Parameter:
-				 *   (String) type - Message type [default: other]
-				 *   (Object) message - Message object. 
-				 */
-                $(Candy).triggerHandler("candy:core:chat:message:other", {
-                    type: "other",
-                    message: msg
                 });
             }
             return true;
