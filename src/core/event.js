@@ -592,6 +592,26 @@ Candy.Core.Event = (function(self, Strophe, $) {
 							message = { name: '', body: msg.children('body').text(), type: 'info' };
 						}
 					}
+				// Typing notification
+				} else if(msg.children('composing').length > 0 || msg.children('inactive').length > 0 || msg.children('paused').length > 0) {
+					roomJid = Candy.Util.unescapeJid(msg.attr('from'));
+					var name = Strophe.getResourceFromJid(roomJid);
+					var chatstate;
+					if(msg.children('composing').length > 0) {
+						chatstate = 'composing';
+					} else if(msg.children('paused').length > 0) {
+						chatstate = 'paused';
+					} else if(msg.children('inactive').length > 0) {
+						chatstate = 'inactive';
+					} else if(msg.children('gone').length > 0) {
+						chatstate = 'gone';
+					}
+					$(Candy).triggerHandler('candy:core.message.chatstate', {
+						name: name,
+						roomJid: roomJid,
+						chatstate: chatstate
+					});
+					return true;
 				// Unhandled message
 				} else {
 					return true;
