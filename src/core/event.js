@@ -606,7 +606,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				Candy.Core.log('[Jabber:Room] Message');
 				// Room subject
 				var roomJid, message;
-				if(msg.children('subject').length > 0) {
+				if(msg.children('subject').length > 0 && msg.children('subject').text().length > 0 && msg.attr('type') === 'groupchat') {
 					roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
 					message = { name: Strophe.getNodeFromJid(roomJid), body: msg.children('subject').text(), type: 'subject' };
 				// Error messsage
