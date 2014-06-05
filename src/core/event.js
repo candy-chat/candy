@@ -250,13 +250,13 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			var fromJid = msg.attr('from'),
 				type = msg.attr('type') || 'undefined',
 				toJid = msg.attr('to');
-				
+
 			// Inspect the message type.
 			if (type === 'normal' || type === 'undefined') {
 				/** Event: candy:core:chat:message:normal
 				 * Messages with the type attribute of normal or those
 				 * that do not have the optional type attribute.
-				 * 
+				 *
 				 * Parameters:
 				 *   (String) type - Type of the message [default: message]
 				 *   (Object) message - Message object.
@@ -272,7 +272,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 * Messages with a type other than the ones listed in RFC3921
 				 * section 2.1.1. This allows plugins to catch custom message
 				 * types.
-				 * 
+				 *
 				 * Parameters:
 				 *   (String) type - Type of the message [default: message]
 				 *   (Object) message - Message object.
@@ -284,7 +284,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				});
 				return true;
 			}
-			
+
 			// Room message
 			if(fromJid !== Strophe.getDomainFromJid(fromJid) && (type === 'groupchat' || type === 'chat' || type === 'error')) {
 				self.Jabber.Room.Message(msg);
@@ -605,7 +605,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			Message: function(msg) {
 				Candy.Core.log('[Jabber:Room] Message');
 				// Room subject
-				var roomJid, message;
+				var roomJid, message, name;
 				if(msg.children('subject').length > 0 && msg.children('subject').text().length > 0 && msg.attr('type') === 'groupchat') {
 					roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
 					message = { name: Strophe.getNodeFromJid(roomJid), body: msg.children('subject').text(), type: 'subject' };
@@ -623,8 +623,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						roomJid = Candy.Util.unescapeJid(msg.attr('from'));
 						var bareRoomJid = Strophe.getBareJidFromJid(roomJid),
 							// if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
-							isNoConferenceRoomJid = !Candy.Core.getRoom(bareRoomJid),
-							name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(roomJid) : Strophe.getResourceFromJid(roomJid);
+							isNoConferenceRoomJid = !Candy.Core.getRoom(bareRoomJid);
+
+						name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(roomJid) : Strophe.getResourceFromJid(roomJid);
 						message = { name: name, body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
 					// Multi-user chat message
 					} else {
@@ -649,7 +650,41 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						var xhtmlMessage = xhtmlChild.children('body[xmlns="' + Strophe.NS.XHTML + '"]').first().html();
 						message.xhtmlMessage = xhtmlMessage;
 					}
-
+				// Typing notification
+				} else if(msg.children('composing').length > 0 || msg.children('inactive').length > 0 || msg.children('paused').length > 0) {
+					roomJid = Candy.Util.unescapeJid(msg.attr('from'));
+					name = Strophe.getResourceFromJid(roomJid);
+					var chatstate;
+					if(msg.children('composing').length > 0) {
+						chatstate = 'composing';
+					} else if(msg.children('paused').length > 0) {
+						chatstate = 'paused';
+					} else if(msg.children('inactive').length > 0) {
+						chatstate = 'inactive';
+					} else if(msg.children('gone').length > 0) {
+						chatstate = 'gone';
+					}
+					/** Event: candy:core.message.chatstate
+					 * Triggers on any recieved chatstate notification.
+					 *
+					 * The resulting message object contains the name of the person, the roomJid, and the indicated chatstate.
+					 *
+					 * The following lists explain those parameters:
+					 *
+					 * Message Object Parameters:
+					 *   (String) name - User name
+					 *   (String) roomJid - Room jid
+					 *   (String) chatstate - Chatstate being indicated. ("paused", "inactive", "composing", "gone")
+					 *
+					 * TODO:
+					 *   Perhaps handle blank "active" as specified by XEP-0085?
+					 */
+					$(Candy).triggerHandler('candy:core.message.chatstate', {
+						name: name,
+						roomJid: roomJid,
+						chatstate: chatstate
+					});
+					return true;
 				// Unhandled message
 				} else {
 					return true;
