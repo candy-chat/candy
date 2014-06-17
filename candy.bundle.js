@@ -2207,26 +2207,43 @@ Candy.Core.Event = function(self, Strophe, $) {
             var fromJid = msg.attr("from"), type = msg.attr("type") || "undefined", toJid = msg.attr("to");
             // Inspect the message type.
             if (type === "normal" || type === "undefined") {
-                /** Event: candy:core:chat:message:normal
-				 * Messages with the type attribute of normal or those
-				 * that do not have the optional type attribute.
-				 * 
-				 * Parameters:
-				 *   (String) type - Type of the message [default: message]
-				 *   (Object) message - Message object.
-				 */
-                // Detect message with type normal or with no type.
-                $(Candy).triggerHandler("candy:core:chat:message:normal", {
-                    type: type || "normal",
-                    message: msg
-                });
+                // It is an invite
+                if ($(msg).find("invite").length > 0) {
+                    /** Event: candy:core:chat:invite
+					 * Incoming chat invite for a MUC.
+					 *
+					 * Parameters:
+					 *   (String) roomJid - The room the invite is to
+					 *   (String) from - User JID that invite is from text
+					 *   (String) reason - Reason for invite [default: '']
+					 */
+                    $(Candy).triggerHandler("candy:core:chat:invite", {
+                        roomJid: fromJid,
+                        from: $(msg).find("invite").attr("from") || "undefined",
+                        reason: $(msg).find("invite").find("reason").html() || ""
+                    });
+                } else {
+                    /** Event: candy:core:chat:message:normal
+					 * Messages with the type attribute of normal or those
+					 * that do not have the optional type attribute.
+					 *
+					 * Parameters:
+					 *   (String) type - Type of the message [default: message]
+					 *   (Object) message - Message object.
+					 */
+                    // Detect message with type normal or with no type.
+                    $(Candy).triggerHandler("candy:core:chat:message:normal", {
+                        type: type || "normal",
+                        message: msg
+                    });
+                }
                 return true;
             } else if (type !== "groupchat" && type !== "chat" && type !== "error" && type !== "headline") {
                 /** Event: candy:core:chat:message:other
 				 * Messages with a type other than the ones listed in RFC3921
 				 * section 2.1.1. This allows plugins to catch custom message
 				 * types.
-				 * 
+				 *
 				 * Parameters:
 				 *   (String) type - Type of the message [default: message]
 				 *   (Object) message - Message object.
