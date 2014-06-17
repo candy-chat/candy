@@ -98,6 +98,21 @@ Candy.Util = (function(self, $){
 		return str;
 	};
 
+	/** Function: parseAndCropXhtml
+	 * Parses the XHTML and applies various Candy related filters to it.
+	 *
+	 *  - Ensures it contains only valid XHTML
+	 *  - Crops text to a max length
+	 *  - Parses the text in order to display html
+	 *
+	 * Parameters:
+	 *   (String) str - String containing XHTML
+	 *   (Integer) len - Max text length
+	 */
+	self.parseAndCropXhtml = function(str, len) {
+		return $('<div/>').append(self.createHtml($(str).get(0), len)).html();
+	};
+
 	/** Function: setCookie
 	 * Sets a new cookie
 	 *
@@ -509,7 +524,7 @@ Candy.Util = (function(self, $){
 		 *   (String) text - Text to parse
 		 *
 		 * Returns:
-		 *   Parsed text
+		 *   (String) Parsed text
 		 */
 		all: function(text) {
 			if(text) {
@@ -520,6 +535,96 @@ Candy.Util = (function(self, $){
 			}
 			return text;
 		}
+	};
+
+	/** Function: createHtml
+	 * Copy an HTML DOM element into an XML DOM.
+	 *
+	 * This function copies a DOM element and all its descendants and returns
+	 * the new copy.
+	 *
+	 * It's a function copied & adapted from [Strophe.js core.js](https://github.com/strophe/strophejs/blob/master/src/core.js).
+	 *
+	 * Parameters:
+	 *   (HTMLElement) elem - A DOM element.
+	 *   (Integer) maxLength - Max length of text
+	 *   (Integer) currentLength - Current accumulated text length
+	 *
+	 * Returns:
+	 *   A new, copied DOM element tree.
+	 */
+	self.createHtml = function(elem, maxLength, currentLength) {
+		/* jshint -W073 */
+		currentLength = currentLength || 0;
+		var i, el, j, tag, attribute, value, css, cssAttrs, attr, cssName, cssValue;
+		if (elem.nodeType === Strophe.ElementType.NORMAL) {
+			tag = elem.nodeName.toLowerCase();
+			if(Strophe.XHTML.validTag(tag)) {
+				try {
+					el = $('<' + tag + '/>');
+					for(i = 0; i < Strophe.XHTML.attributes[tag].length; i++) {
+						attribute = Strophe.XHTML.attributes[tag][i];
+						value = elem.getAttribute(attribute);
+						if(typeof value === 'undefined' || value === null || value === '' || value === false || value === 0) {
+							continue;
+						}
+						if(attribute === 'style' && typeof value === 'object') {
+							if(typeof value.cssText !== 'undefined') {
+								value = value.cssText; // we're dealing with IE, need to get CSS out
+							}
+						}
+						// filter out invalid css styles
+						if(attribute === 'style') {
+							css = [];
+							cssAttrs = value.split(';');
+							for(j = 0; j < cssAttrs.length; j++) {
+								attr = cssAttrs[j].split(':');
+								cssName = attr[0].replace(/^\s*/, "").replace(/\s*$/, "").toLowerCase();
+								if(Strophe.XHTML.validCSS(cssName)) {
+									cssValue = attr[1].replace(/^\s*/, "").replace(/\s*$/, "");
+									css.push(cssName + ': ' + cssValue);
+								}
+							}
+							if(css.length > 0) {
+								value = css.join('; ');
+								el.attr(attribute, value);
+							}
+						} else {
+							el.attr(attribute, value);
+						}
+					}
+
+					for (i = 0; i < elem.childNodes.length; i++) {
+						el.append(self.createHtml(elem.childNodes[i], maxLength, currentLength));
+					}
+				} catch(e) { // invalid elements
+					Candy.Core.log("[Util:createHtml] Error while parsing XHTML:");
+					Candy.Core.log(e);
+					el = Strophe.xmlTextNode('');
+				}
+			} else {
+				el = Strophe.xmlGenerator().createDocumentFragment();
+				for (i = 0; i < elem.childNodes.length; i++) {
+					el.appendChild(self.createHtml(elem.childNodes[i], maxLength, currentLength));
+				}
+			}
+		} else if (elem.nodeType === Strophe.ElementType.FRAGMENT) {
+			el = Strophe.xmlGenerator().createDocumentFragment();
+			for (i = 0; i < elem.childNodes.length; i++) {
+				el.appendChild(self.createHtml(elem.childNodes[i], maxLength, currentLength));
+			}
+		} else if (elem.nodeType === Strophe.ElementType.TEXT) {
+			var text = elem.nodeValue;
+			currentLength += text.length;
+			if(maxLength && currentLength > maxLength) {
+				text = text.substring(0, maxLength);
+			}
+			text = Candy.Util.Parser.all(text);
+			el = $.parseHTML(text);
+		}
+
+		return el;
+		/* jshint +W073 */
 	};
 
 	return self;

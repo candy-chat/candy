@@ -248,10 +248,63 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			msg = $(msg);
 
 			var fromJid = msg.attr('from'),
-				type = msg.attr('type'),
+				type = msg.attr('type') || 'undefined',
 				toJid = msg.attr('to');
+
+			// Inspect the message type.
+			if (type === 'normal' || type === 'undefined') {
+				// It is an invite
+				if($(msg).find('invite').length > 0) {
+					/** Event: candy:core:chat:invite
+					 * Incoming chat invite for a MUC.
+					 *
+					 * Parameters:
+					 *   (String) roomJid - The room the invite is to
+					 *   (String) from - User JID that invite is from text
+					 *   (String) reason - Reason for invite [default: '']
+					 */
+					$(Candy).triggerHandler('candy:core:chat:invite', {
+						roomJid: fromJid,
+						from: $(msg).find('invite').attr('from') || 'undefined',
+						reason: $(msg).find('invite').find('reason').html() || ''
+					});
+				// It is not an invite
+				} else {
+					/** Event: candy:core:chat:message:normal
+					 * Messages with the type attribute of normal or those
+					 * that do not have the optional type attribute.
+					 *
+					 * Parameters:
+					 *   (String) type - Type of the message [default: message]
+					 *   (Object) message - Message object.
+					 */
+					// Detect message with type normal or with no type.
+					$(Candy).triggerHandler('candy:core:chat:message:normal', {
+						type: (type || 'normal'),
+						message: msg
+					});
+				}
+				return true;
+			} else if (type !== 'groupchat' && type !== 'chat' && type !== 'error' && type !== 'headline') {
+				/** Event: candy:core:chat:message:other
+				 * Messages with a type other than the ones listed in RFC3921
+				 * section 2.1.1. This allows plugins to catch custom message
+				 * types.
+				 *
+				 * Parameters:
+				 *   (String) type - Type of the message [default: message]
+				 *   (Object) message - Message object.
+				 */
+				// Detect message with type normal or with no type.
+				$(Candy).triggerHandler('candy:core:chat:message:other', {
+					type: type,
+					message: msg
+				});
+				return true;
+			}
+
 			// Room message
-			if(fromJid !== Strophe.getDomainFromJid(fromJid) && (type === 'groupchat' || type === 'chat' || type === 'error' || type === 'normal')) {
+			if(fromJid !== Strophe.getDomainFromJid(fromJid) && (type === 'groupchat' || type === 'chat' || type === 'error')) {
 				self.Jabber.Room.Message(msg);
 			// Admin message
 			} else if(!toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
@@ -366,6 +419,12 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			Disco: function(msg) {
 				Candy.Core.log('[Jabber:Room] Disco');
 				msg = $(msg);
+				// Temp fix for #219
+				// Don't go further if it's no conference disco reply
+				// FIXME: Do this in a more beautiful way
+				if(!msg.find('identity[category="conference"]').length) {
+					return true;
+				}
 				var roomJid = Strophe.getBareJidFromJid(Candy.Util.unescapeJid(msg.attr('from')));
 
 				// Client joined a room
@@ -442,18 +501,28 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				// User joined a room
 				if(presenceType !== 'unavailable') {
 					if (roster.get(from)) {
-						// user changed nick before
-						return true;
+						// role/affiliation change
+						user = roster.get(from);
+
+						var role = item.attr('role'),
+							affiliation = item.attr('affiliation');
+
+						user.setRole(role);
+						user.setAffiliation(affiliation);
+
+						// FIXME: currently role/affilation changes are handled with this action
+						action = 'join';
+					} else {
+						nick = Strophe.getResourceFromJid(from);
+						user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
+						// Room existed but client (myself) is not yet registered
+						if(room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
+							room.setUser(user);
+							currentUser = user;
+						}
+						roster.add(user);
+						action = 'join';
 					}
-					nick = Strophe.getResourceFromJid(from);
-					user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
-					// Room existed but client (myself) is not yet registered
-					if(room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
-						room.setUser(user);
-						currentUser = user;
-					}
-					roster.add(user);
-					action = 'join';
 				// User left a room
 				} else {
 					user = roster.get(from);
@@ -592,6 +661,13 @@ Candy.Core.Event = (function(self, Strophe, $) {
 							message = { name: '', body: msg.children('body').text(), type: 'info' };
 						}
 					}
+
+					var xhtmlChild = msg.children('html[xmlns="' + Strophe.NS.XHTML_IM + '"]');
+					if(Candy.View.getOptions().enableXHTML === true && xhtmlChild.length > 0) {
+						var xhtmlMessage = xhtmlChild.children('body[xmlns="' + Strophe.NS.XHTML + '"]').first().html();
+						message.xhtmlMessage = xhtmlMessage;
+					}
+
 				// Unhandled message
 				} else {
 					return true;

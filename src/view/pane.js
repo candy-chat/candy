@@ -435,7 +435,7 @@ Candy.View.Pane = (function(self, $) {
 			onPlaySound: function() {
 				try {
 					if(self.Chat.Toolbar._supportsNativeAudio) {
-						new Audio(Candy.View.getOptions().resources + 'notify.mp3').play();
+						new Audio(Candy.View.getOptions().assets + 'notify.mp3').play();
 					} else {
 						var chatSoundPlayer = document.getElementById('chat-sound-player');
 						chatSoundPlayer.SetVariable('method:stop', '');
@@ -1089,11 +1089,31 @@ Candy.View.Pane = (function(self, $) {
 		 */
 		init: function(roomJid, roomName, roomType) {
 			roomType = roomType || 'groupchat';
+			roomJid = Candy.Util.unescapeJid(roomJid);
+
+			var evtData = {
+				roomJid: roomJid,
+				type: roomType
+			};
+			/** Event: candy:view.room.before-add
+			 * Before initialising a room
+			 *
+			 * Parameters:
+			 *   (String) roomJid - Room JID
+			 *   (String) type - Room Type
+			 *
+			 * Returns:
+			 *   Boolean - if you don't want to initialise the room, return false.
+			 */
+			if($(Candy).triggerHandler('candy:view.room.before-add', evtData) === false) {
+				return false;
+			}
+
 			// First room, show sound control
 			if(Candy.Util.isEmptyObject(self.Chat.rooms)) {
 				self.Chat.Toolbar.show();
 			}
-			roomJid = Candy.Util.unescapeJid(roomJid);
+
 			var roomId = Candy.Util.jidToId(roomJid);
 			self.Chat.rooms[roomJid] = {id: roomId, usercount: 0, name: roomName, type: roomType, messageCount: 0, scrollPosition: -1};
 
@@ -1115,6 +1135,8 @@ Candy.View.Pane = (function(self, $) {
 			self.Chat.addTab(roomJid, roomName, roomType);
 			self.Room.getPane(roomJid, '.message-form').submit(self.Message.submit);
 
+			evtData.element = self.Room.getPane(roomJid);
+
 			/** Event: candy:view.room.after-add
 			 * After initialising a room
 			 *
@@ -1123,11 +1145,7 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) type - Room Type
 			 *   (jQuery.Element) element - Room element
 			 */
-			$(Candy).triggerHandler('candy:view.room.after-add', {
-				'roomJid': roomJid,
-				'type': roomType,
-				'element': self.Room.getPane(roomJid)
-			});
+			$(Candy).triggerHandler('candy:view.room.after-add', evtData);
 
 			return roomId;
 		},
@@ -1148,7 +1166,10 @@ Candy.View.Pane = (function(self, $) {
 
 			$('.room-pane').each(function() {
 				var elem = $(this);
-				evtData = {'roomJid': roomJid, 'element' : elem};
+				evtData = {
+					'roomJid': elem.attr('data-roomjid'),
+					'element' : elem
+				};
 
 				if(elem.attr('id') === ('chat-room-' + roomId)) {
 					elem.show();
@@ -1168,7 +1189,7 @@ Candy.View.Pane = (function(self, $) {
 					 */
 					$(Candy).triggerHandler('candy:view.room.after-show', evtData);
 
-				} else {
+				} else if(elem.is(':visible')) {
 					elem.hide();
 
 					/** Event: candy:view.room.after-hide
@@ -1509,13 +1530,36 @@ Candy.View.Pane = (function(self, $) {
 		 *   candy:view.private-room.after-open using {roomJid, type, element}
 		 */
 		open: function(roomJid, roomName, switchToRoom, isNoConferenceRoomJid) {
-			var user = isNoConferenceRoomJid ? Candy.Core.getUser() : self.Room.getUser(Strophe.getBareJidFromJid(roomJid));
+			var user = isNoConferenceRoomJid ? Candy.Core.getUser() : self.Room.getUser(Strophe.getBareJidFromJid(roomJid)),
+				evtData = {
+					'roomJid': roomJid,
+					'roomName': roomName,
+					'type': 'chat',
+				};
+
+			/** Event: candy:view.private-room.before-open
+			 * Before opening a new private room
+			 *
+			 * Parameters:
+			 *   (String) roomJid - Room JID
+			 *   (String) roomName - Room name
+			 *   (String) type - 'chat'
+			 *
+			 * Returns:
+			 *   Boolean - if you don't want to open the private room, return false
+			 */
+			if($(Candy).triggerHandler('candy:view.private-room.before-open', evtData) === false) {
+				return false;
+			}
+
 			// if target user is in privacy list, don't open the private chat.
 			if (Candy.Core.getUser().isInPrivacyList('ignore', roomJid)) {
 				return false;
 			}
 			if(!self.Chat.rooms[roomJid]) {
-				self.Room.init(roomJid, roomName, 'chat');
+				if(self.Room.init(roomJid, roomName, 'chat') === false) {
+					return false;
+				}
 			}
 			if(switchToRoom) {
 				self.Room.show(roomJid);
@@ -1532,6 +1576,7 @@ Candy.View.Pane = (function(self, $) {
 				self.Chat.infoMessage(roomJid, $.i18n._('presenceUnknownWarningSubject'), $.i18n._('presenceUnknownWarning'));
 			}
 
+			evtData.element = self.Room.getPane(roomJid);
 			/** Event: candy:view.private-room.after-open
 			 * After opening a new private room
 			 *
@@ -1540,11 +1585,7 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) type - 'chat'
 			 *   (jQuery.Element) element - User element
 			 */
-			$(Candy).triggerHandler('candy:view.private-room.after-open', {
-				'roomJid': roomJid,
-				'type': 'chat',
-				'element': self.Room.getPane(roomJid)
-			});
+			$(Candy).triggerHandler('candy:view.private-room.after-open', evtData);
 		},
 
 		/** Function: setStatus
@@ -1657,7 +1698,13 @@ Candy.View.Pane = (function(self, $) {
 			var roomId = self.Chat.rooms[roomJid].id,
 				userId = Candy.Util.jidToId(user.getJid()),
 				usercountDiff = -1,
-				userElem = $('#user-' + roomId + '-' + userId);
+				userElem = $('#user-' + roomId + '-' + userId),
+				evtData = {
+					'roomJid' : roomJid,
+					'user' : user,
+					'action': action,
+					'element': userElem
+				};
 
 			/** Event: candy:view.roster.before-update
 			 * Before updating the roster of a room
@@ -1668,12 +1715,7 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) action - [join, leave, kick, ban]
 			 *   (jQuery.Element) element - User element
 			 */
-			$(Candy).triggerHandler('candy:view.roster.before-update', {
-				'roomJid' : roomJid,
-				'user' : user,
-				'action': action,
-				'element': userElem
-			});
+			$(Candy).triggerHandler('candy:view.roster.before-update', evtData);
 
 			// a user joined the room
 			if(action === 'join') {
@@ -1743,7 +1785,6 @@ Candy.View.Pane = (function(self, $) {
 				if (currentUser !== undefined && currentUser.isInPrivacyList('ignore', user.getJid())) {
 					Candy.View.Pane.Room.addIgnoreIcon(roomJid, user.getJid());
 				}
-
 			// a user left the room
 			} else if(action === 'leave') {
 				self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
@@ -1778,6 +1819,9 @@ Candy.View.Pane = (function(self, $) {
 				Candy.View.Pane.Chat.Toolbar.updateUsercount(Candy.View.Pane.Chat.rooms[roomJid].usercount);
 			}
 
+
+			// in case there's been a join, the element is now there (previously not)
+			evtData.element = $('#user-' + roomId + '-' + userId);
 			/** Event: candy:view.roster.after-update
 			 * After updating a room's roster
 			 *
@@ -1787,12 +1831,7 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) action - [join, leave, kick, ban]
 			 *   (jQuery.Element) element - User element
 			 */
-			$(Candy).triggerHandler('candy:view.roster.after-update', {
-				'roomJid' : roomJid,
-				'user' : user,
-				'action': action,
-				'element': $('#user-' + roomId + '-' + userId)
-			});
+			$(Candy).triggerHandler('candy:view.roster.after-update', evtData);
 		},
 
 		/** Function: userClick
@@ -1890,27 +1929,44 @@ Candy.View.Pane = (function(self, $) {
 		 *
 		 * Triggers:
 		 *   candy:view.message.before-send using {message}
+		 *
+		 * FIXME: as everywhere, `roomJid` might be slightly incorrect in this case
+		 *        - maybe rename this as part of a refactoring.
 		 */
 		submit: function(event) {
-			var roomType = Candy.View.Pane.Chat.rooms[Candy.View.getCurrent().roomJid].type,
-				message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body);
-
-			var evtData = {message: message};
+			var roomJid = Candy.View.getCurrent().roomJid,
+				roomType = Candy.View.Pane.Chat.rooms[roomJid].type,
+				message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body),
+				xhtmlMessage,
+				evtData = {
+					roomJid: roomJid,
+					message: message,
+					xhtmlMessage: xhtmlMessage
+				};
 
 			/** Event: candy:view.message.before-send
 			 * Before sending a message
 			 *
 			 * Parameters:
+			 *   (String) roomJid - room to which the message should be sent
 			 *   (String) message - Message text
+			 *   (String) xhtmlMessage - XHTML formatted message [default: undefined]
+			 *
+			 * Returns:
+			 *   Boolean|undefined - if you like to stop sending the message, return false.
 			 */
-			$(Candy).triggerHandler('candy:view.message.before-send', evtData);
+			if($(Candy).triggerHandler('candy:view.message.before-send', evtData) === false) {
+				event.preventDefault();
+				return;
+			}
 
 			message = evtData.message;
+			xhtmlMessage = evtData.xhtmlMessage;
 
-			Candy.Core.Action.Jabber.Room.Message(Candy.View.getCurrent().roomJid, message, roomType);
+			Candy.Core.Action.Jabber.Room.Message(roomJid, message, roomType, xhtmlMessage);
 			// Private user chat. Jabber won't notify the user who has sent the message. Just show it as the user hits the button...
 			if(roomType === 'chat' && message) {
-				self.Message.show(Candy.View.getCurrent().roomJid, self.Room.getUser(Candy.View.getCurrent().roomJid).getNick(), message);
+				self.Message.show(roomJid, self.Room.getUser(roomJid).getNick(), message);
 			}
 			// Clear input and set focus to it
 			$(this).children('.field').val('').focus();
@@ -1924,6 +1980,7 @@ Candy.View.Pane = (function(self, $) {
 		 *   (String) roomJid - room in which the message has been sent to
 		 *   (String) name - Name of the user which sent the message
 		 *   (String) message - Message
+		 *   (String) xhtmlMessage - XHTML formatted message [if options enableXHTML is true]
 		 *   (String) timestamp - [optional] Timestamp of the message, if not present, current date.
 		 *
 		 * Triggers:
@@ -1931,10 +1988,18 @@ Candy.View.Pane = (function(self, $) {
 		 *   candy.view.message.before-render using {template, templateData}
 		 *   candy:view.message.after-show using {roomJid, name, message, element}
 		 */
-		show: function(roomJid, name, message, timestamp) {
+		show: function(roomJid, name, message, xhtmlMessage, timestamp) {
 			message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
+			if(xhtmlMessage) {
+				xhtmlMessage = Candy.Util.parseAndCropXhtml(xhtmlMessage, Candy.View.getOptions().crop.message.body);
+			}
 
-			var evtData = {'roomJid': roomJid, 'name': name, 'message': message};
+			var evtData = {
+				'roomJid': roomJid,
+				'name': name,
+				'message': message,
+				'xhtmlMessage': xhtmlMessage
+			};
 
 			/** Event: candy:view.message.before-show
 			 * Before showing a new message
@@ -1943,10 +2008,19 @@ Candy.View.Pane = (function(self, $) {
 			 *   (String) roomJid - Room JID
 			 *   (String) name - Name of the sending user
 			 *   (String) message - Message text
+			 *
+			 * Returns:
+			 *   Boolean - if you don't want to show the message, return false
 			 */
-			$(Candy).triggerHandler('candy:view.message.before-show', evtData);
+			if($(Candy).triggerHandler('candy:view.message.before-show', evtData) === false) {
+				return;
+			}
 
 			message = evtData.message;
+			xhtmlMessage = evtData.xhtmlMessage;
+			if(xhtmlMessage !== undefined && xhtmlMessage.length > 0) {
+				message = xhtmlMessage;
+			}
 
 			if(!message) {
 				return;
@@ -1984,7 +2058,9 @@ Candy.View.Pane = (function(self, $) {
 				// Check if user is online and not myself
 				var room = Candy.Core.getRoom(roomJid);
 				if(room && name !== self.Room.getUser(Candy.View.getCurrent().roomJid).getNick() && room.getRoster().get(roomJid + '/' + name)) {
-					Candy.View.Pane.PrivateRoom.open(roomJid + '/' + name, name, true);
+					if(Candy.View.Pane.PrivateRoom.open(roomJid + '/' + name, name, true) === false) {
+						return false;
+					}
 				}
 			});
 
@@ -1999,12 +2075,7 @@ Candy.View.Pane = (function(self, $) {
 				self.Room.scrollToBottom(roomJid);
 			}
 
-			evtData = {
-				'roomJid': roomJid,
-				'element': elem,
-				'name': name,
-				'message': message
-			};
+			evtData.element = elem;
 
 			/** Event: candy:view.message.after-show
 			 * Triggered after showing a message
