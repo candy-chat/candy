@@ -27,11 +27,11 @@
 		<header>
 			<div id="download">
 				<!-- if you change the version, change it in the onclick tracker as well -->
-				<a href="https://github.com/candy-chat/candy/archive/v1.6.0.tar.gz" onclick="_gaq.push(['_trackEvent', 'Download', $(this).find('.version').text()]);" class="button">
+				<a href="https://github.com/candy-chat/candy/archive/v1.7.0.tar.gz" onclick="_gaq.push(['_trackEvent', 'Download', $(this).find('.version').text()]);" class="button">
 					Download candy.tar.gz
-					<small>v<span class="version">1.6.0</span> &mdash; <time datetime="2013-12-14">January 20th, 2014</time></small>
+					<small>v<span class="version">1.7.0</span> &mdash; <time datetime="2014-06-27">June 27th, 2014</time></small>
 				</a>
-				<span class="changelog"><a href="https://github.com/candy-chat/candy/releases/tag/v1.6.0">Changelog</a></span><span class="license">Released under the <a href="https://github.com/candy-chat/candy/blob/master/LICENSE">MIT Licence</a></span>
+				<span class="changelog"><a href="https://github.com/candy-chat/candy/releases/tag/v1.7.0">Changelog</a></span><span class="license">Released under the <a href="https://github.com/candy-chat/candy/blob/master/LICENSE">MIT License</a></span>
 			</div>
 			<h1>Candy</h1>
 		 	<em>&mdash; a JavaScript-based multi-user chat client</em>
@@ -180,9 +180,9 @@ RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
 					</ul>
 					<p><mark>Please contribute your translations to the project.</mark></p>
 				</dd>
-				<dt><code><strong>resources</strong> &mdash; path to resources folder, default: '<u>res/</u>'</code></dt>
+				<dt><code><strong>assets</strong> &mdash; path to assets folder, default: '<u>res/</u>'</code></dt>
 				<dd>
-					Path to the resources folder with trailing slash.
+					Path to the assets folder with trailing slash.
 				</dd>
 				<dt><code><strong>crop</strong> &mdash; settings to crop messages &amp; nicknames: { message: { nickname: <u>15</u>, body: <u>1000</u> }, roster: { nickname: <u>15</u> } }</code></dt>
 				<dd>
@@ -192,6 +192,11 @@ RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
 				<dd>
 					If message count hits <strong>limit</strong>, remove <strong>n</strong> messages.<br />
 					Because browsers are getting slower as the DOM tree grows, Candy will remove messages from each room based on this settings to keep the DOM tree at an acceptable size.	<strong>You probably don't want to change the default values.</strong>
+				</dd>
+				<dt><code><strong>enableXHTML</strong> &mdash; enable parsing XHTML annotated XMPP messages</code></dt>
+				<dd>
+					Using XHTML clients can format their messages in various ways. Using this flag, all your Candy users
+					will also see nicely formatted messages.
 				</dd>
 			</dl>
 			<h4>Example</h4>
