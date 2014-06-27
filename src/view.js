@@ -32,6 +32,7 @@ Candy.View = (function(self, $) {
 		 *   (String) assets - path to assets (res) directory (with trailing slash)
 		 *   (Object) messages - limit: clean up message pane when n is reached / remove: remove n messages after limit has been reached
 		 *   (Object) crop - crop if longer than defined: message.nickname=15, message.body=1000, roster.nickname=15
+		 *   (Bool) enableXHTML - [default: false] enables XHTML messages sending & displaying
 		 */
 		_options = {
 			language: 'en',
@@ -40,7 +41,8 @@ Candy.View = (function(self, $) {
 			crop: {
 				message: { nickname: 15, body: 1000 },
 				roster: { nickname: 15 }
-			}
+			},
+			enableXHTML: false
 		},
 
 		/** PrivateFunction: _setupTranslation
