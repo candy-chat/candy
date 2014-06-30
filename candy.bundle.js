@@ -4639,7 +4639,7 @@ Candy.View.Pane = function(self, $) {
 		 */
         userClick: function() {
             var elem = $(this);
-            self.PrivateRoom.open(elem.attr("data-jid"), elem.attr("data-nick"), true);
+            self.PrivateRoom.open(elem.attr("data-jid"), elem.attr("data-nick"), true, true);
         },
         /** Function: showJoinAnimation
 		 * Shows join animation if needed
