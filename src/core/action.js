@@ -290,6 +290,35 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				return true;
 			},
 
+			/** Function: Message
+			 * Send message
+			 *
+			 * Parameters:
+			 *   (String) roomJid - Room to which send the message into
+			 *   (Array)	invitees - Array of JIDs to be invited to the room
+			 *   (String) reason - Message to include with the invitation
+			 *   (String) password - Password to the MUC, if required
+			 *
+			 */
+			Invite: function(roomJid, invitees, reason, password) {
+				reason = $.trim(reason);
+				var message = $msg({to: roomJid});
+				var x = message.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'});
+				$.each(invitees, function(i, invitee) {
+					invitee = Strophe.getBareJidFromJid(invitee);
+					x.c('invite', {to: invitee});
+					if (typeof reason != 'undefined' && reason !== '') {
+						x.c('reason', reason);
+					}
+				})
+
+				if (typeof password != 'undefined' && password !== '') {
+					x.c('password', password);
+				}
+
+				Candy.Core.getConnection().send(message);
+			},
+
 			/** Function: IgnoreUnignore
 			 * Checks if the user is already ignoring the target user, if yes: unignore him, if no: ignore him.
 			 *
