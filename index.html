@@ -151,8 +151,8 @@ RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
 				</dd>
 				<dt><code><strong>autojoin</strong> &mdash; boolean <u>true</u> or an array containing rooms to auto-join: [room1,room2,...]</code></dt>
 				<dd>
-					If set to <strong>true</strong>, Candy will follow <a href="http://xmpp.org/extensions/xep-0048.html">XEP-0048</a> and auto-join rooms based on the bookmarks configuration of your XMPP server.<br />Please note: <mark>Bookmarks are supported by Openfire, but not by ejabberd.</mark><br />
-					You need to tell ejabberd which rooms to join by passing an array such as <strong>['jid1', 'jid2', ...]</strong>
+					If set to <strong>true</strong>, Candy will follow <a href="http://xmpp.org/extensions/xep-0048.html">XEP-0048</a> and auto-join rooms based on the bookmarks configuration of your XMPP server.<br />Please note: <mark>Bookmarks are supported by ejabberd and Openfire, amongst others.</mark><br />
+					For servers which don't support XEP-0048 1.0, you can explicitly list which rooms to join by passing an array such as <strong>['jid1', 'jid2', ...]</strong>
 				</dd>
 				<dt><code><strong>resource</strong> &mdash; string</code></dt>
 				<dd>
