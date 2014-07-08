@@ -100,7 +100,7 @@ Candy.Core = function(self, Strophe, $) {
 		 */
     _options = {
         /** Boolean: autojoin
-			 * If set to `true` try to get the bookmarks and autojoin the rooms (supported by Openfire).
+			 * If set to `true` try to get the bookmarks and autojoin the rooms (supported by ejabberd, Openfire).
 			 * You may want to define an array of rooms to autojoin: `['room1@conference.host.tld', 'room2...]` (ejabberd, Openfire, ...)
 			 */
         autojoin: undefined,
@@ -2165,7 +2165,7 @@ Candy.Core.Event = function(self, Strophe, $) {
 		 */
         Bookmarks: function(msg) {
             Candy.Core.log("[Jabber] Bookmarks");
-            // Autojoin bookmarks (Openfire)
+            // Autojoin bookmarks
             $("conference", msg).each(function() {
                 var item = $(this);
                 if (item.attr("autojoin")) {
