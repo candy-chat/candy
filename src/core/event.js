@@ -253,7 +253,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 
 			// Inspect the message type.
 			if (type === 'normal' || type === 'undefined') {
-				if($(msg).find('invite').length > 0) {
+				var invite = msg.find('invite');
+
+				if(invite.length > 0) {
 					/** Event: candy:core:chat:invite
 					 * Incoming chat invite for a MUC.
 					 *
@@ -264,8 +266,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					 */
 					$(Candy).triggerHandler('candy:core:chat:invite', {
 						roomJid: fromJid,
-						from: $(msg).find('invite').attr('from') || 'undefined',
-						reason: $(msg).find('invite').find('reason').html() || ''
+						from: invite.attr('from') || 'undefined',
+						reason: invite.find('reason').html() || ''
 					});
 				}
 
