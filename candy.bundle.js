@@ -2240,9 +2240,9 @@ Candy.Core.Event = function(self, Strophe, $) {
             var fromJid = msg.attr("from"), type = msg.attr("type") || "undefined", toJid = msg.attr("to");
             // Inspect the message type.
             if (type === "normal" || type === "undefined") {
-                var invite = msg.find("invite");
-                if (invite.length > 0) {
-                    var password_node = msg.find("password"), password = null, continue_node = invite.find("continue"), continued_thread = null;
+                var mediated_invite = msg.find("invite"), direct_invite = msg.find('x[xmlns="jabber:x:conference"]');
+                if (mediated_invite.length > 0) {
+                    var password_node = msg.find("password"), password = null, continue_node = mediated_invite.find("continue"), continued_thread = null;
                     if (password_node) {
                         password = password_node.text();
                     }
@@ -2261,10 +2261,29 @@ Candy.Core.Event = function(self, Strophe, $) {
 					 */
                     $(Candy).triggerHandler("candy:core:chat:invite", {
                         roomJid: fromJid,
-                        from: invite.attr("from") || "undefined",
-                        reason: invite.find("reason").html() || "",
+                        from: mediated_invite.attr("from") || "undefined",
+                        reason: mediated_invite.find("reason").html() || "",
                         password: password,
                         continued_thread: continued_thread
+                    });
+                }
+                if (direct_invite.length > 0) {
+                    /** Event: candy:core:chat:invite
+					 * Incoming chat invite for a MUC.
+					 *
+					 * Parameters:
+					 *   (String) roomJid - The room the invite is to
+					 *   (String) from - User JID that invite is from text
+					 *   (String) reason - Reason for invite [default: '']
+					 *   (String) password - Password for the room [default: null]
+					 *   (String) continued_thread - The thread ID if this is a continuation of a 1-on-1 chat [default: null]
+					 */
+                    $(Candy).triggerHandler("candy:core:chat:invite", {
+                        roomJid: direct_invite.attr("jid"),
+                        from: fromJid,
+                        reason: direct_invite.attr("reason") || "",
+                        password: direct_invite.attr("password"),
+                        continued_thread: direct_invite.attr("thread")
                     });
                 }
                 /** Event: candy:core:chat:message:normal
