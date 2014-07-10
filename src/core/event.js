@@ -253,8 +253,23 @@ Candy.Core.Event = (function(self, Strophe, $) {
 
 			// Inspect the message type.
 			if (type === 'normal' || type === 'undefined') {
-				// It is an invite
-				if($(msg).find('invite').length > 0) {
+				var mediated_invite = msg.find('invite'),
+					direct_invite = msg.find('x[xmlns="jabber:x:conference"]');
+
+				if(mediated_invite.length > 0) {
+					var password_node = msg.find('password'),
+						password = null,
+						continue_node = mediated_invite.find('continue'),
+						continued_thread = null;
+
+					if(password_node) {
+						password = password_node.text();
+					}
+
+					if(continue_node) {
+						continued_thread = continue_node.attr('thread');
+					}
+
 					/** Event: candy:core:chat:invite
 					 * Incoming chat invite for a MUC.
 					 *
@@ -262,28 +277,52 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					 *   (String) roomJid - The room the invite is to
 					 *   (String) from - User JID that invite is from text
 					 *   (String) reason - Reason for invite [default: '']
+					 *   (String) password - Password for the room [default: null]
+					 *   (String) continued_thread - The thread ID if this is a continuation of a 1-on-1 chat [default: null]
 					 */
 					$(Candy).triggerHandler('candy:core:chat:invite', {
 						roomJid: fromJid,
-						from: $(msg).find('invite').attr('from') || 'undefined',
-						reason: $(msg).find('invite').find('reason').html() || ''
-					});
-				// It is not an invite
-				} else {
-					/** Event: candy:core:chat:message:normal
-					 * Messages with the type attribute of normal or those
-					 * that do not have the optional type attribute.
-					 *
-					 * Parameters:
-					 *   (String) type - Type of the message [default: message]
-					 *   (Object) message - Message object.
-					 */
-					// Detect message with type normal or with no type.
-					$(Candy).triggerHandler('candy:core:chat:message:normal', {
-						type: (type || 'normal'),
-						message: msg
+						from: mediated_invite.attr('from') || 'undefined',
+						reason: mediated_invite.find('reason').html() || '',
+						password: password,
+						continued_thread: continued_thread
 					});
 				}
+
+				if(direct_invite.length > 0) {
+					/** Event: candy:core:chat:invite
+					 * Incoming chat invite for a MUC.
+					 *
+					 * Parameters:
+					 *   (String) roomJid - The room the invite is to
+					 *   (String) from - User JID that invite is from text
+					 *   (String) reason - Reason for invite [default: '']
+					 *   (String) password - Password for the room [default: null]
+					 *   (String) continued_thread - The thread ID if this is a continuation of a 1-on-1 chat [default: null]
+					 */
+					$(Candy).triggerHandler('candy:core:chat:invite', {
+						roomJid: direct_invite.attr('jid'),
+						from: fromJid,
+						reason: direct_invite.attr('reason') || '',
+						password: direct_invite.attr('password'),
+						continued_thread: direct_invite.attr('thread')
+					});
+				}
+
+				/** Event: candy:core:chat:message:normal
+				 * Messages with the type attribute of normal or those
+				 * that do not have the optional type attribute.
+				 *
+				 * Parameters:
+				 *   (String) type - Type of the message [default: message]
+				 *   (Object) message - Message object.
+				 */
+				// Detect message with type normal or with no type.
+				$(Candy).triggerHandler('candy:core:chat:message:normal', {
+					type: (type || 'normal'),
+					message: msg
+				});
+
 				return true;
 			} else if (type !== 'groupchat' && type !== 'chat' && type !== 'error' && type !== 'headline') {
 				/** Event: candy:core:chat:message:other
