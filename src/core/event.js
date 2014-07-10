@@ -253,7 +253,6 @@ Candy.Core.Event = (function(self, Strophe, $) {
 
 			// Inspect the message type.
 			if (type === 'normal' || type === 'undefined') {
-				// It is an invite
 				if($(msg).find('invite').length > 0) {
 					/** Event: candy:core:chat:invite
 					 * Incoming chat invite for a MUC.
@@ -268,22 +267,22 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						from: $(msg).find('invite').attr('from') || 'undefined',
 						reason: $(msg).find('invite').find('reason').html() || ''
 					});
-				// It is not an invite
-				} else {
-					/** Event: candy:core:chat:message:normal
-					 * Messages with the type attribute of normal or those
-					 * that do not have the optional type attribute.
-					 *
-					 * Parameters:
-					 *   (String) type - Type of the message [default: message]
-					 *   (Object) message - Message object.
-					 */
-					// Detect message with type normal or with no type.
-					$(Candy).triggerHandler('candy:core:chat:message:normal', {
-						type: (type || 'normal'),
-						message: msg
-					});
 				}
+
+				/** Event: candy:core:chat:message:normal
+				 * Messages with the type attribute of normal or those
+				 * that do not have the optional type attribute.
+				 *
+				 * Parameters:
+				 *   (String) type - Type of the message [default: message]
+				 *   (Object) message - Message object.
+				 */
+				// Detect message with type normal or with no type.
+				$(Candy).triggerHandler('candy:core:chat:message:normal', {
+					type: (type || 'normal'),
+					message: msg
+				});
+
 				return true;
 			} else if (type !== 'groupchat' && type !== 'chat' && type !== 'error' && type !== 'headline') {
 				/** Event: candy:core:chat:message:other
