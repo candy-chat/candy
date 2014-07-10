@@ -2242,6 +2242,10 @@ Candy.Core.Event = function(self, Strophe, $) {
             if (type === "normal" || type === "undefined") {
                 var invite = msg.find("invite");
                 if (invite.length > 0) {
+                    var password_node = msg.find("password"), password = null;
+                    if (password_node) {
+                        password = password_node.text();
+                    }
                     /** Event: candy:core:chat:invite
 					 * Incoming chat invite for a MUC.
 					 *
@@ -2249,11 +2253,13 @@ Candy.Core.Event = function(self, Strophe, $) {
 					 *   (String) roomJid - The room the invite is to
 					 *   (String) from - User JID that invite is from text
 					 *   (String) reason - Reason for invite [default: '']
+					 *   (String) password - Password for the room [default: null]
 					 */
                     $(Candy).triggerHandler("candy:core:chat:invite", {
                         roomJid: fromJid,
                         from: invite.attr("from") || "undefined",
-                        reason: invite.find("reason").html() || ""
+                        reason: invite.find("reason").html() || "",
+                        password: password
                     });
                 }
                 /** Event: candy:core:chat:message:normal
