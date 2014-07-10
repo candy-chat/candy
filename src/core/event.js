@@ -257,10 +257,16 @@ Candy.Core.Event = (function(self, Strophe, $) {
 
 				if(invite.length > 0) {
 					var password_node = msg.find('password'),
-						password = null;
+						password = null,
+						continue_node = invite.find('continue'),
+						continued_thread = null;
 
 					if(password_node) {
 						password = password_node.text();
+					}
+
+					if(continue_node) {
+						continued_thread = continue_node.attr('thread');
 					}
 
 					/** Event: candy:core:chat:invite
@@ -271,12 +277,14 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					 *   (String) from - User JID that invite is from text
 					 *   (String) reason - Reason for invite [default: '']
 					 *   (String) password - Password for the room [default: null]
+					 *   (String) continued_thread - The thread ID if this is a continuation of a 1-on-1 chat [default: null]
 					 */
 					$(Candy).triggerHandler('candy:core:chat:invite', {
 						roomJid: fromJid,
 						from: invite.attr('from') || 'undefined',
 						reason: invite.find('reason').html() || '',
-						password: password
+						password: password,
+						continued_thread: continued_thread
 					});
 				}
 
