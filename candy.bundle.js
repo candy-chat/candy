@@ -132,6 +132,7 @@ Candy.Core = function(self, Strophe, $) {
         _addNamespace("BOOKMARKS", "storage:bookmarks");
         _addNamespace("PRIVACY", "jabber:iq:privacy");
         _addNamespace("DELAY", "jabber:x:delay");
+        _addNamespace("PUBSUB", "http://jabber.org/protocol/pubsub");
     }, _getEscapedJidFromJid = function(jid) {
         var node = Strophe.getNodeFromJid(jid), domain = Strophe.getDomainFromJid(jid);
         return node ? Strophe.escapeNode(node) + "@" + domain : domain;
@@ -1284,6 +1285,16 @@ Candy.Core.Action = function(self, Strophe, $) {
                     xmlns: Strophe.NS.PRIVATE
                 }).c("storage", {
                     xmlns: Strophe.NS.BOOKMARKS
+                }).tree());
+                var pubsubBookmarkRequest = Candy.Core.getConnection().getUniqueId("pubsub");
+                Candy.Core.addHandler(Candy.Core.Event.Jabber.Bookmarks, Strophe.NS.PUBSUB, "iq", "result", pubsubBookmarkRequest);
+                Candy.Core.getConnection().sendIQ($iq({
+                    type: "get",
+                    id: pubsubBookmarkRequest
+                }).c("pubsub", {
+                    xmlns: Strophe.NS.PUBSUB
+                }).c("items", {
+                    node: Strophe.NS.BOOKMARKS
                 }).tree());
             } else if ($.isArray(Candy.Core.getOptions().autojoin)) {
                 $.each(Candy.Core.getOptions().autojoin, function() {
