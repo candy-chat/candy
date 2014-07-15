@@ -672,3 +672,98 @@ ul {
 	color: #333;
 	background-color: #aaa;
 }
+
+/* adjustment for low resolutions */
+@media screen and (max-width: 480px) {
+	.message-form-wrapper {
+		margin-right: 0;
+		border-top: 0;
+		height: 3em;
+	}
+	.message-form {
+		margin-right: 3.5em;
+		height: 3em;
+	}
+	.message-form input {
+		padding: 0;
+		height: 3em;
+		font-size: 100%;
+	}
+	.message-form input.submit {
+		margin: 0;
+		padding: 0;
+		height: 3em;
+		font-size: 100%;
+		line-height: 100%;
+	}
+	.message-pane-wrapper {
+		margin: 1.9em 0 3em 0;
+		font-size: 1em;
+	}
+	.message-pane li>div {
+		padding: 0;
+		line-height: 1.2em;
+	}
+	.message-pane .label {
+		float: none;
+		text-align: left;
+		margin-left: 0;
+	}
+	.message-pane .spacer {
+		display: block;
+		visibility: hidden;
+	}
+	.roster-pane {
+		display: none;
+		z-index: 1;
+		position: fixed;
+		margin: 1.9em 0 3em 0;
+		width: 50%;
+		border-top: 0.1em solid black;
+		box-shadow: none;
+	}
+	.roster-pane .user {
+		padding: 0.5em 0.8em;
+		font-size: 0.9em;
+		height: 1em;
+		border-bottom: 0.1em solid black;
+		box-shadow: none;
+	}
+	.roster-pane .label {
+		width: 80%;
+		text-shadow: none;
+	}
+	.roster-pane li {
+		width: 20%;
+		height: 20%;
+		margin-left: 0;
+	}
+	#chat-tabs {
+		margin: 0;
+		height: 1.9em;
+	}
+	#chat-tabs a {
+		padding: 0.1em 2em 0.1em 0.3em;
+		height: 1.9em;
+	}
+	#chat-toolbar {
+		position: absolute;
+		top: 0;
+		right: 0;
+		padding-top: 0;
+		height: auto;
+		width: auto;
+		border-top: 0;
+		box-shadow: none;
+		font-size: 0.7em;
+	}
+	#chat-toolbar li {
+		display: none;
+	}
+	#chat-toolbar li.usercount {
+		display: inline-block;
+		margin-right: 0.2em;
+		margin-top: 0.5em;
+		padding-left: 2em;
+	}
+}
