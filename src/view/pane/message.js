@@ -41,7 +41,9 @@ Candy.View.Pane = (function(self, $) {
      */
     submit: function(event) {
       var roomJid = Candy.View.getCurrent().roomJid,
-        roomType = Candy.View.Pane.Chat.rooms[roomJid].type,
+        room = Candy.View.Pane.Chat.rooms[roomJid],
+        roomType = room.type,
+        targetJid = room.targetJid,
         message = $(this).children('.field').val().substring(0, Candy.View.getOptions().crop.message.body),
         xhtmlMessage,
         evtData = {
@@ -69,7 +71,7 @@ Candy.View.Pane = (function(self, $) {
       message = evtData.message;
       xhtmlMessage = evtData.xhtmlMessage;
 
-      Candy.Core.Action.Jabber.Room.Message(roomJid, message, roomType, xhtmlMessage);
+      Candy.Core.Action.Jabber.Room.Message(targetJid, message, roomType, xhtmlMessage);
       // Private user chat. Jabber won't notify the user who has sent the message. Just show it as the user hits the button...
       if(roomType === 'chat' && message) {
         self.Message.show(roomJid, self.Room.getUser(roomJid).getNick(), message);
