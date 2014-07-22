@@ -294,7 +294,16 @@ Candy.View.Observer = (function(self, $) {
 			if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
 				Candy.View.Pane.PrivateRoom.open(args.roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
 			}
-			Candy.View.Pane.Chat.rooms[args.roomJid].targetJid = args.message.from;
+			var room = Candy.View.Pane.Chat.rooms[args.roomJid];
+			if (room.targetJid === args.roomJid) {
+				// No messages yet received. Lock the room to this resource.
+				room.targetJid = args.message.from;
+			} else if (room.targetJid === args.message.from) {
+				// We're already locked to the correct resource.
+			} else {
+				// Message received from alternative resource. Release the resource lock.
+				room.targetJid = args.roomJid;
+			}
 			Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.message.xhtmlMessage, args.timestamp);
 		}
 	};
