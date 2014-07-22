@@ -215,6 +215,14 @@ Candy.View.Observer = (function(self, $) {
 					Candy.View.Pane.Roster.update(args.user.getJid(), args.user, args.action, args.currentUser);
 					Candy.View.Pane.PrivateRoom.setStatus(args.user.getJid(), args.action);
 				}
+			} else {
+				// Presence for a one-on-one chat
+				var bareJid = Strophe.getBareJidFromJid(args.from),
+					room = Candy.View.Pane.Chat.rooms[bareJid];
+				if(!room) {
+					return false;
+				}
+				room.targetJid = bareJid; // Reset the room's target JID
 			}
 		},
 
