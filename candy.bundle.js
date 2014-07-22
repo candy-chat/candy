@@ -3034,6 +3034,7 @@ Candy.View.Observer = function(self, $) {
             if (args.message.type === "chat" && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
                 Candy.View.Pane.PrivateRoom.open(args.roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
             }
+            Candy.View.Pane.Chat.rooms[args.roomJid].targetJid = args.message.from;
             Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.message.xhtmlMessage, args.timestamp);
         }
     };
@@ -4075,7 +4076,8 @@ Candy.View.Pane = function(self, $) {
                 name: roomName,
                 type: roomType,
                 messageCount: 0,
-                scrollPosition: -1
+                scrollPosition: -1,
+                targetJid: roomJid
             };
             $("#chat-rooms").append(Mustache.to_html(Candy.View.Template.Room.pane, {
                 roomId: roomId,
@@ -4807,7 +4809,7 @@ Candy.View.Pane = function(self, $) {
 		 *        - maybe rename this as part of a refactoring.
 		 */
         submit: function(event) {
-            var roomJid = Candy.View.getCurrent().roomJid, roomType = Candy.View.Pane.Chat.rooms[roomJid].type, message = $(this).children(".field").val().substring(0, Candy.View.getOptions().crop.message.body), xhtmlMessage, evtData = {
+            var roomJid = Candy.View.getCurrent().roomJid, room = Candy.View.Pane.Chat.rooms[roomJid], roomType = room.type, targetJid = room.targetJid, message = $(this).children(".field").val().substring(0, Candy.View.getOptions().crop.message.body), xhtmlMessage, evtData = {
                 roomJid: roomJid,
                 message: message,
                 xhtmlMessage: xhtmlMessage
@@ -4829,7 +4831,7 @@ Candy.View.Pane = function(self, $) {
             }
             message = evtData.message;
             xhtmlMessage = evtData.xhtmlMessage;
-            Candy.Core.Action.Jabber.Room.Message(roomJid, message, roomType, xhtmlMessage);
+            Candy.Core.Action.Jabber.Room.Message(targetJid, message, roomType, xhtmlMessage);
             // Private user chat. Jabber won't notify the user who has sent the message. Just show it as the user hits the button...
             if (roomType === "chat" && message) {
                 self.Message.show(roomJid, self.Room.getUser(roomJid).getNick(), message);
