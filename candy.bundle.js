@@ -1772,7 +1772,7 @@ Candy.Core.ChatRoster = function() {
 /** Class: Candy.Core.ChatUser
  * Chat User
  */
-Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
+Candy.Core.ChatUser = function(jid, nick, affiliation, role, realJid) {
     /** Constant: ROLE_MODERATOR
 	 * Moderator role
 	 */
@@ -1792,6 +1792,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
     this.data = {
         jid: jid,
+        realJid: realJid || jid,
         nick: Strophe.unescapeNode(nick),
         affiliation: affiliation,
         role: role,
@@ -1825,6 +1826,21 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
     this.getEscapedJid = function() {
         return Candy.Util.escapeJid(this.data.jid);
+    };
+    /** Function: getRealJid
+	 * Gets the user's real JID, available to members of a room with appropriate permissions. Defaults to their roomJid.
+	 *
+	 * See:
+	 *   <Candy.Util.unescapeJid>
+	 *
+	 * Returns:
+	 *   (String) - real jid
+	 */
+    this.getRealJid = function() {
+        if (this.data.realJid) {
+            return Candy.Util.unescapeJid(this.data.realJid);
+        }
+        return;
     };
     /** Function: setJid
 	 * Sets a user's jid
@@ -2505,7 +2521,7 @@ Candy.Core.Event = function(self, Strophe, $) {
                         action = "join";
                     } else {
                         nick = Strophe.getResourceFromJid(from);
-                        user = new Candy.Core.ChatUser(from, nick, item.attr("affiliation"), item.attr("role"));
+                        user = new Candy.Core.ChatUser(from, nick, item.attr("affiliation"), item.attr("role"), item.attr("jid"));
                         // Room existed but client (myself) is not yet registered
                         if (room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
                             room.setUser(user);
@@ -4634,6 +4650,7 @@ Candy.View.Pane = function(self, $) {
                     roomId: roomId,
                     userId: userId,
                     userJid: user.getJid(),
+                    realJid: user.getRealJid(),
                     nick: user.getNick(),
                     displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.nickname),
                     role: user.getRole(),
@@ -4732,8 +4749,8 @@ Candy.View.Pane = function(self, $) {
 		 * Click handler for opening a private room
 		 */
         userClick: function() {
-            var elem = $(this);
-            self.PrivateRoom.open(elem.attr("data-jid"), elem.attr("data-nick"), true);
+            var elem = $(this), realJid = elem.attr("data-real-jid"), useRealJid = realJid !== undefined && realJid !== null && realJid !== "", targetJid = useRealJid ? Strophe.getBareJidFromJid(realJid) : elem.attr("data-jid");
+            self.PrivateRoom.open(targetJid, elem.attr("data-nick"), true, useRealJid);
         },
         /** Function: showJoinAnimation
 		 * Shows join animation if needed
@@ -5012,7 +5029,7 @@ Candy.View.Template = function(self) {
     };
     self.Roster = {
         pane: '<div class="roster-pane"></div>',
-        user: '<div class="user role-{{role}} affiliation-{{affiliation}}{{#me}} me{{/me}}"' + ' id="user-{{roomId}}-{{userId}}" data-jid="{{userJid}}"' + ' data-nick="{{nick}}" data-role="{{role}}" data-affiliation="{{affiliation}}">' + '<div class="label">{{displayNick}}</div><ul>' + '<li class="context" id="context-{{roomId}}-{{userId}}">&#x25BE;</li>' + '<li class="role role-{{role}} affiliation-{{affiliation}}" data-tooltip="{{tooltipRole}}"></li>' + '<li class="ignore" data-tooltip="{{tooltipIgnored}}"></li></ul></div>'
+        user: '<div class="user role-{{role}} affiliation-{{affiliation}}{{#me}} me{{/me}}"' + ' id="user-{{roomId}}-{{userId}}" data-jid="{{userJid}}" data-real-jid="{{realJid}}"' + ' data-nick="{{nick}}" data-role="{{role}}" data-affiliation="{{affiliation}}">' + '<div class="label">{{displayNick}}</div><ul>' + '<li class="context" id="context-{{roomId}}-{{userId}}">&#x25BE;</li>' + '<li class="role role-{{role}} affiliation-{{affiliation}}" data-tooltip="{{tooltipRole}}"></li>' + '<li class="ignore" data-tooltip="{{tooltipIgnored}}"></li></ul></div>'
     };
     self.Message = {
         pane: '<div class="message-pane-wrapper"><ul class="message-pane"></ul></div>',

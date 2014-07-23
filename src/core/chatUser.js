@@ -16,7 +16,7 @@
 /** Class: Candy.Core.ChatUser
  * Chat User
  */
-Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
+Candy.Core.ChatUser = function(jid, nick, affiliation, role, realJid) {
 	/** Constant: ROLE_MODERATOR
 	 * Moderator role
 	 */
@@ -38,6 +38,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
 	this.data = {
 		jid: jid,
+		realJid: realJid || jid,
 		nick: Strophe.unescapeNode(nick),
 		affiliation: affiliation,
 		role: role,
@@ -73,6 +74,22 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
 	this.getEscapedJid = function() {
 		return Candy.Util.escapeJid(this.data.jid);
+	};
+
+	/** Function: getRealJid
+	 * Gets the user's real JID, available to members of a room with appropriate permissions. Defaults to their roomJid.
+	 *
+	 * See:
+	 *   <Candy.Util.unescapeJid>
+	 *
+	 * Returns:
+	 *   (String) - real jid
+	 */
+	this.getRealJid = function() {
+		if(this.data.realJid) {
+			return Candy.Util.unescapeJid(this.data.realJid);
+		}
+		return;
 	};
 
 	/** Function: setJid
