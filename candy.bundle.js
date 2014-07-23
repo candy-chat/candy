@@ -3046,7 +3046,9 @@ Candy.View.Observer = function(self, $) {
                 if (!room) {
                     return false;
                 }
+                // Reset the room's target JID
                 room.targetJid = bareJid;
+                Candy.View.Pane.Roster.update(bareJid, new Candy.Core.ChatUser(bareJid, "foo"), "join", Candy.Core.getUser());
             }
         },
         /** Function: notifyPrivateChats
