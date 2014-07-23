@@ -4814,7 +4814,10 @@ Candy.View.Pane = function(self, $) {
             $(Candy).triggerHandler("candy:view.roster.after-update", evtData);
         },
         drawProfilePane: function(pane, user) {
-            pane.html(Mustache.to_html(Candy.View.Template.UserInfoPanel.pane, user.getVCard()));
+            pane.html(Mustache.to_html(Candy.View.Template.UserInfoPanel.pane, self.Roster.profileDataForUser(user)));
+        },
+        profileDataForUser: function(user) {
+            return user.getVCard();
         },
         /** Function: userClick
 		 * Click handler for opening a private room

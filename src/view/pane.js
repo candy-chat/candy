@@ -1844,7 +1844,11 @@ Candy.View.Pane = (function(self, $) {
 		},
 
 		drawProfilePane: function(pane, user) {
-			pane.html(Mustache.to_html(Candy.View.Template.UserInfoPanel.pane, user.getVCard()));
+			pane.html(Mustache.to_html(Candy.View.Template.UserInfoPanel.pane, self.Roster.profileDataForUser(user)));
+		},
+
+		profileDataForUser: function(user) {
+			return user.getVCard();
 		},
 
 		/** Function: userClick
