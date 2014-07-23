@@ -1123,9 +1123,6 @@ Candy.View.Pane = (function(self, $) {
 				roomType: roomType,
 				form: {
 					_messageSubmit: $.i18n._('messageSubmit')
-				},
-				roster: {
-					_userOnline: $.i18n._('userOnline')
 				}
 			}, {
 				roster: Candy.View.Template.Roster.pane,
