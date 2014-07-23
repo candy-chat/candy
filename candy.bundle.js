@@ -114,7 +114,11 @@ Candy.Core = function(self, Strophe, $) {
 			 * JID resource to use when connecting to the server.
 			 * Specify `''` (an empty string) to request a random resource.
 			 */
-        resource: Candy.about.name
+        resource: Candy.about.name,
+        /** Boolean: useParticipantRealJid
+			 * If set true, will direct one-on-one chats to participant's real JID rather than their MUC jid
+			 */
+        useParticipantRealJid: false
     }, /** PrivateFunction: _addNamespace
 		 * Adds a namespace.
 		 *
@@ -4749,7 +4753,7 @@ Candy.View.Pane = function(self, $) {
 		 * Click handler for opening a private room
 		 */
         userClick: function() {
-            var elem = $(this), realJid = elem.attr("data-real-jid"), useRealJid = realJid !== undefined && realJid !== null && realJid !== "", targetJid = useRealJid ? Strophe.getBareJidFromJid(realJid) : elem.attr("data-jid");
+            var elem = $(this), realJid = elem.attr("data-real-jid"), useRealJid = Candy.Core.getOptions().useParticipantRealJid && (realJid !== undefined && realJid !== null && realJid !== ""), targetJid = useRealJid ? Strophe.getBareJidFromJid(realJid) : elem.attr("data-jid");
             self.PrivateRoom.open(targetJid, elem.attr("data-nick"), true, useRealJid);
         },
         /** Function: showJoinAnimation

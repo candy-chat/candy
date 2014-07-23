@@ -1841,7 +1841,7 @@ Candy.View.Pane = (function(self, $) {
 		userClick: function() {
 			var elem = $(this),
 				realJid = elem.attr('data-real-jid'),
-				useRealJid = (realJid !== undefined && realJid !== null && realJid !== ''),
+				useRealJid = Candy.Core.getOptions().useParticipantRealJid && (realJid !== undefined && realJid !== null && realJid !== ''),
 				targetJid = useRealJid ? Strophe.getBareJidFromJid(realJid) : elem.attr('data-jid');
 			self.PrivateRoom.open(targetJid, elem.attr('data-nick'), true, useRealJid);
 		},

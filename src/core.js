@@ -67,7 +67,11 @@ Candy.Core = (function(self, Strophe, $) {
 			 * JID resource to use when connecting to the server.
 			 * Specify `''` (an empty string) to request a random resource.
 			 */
-			resource: Candy.about.name
+			resource: Candy.about.name,
+			/** Boolean: useParticipantRealJid
+			 * If set true, will direct one-on-one chats to participant's real JID rather than their MUC jid
+			 */
+			useParticipantRealJid: false
 		},
 
 		/** PrivateFunction: _addNamespace
