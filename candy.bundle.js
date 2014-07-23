@@ -1772,7 +1772,7 @@ Candy.Core.ChatRoster = function() {
  */
 "use strict";
 
-/* global Candy, Strophe */
+/* global Candy, Strophe, jQuery */
 /** Class: Candy.Core.ChatUser
  * Chat User
  */
@@ -1802,7 +1802,10 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role, realJid) {
         role: role,
         privacyLists: {},
         customData: {},
-        previousNick: undefined
+        previousNick: undefined,
+        vCard: {
+            nickName: Strophe.unescapeNode(nick)
+        }
     };
     /** Function: getJid
 	 * Gets an unescaped user jid
@@ -2017,6 +2020,60 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role, realJid) {
 	 */
     this.getPreviousNick = function() {
         return this.data.previousNick;
+    };
+    /** Function: fetchVCard
+	 * Requests the VCard for the user from the server
+	 */
+    this.fetchVCard = function(callback) {
+        var data = this.data;
+        Candy.Core.getConnection().vcard.get(function(stanza) {
+            var v = jQuery(stanza).find('vCard[xmlns="' + Strophe.NS.VCARD + '"]'), tel = v.find("TEL"), email = v.find("EMAIL"), photo = v.find("PHOTO"), org = v.find("ORG"), adr = v.find("ADR");
+            data.vCard = {
+                nickName: v.find("NICKNAME").text(),
+                fullName: v.find("FN").text(),
+                title: v.find("TITLE").text(),
+                url: v.find("URL").text(),
+                description: v.find("DESC").text(),
+                tel: {
+                    voice: tel.find("VOICE").text(),
+                    work: tel.find("WORK").text(),
+                    number: tel.find("NUMBER").text()
+                },
+                email: {
+                    internet: email.find("INTERNET").text(),
+                    pref: email.find("PREF").text(),
+                    userID: email.find("USERID").text()
+                },
+                birthDay: v.find("BDAY").text(),
+                role: v.find("ROLE").text(),
+                photo: {
+                    type: photo.find("TYPE").text(),
+                    binaryValue: photo.find("BINVAL").text()
+                },
+                name: v.find("N").text(),
+                organisation: {
+                    name: org.find("ORGNAME").text(),
+                    unit: org.find("ORGUNIT").text()
+                },
+                address: {
+                    country: adr.find("CTRY").text(),
+                    locality: adr.find("LOCALITY").text(),
+                    street: adr.find("STREET").text(),
+                    region: adr.find("REGION").text(),
+                    postCode: adr.find("PCODE").text()
+                }
+            };
+            callback(data.vCard);
+        }, this.data.jid);
+    };
+    /** Function: getVCard
+	 * Gets the user's vcard if available.
+	 *
+	 * Returns:
+	 *   (String) - vcard
+	 */
+    this.getVCard = function() {
+        return this.data.vCard;
     };
 };
 
@@ -4647,16 +4704,16 @@ Candy.View.Pane = function(self, $) {
             // a user joined the room
             if (action === "join") {
                 usercountDiff = 1;
-                var rosterPane = self.Room.getPane(roomJid, ".roster-pane"), html;
+                var rosterPane = self.Room.getPane(roomJid, ".roster-pane");
                 if (self.Chat.rooms[roomJid].type === "chat") {
                     if (user !== Candy.Core.getUser()) {
-                        html = Mustache.to_html(Candy.View.Template.UserInfoPanel.pane, {
-                            nick: user.getNick()
+                        self.Roster.drawProfilePane(rosterPane, user);
+                        user.fetchVCard(function() {
+                            self.Roster.drawProfilePane(rosterPane, user);
                         });
-                        rosterPane.html(html);
                     }
                 } else {
-                    html = Mustache.to_html(Candy.View.Template.Roster.user, {
+                    var html = Mustache.to_html(Candy.View.Template.Roster.user, {
                         roomId: roomId,
                         userId: userId,
                         userJid: user.getJid(),
@@ -4755,6 +4812,9 @@ Candy.View.Pane = function(self, $) {
 			 *   (jQuery.Element) element - User element
 			 */
             $(Candy).triggerHandler("candy:view.roster.after-update", evtData);
+        },
+        drawProfilePane: function(pane, user) {
+            pane.html(Mustache.to_html(Candy.View.Template.UserInfoPanel.pane, user.getVCard()));
         },
         /** Function: userClick
 		 * Click handler for opening a private room
@@ -5043,7 +5103,7 @@ Candy.View.Template = function(self) {
         user: '<div class="user role-{{role}} affiliation-{{affiliation}}{{#me}} me{{/me}}"' + ' id="user-{{roomId}}-{{userId}}" data-jid="{{userJid}}" data-real-jid="{{realJid}}"' + ' data-nick="{{nick}}" data-role="{{role}}" data-affiliation="{{affiliation}}">' + '<div class="label">{{displayNick}}</div><ul>' + '<li class="context" id="context-{{roomId}}-{{userId}}">&#x25BE;</li>' + '<li class="role role-{{role}} affiliation-{{affiliation}}" data-tooltip="{{tooltipRole}}"></li>' + '<li class="ignore" data-tooltip="{{tooltipIgnored}}"></li></ul></div>'
     };
     self.UserInfoPanel = {
-        pane: '<span id="nickname">{{nick}}</span>'
+        pane: '<span id="nickname">{{nickName}}</span>'
     };
     self.Message = {
         pane: '<div class="message-pane-wrapper"><ul class="message-pane"></ul></div>',

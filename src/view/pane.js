@@ -1718,18 +1718,17 @@ Candy.View.Pane = (function(self, $) {
 			if(action === 'join') {
 				usercountDiff = 1;
 
-				var rosterPane = self.Room.getPane(roomJid, '.roster-pane'),
-					html;
+				var rosterPane = self.Room.getPane(roomJid, '.roster-pane');
 
 				if (self.Chat.rooms[roomJid].type === 'chat') {
 					if (user !== Candy.Core.getUser()) {
-						html = Mustache.to_html(Candy.View.Template.UserInfoPanel.pane, {
-							nick: user.getNick()
+						self.Roster.drawProfilePane(rosterPane, user);
+						user.fetchVCard(function() {
+							self.Roster.drawProfilePane(rosterPane, user);
 						});
-						rosterPane.html(html);
 					}
 				} else {
-					html = Mustache.to_html(Candy.View.Template.Roster.user, {
+					var html = Mustache.to_html(Candy.View.Template.Roster.user, {
 							roomId: roomId,
 							userId : userId,
 							userJid: user.getJid(),
@@ -1842,6 +1841,10 @@ Candy.View.Pane = (function(self, $) {
 			 *   (jQuery.Element) element - User element
 			 */
 			$(Candy).triggerHandler('candy:view.roster.after-update', evtData);
+		},
+
+		drawProfilePane: function(pane, user) {
+			pane.html(Mustache.to_html(Candy.View.Template.UserInfoPanel.pane, user.getVCard()));
 		},
 
 		/** Function: userClick
