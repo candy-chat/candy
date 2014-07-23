@@ -94,7 +94,7 @@ Candy.View.Template = (function(self){
 	};
 
 	self.UserInfoPanel = {
-		pane: '<span id="nickname">{{nick}}</span>'
+		pane: '<span id="nickname">{{nickName}}</span>'
 	};
 
 	self.Message = {
