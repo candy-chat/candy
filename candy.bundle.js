@@ -4647,49 +4647,59 @@ Candy.View.Pane = function(self, $) {
             // a user joined the room
             if (action === "join") {
                 usercountDiff = 1;
-                var html = Mustache.to_html(Candy.View.Template.Roster.user, {
-                    roomId: roomId,
-                    userId: userId,
-                    userJid: user.getJid(),
-                    realJid: user.getRealJid(),
-                    nick: user.getNick(),
-                    displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.nickname),
-                    role: user.getRole(),
-                    affiliation: user.getAffiliation(),
-                    me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
-                    tooltipRole: $.i18n._("tooltipRole"),
-                    tooltipIgnored: $.i18n._("tooltipIgnored")
-                });
-                if (userElem.length < 1) {
-                    var userInserted = false, rosterPane = self.Room.getPane(roomJid, ".roster-pane");
-                    // there are already users in the roster
-                    if (rosterPane.children().length > 0) {
-                        // insert alphabetically
-                        var userSortCompare = user.getNick().toUpperCase();
-                        rosterPane.children().each(function() {
-                            var elem = $(this);
-                            if (elem.attr("data-nick").toUpperCase() > userSortCompare) {
-                                elem.before(html);
-                                userInserted = true;
-                                return false;
-                            }
-                            return true;
+                var rosterPane = self.Room.getPane(roomJid, ".roster-pane"), html;
+                if (self.Chat.rooms[roomJid].type === "chat") {
+                    if (user !== Candy.Core.getUser()) {
+                        html = Mustache.to_html(Candy.View.Template.UserInfoPanel.pane, {
+                            nick: user.getNick()
                         });
+                        rosterPane.html(html);
                     }
-                    // first user in roster
-                    if (!userInserted) {
-                        rosterPane.append(html);
-                    }
-                    self.Roster.showJoinAnimation(user, userId, roomId, roomJid, currentUser);
                 } else {
-                    usercountDiff = 0;
-                    userElem.replaceWith(html);
-                    $("#user-" + roomId + "-" + userId).css({
-                        opacity: 1
-                    }).show();
-                    // it's me, update the toolbar
-                    if (currentUser !== undefined && user.getNick() === currentUser.getNick() && self.Room.getUser(roomJid)) {
-                        self.Chat.Toolbar.update(roomJid);
+                    html = Mustache.to_html(Candy.View.Template.Roster.user, {
+                        roomId: roomId,
+                        userId: userId,
+                        userJid: user.getJid(),
+                        realJid: user.getRealJid(),
+                        nick: user.getNick(),
+                        displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.nickname),
+                        role: user.getRole(),
+                        affiliation: user.getAffiliation(),
+                        me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
+                        tooltipRole: $.i18n._("tooltipRole"),
+                        tooltipIgnored: $.i18n._("tooltipIgnored")
+                    });
+                    if (userElem.length < 1) {
+                        var userInserted = false;
+                        // there are already users in the roster
+                        if (rosterPane.children().length > 0) {
+                            // insert alphabetically
+                            var userSortCompare = user.getNick().toUpperCase();
+                            rosterPane.children().each(function() {
+                                var elem = $(this);
+                                if (elem.attr("data-nick").toUpperCase() > userSortCompare) {
+                                    elem.before(html);
+                                    userInserted = true;
+                                    return false;
+                                }
+                                return true;
+                            });
+                        }
+                        // first user in roster
+                        if (!userInserted) {
+                            rosterPane.append(html);
+                        }
+                        self.Roster.showJoinAnimation(user, userId, roomId, roomJid, currentUser);
+                    } else {
+                        usercountDiff = 0;
+                        userElem.replaceWith(html);
+                        $("#user-" + roomId + "-" + userId).css({
+                            opacity: 1
+                        }).show();
+                        // it's me, update the toolbar
+                        if (currentUser !== undefined && user.getNick() === currentUser.getNick() && self.Room.getUser(roomJid)) {
+                            self.Chat.Toolbar.update(roomJid);
+                        }
                     }
                 }
                 // Presence of client
@@ -5031,6 +5041,9 @@ Candy.View.Template = function(self) {
     self.Roster = {
         pane: '<div class="roster-pane"></div>',
         user: '<div class="user role-{{role}} affiliation-{{affiliation}}{{#me}} me{{/me}}"' + ' id="user-{{roomId}}-{{userId}}" data-jid="{{userJid}}" data-real-jid="{{realJid}}"' + ' data-nick="{{nick}}" data-role="{{role}}" data-affiliation="{{affiliation}}">' + '<div class="label">{{displayNick}}</div><ul>' + '<li class="context" id="context-{{roomId}}-{{userId}}">&#x25BE;</li>' + '<li class="role role-{{role}} affiliation-{{affiliation}}" data-tooltip="{{tooltipRole}}"></li>' + '<li class="ignore" data-tooltip="{{tooltipIgnored}}"></li></ul></div>'
+    };
+    self.UserInfoPanel = {
+        pane: '<span id="nickname">{{nick}}</span>'
     };
     self.Message = {
         pane: '<div class="message-pane-wrapper"><ul class="message-pane"></ul></div>',

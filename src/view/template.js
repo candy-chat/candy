@@ -93,6 +93,10 @@ Candy.View.Template = (function(self){
 				'<li class="ignore" data-tooltip="{{tooltipIgnored}}"></li></ul></div>'
 	};
 
+	self.UserInfoPanel = {
+		pane: '<span id="nickname">{{nick}}</span>'
+	};
+
 	self.Message = {
 		pane: '<div class="message-pane-wrapper"><ul class="message-pane"></ul></div>',
 		item: '<li><small>{{time}}</small><div>' +
