@@ -5108,7 +5108,7 @@ Candy.View.Template = function(self) {
         user: '<div class="user role-{{role}} affiliation-{{affiliation}}{{#me}} me{{/me}}"' + ' id="user-{{roomId}}-{{userId}}" data-jid="{{userJid}}" data-real-jid="{{realJid}}"' + ' data-nick="{{nick}}" data-role="{{role}}" data-affiliation="{{affiliation}}">' + '<div class="label">{{displayNick}}</div><ul>' + '<li class="context" id="context-{{roomId}}-{{userId}}">&#x25BE;</li>' + '<li class="role role-{{role}} affiliation-{{affiliation}}" data-tooltip="{{tooltipRole}}"></li>' + '<li class="ignore" data-tooltip="{{tooltipIgnored}}"></li></ul></div>'
     };
     self.UserInfoPanel = {
-        pane: '{{#photo}}<img id="avatar" width="200" src="data:{{type}};base64,{{binaryValue}}"/>{{/photo}}' + '<span id="name">{{#fullName}}{{fullName}} ({{nickName}}){{/fullName}}{{^fullName}}{{nickName}}{{/fullName}}</span>' + '{{#role}}<span id="role">{{role}}</span>{{/role}}' + '{{#organisation}}<span id="orgunit">{{unit}}</span>{{/organisation}}' + '{{#email}}<span id="email">{{userID}}</span>{{/email}}'
+        pane: '{{#photo}}<img class="avatar" width="200" src="data:{{type}};base64,{{binaryValue}}"/>{{/photo}}' + '<div class="name">{{#fullName}}{{fullName}} ({{nickName}}){{/fullName}}{{^fullName}}{{nickName}}{{/fullName}}</div>' + '{{#role}}<div class="role">{{role}}</div>{{/role}}' + '{{#organisation}}<div class="orgunit">{{unit}}</div>{{/organisation}}' + '{{#email}}<div class="email">{{userID}}</div>{{/email}}'
     };
     self.Message = {
         pane: '<div class="message-pane-wrapper"><ul class="message-pane"></ul></div>',
