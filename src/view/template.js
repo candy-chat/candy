@@ -94,11 +94,11 @@ Candy.View.Template = (function(self){
 	};
 
 	self.UserInfoPanel = {
-		pane: '{{#photo}}<img id="avatar" width="200" src="data:{{type}};base64,{{binaryValue}}"/>{{/photo}}' +
-			'<span id="name">{{#fullName}}{{fullName}} ({{nickName}}){{/fullName}}{{^fullName}}{{nickName}}{{/fullName}}</span>' +
-			'{{#role}}<span id="role">{{role}}</span>{{/role}}' +
-			'{{#organisation}}<span id="orgunit">{{unit}}</span>{{/organisation}}' +
-			'{{#email}}<span id="email">{{userID}}</span>{{/email}}'
+		pane: '{{#photo}}<img class="avatar" width="200" src="data:{{type}};base64,{{binaryValue}}"/>{{/photo}}' +
+			'<div class="name">{{#fullName}}{{fullName}} ({{nickName}}){{/fullName}}{{^fullName}}{{nickName}}{{/fullName}}</div>' +
+			'{{#role}}<div class="role">{{role}}</div>{{/role}}' +
+			'{{#organisation}}<div class="orgunit">{{unit}}</div>{{/organisation}}' +
+			'{{#email}}<div class="email">{{userID}}</div>{{/email}}'
 	};
 
 	self.Message = {
