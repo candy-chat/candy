@@ -15,7 +15,12 @@ define([
 	, 'intern/order!../../src/core/chatUser.js'
 	, 'intern/order!../../src/core/event.js'
 	, 'intern/order!../../src/view/observer.js'
-	, 'intern/order!../../src/view/pane.js'
+	, 'intern/order!../../src/view/pane/chat.js'
+	, 'intern/order!../../src/view/pane/message.js'
+	, 'intern/order!../../src/view/pane/privateRoom.js'
+	, 'intern/order!../../src/view/pane/room.js'
+	, 'intern/order!../../src/view/pane/roster.js'
+	, 'intern/order!../../src/view/pane/window.js'
 	, 'intern/order!../../src/view/template.js'
 	, 'intern/order!../../src/view/translation.js'
 ], function (bdd, expect, $) {

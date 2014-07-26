@@ -40,7 +40,10 @@ module.exports = function(grunt) {
 						'src/util.js', 'src/core/action.js',
 						'src/core/chatRoom.js', 'src/core/chatRoster.js',
 						'src/core/chatUser.js', 'src/core/event.js',
-						'src/view/observer.js', 'src/view/pane.js',
+						'src/view/observer.js',
+						'src/view/pane/chat.js', 'src/view/pane/message.js',
+						'src/view/pane/privateRoom.js', 'src/view/pane/room.js',
+						'src/view/pane/roster.js', 'src/view/pane/window.js',
 						'src/view/template.js', 'src/view/translation.js'
 					]
 				},
