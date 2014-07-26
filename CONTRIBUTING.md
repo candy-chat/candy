@@ -47,3 +47,7 @@ Please note that you should have a working XMPP server to test your changes (the
 9. Create a [pull request](https://help.github.com/articles/using-pull-requests)
 
 In case you have any questions, don't hesitate to ask on the [Mailing list](http://groups.google.com/group/candy-chat).
+
+### Running tests
+
+Tests are run using [Intern](http://theintern.io). `grunt` and `grunt watch` will each run unit tests in Chrome on Linux (for fast feedback). `grunt test` will run both unit and integration tests in a variety of environments. Tests are run using Selenium Standalone and Phantom.JS while developing and on Sauce Labs in CI or using `grunt test`. If you don't want to use the Vagrant box to run Selenium/PhantomJS, set `CANDY_VAGRANT='false'` to run tests.

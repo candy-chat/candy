@@ -38,19 +38,20 @@ ln -fs /vagrant/devbox/index.html /usr/share/nginx/html/index.html
 #
 sudo add-apt-repository ppa:chris-lea/node.js
 sudo apt-get update
-sudo apt-get install -y nodejs
+sudo apt-get install -y nodejs git
+npm install -g grunt-cli
+npm install -g bower
 
 cd /vagrant
-npm install -g grunt-cli
-npm install
+su -u vagrant npm install
+su -u vagrant bower install
 
 #
 # Selenium & PhantomJS for testing
 #
 apt-get install -y openjdk-7-jre
 mkdir /usr/lib/selenium/
-cd /usr/lib/selenium/
-wget http://selenium-release.storage.googleapis.com/2.42/selenium-server-standalone-2.42.2.jar
+wget --no-verbose --output-document=/usr/lib/selenium/selenium-server-standalone-2.42.2.jar -- http://selenium-release.storage.googleapis.com/2.42/selenium-server-standalone-2.42.2.jar
 mkdir -p /var/log/selenium/
 chmod a+w /var/log/selenium/
 cp /vagrant/devbox/selenium.init.sh /etc/init.d/selenium

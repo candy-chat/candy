@@ -48,6 +48,8 @@
     "grunt-natural-docs": "~0.1.1",
     "grunt-notify": "^0.3.0",
     "grunt-sync-pkg": "~0.1.2",
-    "jshint-stylish": "^0.2.0"
+    "jshint-stylish": "^0.2.0",
+    "intern": "~2.0.1",
+    "grunt-clear": "~0.2.1"
   }
 }
