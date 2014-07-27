@@ -29,5 +29,11 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "strophe": "1.1.3",
+    "strophejs-plugins": "strophe/strophejs-plugins#ca6124b235b0dc007a1bac740a5db3e0978c1a29",
+    "mustache": "0.3.0",
+    "jquery-i18n": "1.1.1"
+  }
 }
