@@ -5,7 +5,13 @@ module.exports = function(grunt) {
 	// Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-
+		bower: {
+			install: {
+				options: {
+					targetDir: './lib'
+				}
+			}
+		},
 		jshint: {
 			all: ['Gruntfile.js', './src/**/*.js'],
 			options: {
@@ -54,13 +60,13 @@ module.exports = function(grunt) {
 			libs: {
 				files: {
 					'libs/libs.bundle.js': [
-						'libs/strophejs/strophe.js',
-						'libs/strophejs-plugins/muc/strophe.muc.js',
-						'libs/strophejs-plugins/disco/strophe.disco.js',
-						'libs/strophejs-plugins/caps/strophe.caps.jsonly.js',
-						'libs/mustache.js/mustache.js',
-						'libs/jquery-i18n/jquery.i18n.js',
-						'libs/dateformat/dateFormat.js'
+						'lib/strophe/strophe.js',
+						'lib/strophejs-plugins/muc/strophe.muc.js',
+						'lib/strophejs-plugins/disco/strophe.disco.js',
+						'lib/strophejs-plugins/caps/strophe.caps.jsonly.js',
+						'lib/mustache/mustache.js',
+						'lib/jquery-i18n/jquery.i18n.js',
+						'vendor_libs/dateformat/dateFormat.js'
 					]
 				},
 				options: {
@@ -83,7 +89,7 @@ module.exports = function(grunt) {
 				tasks: ['jshint', 'uglify:bundle', 'uglify:min', 'notify:bundle']
 			},
 			libs: {
-				files: ['libs/*/**/*.js'],
+				files: ['lib/*/**/*.js', 'vendor_libs/*/**/*.js'],
 				tasks: ['uglify:libs', 'uglify:libs-min', 'notify:libs']
 			}
 		},
@@ -140,9 +146,10 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-mkdir');
 	grunt.loadNpmTasks('grunt-notify');
 	grunt.loadNpmTasks('grunt-sync-pkg');
+	grunt.loadNpmTasks('grunt-bower-task');
 
 	grunt.registerTask('default', [
-		'jshint', 'uglify:libs', 'uglify:libs-min',
+		'bower:install', 'jshint', 'uglify:libs', 'uglify:libs-min',
 		'uglify:bundle', 'uglify:min', 'notify:default'
 	]);
 	grunt.registerTask('docs', ['mkdir:docs', 'natural_docs', 'notify:docs']);

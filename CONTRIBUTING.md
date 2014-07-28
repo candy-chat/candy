@@ -21,8 +21,7 @@ A few hopefully helpful hints to contributing to Candy
 #### Using vagrant
 1. [Fork](https://help.github.com/articles/fork-a-repo) Candy
 2. [Install Vagrant](http://vagrantup.com/)
-3. Follow instructions [for Candy Vagrant](https://github.com/candy-chat/vagrant)
-4. Change the remote in the `candy` and `candy-plugins` repos: `git remote set-url origin git://github.com/YOURNAME/candy` (or candy-plugins)
+3. Run `vagrant up`.
 5. Create a branch based on the `dev` branch (`git checkout -B my-awesome-feature`)
 6. Run `grunt watch` to automatically run jshint (syntax checker) and the build of `candy.bundle.js` and `candy.min.js` while developing.
 7. Make your changes, fix eventual *jshint* errors & push them back to your fork
@@ -34,7 +33,7 @@ Please note that you should have a working XMPP server to test your changes (the
 
 1. [Fork](https://help.github.com/articles/fork-a-repo) Candy
 2. Clone your fork
-2. Checkout out `dev` branch (`git checkout dev`) & Update git submodules `git submodule update --init`
+2. Checkout out `dev` branch (`git checkout dev`)
 3. Install [Node.js](http://nodejs.org/)
 4. Install [Grunt](http://gruntjs.com/) (`npm install -g grunt-cli`)
 5. Install npm dependencies (`npm install` in candy root directory)
