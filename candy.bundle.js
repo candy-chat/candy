@@ -1413,7 +1413,6 @@ Candy.Core.Action = function(self, Strophe, $) {
 			 */
             Leave: function(roomJid) {
                 var user = Candy.Core.getRoom(roomJid).getUser();
-                roomJid = Candy.Util.escapeJid(roomJid);
                 if (user) {
                     Candy.Core.getConnection().muc.leave(roomJid, user.getNick(), function() {});
                 }
