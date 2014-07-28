@@ -35,7 +35,7 @@ Candy.Util = (function(self, $){
 	};
 
 	/** Function: escapeJid
-	 * Escapes a jid (node & resource get escaped)
+	 * Escapes a jid
 	 *
 	 * See:
 	 *   XEP-0106
