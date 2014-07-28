@@ -51,8 +51,7 @@ su -u vagrant bower install
 #
 apt-get install -y openjdk-7-jre
 mkdir /usr/lib/selenium/
-cd /usr/lib/selenium/
-wget http://selenium-release.storage.googleapis.com/2.42/selenium-server-standalone-2.42.2.jar
+wget --no-verbose --output-document=/usr/lib/selenium/selenium-server-standalone-2.42.2.jar -- http://selenium-release.storage.googleapis.com/2.42/selenium-server-standalone-2.42.2.jar
 mkdir -p /var/log/selenium/
 chmod a+w /var/log/selenium/
 cp /vagrant/devbox/selenium.init.sh /etc/init.d/selenium
