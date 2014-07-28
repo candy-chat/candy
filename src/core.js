@@ -122,6 +122,32 @@ Candy.Core = (function(self, Strophe, $) {
 					};
 				}
 			}
+			Strophe.log = function (level, message) {
+				var level_name, console_level;
+				switch (level) {
+					case Strophe.LogLevel.DEBUG:
+						level_name = 'DEBUG';
+						console_level = 'log';
+						break;
+					case Strophe.LogLevel.INFO:
+						level_name = 'INFO';
+						console_level = 'info';
+						break;
+					case Strophe.LogLevel.WARN:
+						level_name = 'WARN';
+						console_level = 'info';
+						break;
+					case Strophe.LogLevel.ERROR:
+						level_name = 'ERROR';
+						console_level = 'error';
+						break;
+					case Strophe.LogLevel.FATAL:
+						level_name = 'FATAL';
+						console_level = 'error';
+						break;
+				}
+				console[console_level]('[Strophe][' + level_name + ']: ' + message);
+			};
 			self.log('[Init] Debugging enabled');
 		}
 
