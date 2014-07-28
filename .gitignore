@@ -6,3 +6,8 @@ example/.htaccess
 .ndproj/Data
 .ndproj/Menu.txt
 node_modules
+bower_components
+libs/
+lib/
+candy.bundle.*
+candy.min.*

@@ -34,7 +34,7 @@ Please note that you should have a working XMPP server to test your changes (the
 
 1. [Fork](https://help.github.com/articles/fork-a-repo) Candy
 2. Clone your fork
-2. Checkout out `dev` branch (`git checkout dev`) & Update git submodules `git submodule update --init`
+2. Checkout out `dev` branch (`git checkout dev`)
 3. Install [Node.js](http://nodejs.org/)
 4. Install [Grunt](http://gruntjs.com/) (`npm install -g grunt-cli`)
 5. Install npm dependencies (`npm install` in candy root directory)
