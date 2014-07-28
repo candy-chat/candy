@@ -3,35 +3,12 @@
 define([
 		'intern!bdd'
 	, 'intern/chai!expect'
-	, 'intern/order!../../bower_components/jquery/jquery.js'
-	, 'intern/order!../../libs.bundle.js'
-	, 'intern/order!../../src/candy.js'
-	, 'intern/order!../../src/core.js'
-	, 'intern/order!../../src/view.js'
-	, 'intern/order!../../src/util.js'
-	, 'intern/order!../../src/core/action.js'
-	, 'intern/order!../../src/core/chatRoom.js'
-	, 'intern/order!../../src/core/chatRoster.js'
-	, 'intern/order!../../src/core/chatUser.js'
-	, 'intern/order!../../src/core/event.js'
-	, 'intern/order!../../src/view/observer.js'
-	, 'intern/order!../../src/view/pane.js'
-	, 'intern/order!../../src/view/template.js'
-	, 'intern/order!../../src/view/translation.js'
-], function (bdd, expect, $) {
-	bdd.describe('Candy', function () {
-		bdd.describe('event triggering', function () {
-			bdd.it('should bubble up exceptions from event handlers', function () {
-				$(Candy).on('candy:core.message', function(ev, obj) {
-					throw new ReferenceError(obj.msg);
-				});
-				expect(function () {
-					$(Candy).triggerHandler('candy:core.message', { msg: 'foo bar' });
-				}).to.throw(ReferenceError, /foo bar/);
-			});
-		});
-	});
-
+	, 'intern/order!../../../bower_components/jquery/jquery.js'
+	, 'intern/order!../../../libs.bundle.js'
+	, 'intern/order!../../../src/candy.js'
+	, 'intern/order!../../../src/core.js'
+	, 'intern/order!../../../src/util.js'
+], function (bdd, expect) {
 	bdd.describe('Candy.Util', function () {
 		bdd.describe('jidToId', function () {
 			bdd.it('should MD5 hash a JID', function () {

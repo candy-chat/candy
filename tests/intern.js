@@ -78,10 +78,13 @@ define({
 	},
 
 	// Non-functional test suite(s) to run in each browser
-	suites: [ 'tests/candy/unit' ],
+	suites: [
+			'tests/candy/unit/candy'
+		, 'test/candy/unit/util'
+	],
 
 	// Functional test suite(s) to run in each browser once non-functional tests are completed
-	functionalSuites: [ 'tests/candy/functional' ],
+	functionalSuites: [ 'tests/candy/functional/basics' ],
 
 	// A regular expression matching URLs to files that should not be included in code coverage analysis
 	excludeInstrumentation: /^(?:tests|node_modules|libs)\//

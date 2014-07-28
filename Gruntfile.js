@@ -107,7 +107,7 @@ module.exports = function(grunt) {
 				tasks: ['env:quick_test', 'jshint', 'intern:unit']
 			},
 			functional_tests: {
-				files: ['tests/**/functional.js'],
+				files: ['tests/functional/**/*.js'],
 				tasks: ['jshint', 'env:quick_test', 'intern:all']
 			}
 		},
@@ -165,7 +165,10 @@ module.exports = function(grunt) {
 				options: {
 					runType: 'runner',
 					config: 'tests/intern',
-					suites: ['tests/candy/unit']
+					suites: [
+							'tests/candy/unit/candy'
+						, 'tests/candy/unit/util'
+					]
 				}
 			}
 		}
