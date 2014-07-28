@@ -11,12 +11,12 @@
  */
 'use strict';
 
-/* global Candy, Strophe */
+/* global Candy, Strophe, jQuery */
 
 /** Class: Candy.Core.ChatUser
  * Chat User
  */
-Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
+Candy.Core.ChatUser = function(jid, nick, affiliation, role, realJid) {
 	/** Constant: ROLE_MODERATOR
 	 * Moderator role
 	 */
@@ -38,12 +38,14 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
 	this.data = {
 		jid: jid,
+		realJid: realJid || jid,
 		nick: Strophe.unescapeNode(nick),
 		affiliation: affiliation,
 		role: role,
 		privacyLists: {},
 		customData: {},
-		previousNick: undefined
+		previousNick: undefined,
+		vCard: {nickName: Strophe.unescapeNode(nick)}
 	};
 
 	/** Function: getJid
@@ -73,6 +75,22 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
 	this.getEscapedJid = function() {
 		return Candy.Util.escapeJid(this.data.jid);
+	};
+
+	/** Function: getRealJid
+	 * Gets the user's real JID, available to members of a room with appropriate permissions. Defaults to their roomJid.
+	 *
+	 * See:
+	 *   <Candy.Util.unescapeJid>
+	 *
+	 * Returns:
+	 *   (String) - real jid
+	 */
+	this.getRealJid = function() {
+		if(this.data.realJid) {
+			return Candy.Util.unescapeJid(this.data.realJid);
+		}
+		return;
 	};
 
 	/** Function: setJid
@@ -261,5 +279,66 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
 	this.getPreviousNick = function() {
 		return this.data.previousNick;
+	};
+
+	/** Function: fetchVCard
+	 * Requests the VCard for the user from the server
+	 */
+	this.fetchVCard = function(callback) {
+		var data = this.data;
+		Candy.Core.getConnection().vcard.get(function(stanza) {
+			var v = jQuery(stanza).find('vCard[xmlns="' + Strophe.NS.VCARD + '"]'),
+				tel = v.find('TEL'),
+				email = v.find('EMAIL'),
+				photo = v.find('PHOTO'),
+				org = v.find('ORG'),
+				adr = v.find('ADR');
+			data.vCard = {
+				nickName: v.find('NICKNAME').text(),
+				fullName: v.find('FN').text(),
+				title: v.find('TITLE').text(),
+				url: v.find('URL').text(),
+				description: v.find('DESC').text(),
+				tel: {
+					voice: tel.find('VOICE').text(),
+					work: tel.find('WORK').text(),
+					number: tel.find('NUMBER').text()
+				},
+				email: {
+					internet: email.find('INTERNET').text(),
+					pref: email.find('PREF').text(),
+					userID: email.find('USERID').text()
+				},
+				birthDay: v.find('BDAY').text(),
+				role: v.find('ROLE').text(),
+				photo: {
+					type: photo.find('TYPE').text(),
+					binaryValue: photo.find('BINVAL').text()
+				},
+				name: v.find('N').text(),
+				organisation: {
+					name: org.find('ORGNAME').text(),
+					unit: org.find('ORGUNIT').text()
+				},
+				address: {
+					country: adr.find('CTRY').text(),
+					locality: adr.find('LOCALITY').text(),
+					street: adr.find('STREET').text(),
+					region: adr.find('REGION').text(),
+					postCode: adr.find('PCODE').text()
+				}
+			};
+			callback(data.vCard);
+		}, this.data.jid);
+	};
+
+	/** Function: getVCard
+	 * Gets the user's vcard if available.
+	 *
+	 * Returns:
+	 *   (String) - vcard
+	 */
+	this.getVCard = function() {
+		return this.data.vCard;
 	};
 };

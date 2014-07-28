@@ -553,7 +553,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						action = 'join';
 					} else {
 						nick = Strophe.getResourceFromJid(from);
-						user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
+						user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'), item.attr('jid'));
 						// Room existed but client (myself) is not yet registered
 						if(room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
 							room.setUser(user);
@@ -665,25 +665,26 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				var roomJid, message, name;
 				if(msg.children('subject').length > 0 && msg.children('subject').text().length > 0 && msg.attr('type') === 'groupchat') {
 					roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
-					message = { name: Strophe.getNodeFromJid(roomJid), body: msg.children('subject').text(), type: 'subject' };
+					message = { from: roomJid, name: Strophe.getNodeFromJid(roomJid), body: msg.children('subject').text(), type: 'subject' };
 				// Error messsage
 				} else if(msg.attr('type') === 'error') {
 					var error = msg.children('error');
 					if(error.children('text').length > 0) {
 						roomJid = msg.attr('from');
-						message = { type: 'info', body: error.children('text').text() };
+						message = { from: roomJid, type: 'info', body: error.children('text').text() };
 					}
 				// Chat message
 				} else if(msg.children('body').length > 0) {
 					// Private chat message
 					if(msg.attr('type') === 'chat' || msg.attr('type') === 'normal') {
-						roomJid = Candy.Util.unescapeJid(msg.attr('from'));
-						var bareRoomJid = Strophe.getBareJidFromJid(roomJid),
-							// if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
-							isNoConferenceRoomJid = !Candy.Core.getRoom(bareRoomJid);
+						var from = Candy.Util.unescapeJid(msg.attr('from'));
+						roomJid = Strophe.getBareJidFromJid(from);
 
-						name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(roomJid) : Strophe.getResourceFromJid(roomJid);
-						message = { name: name, body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
+						// if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
+						var isNoConferenceRoomJid = !Candy.Core.getRoom(roomJid);
+
+						name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(from) : Strophe.getResourceFromJid(from);
+						message = { from: from, name: name, body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
 					// Multi-user chat message
 					} else {
 						roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
@@ -691,14 +692,14 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						// Message from a user
 						if(resource) {
 							resource = Strophe.unescapeNode(resource);
-							message = { name: resource, body: msg.children('body').text(), type: msg.attr('type') };
+							message = { from: roomJid, name: resource, body: msg.children('body').text(), type: msg.attr('type') };
 						// Message from server (XEP-0045#registrar-statuscodes)
 						} else {
 							// we are not yet present in the room, let's just drop this message (issue #105)
 							if(!Candy.View.Pane.Chat.rooms[msg.attr('from')]) {
 								return true;
 							}
-							message = { name: '', body: msg.children('body').text(), type: 'info' };
+							message = { from: roomJid, name: '', body: msg.children('body').text(), type: 'info' };
 						}
 					}
 
@@ -761,6 +762,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 * The following lists explain those parameters:
 				 *
 				 * Message Object Parameters:
+				 *   (String) from - The unmodified JID that the stanza came from
 				 *   (String) name - Room name
 				 *   (String) body - Message text
 				 *   (String) type - Message type ([normal, chat, groupchat])
@@ -771,7 +773,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *                                     This flag tells if this is the case.
 				 *
 				 * Parameters:
-				 *   (String) roomJid - Room jid
+				 *   (String) roomJid - Room jid. For one-on-one messages, this is sanitized to the bare JID for indexing purposes.
 				 *   (Object) message - Depending on what kind of message, the object consists of different key-value pairs:
 				 *                        - Room Subject: {name, body, type}
 				 *                        - Error message: {type = 'info', body}

@@ -215,6 +215,18 @@ Candy.View.Observer = (function(self, $) {
 					Candy.View.Pane.Roster.update(args.user.getJid(), args.user, args.action, args.currentUser);
 					Candy.View.Pane.PrivateRoom.setStatus(args.user.getJid(), args.action);
 				}
+			} else {
+				// Presence for a one-on-one chat
+				var bareJid = Strophe.getBareJidFromJid(args.from),
+					room = Candy.View.Pane.Chat.rooms[bareJid];
+				if(!room) {
+					return false;
+				}
+
+				// Reset the room's target JID
+				room.targetJid = bareJid;
+
+				Candy.View.Pane.Roster.update(bareJid, new Candy.Core.ChatUser(bareJid, 'foo'), 'join', Candy.Core.getUser());
 			}
 		},
 
@@ -285,6 +297,16 @@ Candy.View.Observer = (function(self, $) {
 			// Initialize room if it's a message for a new private user chat
 			if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
 				Candy.View.Pane.PrivateRoom.open(args.roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
+			}
+			var room = Candy.View.Pane.Chat.rooms[args.roomJid];
+			if (room.targetJid === args.roomJid) {
+				// No messages yet received. Lock the room to this resource.
+				room.targetJid = args.message.from;
+			} else if (room.targetJid === args.message.from) {
+				// We're already locked to the correct resource.
+			} else {
+				// Message received from alternative resource. Release the resource lock.
+				room.targetJid = args.roomJid;
 			}
 			Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.message.xhtmlMessage, args.timestamp);
 		}

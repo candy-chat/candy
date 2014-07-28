@@ -114,7 +114,11 @@ Candy.Core = function(self, Strophe, $) {
 			 * JID resource to use when connecting to the server.
 			 * Specify `''` (an empty string) to request a random resource.
 			 */
-        resource: Candy.about.name
+        resource: Candy.about.name,
+        /** Boolean: useParticipantRealJid
+			 * If set true, will direct one-on-one chats to participant's real JID rather than their MUC jid
+			 */
+        useParticipantRealJid: false
     }, /** PrivateFunction: _addNamespace
 		 * Adds a namespace.
 		 *
@@ -1768,11 +1772,11 @@ Candy.Core.ChatRoster = function() {
  */
 "use strict";
 
-/* global Candy, Strophe */
+/* global Candy, Strophe, jQuery */
 /** Class: Candy.Core.ChatUser
  * Chat User
  */
-Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
+Candy.Core.ChatUser = function(jid, nick, affiliation, role, realJid) {
     /** Constant: ROLE_MODERATOR
 	 * Moderator role
 	 */
@@ -1792,12 +1796,16 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
     this.data = {
         jid: jid,
+        realJid: realJid || jid,
         nick: Strophe.unescapeNode(nick),
         affiliation: affiliation,
         role: role,
         privacyLists: {},
         customData: {},
-        previousNick: undefined
+        previousNick: undefined,
+        vCard: {
+            nickName: Strophe.unescapeNode(nick)
+        }
     };
     /** Function: getJid
 	 * Gets an unescaped user jid
@@ -1825,6 +1833,21 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
     this.getEscapedJid = function() {
         return Candy.Util.escapeJid(this.data.jid);
+    };
+    /** Function: getRealJid
+	 * Gets the user's real JID, available to members of a room with appropriate permissions. Defaults to their roomJid.
+	 *
+	 * See:
+	 *   <Candy.Util.unescapeJid>
+	 *
+	 * Returns:
+	 *   (String) - real jid
+	 */
+    this.getRealJid = function() {
+        if (this.data.realJid) {
+            return Candy.Util.unescapeJid(this.data.realJid);
+        }
+        return;
     };
     /** Function: setJid
 	 * Sets a user's jid
@@ -1997,6 +2020,60 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
     this.getPreviousNick = function() {
         return this.data.previousNick;
+    };
+    /** Function: fetchVCard
+	 * Requests the VCard for the user from the server
+	 */
+    this.fetchVCard = function(callback) {
+        var data = this.data;
+        Candy.Core.getConnection().vcard.get(function(stanza) {
+            var v = jQuery(stanza).find('vCard[xmlns="' + Strophe.NS.VCARD + '"]'), tel = v.find("TEL"), email = v.find("EMAIL"), photo = v.find("PHOTO"), org = v.find("ORG"), adr = v.find("ADR");
+            data.vCard = {
+                nickName: v.find("NICKNAME").text(),
+                fullName: v.find("FN").text(),
+                title: v.find("TITLE").text(),
+                url: v.find("URL").text(),
+                description: v.find("DESC").text(),
+                tel: {
+                    voice: tel.find("VOICE").text(),
+                    work: tel.find("WORK").text(),
+                    number: tel.find("NUMBER").text()
+                },
+                email: {
+                    internet: email.find("INTERNET").text(),
+                    pref: email.find("PREF").text(),
+                    userID: email.find("USERID").text()
+                },
+                birthDay: v.find("BDAY").text(),
+                role: v.find("ROLE").text(),
+                photo: {
+                    type: photo.find("TYPE").text(),
+                    binaryValue: photo.find("BINVAL").text()
+                },
+                name: v.find("N").text(),
+                organisation: {
+                    name: org.find("ORGNAME").text(),
+                    unit: org.find("ORGUNIT").text()
+                },
+                address: {
+                    country: adr.find("CTRY").text(),
+                    locality: adr.find("LOCALITY").text(),
+                    street: adr.find("STREET").text(),
+                    region: adr.find("REGION").text(),
+                    postCode: adr.find("PCODE").text()
+                }
+            };
+            callback(data.vCard);
+        }, this.data.jid);
+    };
+    /** Function: getVCard
+	 * Gets the user's vcard if available.
+	 *
+	 * Returns:
+	 *   (String) - vcard
+	 */
+    this.getVCard = function() {
+        return this.data.vCard;
     };
 };
 
@@ -2505,7 +2582,7 @@ Candy.Core.Event = function(self, Strophe, $) {
                         action = "join";
                     } else {
                         nick = Strophe.getResourceFromJid(from);
-                        user = new Candy.Core.ChatUser(from, nick, item.attr("affiliation"), item.attr("role"));
+                        user = new Candy.Core.ChatUser(from, nick, item.attr("affiliation"), item.attr("role"), item.attr("jid"));
                         // Room existed but client (myself) is not yet registered
                         if (room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
                             room.setUser(user);
@@ -2610,6 +2687,7 @@ Candy.Core.Event = function(self, Strophe, $) {
                 if (msg.children("subject").length > 0 && msg.children("subject").text().length > 0 && msg.attr("type") === "groupchat") {
                     roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr("from")));
                     message = {
+                        from: roomJid,
                         name: Strophe.getNodeFromJid(roomJid),
                         body: msg.children("subject").text(),
                         type: "subject"
@@ -2619,6 +2697,7 @@ Candy.Core.Event = function(self, Strophe, $) {
                     if (error.children("text").length > 0) {
                         roomJid = msg.attr("from");
                         message = {
+                            from: roomJid,
                             type: "info",
                             body: error.children("text").text()
                         };
@@ -2626,11 +2705,13 @@ Candy.Core.Event = function(self, Strophe, $) {
                 } else if (msg.children("body").length > 0) {
                     // Private chat message
                     if (msg.attr("type") === "chat" || msg.attr("type") === "normal") {
-                        roomJid = Candy.Util.unescapeJid(msg.attr("from"));
-                        var bareRoomJid = Strophe.getBareJidFromJid(roomJid), // if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
-                        isNoConferenceRoomJid = !Candy.Core.getRoom(bareRoomJid);
-                        name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(roomJid) : Strophe.getResourceFromJid(roomJid);
+                        var from = Candy.Util.unescapeJid(msg.attr("from"));
+                        roomJid = Strophe.getBareJidFromJid(from);
+                        // if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
+                        var isNoConferenceRoomJid = !Candy.Core.getRoom(roomJid);
+                        name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(from) : Strophe.getResourceFromJid(from);
                         message = {
+                            from: from,
                             name: name,
                             body: msg.children("body").text(),
                             type: msg.attr("type"),
@@ -2643,6 +2724,7 @@ Candy.Core.Event = function(self, Strophe, $) {
                         if (resource) {
                             resource = Strophe.unescapeNode(resource);
                             message = {
+                                from: roomJid,
                                 name: resource,
                                 body: msg.children("body").text(),
                                 type: msg.attr("type")
@@ -2653,6 +2735,7 @@ Candy.Core.Event = function(self, Strophe, $) {
                                 return true;
                             }
                             message = {
+                                from: roomJid,
                                 name: "",
                                 body: msg.children("body").text(),
                                 type: "info"
@@ -2713,6 +2796,7 @@ Candy.Core.Event = function(self, Strophe, $) {
 				 * The following lists explain those parameters:
 				 *
 				 * Message Object Parameters:
+				 *   (String) from - The unmodified JID that the stanza came from
 				 *   (String) name - Room name
 				 *   (String) body - Message text
 				 *   (String) type - Message type ([normal, chat, groupchat])
@@ -2723,7 +2807,7 @@ Candy.Core.Event = function(self, Strophe, $) {
 				 *                                     This flag tells if this is the case.
 				 *
 				 * Parameters:
-				 *   (String) roomJid - Room jid
+				 *   (String) roomJid - Room jid. For one-on-one messages, this is sanitized to the bare JID for indexing purposes.
 				 *   (Object) message - Depending on what kind of message, the object consists of different key-value pairs:
 				 *                        - Room Subject: {name, body, type}
 				 *                        - Error message: {type = 'info', body}
@@ -2956,6 +3040,15 @@ Candy.View.Observer = function(self, $) {
                     Candy.View.Pane.Roster.update(args.user.getJid(), args.user, args.action, args.currentUser);
                     Candy.View.Pane.PrivateRoom.setStatus(args.user.getJid(), args.action);
                 }
+            } else {
+                // Presence for a one-on-one chat
+                var bareJid = Strophe.getBareJidFromJid(args.from), room = Candy.View.Pane.Chat.rooms[bareJid];
+                if (!room) {
+                    return false;
+                }
+                // Reset the room's target JID
+                room.targetJid = bareJid;
+                Candy.View.Pane.Roster.update(bareJid, new Candy.Core.ChatUser(bareJid, "foo"), "join", Candy.Core.getUser());
             }
         },
         /** Function: notifyPrivateChats
@@ -3026,6 +3119,14 @@ Candy.View.Observer = function(self, $) {
             // Initialize room if it's a message for a new private user chat
             if (args.message.type === "chat" && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
                 Candy.View.Pane.PrivateRoom.open(args.roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
+            }
+            var room = Candy.View.Pane.Chat.rooms[args.roomJid];
+            if (room.targetJid === args.roomJid) {
+                // No messages yet received. Lock the room to this resource.
+                room.targetJid = args.message.from;
+            } else if (room.targetJid === args.message.from) {} else {
+                // Message received from alternative resource. Release the resource lock.
+                room.targetJid = args.roomJid;
             }
             Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.message.xhtmlMessage, args.timestamp);
         }
@@ -4068,7 +4169,8 @@ Candy.View.Pane = function(self, $) {
                 name: roomName,
                 type: roomType,
                 messageCount: 0,
-                scrollPosition: -1
+                scrollPosition: -1,
+                targetJid: roomJid
             };
             $("#chat-rooms").append(Mustache.to_html(Candy.View.Template.Room.pane, {
                 roomId: roomId,
@@ -4076,9 +4178,6 @@ Candy.View.Pane = function(self, $) {
                 roomType: roomType,
                 form: {
                     _messageSubmit: $.i18n._("messageSubmit")
-                },
-                roster: {
-                    _userOnline: $.i18n._("userOnline")
                 }
             }, {
                 roster: Candy.View.Template.Roster.pane,
@@ -4607,48 +4706,59 @@ Candy.View.Pane = function(self, $) {
             // a user joined the room
             if (action === "join") {
                 usercountDiff = 1;
-                var html = Mustache.to_html(Candy.View.Template.Roster.user, {
-                    roomId: roomId,
-                    userId: userId,
-                    userJid: user.getJid(),
-                    nick: user.getNick(),
-                    displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.nickname),
-                    role: user.getRole(),
-                    affiliation: user.getAffiliation(),
-                    me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
-                    tooltipRole: $.i18n._("tooltipRole"),
-                    tooltipIgnored: $.i18n._("tooltipIgnored")
-                });
-                if (userElem.length < 1) {
-                    var userInserted = false, rosterPane = self.Room.getPane(roomJid, ".roster-pane");
-                    // there are already users in the roster
-                    if (rosterPane.children().length > 0) {
-                        // insert alphabetically
-                        var userSortCompare = user.getNick().toUpperCase();
-                        rosterPane.children().each(function() {
-                            var elem = $(this);
-                            if (elem.attr("data-nick").toUpperCase() > userSortCompare) {
-                                elem.before(html);
-                                userInserted = true;
-                                return false;
-                            }
-                            return true;
+                var rosterPane = self.Room.getPane(roomJid, ".roster-pane");
+                if (self.Chat.rooms[roomJid].type === "chat") {
+                    if (user !== Candy.Core.getUser()) {
+                        self.Roster.drawProfilePane(rosterPane, user);
+                        user.fetchVCard(function() {
+                            self.Roster.drawProfilePane(rosterPane, user);
                         });
                     }
-                    // first user in roster
-                    if (!userInserted) {
-                        rosterPane.append(html);
-                    }
-                    self.Roster.showJoinAnimation(user, userId, roomId, roomJid, currentUser);
                 } else {
-                    usercountDiff = 0;
-                    userElem.replaceWith(html);
-                    $("#user-" + roomId + "-" + userId).css({
-                        opacity: 1
-                    }).show();
-                    // it's me, update the toolbar
-                    if (currentUser !== undefined && user.getNick() === currentUser.getNick() && self.Room.getUser(roomJid)) {
-                        self.Chat.Toolbar.update(roomJid);
+                    var html = Mustache.to_html(Candy.View.Template.Roster.user, {
+                        roomId: roomId,
+                        userId: userId,
+                        userJid: user.getJid(),
+                        realJid: user.getRealJid(),
+                        nick: user.getNick(),
+                        displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.nickname),
+                        role: user.getRole(),
+                        affiliation: user.getAffiliation(),
+                        me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
+                        tooltipRole: $.i18n._("tooltipRole"),
+                        tooltipIgnored: $.i18n._("tooltipIgnored")
+                    });
+                    if (userElem.length < 1) {
+                        var userInserted = false;
+                        // there are already users in the roster
+                        if (rosterPane.children().length > 0) {
+                            // insert alphabetically
+                            var userSortCompare = user.getNick().toUpperCase();
+                            rosterPane.children().each(function() {
+                                var elem = $(this);
+                                if (elem.attr("data-nick").toUpperCase() > userSortCompare) {
+                                    elem.before(html);
+                                    userInserted = true;
+                                    return false;
+                                }
+                                return true;
+                            });
+                        }
+                        // first user in roster
+                        if (!userInserted) {
+                            rosterPane.append(html);
+                        }
+                        self.Roster.showJoinAnimation(user, userId, roomId, roomJid, currentUser);
+                    } else {
+                        usercountDiff = 0;
+                        userElem.replaceWith(html);
+                        $("#user-" + roomId + "-" + userId).css({
+                            opacity: 1
+                        }).show();
+                        // it's me, update the toolbar
+                        if (currentUser !== undefined && user.getNick() === currentUser.getNick() && self.Room.getUser(roomJid)) {
+                            self.Chat.Toolbar.update(roomJid);
+                        }
                     }
                 }
                 // Presence of client
@@ -4705,12 +4815,18 @@ Candy.View.Pane = function(self, $) {
 			 */
             $(Candy).triggerHandler("candy:view.roster.after-update", evtData);
         },
+        drawProfilePane: function(pane, user) {
+            pane.html(Mustache.to_html(Candy.View.Template.UserInfoPanel.pane, self.Roster.profileDataForUser(user)));
+        },
+        profileDataForUser: function(user) {
+            return user.getVCard();
+        },
         /** Function: userClick
 		 * Click handler for opening a private room
 		 */
         userClick: function() {
-            var elem = $(this);
-            self.PrivateRoom.open(elem.attr("data-jid"), elem.attr("data-nick"), true);
+            var elem = $(this), realJid = elem.attr("data-real-jid"), useRealJid = Candy.Core.getOptions().useParticipantRealJid && (realJid !== undefined && realJid !== null && realJid !== ""), targetJid = useRealJid ? Strophe.getBareJidFromJid(realJid) : elem.attr("data-jid");
+            self.PrivateRoom.open(targetJid, elem.attr("data-nick"), true, useRealJid);
         },
         /** Function: showJoinAnimation
 		 * Shows join animation if needed
@@ -4800,7 +4916,7 @@ Candy.View.Pane = function(self, $) {
 		 *        - maybe rename this as part of a refactoring.
 		 */
         submit: function(event) {
-            var roomJid = Candy.View.getCurrent().roomJid, roomType = Candy.View.Pane.Chat.rooms[roomJid].type, message = $(this).children(".field").val().substring(0, Candy.View.getOptions().crop.message.body), xhtmlMessage, evtData = {
+            var roomJid = Candy.View.getCurrent().roomJid, room = Candy.View.Pane.Chat.rooms[roomJid], roomType = room.type, targetJid = room.targetJid, message = $(this).children(".field").val().substring(0, Candy.View.getOptions().crop.message.body), xhtmlMessage, evtData = {
                 roomJid: roomJid,
                 message: message,
                 xhtmlMessage: xhtmlMessage
@@ -4822,7 +4938,7 @@ Candy.View.Pane = function(self, $) {
             }
             message = evtData.message;
             xhtmlMessage = evtData.xhtmlMessage;
-            Candy.Core.Action.Jabber.Room.Message(roomJid, message, roomType, xhtmlMessage);
+            Candy.Core.Action.Jabber.Room.Message(targetJid, message, roomType, xhtmlMessage);
             // Private user chat. Jabber won't notify the user who has sent the message. Just show it as the user hits the button...
             if (roomType === "chat" && message) {
                 self.Message.show(roomJid, self.Room.getUser(roomJid).getNick(), message);
@@ -4989,7 +5105,10 @@ Candy.View.Template = function(self) {
     };
     self.Roster = {
         pane: '<div class="roster-pane"></div>',
-        user: '<div class="user role-{{role}} affiliation-{{affiliation}}{{#me}} me{{/me}}"' + ' id="user-{{roomId}}-{{userId}}" data-jid="{{userJid}}"' + ' data-nick="{{nick}}" data-role="{{role}}" data-affiliation="{{affiliation}}">' + '<div class="label">{{displayNick}}</div><ul>' + '<li class="context" id="context-{{roomId}}-{{userId}}">&#x25BE;</li>' + '<li class="role role-{{role}} affiliation-{{affiliation}}" data-tooltip="{{tooltipRole}}"></li>' + '<li class="ignore" data-tooltip="{{tooltipIgnored}}"></li></ul></div>'
+        user: '<div class="user role-{{role}} affiliation-{{affiliation}}{{#me}} me{{/me}}"' + ' id="user-{{roomId}}-{{userId}}" data-jid="{{userJid}}" data-real-jid="{{realJid}}"' + ' data-nick="{{nick}}" data-role="{{role}}" data-affiliation="{{affiliation}}">' + '<div class="label">{{displayNick}}</div><ul>' + '<li class="context" id="context-{{roomId}}-{{userId}}">&#x25BE;</li>' + '<li class="role role-{{role}} affiliation-{{affiliation}}" data-tooltip="{{tooltipRole}}"></li>' + '<li class="ignore" data-tooltip="{{tooltipIgnored}}"></li></ul></div>'
+    };
+    self.UserInfoPanel = {
+        pane: '{{#photo}}<img class="avatar" width="200" src="data:{{type}};base64,{{binaryValue}}"/>{{/photo}}' + '<div class="name">{{#fullName}}{{fullName}} ({{nickName}}){{/fullName}}{{^fullName}}{{nickName}}{{/fullName}}</div>' + '{{#role}}<div class="role">{{role}}</div>{{/role}}' + '{{#organisation}}<div class="orgunit">{{unit}}</div>{{/organisation}}' + '{{#email}}<div class="email">{{userID}}</div>{{/email}}'
     };
     self.Message = {
         pane: '<div class="message-pane-wrapper"><ul class="message-pane"></ul></div>',

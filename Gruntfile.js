@@ -58,6 +58,7 @@ module.exports = function(grunt) {
 						'libs/strophejs-plugins/muc/strophe.muc.js',
 						'libs/strophejs-plugins/disco/strophe.disco.js',
 						'libs/strophejs-plugins/caps/strophe.caps.jsonly.js',
+						'libs/strophejs-plugins/vcard/strophe.vcard.js',
 						'libs/mustache.js/mustache.js',
 						'libs/jquery-i18n/jquery.i18n.js',
 						'libs/dateformat/dateFormat.js'
