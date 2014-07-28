@@ -11,3 +11,4 @@ libs/
 lib/
 candy.bundle.*
 candy.min.*
+.vagrant

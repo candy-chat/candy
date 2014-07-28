@@ -3,29 +3,30 @@
 <head>
 	<meta charset="utf-8">
 	<title>Candy - Chats are not dead yet</title>
-	<link rel="shortcut icon" href="../res/img/favicon.png" type="image/gif" />
-	<link rel="stylesheet" type="text/css" href="../res/default.css" />
+	<link rel="shortcut icon" href="candy/res/img/favicon.png" type="image/gif" />
+	<link rel="stylesheet" type="text/css" href="candy/res/default.css" />
 
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script type="text/javascript" src="../libs.min.js"></script>
-	<script type="text/javascript" src="../candy.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script type="text/javascript" src="candy/libs/libs.min.js"></script>
+	<script type="text/javascript" src="candy/candy.min.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			Candy.init('http-bind/', {
+			//Candy.init('/http-bind/', { // uncomment & comment next line if you'd like to use BOSH
+			Candy.init('ws://localhost:5280/xmpp-websocket/', {
 				core: {
 					// only set this to true if developing / debugging errors
-					debug: false,
+					debug: true,
 					// autojoin is a *required* parameter if you don't have a plugin (e.g. roomPanel) for it
 					//   true
 					//     -> fetch info from server (NOTE: does only work with openfire server)
 					//   ['test@conference.example.com']
 					//     -> array of rooms to join after connecting
-					autojoin: true
+					autojoin: ['test@conference.localhost']
 				},
-				view: { assets: '../res/' }
+				view: { resources: 'candy/res/' }
 			});
 
-			Candy.Core.connect();
+			Candy.Core.connect('localhost');
 
 			/**
 			 * Thanks for trying Candy!
