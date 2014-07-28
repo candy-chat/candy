@@ -38,6 +38,8 @@ Please note that you should have a working XMPP server to test your changes (the
 3. Install [Node.js](http://nodejs.org/)
 4. Install [Grunt](http://gruntjs.com/) (`npm install -g grunt-cli`)
 5. Install npm dependencies (`npm install` in candy root directory)
+4. Install [Bower](http://bower.io/) (`npm install -g bower`)
+5. Install bower dependencies (`bower install` in candy root directory)
 6. Create a branch based on the `dev` branch (`git checkout -B my-awesome-feature`)
 7. Run `grunt watch` to automatically run jshint (syntax checker) and the build of `candy.bundle.js` and `candy.min.js` while developing.
 8. Make your changes, fix eventual *jshint* errors & push them back to your fork

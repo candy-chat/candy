@@ -5,13 +5,6 @@ module.exports = function(grunt) {
 	// Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-		bower: {
-			install: {
-				options: {
-					targetDir: './lib'
-				}
-			}
-		},
 		jshint: {
 			all: ['Gruntfile.js', './src/**/*.js'],
 			options: {
@@ -59,13 +52,13 @@ module.exports = function(grunt) {
 			},
 			libs: {
 				files: {
-					'libs/libs.bundle.js': [
-						'lib/strophe/strophe.js',
-						'lib/strophejs-plugins/muc/strophe.muc.js',
-						'lib/strophejs-plugins/disco/strophe.disco.js',
-						'lib/strophejs-plugins/caps/strophe.caps.jsonly.js',
-						'lib/mustache/mustache.js',
-						'lib/jquery-i18n/jquery.i18n.js',
+					'libs.bundle.js': [
+						'bower_components/strophe/strophe.js',
+						'bower_components/strophejs-plugins/muc/strophe.muc.js',
+						'bower_components/strophejs-plugins/disco/strophe.disco.js',
+						'bower_components/strophejs-plugins/caps/strophe.caps.jsonly.js',
+						'bower_components/mustache/mustache.js',
+						'bower_components/jquery-i18n/jquery.i18n.js',
 						'vendor_libs/dateformat/dateFormat.js'
 					]
 				},
@@ -79,17 +72,17 @@ module.exports = function(grunt) {
 			},
 			'libs-min': {
 				files: {
-					'libs/libs.min.js': ['libs/libs.bundle.js']
+					'libs.min.js': ['libs.bundle.js']
 				}
 			}
 		},
 		watch: {
 			bundle: {
-				files: ['src/*.js', 'src/**/*.js'],
+				files: ['src/**/*.js'],
 				tasks: ['jshint', 'uglify:bundle', 'uglify:min', 'notify:bundle']
 			},
 			libs: {
-				files: ['lib/*/**/*.js', 'vendor_libs/*/**/*.js'],
+				files: ['bower_components/*/**/*.js', 'vendor_libs/*/**/*.js'],
 				tasks: ['uglify:libs', 'uglify:libs-min', 'notify:libs']
 			}
 		},
@@ -104,7 +97,7 @@ module.exports = function(grunt) {
 		},
 		clean: {
 			bundle: ['./candy.bundle.js', './candy.bundle.map', './candy.min.js'],
-			libs: ['./libs/libs.bundle.js', './libs/libs.bundle.map', './libs/libs.min.js'],
+			libs: ['./libs.bundle.js', './libs.bundle.map', './libs.min.js'],
 			docs: ['./docs']
 		},
 		mkdir: {
@@ -146,10 +139,9 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-mkdir');
 	grunt.loadNpmTasks('grunt-notify');
 	grunt.loadNpmTasks('grunt-sync-pkg');
-	grunt.loadNpmTasks('grunt-bower-task');
 
 	grunt.registerTask('default', [
-		'bower:install', 'jshint', 'uglify:libs', 'uglify:libs-min',
+		'jshint', 'uglify:libs', 'uglify:libs-min',
 		'uglify:bundle', 'uglify:min', 'notify:default'
 	]);
 	grunt.registerTask('docs', ['mkdir:docs', 'natural_docs', 'notify:docs']);
