@@ -136,5 +136,82 @@ define([
 				});
 			});
 		});
+
+		bdd.describe('Parser', function () {
+			bdd.describe('jid', function () {
+				bdd.it('should parse JIDs per RFC6122', function () {
+					var jid = Candy.Util.Parser.jid("space cadet@example.com");
+					expect(jid.node).to.equal("space cadet");
+					expect(jid.domain).to.equal("example.com");
+					expect(jid.resource).to.equal(undefined);
+				});
+				bdd.it('should parse JIDs per RFC6122', function () {
+					var jid = Candy.Util.Parser.jid("call me \"ishmael\"@example.com");
+					expect(jid.node).to.equal("call me \"ishmael\"");
+					expect(jid.domain).to.equal("example.com");
+					expect(jid.resource).to.equal(undefined);
+				});
+				bdd.it('should parse JIDs per RFC6122', function () {
+					var jid = Candy.Util.Parser.jid("at&t guy@example.com");
+					expect(jid.node).to.equal("at&t guy");
+					expect(jid.domain).to.equal("example.com");
+					expect(jid.resource).to.equal(undefined);
+				});
+				bdd.it('should parse JIDs per RFC6122', function () {
+					var jid = Candy.Util.Parser.jid("d'artagnan@example.com");
+					expect(jid.node).to.equal("d'artagnan");
+					expect(jid.domain).to.equal("example.com");
+					expect(jid.resource).to.equal(undefined);
+				});
+				bdd.it('should parse JIDs per RFC6122', function () {
+					var jid = Candy.Util.Parser.jid("/.fanboy@example.com");
+					expect(jid.node).to.equal("/.fanboy");
+					expect(jid.domain).to.equal("example.com");
+					expect(jid.resource).to.equal(undefined);
+				});
+				bdd.it('should parse JIDs per RFC6122', function () {
+					var jid = Candy.Util.Parser.jid("::foo::@example.com");
+					expect(jid.node).to.equal("::foo::");
+					expect(jid.domain).to.equal("example.com");
+					expect(jid.resource).to.equal(undefined);
+				});
+				bdd.it('should parse JIDs per RFC6122', function () {
+					var jid = Candy.Util.Parser.jid("<foo>@example.com");
+					expect(jid.node).to.equal("<foo>");
+					expect(jid.domain).to.equal("example.com");
+					expect(jid.resource).to.equal(undefined);
+				});
+				bdd.it('should parse JIDs per RFC6122', function () {
+					var jid = Candy.Util.Parser.jid("user@host@example.com");
+					expect(jid.node).to.equal("user@host");
+					expect(jid.domain).to.equal("example.com");
+					expect(jid.resource).to.equal(undefined);
+				});
+				bdd.it('should parse JIDs per RFC6122', function () {
+					var jid = Candy.Util.Parser.jid("c:\\net@example.com");
+					expect(jid.node).to.equal('c:\\net');
+					expect(jid.domain).to.equal('example.com');
+					expect(jid.resource).to.equal(undefined);
+				});
+				bdd.it('should parse JIDs per RFC6122', function () {
+					var jid = Candy.Util.Parser.jid("c:\\net@example.com");
+					expect(jid.node).to.equal("c:\\net");
+					expect(jid.domain).to.equal("example.com");
+					expect(jid.resource).to.equal(undefined);
+				});
+				bdd.it('should parse JIDs per RFC6122', function () {
+					var jid = Candy.Util.Parser.jid("c:\\cool stuff@example.com");
+					expect(jid.node).to.equal("c:\\cool stuff");
+					expect(jid.domain).to.equal("example.com");
+					expect(jid.resource).to.equal(undefined);
+				});
+				bdd.it('should parse JIDs per RFC6122', function () {
+					var jid = Candy.Util.Parser.jid("c:\\5commas@example.com");
+					expect(jid.node).to.equal("c:\\5commas");
+					expect(jid.domain).to.equal("example.com");
+					expect(jid.resource).to.equal(undefined);
+				});
+			});
+		});
 	});
 });

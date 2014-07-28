@@ -355,6 +355,21 @@ Candy.Util = (function(self, $){
 	 * Parser for emoticons, links and also supports escaping.
 	 */
 	self.Parser = {
+		/** Function: jid
+		 * Parse a JID into an object with each element
+		 *
+		 * Parameters:
+		 * 	(String) jid - The string representation of a JID
+		 */
+		jid: function (jid) {
+			var r = /^(([^@]+)@)?([^\/]+)(\/(.*))?$/i,
+				a = jid.match(r);
+
+			if (!a) { throw "not a valid jid (" + jid + ")"; }
+
+			return {node: a[2], domain: a[3], resource: a[4]};
+		},
+
 		/** PrivateVariable: _emoticonPath
 		 * Path to emoticons.
 		 *

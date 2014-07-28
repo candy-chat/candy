@@ -22,6 +22,23 @@
  *   (jQuery) $ - jQuery
  */
 Candy.Core = (function(self, Strophe, $) {
+		Strophe.getBareJidFromJid = function (jid) {
+			var parsedJid = Candy.Util.Parser.jid(jid);
+			return parsedJid.node + '@' + parsedJid.domain;
+		};
+
+		Strophe.getNodeFromJid = function (jid) {
+			return Candy.Util.Parser.jid(jid).node;
+		};
+
+		Strophe.getDomainFromJid = function (jid) {
+			return Candy.Util.Parser.jid(jid).domain;
+		};
+
+		Strophe.getResourceFromJid = function (jid) {
+			return Candy.Util.Parser.jid(jid).resource;
+		};
+
 		/** PrivateVariable: _connection
 		 * Strophe connection
 		 */
