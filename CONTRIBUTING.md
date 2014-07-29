@@ -7,6 +7,8 @@
 
 ## Learn & listen
 
+[![Gitter chat](https://badges.gitter.im/candy-chat.png)](https://gitter.im/candy-chat)
+
 * [Mailing list](http://groups.google.com/group/candy-chat)
 	* yes, non-gmail users can signup as well
 * [FAQ](https://github.com/candy-chat/candy/wiki/Frequently-Asked-Questions)
