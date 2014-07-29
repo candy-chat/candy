@@ -168,6 +168,7 @@ module.exports = function(grunt) {
 					suites: [
 							'tests/candy/unit/candy'
 						, 'tests/candy/unit/util'
+						, 'tests/candy/unit/core/chatUser'
 					],
 					functionalSuites: []
 				}

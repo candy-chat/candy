@@ -81,6 +81,7 @@ define({
 	suites: [
 			'tests/candy/unit/candy'
 		, 'test/candy/unit/util'
+		, 'test/candy/unit/core/chatUser'
 	],
 
 	// Functional test suite(s) to run in each browser once non-functional tests are completed
