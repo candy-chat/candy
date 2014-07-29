@@ -1,4 +1,5 @@
 /*global define, Candy */
+/*jshint -W030 */
 
 define([
     'intern!bdd'
@@ -84,6 +85,48 @@ define([
         bdd.it('returns true', function () {
           expect(chatUser.isModerator()).to.equal(true);
         });
+      });
+    });
+
+    bdd.describe('privacy lists', function () {
+      bdd.it('has only empty lists to start', function () {
+        expect(chatUser.getPrivacyList('somelist')).to.be.empty;
+        expect(chatUser.isInPrivacyList('somelist', 'some@jid.com')).to.be.false;
+      });
+
+      bdd.it('can have existing lists set', function () {
+        chatUser.setPrivacyLists({'somelist': ['some@jid.com']});
+        expect(chatUser.isInPrivacyList('somelist', 'some@jid.com')).to.be.true;
+        expect(chatUser.isInPrivacyList('otherlist', 'some@jid.com')).to.be.false;
+      });
+
+      bdd.it('can have contacts toggled in and out of a list', function () {
+        expect(chatUser.isInPrivacyList('somelist', 'some@jid.com')).to.be.false;
+        expect(chatUser.isInPrivacyList('otherlist', 'some@jid.com')).to.be.false;
+
+        chatUser.addToOrRemoveFromPrivacyList('somelist', 'some@jid.com');
+        expect(chatUser.isInPrivacyList('somelist', 'some@jid.com')).to.be.true;
+        expect(chatUser.isInPrivacyList('otherlist', 'some@jid.com')).to.be.false;
+
+        chatUser.addToOrRemoveFromPrivacyList('somelist', 'some@jid.com');
+        expect(chatUser.isInPrivacyList('somelist', 'some@jid.com')).to.be.false;
+        expect(chatUser.isInPrivacyList('otherlist', 'some@jid.com')).to.be.false;
+      });
+    });
+
+    bdd.describe('custom data', function () {
+      bdd.it('can be written and read', function () {
+        expect(chatUser.getCustomData()).to.eql({});
+        chatUser.setCustomData({foo: 'bar'});
+        expect(chatUser.getCustomData()).to.eql({foo: 'bar'});
+      });
+    });
+
+    bdd.describe('previous nick', function () {
+      bdd.it('can be written and read', function () {
+        expect(chatUser.getPreviousNick()).to.equal(undefined);
+        chatUser.setPreviousNick('oldNick');
+        expect(chatUser.getPreviousNick()).to.equal('oldNick');
       });
     });
   });
