@@ -12,3 +12,4 @@ candy.min.*
 libs.bundle.*
 libs.min.*
 .vagrant
+*.log
