@@ -165,13 +165,7 @@ module.exports = function(grunt) {
 				options: {
 					runType: 'runner',
 					config: 'tests/intern',
-					suites: [
-							'tests/candy/unit/candy'
-						, 'tests/candy/unit/util'
-						, 'tests/candy/unit/core/chatUser'
-						, 'tests/candy/unit/core/chatRoster'
-						, 'tests/candy/unit/core/chatRoom'
-					],
+					suites: [ 'tests/candy/unit/all' ],
 					functionalSuites: []
 				}
 			}
