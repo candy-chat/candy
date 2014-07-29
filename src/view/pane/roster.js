@@ -150,7 +150,7 @@ Candy.View.Pane = (function(self, $) {
         self.Room.changeDataUserJidIfUserIsMe(roomId, user);
         self.PrivateRoom.changeNick(roomJid, user);
         var infoMessage = $.i18n._('userChangedNick', [user.getPreviousNick(), user.getNick()]);
-        self.Chat.onInfoMessage(roomJid, infoMessage);
+        self.Chat.infoMessage(roomJid, infoMessage);
       // user has been kicked
       } else if(action === 'kick') {
         self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
