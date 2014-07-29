@@ -170,6 +170,7 @@ module.exports = function(grunt) {
 						, 'tests/candy/unit/util'
 						, 'tests/candy/unit/core/chatUser'
 						, 'tests/candy/unit/core/chatRoster'
+						, 'tests/candy/unit/core/chatRoom'
 					],
 					functionalSuites: []
 				}

@@ -83,6 +83,7 @@ define({
 		, 'test/candy/unit/util'
 		, 'test/candy/unit/core/chatUser'
 		, 'test/candy/unit/core/chatRoster'
+		, 'test/candy/unit/core/chatRoom'
 	],
 
 	// Functional test suite(s) to run in each browser once non-functional tests are completed
