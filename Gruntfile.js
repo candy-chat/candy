@@ -5,16 +5,6 @@ module.exports = function(grunt) {
 	// Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-		env: {
-			options: {
-			},
-			full_test: {
-				TEST_ENVIRONMENTS: 'ALL'
-			},
-			quick_test: {
-				TEST_ENVIRONMENTS: 'PHANTOM'
-			}
-		},
 		jshint: {
 			all: ['Gruntfile.js', './src/**/*.js', './tests/**/*.js'],
 			options: {
@@ -96,19 +86,19 @@ module.exports = function(grunt) {
 			},
 			bundle: {
 				files: ['src/**/*.js'],
-				tasks: ['env:quick_test', 'jshint', 'uglify:bundle', 'uglify:min', 'notify:bundle', 'intern:unit']
+				tasks: ['jshint', 'uglify:bundle', 'uglify:min', 'notify:bundle', 'intern:unit']
 			},
 			libs: {
 				files: ['bower_components/*/**/*.js', 'vendor_libs/*/**/*.js'],
-				tasks: ['env:quick_test', 'uglify:libs', 'uglify:libs-min', 'notify:libs']
+				tasks: ['uglify:libs', 'uglify:libs-min', 'notify:libs']
 			},
 			tests: {
-				files: ['tests/**/*.js'],
-				tasks: ['env:quick_test', 'jshint', 'intern:unit']
+				files: ['tests/candy/unit/**/*.js'],
+				tasks: ['jshint', 'intern:unit']
 			},
 			functional_tests: {
-				files: ['tests/functional/**/*.js'],
-				tasks: ['jshint', 'env:quick_test', 'intern:all']
+				files: ['tests/candy/functional/**/*.js'],
+				tasks: ['jshint', 'intern:functional']
 			}
 		},
 		natural_docs: {
@@ -164,9 +154,15 @@ module.exports = function(grunt) {
 			unit: {
 				options: {
 					runType: 'runner',
-					config: 'tests/intern',
-					suites: [ 'tests/candy/unit/all' ],
+					config: process.env.CANDY_VAGRANT ? 'tests/intern.vagrant' : 'tests/intern.local',
 					functionalSuites: []
+				}
+			},
+			functional: {
+				options: {
+					runType: 'runner',
+					config: process.env.CANDY_VAGRANT ? 'tests/intern.vagrant' : 'tests/intern.local',
+					suites: []
 				}
 			}
 		}
@@ -181,12 +177,11 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-notify');
 	grunt.loadNpmTasks('grunt-sync-pkg');
 	grunt.loadNpmTasks('intern');
-	grunt.loadNpmTasks('grunt-env');
 	grunt.loadNpmTasks('grunt-clear');
 
-	grunt.registerTask('test', ['env:full_test', 'intern:all']);
+	grunt.registerTask('test', ['intern:all']);
 	grunt.registerTask('default', [
-		'env:quick_test', 'jshint', 'uglify:libs', 'uglify:libs-min',
+		'jshint', 'uglify:libs', 'uglify:libs-min',
 		'uglify:bundle', 'uglify:min', 'notify:default', 'intern:unit'
 	]);
 	grunt.registerTask('docs', ['mkdir:docs', 'natural_docs', 'notify:docs']);

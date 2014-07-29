@@ -1,37 +1,5 @@
 /*global define */
 
-var environments, tunnel, proxyUrl;
-
-switch (process.env.TEST_ENVIRONMENTS) {
-	case 'ALL':
-		environments = [
-			{ browserName: 'internet explorer', version: '11', platform: 'Windows 8.1' },
-			{ browserName: 'internet explorer', version: '10', platform: 'Windows 8' },
-			{ browserName: 'internet explorer', version: '9', platform: 'Windows 7' },
-			{ browserName: 'firefox', version: '30', platform: [ 'OS X 10.9', 'Windows 7', 'Linux' ] },
-			{ browserName: 'chrome', version: '31', platform: [ 'OS X 10.9', 'Windows 7', 'Linux' ] },
-			{ browserName: 'safari', version: '6', platform: 'OS X 10.8' },
-			{ browserName: 'safari', version: '7', platform: 'OS X 10.9' }
-		];
-		tunnel = 'SauceLabsTunnel';
-		break;
-	case 'PHANTOM':
-		environments = [ { browserName: 'phantomjs' } ];
-		tunnel = 'NullTunnel';
-		break;
-	default:
-		environments = [
-			{ browserName: 'chrome', version: '31', platform: 'Linux' }
-		];
-		tunnel = 'SauceLabsTunnel';
-}
-
-if (process.env.CANDY_VAGRANT) {
-	proxyUrl = 'http://192.168.88.1:9000/';
-} else {
-	proxyUrl = 'http://localhost:9000/';
-}
-
 // Learn more about configuring this file at <https://github.com/theintern/intern/wiki/Configuring-Intern>.
 // These default settings work OK for most people. The options that *must* be changed below are the
 // packages, suites, excludeInstrumentation, and (if you want functional tests) functionalSuites.
@@ -40,7 +8,7 @@ define({
 	proxyPort: 9000,
 
 	// A fully qualified URL to the Intern proxy
-	proxyUrl: proxyUrl,
+	proxyUrl: 'http://localhost:9000/',
 
 	// Default desired capabilities for all environments. Individual capabilities can be overridden by any of the
 	// specified browser environments in the `environments` array below as well. See
@@ -55,13 +23,21 @@ define({
 	// Browsers to run integration testing against. Note that version numbers must be strings if used with Sauce
 	// OnDemand. Options that will be permutated are browserName, version, platform, and platformVersion; any other
 	// capabilities options specified for an environment will be copied as-is
-	environments: environments,
+	environments: [
+		{ browserName: 'internet explorer', version: '11', platform: 'Windows 8.1' },
+		{ browserName: 'internet explorer', version: '10', platform: 'Windows 8' },
+		{ browserName: 'internet explorer', version: '9', platform: 'Windows 7' },
+		{ browserName: 'firefox', version: '30', platform: [ 'OS X 10.9', 'Windows 7', 'Linux' ] },
+		{ browserName: 'chrome', version: '31', platform: [ 'OS X 10.9', 'Windows 7', 'Linux' ] },
+		{ browserName: 'safari', version: '6', platform: 'OS X 10.8' },
+		{ browserName: 'safari', version: '7', platform: 'OS X 10.9' }
+	],
 
 	// Maximum number of simultaneous integration tests that should be executed on the remote WebDriver service
 	maxConcurrency: 3,
 
 	// Name of the tunnel class to use for WebDriver tests
-	tunnel: tunnel,
+	tunnel: 'SauceLabsTunnel',
 
 	// The desired AMD loader to use when running unit tests (client.html/client.js). Omit to use the default Dojo
 	// loader
