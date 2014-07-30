@@ -6,7 +6,8 @@ env:
     - SAUCE_USERNAME: candy-chat-ci
     - SAUCE_ACCESS_KEY: 6a43c907-5991-4c4d-b0c7-fa5c40bf772b
 script:
-  - npm install -g
+  - npm install -g grunt-cli bower
+  - npm install
   - bower install
   - grunt
   - grunt test
