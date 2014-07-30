@@ -4,9 +4,15 @@ node_js:
 env:
   global:
     - SAUCE_USERNAME: candy-chat-ci
-    - SAUCE_ACCESS_KEY: 6a43c907-5991-4c4d-b0c7-fa5c40bf772b
     - CANDY_VAGRANT: false
+    - secure: VS19x4A/eDbfus1VSdtIMgZp2z4XgXvjVyGY49G3l0T1QINFeVb8HkfR8qAQafxl2DroyoL+BsMyOEiJKMi0Bnj80oig3DAS6pbqHxPDwe6N+B/y2kgkRhMyF522AWQSrRVzscjRSQ3Da8KPZcXMw3lO2HjmR6v7GPv9gBs33ss=
 script:
+  - sudo apt-get install -y nginx
+  - "sudo mkdir -p /usr/share/nginx/html"
+  - "sudo cp ${TRAVIS_BUILD_DIR}/devbox/nginx-default.conf /etc/nginx/sites-available/default"
+  - sudo /etc/init.d/nginx restart
+  - "sudo ln -fs ${TRAVIS_BUILD_DIR} /usr/share/nginx/html/candy"
+  - "sudo ln -fs ${TRAVIS_BUILD_DIR}/devbox/index.html /usr/share/nginx/html/index.html"
   - npm install -g grunt-cli bower
   - npm install
   - bower install
