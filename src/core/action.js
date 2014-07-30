@@ -74,7 +74,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		Roster: function() {
 			Candy.Core.getConnection().sendIQ($iq({
 				type: 'get'
-			}).c('query', {xmlns: Strophe.NS.ROSTER}).tree());
+			}).c('query', {xmlns: Strophe.NS.ROSTER}));
 		},
 
 		/** Function: Presence
