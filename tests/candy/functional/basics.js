@@ -2,7 +2,7 @@
 
 var exampleUrl;
 
-if (process.env.CANDY_VAGRANT === 'false') {
+if (process.env.CANDY_VAGRANT === 'false' && process.env.CI !== 'true') {
 	exampleUrl = 'http://localhost:8080/';
 } else {
 	exampleUrl = 'http://localhost:80/';

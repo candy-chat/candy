@@ -7,6 +7,12 @@ env:
     - SAUCE_ACCESS_KEY: 6a43c907-5991-4c4d-b0c7-fa5c40bf772b
     - CANDY_VAGRANT: false
 script:
+  - sudo apt-get install -y nginx
+  - "sudo mkdir -p /usr/share/nginx/html"
+  - "sudo cp ${TRAVIS_BUILD_DIR}/devbox/nginx-default.conf /etc/nginx/sites-available/default"
+  - sudo /etc/init.d/nginx restart
+  - "sudo ln -fs ${TRAVIS_BUILD_DIR} /usr/share/nginx/html/candy"
+  - "sudo ln -fs ${TRAVIS_BUILD_DIR}/devbox/index.html /usr/share/nginx/html/index.html"
   - npm install -g grunt-cli bower
   - npm install
   - bower install
