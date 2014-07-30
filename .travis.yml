@@ -1,19 +1,19 @@
 language: node_js
 node_js:
-  - '0.10'
+- '0.10'
 env:
   global:
-    - SAUCE_USERNAME: candy-chat-ci
-    - CANDY_VAGRANT: false
-    - secure: VS19x4A/eDbfus1VSdtIMgZp2z4XgXvjVyGY49G3l0T1QINFeVb8HkfR8qAQafxl2DroyoL+BsMyOEiJKMi0Bnj80oig3DAS6pbqHxPDwe6N+B/y2kgkRhMyF522AWQSrRVzscjRSQ3Da8KPZcXMw3lO2HjmR6v7GPv9gBs33ss=
+  - SAUCE_USERNAME: candy-chat-ci
+  - CANDY_VAGRANT: false
+  - secure: j3WtBCNS0sF73F/5yjw2O4XHus7HdeQT1AfUxaEt9+lX5v8IUKu4y/kUHE7bGjFC+eb8zsh+R49oZm9RFTwtTrfl+Chiz9h9I6S++ofXX8G/UKJgYXPVY98qrcHeIhWpm1N3G1B4/yxHN8NtzVmWK+Tg/LxX+75gnNxaoLR4Zgo=
 script:
-  - sudo apt-get install -y nginx
-  - "sudo mkdir -p /usr/share/nginx/html"
-  - "sudo cp ${TRAVIS_BUILD_DIR}/devbox/nginx-default.conf /etc/nginx/sites-available/default"
-  - sudo /etc/init.d/nginx restart
-  - "sudo ln -fs ${TRAVIS_BUILD_DIR} /usr/share/nginx/html/candy"
-  - "sudo ln -fs ${TRAVIS_BUILD_DIR}/devbox/index.html /usr/share/nginx/html/index.html"
-  - npm install -g grunt-cli bower
-  - npm install
-  - bower install
-  - grunt ci
+- sudo apt-get install -y nginx
+- sudo mkdir -p /usr/share/nginx/html
+- sudo cp ${TRAVIS_BUILD_DIR}/devbox/nginx-default.conf /etc/nginx/sites-available/default
+- sudo /etc/init.d/nginx restart
+- sudo ln -fs ${TRAVIS_BUILD_DIR} /usr/share/nginx/html/candy
+- sudo ln -fs ${TRAVIS_BUILD_DIR}/devbox/index.html /usr/share/nginx/html/index.html
+- npm install -g grunt-cli bower
+- npm install
+- bower install
+- grunt ci
