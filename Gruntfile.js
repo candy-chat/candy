@@ -192,9 +192,10 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-coveralls');
 
 	grunt.registerTask('test', ['intern:all']);
+	grunt.registerTask('ci', ['jshint', 'build', 'intern:all', 'coveralls', 'docs']);
+	grunt.registerTask('build', ['uglify:libs', 'uglify:libs-min', 'uglify:bundle', 'uglify:min']);
 	grunt.registerTask('default', [
-		'jshint', 'uglify:libs', 'uglify:libs-min',
-		'uglify:bundle', 'uglify:min', 'notify:default', 'intern:unit'
+		'jshint', 'build', 'notify:default', 'intern:unit'
 	]);
 	grunt.registerTask('docs', ['mkdir:docs', 'natural_docs', 'notify:docs']);
 };
