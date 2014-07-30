@@ -51,6 +51,8 @@ define({
 		packages: [
 				{ name: 'candy', location: '.' }
 			, { name: 'jquery', location: 'bower_components/jquery', main: 'jquery'}
+			, { name: 'sinon', location: 'node_modules/sinon/lib', main: 'sinon'}
+			, { name: 'sinon-chai', location: 'node_modules/sinon-chai/lib', main: 'sinon-chai'}
 	  ]
 	},
 
