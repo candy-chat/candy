@@ -13,3 +13,4 @@ libs.bundle.*
 libs.min.*
 .vagrant
 *.log
+lcov.info

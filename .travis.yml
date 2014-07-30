@@ -11,3 +11,4 @@ script:
   - bower install
   - grunt
   - grunt test
+  - grunt coveralls

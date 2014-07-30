@@ -170,6 +170,12 @@ module.exports = function(grunt) {
 					suites: []
 				}
 			}
+		},
+		coveralls: {
+			options: {
+				src: 'lcov.info',
+				force: true // prevent from failing CI build if coveralls is down etc.
+			}
 		}
 	});
 
@@ -183,6 +189,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-sync-pkg');
 	grunt.loadNpmTasks('intern');
 	grunt.loadNpmTasks('grunt-clear');
+	grunt.loadNpmTasks('grunt-coveralls');
 
 	grunt.registerTask('test', ['intern:all']);
 	grunt.registerTask('default', [
