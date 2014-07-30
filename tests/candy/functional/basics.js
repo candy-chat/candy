@@ -2,10 +2,10 @@
 
 var exampleUrl;
 
-if (process.env.CANDY_VAGRANT) {
-	exampleUrl = 'http://localhost:80/';
-} else {
+if (process.env.CANDY_VAGRANT === 'false') {
 	exampleUrl = 'http://localhost:8080/';
+} else {
+	exampleUrl = 'http://localhost:80/';
 }
 
 define([

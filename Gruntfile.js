@@ -154,14 +154,14 @@ module.exports = function(grunt) {
 			unit: {
 				options: {
 					runType: 'runner',
-					config: process.env.CANDY_VAGRANT ? 'tests/intern.vagrant' : 'tests/intern.local',
+					config: process.env.CANDY_VAGRANT === 'false' ? 'tests/intern.local' : 'tests/intern.vagrant',
 					functionalSuites: []
 				}
 			},
 			functional: {
 				options: {
 					runType: 'runner',
-					config: process.env.CANDY_VAGRANT ? 'tests/intern.vagrant' : 'tests/intern.local',
+					config: process.env.CANDY_VAGRANT === 'false' ? 'tests/intern.local' : 'tests/intern.vagrant',
 					suites: []
 				}
 			}
