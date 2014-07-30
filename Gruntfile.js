@@ -108,7 +108,7 @@ module.exports = function(grunt) {
 		},
 		natural_docs: {
 			all: {
-				bin: process.env.NATURALDOCS_DIR + '/NaturalDocs',
+				bin: process.env.NATURALDOCS_DIR ? process.env.NATURALDOCS_DIR + '/NaturalDocs' : 'naturaldocs',
 				flags: ['-r'],
 				inputs: ['./src'],
 				output: './docs',
