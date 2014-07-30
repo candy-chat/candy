@@ -73,8 +73,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 */
 		Roster: function() {
 			Candy.Core.getConnection().sendIQ($iq({
-				type: 'get',
-				xmlns: Strophe.NS.CLIENT
+				type: 'get'
 			}).c('query', {xmlns: Strophe.NS.ROSTER}).tree());
 		},
 
