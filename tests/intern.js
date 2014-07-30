@@ -50,7 +50,10 @@ define({
 	// can be used here
 	loader: {
 		// Packages that should be registered with the loader in each testing environment
-		packages: [ { name: 'candy', location: '.' } ]
+		packages: [
+				{ name: 'candy', location: '.' }
+			, { name: 'jquery', location: 'bower_components/jquery', main: 'jquery'}
+	  ]
 	},
 
 	// Non-functional test suite(s) to run in each browser

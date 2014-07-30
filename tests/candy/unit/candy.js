@@ -3,7 +3,7 @@
 define([
     'intern!bdd'
   , 'intern/chai!expect'
-  , 'intern/order!../../../bower_components/jquery/jquery.js'
+  , 'intern/order!jquery'
   , 'intern/order!../../../libs.bundle.js'
   , 'intern/order!../../../src/candy.js'
 ], function (bdd, expect, $) {
