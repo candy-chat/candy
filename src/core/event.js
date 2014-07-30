@@ -63,7 +63,10 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					/* falls through */
 				case Strophe.Status.ATTACHED:
 					Candy.Core.log('[Connection] Attached');
-					Candy.Core.Action.Jabber.Presence();
+					$(Candy).on('candy:core:roster:fetched', function () {
+						Candy.Core.Action.Jabber.Presence();
+					});
+					Candy.Core.Action.Jabber.Roster();
 					Candy.Core.Action.Jabber.Autojoin();
 					Candy.Core.Action.Jabber.GetIgnoreList();
 					break;
@@ -158,6 +161,118 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				$(Candy).triggerHandler('candy:core.presence', {'from': msg.attr('from'), 'stanza': msg});
 			}
 			return true;
+		},
+
+		/** Function: RosterLoad
+		 * Acts on the result of loading roster items from a cache
+		 *
+		 * Parameters:
+		 *   (String) items - List of roster items
+		 *
+ 		 * Triggers:
+		 *   candy:core.roster.loaded
+		 *
+		 * Returns:
+		 *   (Boolean) - true
+		 */
+		RosterLoad: function(items) {
+			self.Jabber._addRosterItems(items);
+
+			/** Event: candy:core.roster.loaded
+			 * Notification of the roster having been loaded from cache
+			 */
+			$(Candy).triggerHandler('candy:core:roster:loaded', {roster: Candy.Core.getRoster()});
+
+			return true;
+		},
+
+		/** Function: RosterFetch
+		 * Acts on the result of a roster fetch
+		 *
+		 * Parameters:
+		 *   (String) items - List of roster items
+		 *
+ 		 * Triggers:
+		 *   candy:core.roster.fetched
+		 *
+		 * Returns:
+		 *   (Boolean) - true
+		 */
+		RosterFetch: function(items) {
+			self.Jabber._addRosterItems(items);
+
+			/** Event: candy:core.roster.fetched
+			 * Notification of the roster having been fetched
+			 */
+			$(Candy).triggerHandler('candy:core:roster:fetched', {roster: Candy.Core.getRoster()});
+
+			return true;
+		},
+
+		/** Function: RosterPush
+		 * Acts on a roster push
+		 *
+		 * Parameters:
+		 *   (String) stanza - Raw XML Message
+		 *
+ 		 * Triggers:
+		 *   candy:core.roster.added
+		 *   candy:core.roster.updated
+		 *   candy:core.roster.removed
+		 *
+		 * Returns:
+		 *   (Boolean) - true
+		 */
+		RosterPush: function(items, updatedItem) {
+			if (!updatedItem) {
+				return true;
+			}
+
+			if (updatedItem.subscription === "remove") {
+				var contact = Candy.Core.getRoster().get(updatedItem.jid);
+				Candy.Core.getRoster().remove(updatedItem.jid);
+				/** Event: candy:core.roster.removed
+				 * Notification of a roster entry having been removed
+ 				 *
+				 * Parameters:
+				 *   (Candy.Core.Contact) contact - The contact that was removed from the roster
+				 */
+				$(Candy).triggerHandler('candy:core:roster:removed', {contact: contact});
+			} else {
+				var user = Candy.Core.getRoster().get(updatedItem.jid);
+				if (!user) {
+					user = self.Jabber._addRosterItem(updatedItem);
+					/** Event: candy:core.roster.added
+					 * Notification of a roster entry having been added
+	 				 *
+					 * Parameters:
+					 *   (Candy.Core.Contact) contact - The contact that was added
+					 */
+					$(Candy).triggerHandler('candy:core:roster:added', {contact: user});
+				} else {
+					/** Event: candy:core.roster.updated
+					 * Notification of a roster entry having been updated
+	 				 *
+					 * Parameters:
+					 *   (Candy.Core.Contact) contact - The contact that was updated
+					 */
+					$(Candy).triggerHandler('candy:core:roster:updated', {contact: user});
+				}
+			}
+
+			return true;
+		},
+
+		_addRosterItem: function(item) {
+			var user = new Candy.Core.Contact(item);
+			Candy.Core.getRoster().add(user);
+			return user;
+		},
+
+		_addRosterItems: function(items) {
+			$.each(items, function(i, item) {
+				self.Jabber._addRosterItem(item);
+			});
 		},
 
 		/** Function: Bookmarks
@@ -553,7 +668,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						action = 'join';
 					} else {
 						nick = Strophe.getResourceFromJid(from);
-						user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
+						user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'), item.attr('jid'));
 						// Room existed but client (myself) is not yet registered
 						if(room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
 							room.setUser(user);

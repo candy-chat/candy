@@ -34,6 +34,10 @@ Candy.Core = (function(self, Strophe, $) {
 		 * Current user (me)
 		 */
 		_user = null,
+		/** PrivateVariable: _roster
+		 * Main roster of contacts
+		 */
+		_roster = null,
 		/** PrivateVariable: _rooms
 		 * Opened rooms, containing instances of Candy.Core.ChatRooms
 		 */
@@ -67,7 +71,16 @@ Candy.Core = (function(self, Strophe, $) {
 			 * JID resource to use when connecting to the server.
 			 * Specify `''` (an empty string) to request a random resource.
 			 */
-			resource: Candy.about.name
+			resource: Candy.about.name,
+			/**
+			 * Roster version we claim to already have. Used when loading a cached roster.
+			 * Defaults to null, indicating we don't have the roster.
+			 */
+			initialRosterVersion: null,
+			/**
+			 * Initial roster items. Loaded from a cache, used to bootstrap displaying a roster prior to fetching updates.
+			 */
+			initialRosterItems: []
 		},
 
 		/** PrivateFunction: _addNamespace
@@ -152,6 +165,8 @@ Candy.Core = (function(self, Strophe, $) {
 		}
 
 		_addNamespaces();
+
+		_roster = new Candy.Core.ChatRoster();
 
 		// Connect to BOSH/Websocket service
 		_connection = new Strophe.Connection(_service);
@@ -290,6 +305,16 @@ Candy.Core = (function(self, Strophe, $) {
 	 */
 	self.addHandler = function(handler, ns, name, type, id, from, options) {
 		return _connection.addHandler(handler, ns, name, type, id, from, options);
+	};
+
+	/** Function: getRoster
+	 * Gets main roster
+	 *
+	 * Returns:
+	 *   Instance of Candy.Core.ChatRoster
+	 */
+	self.getRoster = function() {
+		return _roster;
 	};
 
 	/** Function: getUser

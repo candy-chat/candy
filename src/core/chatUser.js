@@ -16,7 +16,7 @@
 /** Class: Candy.Core.ChatUser
  * Chat User
  */
-Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
+Candy.Core.ChatUser = function(jid, nick, affiliation, role, realJid) {
 	/** Constant: ROLE_MODERATOR
 	 * Moderator role
 	 */
@@ -30,6 +30,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	/** Object: data
 	 * User data containing:
 	 * - jid
+	 * - realJid
 	 * - nick
 	 * - affiliation
 	 * - role
@@ -38,6 +39,7 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role) {
 	 */
 	this.data = {
 		jid: jid,
+		realJid: realJid,
 		nick: Strophe.unescapeNode(nick),
 		affiliation: affiliation,
 		role: role,
@@ -84,6 +86,22 @@ Candy.Core.ChatUser.prototype.getEscapedJid = function() {
  */
 Candy.Core.ChatUser.prototype.setJid = function(jid) {
 	this.data.jid = jid;
+};
+
+/** Function: getRealJid
+ * Gets an unescaped real jid if known
+ *
+ * See:
+ *   <Candy.Util.unescapeJid>
+ *
+ * Returns:
+ *   (String) - realJid
+ */
+Candy.Core.ChatUser.prototype.getRealJid = function() {
+	if(this.data.realJid) {
+		return Candy.Util.unescapeJid(this.data.realJid);
+	}
+	return;
 };
 
 /** Function: getNick
@@ -262,4 +280,14 @@ Candy.Core.ChatUser.prototype.setPreviousNick = function(previousNick) {
  */
 Candy.Core.ChatUser.prototype.getPreviousNick = function() {
 	return this.data.previousNick;
+};
+
+/** Function: getContact
+ * Gets the contact matching this user from our roster
+ *
+ * Returns:
+ *   (Candy.Core.Contact) - contact from roster
+ */
+Candy.Core.ChatUser.prototype.getContact = function() {
+	return Candy.Core.getRoster().get(Strophe.getBareJidFromJid(this.data.realJid));
 };

@@ -9,26 +9,31 @@ define([
   , 'intern/order!candy/src/candy.js'
   , 'intern/order!candy/src/core.js'
   , 'intern/order!candy/src/core/chatUser.js'
+  , 'intern/order!candy/src/core/contact.js'
 ], function (bdd, expect) {
   bdd.describe('Candy.Core.ChatUser', function () {
     var chatUser;
 
     bdd.beforeEach(function () {
-      chatUser = new Candy.Core.ChatUser('foo bar@baz.com', 'SomeNick', 'admin', 'member');
+      chatUser = new Candy.Core.ChatUser('foo bar@conference.baz.com/SomeNick', 'SomeNick', 'admin', 'member', 'foo@bar.com/somewhere');
     });
 
     bdd.it('reveals its JID', function () {
-      expect(chatUser.getJid()).to.equal('foo bar@baz.com');
+      expect(chatUser.getJid()).to.equal('foo bar@conference.baz.com/SomeNick');
     });
 
     bdd.it('reveals its escaped JID', function () {
-      expect(chatUser.getEscapedJid()).to.equal('foo\\20bar@baz.com');
+      expect(chatUser.getEscapedJid()).to.equal('foo\\20bar@conference.baz.com/SomeNick');
     });
 
     bdd.it('allows setting its JID', function () {
       chatUser.setJid('doo dah@bah.com');
       expect(chatUser.getJid()).to.equal('doo dah@bah.com');
       expect(chatUser.getEscapedJid()).to.equal('doo\\20dah@bah.com');
+    });
+
+    bdd.it('reveals its real JID', function () {
+      expect(chatUser.getRealJid()).to.equal('foo@bar.com/somewhere');
     });
 
     bdd.it('reveals its nick', function () {
@@ -127,6 +132,34 @@ define([
         expect(chatUser.getPreviousNick()).to.equal(undefined);
         chatUser.setPreviousNick('oldNick');
         expect(chatUser.getPreviousNick()).to.equal('oldNick');
+      });
+    });
+
+    bdd.describe("getting the user's contact from our roster", function () {
+      bdd.describe('when the user is not in our roster', function () {
+        bdd.it('returns null', function () {
+          expect(chatUser.getContact()).to.be.undefined;
+        });
+      });
+
+      bdd.describe('when the user is in our roster', function () {
+        var contact;
+
+        bdd.before(function () {
+          contact = new Candy.Core.Contact({
+            jid: 'foo@bar.com',
+            name: 'Some Name',
+            subscription: 'both',
+            groups: ['Friends'],
+            resources: {}
+          });
+
+          Candy.Core.getRoster().add(contact);
+        });
+
+        bdd.it('returns the contact', function () {
+          expect(chatUser.getContact()).to.eql(contact);
+        });
       });
     });
   });
