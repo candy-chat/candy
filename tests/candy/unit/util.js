@@ -4,10 +4,10 @@ define([
 		'intern!bdd'
 	, 'intern/chai!expect'
 	, 'intern/order!jquery'
-	, 'intern/order!../../../libs.bundle.js'
-	, 'intern/order!../../../src/candy.js'
-	, 'intern/order!../../../src/core.js'
-	, 'intern/order!../../../src/util.js'
+	, 'intern/order!candy/libs.bundle.js'
+	, 'intern/order!candy/src/candy.js'
+	, 'intern/order!candy/src/core.js'
+	, 'intern/order!candy/src/util.js'
 ], function (bdd, expect) {
 	bdd.describe('Candy.Util', function () {
 		bdd.describe('jidToId', function () {

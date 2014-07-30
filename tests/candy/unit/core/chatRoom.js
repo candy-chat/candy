@@ -5,12 +5,12 @@ define([
     'intern!bdd'
   , 'intern/chai!expect'
   , 'intern/order!jquery'
-  , 'intern/order!../../../../libs.bundle.js'
-  , 'intern/order!../../../../src/candy.js'
-  , 'intern/order!../../../../src/core.js'
-  , 'intern/order!../../../../src/core/chatUser.js'
-  , 'intern/order!../../../../src/core/chatRoster.js'
-  , 'intern/order!../../../../src/core/chatRoom.js'
+  , 'intern/order!candy/libs.bundle.js'
+  , 'intern/order!candy/src/candy.js'
+  , 'intern/order!candy/src/core.js'
+  , 'intern/order!candy/src/core/chatUser.js'
+  , 'intern/order!candy/src/core/chatRoster.js'
+  , 'intern/order!candy/src/core/chatRoom.js'
 ], function (bdd, expect) {
   bdd.describe('Candy.Core.ChatRoom', function () {
     var chatRoom;
