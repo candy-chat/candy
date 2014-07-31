@@ -176,7 +176,7 @@ Candy.Core = (function(self, Strophe, $) {
 		_connection.rawOutput = self.rawOutput.bind(self);
 
 		// set caps node
-		_connection.caps.node = 'https://candy-chat.github.io/candy/';
+		_connection.caps.node = 'https://candy-im.net/';
 
 		// Window unload handler... works on all browsers but Opera. There is NO workaround.
 		// Opera clients getting disconnected 1-2 minutes delayed.
