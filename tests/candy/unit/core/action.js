@@ -1,25 +1,19 @@
 /*global define, Candy, Strophe */
 /*jshint -W030 */
 
-var str = function (builder) {
-	if (builder.tree) {
-		return Strophe.serialize(builder.tree());
-	}
-	return Strophe.serialize(builder);
-};
-
 define([
 		'intern!bdd'
 	, 'intern/chai!'
 	, 'intern/chai!expect'
 	, 'sinon'
 	, 'sinon-chai'
+	, 'intern/order!candy/tests/helper.js'
 	, 'intern/order!jquery'
 	, 'intern/order!candy/libs.bundle.js'
 	, 'intern/order!candy/src/candy.js'
 	, 'intern/order!candy/src/core.js'
 	, 'intern/order!candy/src/core/action.js'
-], function (bdd, chai, expect, sinon, sinonChai) {
+], function (bdd, chai, expect, sinon, sinonChai, testHelper) {
 	chai.use(sinonChai);
 
 	bdd.describe('Candy.Core.Action', function () {
@@ -46,7 +40,7 @@ define([
 
 				Candy.Core.Action.Jabber.Roster();
 
-				expect(str(request.firstCall.args[0])).to.eql(
+				expect(testHelper.str(request.firstCall.args[0])).to.eql(
 					"<iq type='get' xmlns='jabber:client' id='1:sendIQ'><query xmlns='jabber:iq:roster'/></iq>"
 				);
 			});
