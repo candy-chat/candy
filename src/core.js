@@ -34,6 +34,10 @@ Candy.Core = (function(self, Strophe, $) {
 		 * Current user (me)
 		 */
 		_user = null,
+		/** PrivateVariable: _roster
+		 * Main roster of contacts
+		 */
+		_roster = null,
 		/** PrivateVariable: _rooms
 		 * Opened rooms, containing instances of Candy.Core.ChatRooms
 		 */
@@ -152,6 +156,8 @@ Candy.Core = (function(self, Strophe, $) {
 		}
 
 		_addNamespaces();
+
+		_roster = new Candy.Core.ChatRoster();
 
 		// Connect to BOSH/Websocket service
 		_connection = new Strophe.Connection(_service);
@@ -290,6 +296,16 @@ Candy.Core = (function(self, Strophe, $) {
 	 */
 	self.addHandler = function(handler, ns, name, type, id, from, options) {
 		return _connection.addHandler(handler, ns, name, type, id, from, options);
+	};
+
+	/** Function: getRoster
+	 * Gets main roster
+	 *
+	 * Returns:
+	 *   Instance of Candy.Core.ChatRoster
+	 */
+	self.getRoster = function() {
+		return _roster;
 	};
 
 	/** Function: getUser
