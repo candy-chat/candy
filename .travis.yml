@@ -6,7 +6,7 @@ env:
   - SAUCE_USERNAME: candy-chat-ci
   - CANDY_VAGRANT: false
   - secure: j3WtBCNS0sF73F/5yjw2O4XHus7HdeQT1AfUxaEt9+lX5v8IUKu4y/kUHE7bGjFC+eb8zsh+R49oZm9RFTwtTrfl+Chiz9h9I6S++ofXX8G/UKJgYXPVY98qrcHeIhWpm1N3G1B4/yxHN8NtzVmWK+Tg/LxX+75gnNxaoLR4Zgo=
-script:
+before_script:
 - sudo apt-get install -y nginx
 - sudo mkdir -p /usr/share/nginx/html
 - sudo cp ${TRAVIS_BUILD_DIR}/devbox/nginx-default.conf /etc/nginx/sites-available/default
@@ -17,4 +17,5 @@ script:
 - npm install -g grunt-cli bower
 - npm install
 - bower install
+script:
 - grunt ci
