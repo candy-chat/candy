@@ -173,8 +173,10 @@ module.exports = function(grunt) {
 		},
 		coveralls: {
 			options: {
-				src: 'lcov.info',
 				force: true // prevent from failing CI build if coveralls is down etc.
+			},
+			all: {
+				src: 'lcov.info',
 			}
 		}
 	});
@@ -192,7 +194,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-coveralls');
 
 	grunt.registerTask('test', ['intern:all']);
-	grunt.registerTask('ci', ['jshint', 'build', 'intern:all', 'coveralls', 'docs']);
+	grunt.registerTask('ci', ['jshint', 'build', 'intern:all', 'coveralls:all', 'docs']);
 	grunt.registerTask('build', ['uglify:libs', 'uglify:libs-min', 'uglify:bundle', 'uglify:min']);
 	grunt.registerTask('default', [
 		'jshint', 'build', 'notify:default', 'intern:unit'
