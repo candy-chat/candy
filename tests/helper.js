@@ -21,5 +21,20 @@
 		return Strophe.serialize(builder);
 	};
 
+	self.createRequest = function (stanza) {
+		stanza = typeof stanza.tree === "function" ? stanza.tree() : stanza;
+		var req = new Strophe.Request(stanza, function() {});
+		req.getResponse = function() {
+			var env = new Strophe.Builder('env', {type: 'mock'}).tree();
+			env.appendChild(stanza);
+			return env;
+		};
+		return req;
+	};
+
+	self.receiveStanza = function (connection, stanza) {
+		connection._dataRecv(self.createRequest(stanza));
+	};
+
 	return self;
 }));

@@ -160,6 +160,54 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			return true;
 		},
 
+		/** Function: RosterFetch
+		 * Acts on the result of a roster fetch
+		 *
+		 * Parameters:
+		 *   (String) items - List of roster items
+		 *
+		 * Returns:
+		 *   (Boolean) - true
+		 */
+		RosterFetch: function(items) {
+			$.each(items, function(i, item) {
+				self.Jabber._addRosterItem(item);
+			});
+
+			return true;
+		},
+
+		/** Function: RosterPush
+		 * Acts on a roster push
+		 *
+		 * Parameters:
+		 *   (String) stanza - Raw XML Message
+		 *
+		 * Returns:
+		 *   (Boolean) - true
+		 */
+		RosterPush: function(items, updatedItem) {
+			if (!updatedItem) {
+				return true;
+			}
+
+			if (updatedItem.subscription === "remove") {
+				Candy.Core.getRoster().remove(updatedItem.jid);
+			} else {
+				var user = Candy.Core.getRoster().get(updatedItem.jid);
+				if (!user) {
+					self.Jabber._addRosterItem(updatedItem);
+				}
+			}
+
+			return true;
+		},
+
+		_addRosterItem: function(item) {
+			var user = new Candy.Core.Contact(item);
+			Candy.Core.getRoster().add(user);
+		},
+
 		/** Function: Bookmarks
 		 * Acts on a bookmarks event. When a bookmark has the attribute autojoin set, joins this room.
 		 *

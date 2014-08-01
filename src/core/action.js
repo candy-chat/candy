@@ -72,9 +72,9 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Sends a request for a roster
 		 */
 		Roster: function() {
-			Candy.Core.getConnection().sendIQ($iq({
-				type: 'get'
-			}).c('query', {xmlns: Strophe.NS.ROSTER}));
+			var roster = Candy.Core.getConnection().roster;
+			roster.registerCallback(Candy.Core.Event.Jabber.RosterPush);
+			roster.get(Candy.Core.Event.Jabber.RosterFetch);
 		},
 
 		/** Function: Presence

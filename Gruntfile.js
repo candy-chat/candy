@@ -60,6 +60,7 @@ module.exports = function(grunt) {
 					'libs.bundle.js': [
 						'bower_components/strophe/strophe.js',
 						'bower_components/strophejs-plugins/muc/strophe.muc.js',
+						'bower_components/strophejs-plugins/roster/strophe.roster.js',
 						'bower_components/strophejs-plugins/disco/strophe.disco.js',
 						'bower_components/strophejs-plugins/caps/strophe.caps.jsonly.js',
 						'bower_components/mustache/mustache.js',
