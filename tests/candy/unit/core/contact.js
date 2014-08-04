@@ -138,6 +138,33 @@ define([
       });
 
       bdd.describe('when multiple resources are online', function () {
+        bdd.describe('with the same priority', function () {
+          bdd.beforeEach(function () {
+            contact = new Candy.Core.Contact({
+              jid: 'foo bar@baz.com',
+              name: 'Some Name',
+              subscription: 'both',
+              groups: ['Friends'],
+              resources: {
+                'foo bar@baz.com/resource1': {
+                  show: 'away',
+                  status: 'Hanging out',
+                  priority: 5
+                },
+                'foo bar@baz.com/resource2': {
+                  show: 'dnd',
+                  status: 'Doing stuff',
+                  priority: 5
+                }
+              }
+            });
+          });
+
+          bdd.it('matches the lowest weighted status', function () {
+            expect(contact.getStatus()).to.eql('dnd');
+          });
+        });
+
         bdd.describe('with differing priority', function () {
           bdd.beforeEach(function () {
             contact = new Candy.Core.Contact({
@@ -152,7 +179,7 @@ define([
                   priority: 10
                 },
                 'foo bar@baz.com/resource2': {
-                  show: 'busy',
+                  show: 'dnd',
                   status: 'Doing stuff',
                   priority: 5
                 }

@@ -100,6 +100,7 @@ Candy.Core.Contact.prototype.getGroups = function() {
  */
 Candy.Core.Contact.prototype.getStatus = function() {
   var status = 'unavailable',
+    self = this,
     highestResourcePriority;
 
   jQuery.each(this.data.resources, function(resource, obj) {
@@ -114,8 +115,30 @@ Candy.Core.Contact.prototype.getStatus = function() {
       // This resource is higher priority than the ones we've checked so far, override with this one
       status = obj.show;
       highestResourcePriority = resourcePriority;
+    } else if (highestResourcePriority === resourcePriority) {
+      // Two resources with the same priority means we have to weight their status
+      if (self._weightForStatus(status) > self._weightForStatus(obj.show)) {
+        status = obj.show;
+      }
     }
   });
 
   return status;
+};
+
+Candy.Core.Contact.prototype._weightForStatus = function(status) {
+  switch (status) {
+    case 'chat':
+    case 'dnd':
+      return 1;
+    case 'available':
+    case '':
+      return 2;
+    case 'away':
+      return 3;
+    case 'xa':
+      return 4;
+    case 'unavailable':
+      return 5;
+  }
 };
