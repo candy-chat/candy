@@ -71,7 +71,16 @@ Candy.Core = (function(self, Strophe, $) {
 			 * JID resource to use when connecting to the server.
 			 * Specify `''` (an empty string) to request a random resource.
 			 */
-			resource: Candy.about.name
+			resource: Candy.about.name,
+			/**
+			 * Roster version we claim to already have. Used when loading a cached roster.
+			 * Defaults to null, indicating we don't have the roster.
+			 */
+			initialRosterVersion: null,
+			/**
+			 * Initial roster items. Loaded from a cache, used to bootstrap displaying a roster prior to fetching updates.
+			 */
+			initialRosterItems: []
 		},
 
 		/** PrivateFunction: _addNamespace

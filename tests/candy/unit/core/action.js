@@ -34,7 +34,28 @@ define([
 			fakeConnection.addHandler(fakeConnection.roster._onReceivePresence.bind(fakeConnection.roster), null, 'presence', null, null, null);
 			fakeConnection.addHandler(fakeConnection.roster._onReceiveIQ.bind(fakeConnection.roster), Strophe.NS.ROSTER, 'iq', "set", null, null);
 
-			Candy.Core.init('http://foo.bar/http-bind', {}, fakeConnection);
+			Candy.Core.init(
+				'http://foo.bar/http-bind',
+				{
+					initialRosterVersion: 'abc',
+					initialRosterItems: [
+						{
+							jid: 'stored@guy.com',
+							name: 'Stored Guy',
+							subscription: 'both',
+							groups: ['Some', 'People'],
+							resources: {
+								'resource1': {
+									show: 'busy',
+									status: 'Stuff',
+									priority: 10
+								}
+							}
+						}
+					]
+				},
+				fakeConnection
+			);
 			Candy.Core.registerEventHandlers();
 		});
 
@@ -47,6 +68,36 @@ define([
 				expect(testHelper.str(request.firstCall.args[0])).to.eql(
 					"<iq type='get' id='1:roster' xmlns='jabber:client'><query xmlns='jabber:iq:roster'/></iq>"
 				);
+			});
+
+			bdd.describe('if roster versioning is supported server side', function () {
+				bdd.beforeEach(function () {
+					fakeConnection.features = Strophe.xmlGenerator().createElement("stream:features");
+					var verFeature = Strophe.xmlGenerator().createElement('ver');
+					verFeature.setAttribute('xmlns', 'urn:xmpp:features:rosterver');
+					fakeConnection.features.appendChild(verFeature);
+				});
+
+				bdd.it('bootstraps the roster from the initial items provided', function () {
+					Candy.Core.Action.Jabber.Roster();
+
+					var rosterItem = Candy.Core.getRoster().get('stored@guy.com');
+					expect(rosterItem.getName()).to.eql('Stored Guy');
+					expect(rosterItem.getJid()).to.eql('stored@guy.com');
+					expect(rosterItem.getSubscription()).to.eql('both');
+					expect(rosterItem.getGroups()).to.eql(['Some', 'People']);
+					expect(rosterItem.getStatus()).to.eql('unavailable'); // Throw away resources from the cache
+				});
+
+				bdd.it('includes the cached version in the roster request', function () {
+					var request = sinon.spy(fakeConnection, 'send');
+
+					Candy.Core.Action.Jabber.Roster();
+
+					expect(testHelper.str(request.firstCall.args[0])).to.eql(
+						"<iq type='get' id='1:roster' xmlns='jabber:client'><query xmlns='jabber:iq:roster' ver='abc'/></iq>"
+					);
+				});
 			});
 
 			bdd.describe('once the roster is received', function () {

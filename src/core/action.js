@@ -72,9 +72,20 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Sends a request for a roster
 		 */
 		Roster: function() {
-			var roster = Candy.Core.getConnection().roster;
+			var roster = Candy.Core.getConnection().roster,
+				options = Candy.Core.getOptions();
 			roster.registerCallback(Candy.Core.Event.Jabber.RosterPush);
-			roster.get(Candy.Core.Event.Jabber.RosterFetch);
+			$.each(options.initialRosterItems, function (i, item) {
+				// Blank out resources because their cached value is not relevant
+				item.resources = {};
+			});
+			roster.get(
+				Candy.Core.Event.Jabber.RosterFetch,
+				options.initialRosterVersion,
+				options.initialRosterItems
+			);
+			// Bootstrap our roster with cached items
+			Candy.Core.Event.Jabber.RosterFetch(roster.items);
 		},
 
 		/** Function: Presence
