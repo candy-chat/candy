@@ -99,15 +99,22 @@ Candy.Core.Contact.prototype.getGroups = function() {
  *   (String) - aggregate status, one of chat|dnd|available|away|xa|unavailable
  */
 Candy.Core.Contact.prototype.getStatus = function() {
-  var status = 'unavailable';
+  var status = 'unavailable',
+    highestResourcePriority;
 
   jQuery.each(this.data.resources, function(resource, obj) {
+    var resourcePriority = parseInt(obj.priority, 10);
+
     if (obj.show === '' || obj.show === null || obj.show === undefined) {
       // TODO: Submit this as a bugfix to strophejs-plugins' roster plugin
       obj.show = 'available';
     }
 
-    status = obj.show;
+    if (highestResourcePriority === undefined || highestResourcePriority < resourcePriority) {
+      // This resource is higher priority than the ones we've checked so far, override with this one
+      status = obj.show;
+      highestResourcePriority = resourcePriority;
+    }
   });
 
   return status;

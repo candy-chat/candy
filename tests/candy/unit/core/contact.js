@@ -136,6 +136,35 @@ define([
           });
         });
       });
+
+      bdd.describe('when multiple resources are online', function () {
+        bdd.describe('with differing priority', function () {
+          bdd.beforeEach(function () {
+            contact = new Candy.Core.Contact({
+              jid: 'foo bar@baz.com',
+              name: 'Some Name',
+              subscription: 'both',
+              groups: ['Friends'],
+              resources: {
+                'foo bar@baz.com/resource1': {
+                  show: 'away',
+                  status: 'Hanging out',
+                  priority: 10
+                },
+                'foo bar@baz.com/resource2': {
+                  show: 'busy',
+                  status: 'Doing stuff',
+                  priority: 5
+                }
+              }
+            });
+          });
+
+          bdd.it('matches the show attribute of the highest priority resource', function () {
+            expect(contact.getStatus()).to.eql('away');
+          });
+        });
+      });
     });
   });
 });
