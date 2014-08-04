@@ -161,6 +161,29 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			return true;
 		},
 
+		/** Function: RosterLoad
+		 * Acts on the result of loading roster items from a cache
+		 *
+		 * Parameters:
+		 *   (String) items - List of roster items
+		 *
+ 		 * Triggers:
+		 *   candy:core.roster.loaded
+		 *
+		 * Returns:
+		 *   (Boolean) - true
+		 */
+		RosterLoad: function(items) {
+			self.Jabber._addRosterItems(items);
+
+			/** Event: candy:core.roster.loaded
+			 * Notification of the roster having been loaded from cache
+			 */
+			$(Candy).triggerHandler('candy:core.roster.loaded');
+
+			return true;
+		},
+
 		/** Function: RosterFetch
 		 * Acts on the result of a roster fetch
 		 *
@@ -174,9 +197,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 *   (Boolean) - true
 		 */
 		RosterFetch: function(items) {
-			$.each(items, function(i, item) {
-				self.Jabber._addRosterItem(item);
-			});
+			self.Jabber._addRosterItems(items);
 
 			/** Event: candy:core.roster.fetched
 			 * Notification of the roster having been fetched
@@ -244,6 +265,12 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			var user = new Candy.Core.Contact(item);
 			Candy.Core.getRoster().add(user);
 			return user;
+		},
+
+		_addRosterItems: function(items) {
+			$.each(items, function(i, item) {
+				self.Jabber._addRosterItem(item);
+			});
 		},
 
 		/** Function: Bookmarks

@@ -85,7 +85,7 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				options.initialRosterItems
 			);
 			// Bootstrap our roster with cached items
-			Candy.Core.Event.Jabber.RosterFetch(roster.items);
+			Candy.Core.Event.Jabber.RosterLoad(roster.items);
 		},
 
 		/** Function: Presence

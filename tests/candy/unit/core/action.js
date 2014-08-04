@@ -98,6 +98,13 @@ define([
 						"<iq type='get' id='1:roster' xmlns='jabber:client'><query xmlns='jabber:iq:roster' ver='abc'/></iq>"
 					);
 				});
+
+				bdd.it('emits an event indicating that the roster was loaded from cache', function () {
+					var foo = false;
+					$(Candy).on('candy:core.roster.loaded', function () { foo = true; });
+					Candy.Core.Action.Jabber.Roster();
+					expect(foo).to.be.true;
+				});
 			});
 
 			bdd.describe('once the roster is received', function () {
