@@ -21,47 +21,47 @@ Candy.Core.ChatRoster = function () {
 	 * Roster items
 	 */
 	this.items = {};
+};
 
-	/** Function: add
-	 * Add user to roster
-	 *
-	 * Parameters:
-	 *   (Candy.Core.ChatUser) user - User to add
-	 */
-	this.add = function(user) {
-		this.items[user.getJid()] = user;
-	};
+/** Function: add
+ * Add user to roster
+ *
+ * Parameters:
+ *   (Candy.Core.ChatUser) user - User to add
+ */
+Candy.Core.ChatRoster.prototype.add = function(user) {
+	this.items[user.getJid()] = user;
+};
 
-	/** Function: remove
-	 * Remove user from roster
-	 *
-	 * Parameters:
-	 *   (String) jid - User jid
-	 */
-	this.remove = function(jid) {
-		delete this.items[jid];
-	};
+/** Function: remove
+ * Remove user from roster
+ *
+ * Parameters:
+ *   (String) jid - User jid
+ */
+Candy.Core.ChatRoster.prototype.remove = function(jid) {
+	delete this.items[jid];
+};
 
-	/** Function: get
-	 * Get user from roster
-	 *
-	 * Parameters:
-	 *   (String) jid - User jid
-	 *
-	 * Returns:
-	 *   (Candy.Core.ChatUser) - User
-	 */
-	this.get = function(jid) {
-		return this.items[jid];
-	};
+/** Function: get
+ * Get user from roster
+ *
+ * Parameters:
+ *   (String) jid - User jid
+ *
+ * Returns:
+ *   (Candy.Core.ChatUser) - User
+ */
+Candy.Core.ChatRoster.prototype.get = function(jid) {
+	return this.items[jid];
+};
 
-	/** Function: getAll
-	 * Get all items
-	 *
-	 * Returns:
-	 *   (Object) - all roster items
-	 */
-	this.getAll = function() {
-		return this.items;
-	};
+/** Function: getAll
+ * Get all items
+ *
+ * Returns:
+ *   (Object) - all roster items
+ */
+Candy.Core.ChatRoster.prototype.getAll = function() {
+	return this.items;
 };
