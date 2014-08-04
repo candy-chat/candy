@@ -7,5 +7,6 @@ define([
   , 'tests/candy/unit/core/chatUser'
   , 'tests/candy/unit/core/chatRoster'
   , 'tests/candy/unit/core/chatRoom'
+  , 'tests/candy/unit/core/contact'
   , 'tests/candy/unit/core/action'
 ], function () {});
