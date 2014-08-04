@@ -11,7 +11,7 @@
  */
 'use strict';
 
-/* global Candy, Strophe */
+/* global Candy, Strophe, jQuery */
 
 /** Class: Candy.Core.Contact
  * Roster contact
@@ -90,4 +90,25 @@ Candy.Core.Contact.prototype.getSubscription = function() {
  */
 Candy.Core.Contact.prototype.getGroups = function() {
   return this.data.groups;
+};
+
+/** Function: getStatus
+ * Gets user status as an aggregate of all resources
+ *
+ * Returns:
+ *   (String) - aggregate status, one of chat|dnd|available|away|xa|unavailable
+ */
+Candy.Core.Contact.prototype.getStatus = function() {
+  var status = 'unavailable';
+
+  jQuery.each(this.data.resources, function(resource, obj) {
+    if (obj.show === '' || obj.show === null || obj.show === undefined) {
+      // TODO: Submit this as a bugfix to strophejs-plugins' roster plugin
+      obj.show = 'available';
+    }
+
+    status = obj.show;
+  });
+
+  return status;
 };

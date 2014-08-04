@@ -14,7 +14,13 @@ define([
     var contact;
 
     bdd.beforeEach(function () {
-      contact = new Candy.Core.Contact({jid: 'foo bar@baz.com', name: 'Some Name', subscription: 'both', groups: ['Friends']});
+      contact = new Candy.Core.Contact({
+        jid: 'foo bar@baz.com',
+        name: 'Some Name',
+        subscription: 'both',
+        groups: ['Friends'],
+        resources: {}
+      });
     });
 
     bdd.it('reveals its JID', function () {
@@ -35,6 +41,101 @@ define([
 
     bdd.it('reveals its groups', function () {
       expect(contact.getGroups()).to.eql(['Friends']);
+    });
+
+    bdd.describe('aggregate status', function () {
+      bdd.describe('when there are no online resources', function () {
+        bdd.it('is unavailable when there are no online resources', function () {
+          expect(contact.getStatus()).to.eql('unavailable');
+        });
+      });
+
+      bdd.describe('when only one resource is online', function () {
+        bdd.beforeEach(function () {
+          contact = new Candy.Core.Contact({
+            jid: 'foo bar@baz.com',
+            name: 'Some Name',
+            subscription: 'both',
+            groups: ['Friends'],
+            resources: {
+              'foo bar@baz.com/resource1': {
+                show: 'away',
+                status: 'Hanging out',
+                priority: 0
+              }
+            }
+          });
+        });
+
+        bdd.it('matches the show attribute of the online resource', function () {
+          expect(contact.getStatus()).to.eql('away');
+        });
+
+        bdd.describe('when its show is not available', function () {
+          bdd.beforeEach(function () {
+            contact = new Candy.Core.Contact({
+              jid: 'foo bar@baz.com',
+              name: 'Some Name',
+              subscription: 'both',
+              groups: ['Friends'],
+              resources: {
+                'foo bar@baz.com/resource1': {
+                  status: 'Hanging out',
+                  priority: 0
+                }
+              }
+            });
+          });
+
+          bdd.it('appears available', function () {
+            expect(contact.getStatus()).to.eql('available');
+          });
+        });
+
+        bdd.describe('when its show is null', function () {
+          bdd.beforeEach(function () {
+            contact = new Candy.Core.Contact({
+              jid: 'foo bar@baz.com',
+              name: 'Some Name',
+              subscription: 'both',
+              groups: ['Friends'],
+              resources: {
+                'foo bar@baz.com/resource1': {
+                  show: null,
+                  status: 'Hanging out',
+                  priority: 0
+                }
+              }
+            });
+          });
+
+          bdd.it('appears available', function () {
+            expect(contact.getStatus()).to.eql('available');
+          });
+        });
+
+        bdd.describe('when its show is empty', function () {
+          bdd.beforeEach(function () {
+            contact = new Candy.Core.Contact({
+              jid: 'foo bar@baz.com',
+              name: 'Some Name',
+              subscription: 'both',
+              groups: ['Friends'],
+              resources: {
+                'foo bar@baz.com/resource1': {
+                  show: '',
+                  status: 'Hanging out',
+                  priority: 0
+                }
+              }
+            });
+          });
+
+          bdd.it('appears available', function () {
+            expect(contact.getStatus()).to.eql('available');
+          });
+        });
+      });
     });
   });
 });
