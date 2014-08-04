@@ -15,7 +15,7 @@ define([
 	, 'intern/order!candy/src/core/action.js'
 	, 'intern/order!candy/src/core/event.js'
 	, 'intern/order!candy/src/core/contact.js'
-], function (bdd, chai, expect, sinon, sinonChai, testHelper) {
+], function (bdd, chai, expect, sinon, sinonChai, testHelper, $) {
 	chai.use(sinonChai);
 
 	bdd.describe('Candy.Core.Action', function () {
@@ -50,9 +50,7 @@ define([
 			});
 
 			bdd.describe('once the roster is received', function () {
-				bdd.beforeEach(function () {
-					Candy.Core.Action.Jabber.Roster();
-
+				var receiveResponse = function () {
 					var rosterResponse = new Strophe.Builder('iq', {
 						type: 'result',
 						id: '1:roster'
@@ -65,44 +63,61 @@ define([
 					.c('item', {jid: 'doo@dah.com'});
 
 					testHelper.receiveStanza(fakeConnection, rosterResponse);
-				});
+				};
+
+				bdd.beforeEach(Candy.Core.Action.Jabber.Roster);
 
 				bdd.it('makes the returned items available in the main roster', function () {
+					receiveResponse();
 					expect(Candy.Core.getRoster().getAll()).to.have.keys(['foo@bar.com', 'doo@dah.com']);
 					expect(Candy.Core.getRoster().get('foo@bar.com')).to.be.an.instanceof(Candy.Core.Contact);
 					expect(Candy.Core.getRoster().get('doo@dah.com')).to.be.an.instanceof(Candy.Core.Contact);
 				});
 
 				bdd.it('records the contact name properly', function () {
+					receiveResponse();
 					var rosterItem = Candy.Core.getRoster().get('foo@bar.com');
 					expect(rosterItem.getName()).to.eql('Foo Bar');
 				});
 
 				bdd.it('uses the JID as name if not available', function () {
+					receiveResponse();
 					var rosterItem = Candy.Core.getRoster().get('doo@dah.com');
 					expect(rosterItem.getName()).to.eql('doo@dah.com');
 				});
 
 				bdd.it('records the subscription', function () {
+					receiveResponse();
 					var rosterItem = Candy.Core.getRoster().get('foo@bar.com');
 					expect(rosterItem.getSubscription()).to.eql('both');
 				});
 
 				bdd.it('records the subscription as none by default', function () {
+					receiveResponse();
 					var rosterItem = Candy.Core.getRoster().get('doo@dah.com');
 					expect(rosterItem.getSubscription()).to.eql('none');
 				});
 
 				bdd.it('records groups', function () {
+					receiveResponse();
 					var rosterItem = Candy.Core.getRoster().get('foo@bar.com');
 					expect(rosterItem.getGroups()).to.eql(['Friends', 'Close Friends']);
 				});
 
+				bdd.it('emits an event indicating that the roster was fetched', function () {
+					var foo = false;
+					$(Candy).on('candy:core.roster.fetched', function () { foo = true; });
+					receiveResponse();
+					expect(foo).to.be.true;
+				});
+
 				bdd.describe('updating roster items from pushes', function () {
+					bdd.beforeEach(receiveResponse);
+
 					bdd.describe('modifying a user', function () {
 						var modifiedUser;
 
-						bdd.beforeEach(function () {
+						var receivePush = function () {
 							var rosterPush = new Strophe.Builder('iq', {
 								type: 'set'
 							})
@@ -113,23 +128,33 @@ define([
 							testHelper.receiveStanza(fakeConnection, rosterPush);
 
 							modifiedUser = Candy.Core.getRoster().get('foo@bar.com');
-						});
+						};
 
 						bdd.it('updates the nick', function () {
+							receivePush();
 							expect(modifiedUser.getName()).to.equal('My Friend');
 						});
 
 						bdd.it('updates the affiliation', function () {
+							receivePush();
 							expect(modifiedUser.getSubscription()).to.equal('to');
 						});
 
 						bdd.it('updates the groups', function () {
+							receivePush();
 							expect(modifiedUser.getGroups()).to.eql(['Friends']);
+						});
+
+						bdd.it('emits an event indicating that the roster was updated', function () {
+							var eventParams = null;
+							$(Candy).on('candy:core.roster.updated', function (ev, params) { eventParams = params; });
+							receivePush();
+							expect(eventParams).to.eql({contact: modifiedUser});
 						});
 					});
 
 					bdd.describe('removing a user', function () {
-						bdd.beforeEach(function () {
+						var receivePush = function () {
 							var rosterPush = new Strophe.Builder('iq', {
 								type: 'set'
 							})
@@ -137,15 +162,24 @@ define([
 							.c('item', {jid: 'foo@bar.com', subscription: 'remove'});
 
 							testHelper.receiveStanza(fakeConnection, rosterPush);
-						});
+						};
 
 						bdd.it('removes the user from the roster', function () {
+							receivePush();
 							expect(Candy.Core.getRoster().get('foo@bar.com')).to.be.undefined;
+						});
+
+						bdd.it('emits an event indicating that the roster was updated', function () {
+							var eventParams = null;
+							var contact = Candy.Core.getRoster().get('foo@bar.com');
+							$(Candy).on('candy:core.roster.removed', function (ev, params) { eventParams = params; });
+							receivePush();
+							expect(eventParams).to.eql({contact: contact});
 						});
 					});
 
 					bdd.describe('adding a user', function () {
-						bdd.beforeEach(function () {
+						var receivePush = function () {
 							var rosterPush = new Strophe.Builder('iq', {
 								type: 'set'
 							})
@@ -155,26 +189,38 @@ define([
 							.c('group').t('Close Friends').up();
 
 							testHelper.receiveStanza(fakeConnection, rosterPush);
-						});
+						};
 
 						bdd.it('makes the new item available in the main roster', function () {
+							receivePush();
 							expect(Candy.Core.getConnection().roster.findItem('new@guy.com').name).to.eql('Foo Bar');
 							expect(Candy.Core.getRoster().get('new@guy.com')).to.be.an.instanceof(Candy.Core.Contact);
 						});
 
 						bdd.it('records the contact name properly', function () {
+							receivePush();
 							var rosterItem = Candy.Core.getRoster().get('new@guy.com');
 							expect(rosterItem.getName()).to.eql('Foo Bar');
 						});
 
 						bdd.it('records the subscription type as affiliation', function () {
+							receivePush();
 							var rosterItem = Candy.Core.getRoster().get('new@guy.com');
 							expect(rosterItem.getSubscription()).to.eql('both');
 						});
 
 						bdd.it('records groups', function () {
+							receivePush();
 							var rosterItem = Candy.Core.getRoster().get('new@guy.com');
 							expect(rosterItem.getGroups()).to.eql(['Friends', 'Close Friends']);
+						});
+
+						bdd.it('emits an event indicating that the roster item was added', function () {
+							var eventParams = null;
+							$(Candy).on('candy:core.roster.added', function (ev, params) { eventParams = params; });
+							receivePush();
+							var contact = Candy.Core.getRoster().get('new@guy.com');
+							expect(eventParams).to.eql({contact: contact});
 						});
 					});
 				});

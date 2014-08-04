@@ -167,6 +167,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 * Parameters:
 		 *   (String) items - List of roster items
 		 *
+ 		 * Triggers:
+		 *   candy:core.roster.fetched
+		 *
 		 * Returns:
 		 *   (Boolean) - true
 		 */
@@ -174,6 +177,11 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			$.each(items, function(i, item) {
 				self.Jabber._addRosterItem(item);
 			});
+
+			/** Event: candy:core.roster.fetched
+			 * Notification of the roster having been fetched
+			 */
+			$(Candy).triggerHandler('candy:core.roster.fetched');
 
 			return true;
 		},
@@ -184,6 +192,11 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 * Parameters:
 		 *   (String) stanza - Raw XML Message
 		 *
+ 		 * Triggers:
+		 *   candy:core.roster.added
+		 *   candy:core.roster.updated
+		 *   candy:core.roster.removed
+		 *
 		 * Returns:
 		 *   (Boolean) - true
 		 */
@@ -193,11 +206,34 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			}
 
 			if (updatedItem.subscription === "remove") {
+				var contact = Candy.Core.getRoster().get(updatedItem.jid);
 				Candy.Core.getRoster().remove(updatedItem.jid);
+				/** Event: candy:core.roster.removed
+				 * Notification of a roster entry having been removed
+ 				 *
+				 * Parameters:
+				 *   (Candy.Core.Contact) contact - The contact that was removed from the roster
+				 */
+				$(Candy).triggerHandler('candy:core.roster.removed', {contact: contact});
 			} else {
 				var user = Candy.Core.getRoster().get(updatedItem.jid);
 				if (!user) {
-					self.Jabber._addRosterItem(updatedItem);
+					user = self.Jabber._addRosterItem(updatedItem);
+					/** Event: candy:core.roster.added
+					 * Notification of a roster entry having been added
+	 				 *
+					 * Parameters:
+					 *   (Candy.Core.Contact) contact - The contact that was added
+					 */
+					$(Candy).triggerHandler('candy:core.roster.added', {contact: user});
+				} else {
+					/** Event: candy:core.roster.updated
+					 * Notification of a roster entry having been updated
+	 				 *
+					 * Parameters:
+					 *   (Candy.Core.Contact) contact - The contact that was updated
+					 */
+					$(Candy).triggerHandler('candy:core.roster.updated', {contact: user});
 				}
 			}
 
@@ -207,6 +243,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		_addRosterItem: function(item) {
 			var user = new Candy.Core.Contact(item);
 			Candy.Core.getRoster().add(user);
+			return user;
 		},
 
 		/** Function: Bookmarks
