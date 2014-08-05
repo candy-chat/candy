@@ -26,14 +26,6 @@ define([
 		});
 
 		bdd.beforeEach(function () {
-			fakeConnection = new Strophe.Connection("http://foo.bar/http-bind");
-			fakeConnection.authenticated = true;
-			fakeConnection.jid = 'n@d/r';
-
-			// The Strophe roster plugin adds its callbacks when we connect only (see https://github.com/strophe/strophejs-plugins/commit/4f3bcd25c43142f99c314f75a9bc10c8957a23d1). Add them manually here to compensate.
-			fakeConnection.addHandler(fakeConnection.roster._onReceivePresence.bind(fakeConnection.roster), null, 'presence', null, null, null);
-			fakeConnection.addHandler(fakeConnection.roster._onReceiveIQ.bind(fakeConnection.roster), Strophe.NS.ROSTER, 'iq', "set", null, null);
-
 			Candy.Core.init(
 				'http://foo.bar/http-bind',
 				{
@@ -53,9 +45,17 @@ define([
 							}
 						}
 					]
-				},
-				fakeConnection
+				}
 			);
+
+			fakeConnection = Candy.Core.getConnection();
+			fakeConnection.authenticated = true;
+			fakeConnection.jid = 'n@d/r';
+
+			// The Strophe roster plugin adds its callbacks when we connect only (see https://github.com/strophe/strophejs-plugins/commit/4f3bcd25c43142f99c314f75a9bc10c8957a23d1). Add them manually here to compensate.
+			fakeConnection.addHandler(fakeConnection.roster._onReceivePresence.bind(fakeConnection.roster), null, 'presence', null, null, null);
+			fakeConnection.addHandler(fakeConnection.roster._onReceiveIQ.bind(fakeConnection.roster), Strophe.NS.ROSTER, 'iq', "set", null, null);
+
 			Candy.Core.registerEventHandlers();
 		});
 

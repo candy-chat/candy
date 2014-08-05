@@ -118,7 +118,7 @@ Candy.Core = (function(self, Strophe, $) {
 	 *   (String) service - URL of BOSH/Websocket service
 	 *   (Object) options - Options for candy
 	 */
-	self.init = function(service, options, connection) {
+	self.init = function(service, options) {
 		_service = service;
 		// Apply options
 		$.extend(true, _options, options);
@@ -169,11 +169,7 @@ Candy.Core = (function(self, Strophe, $) {
 		_roster = new Candy.Core.ChatRoster();
 
 		// Connect to BOSH/Websocket service
-		if (!connection) {
-			_connection = new Strophe.Connection(_service);
-		} else {
-			_connection = connection;
-		}
+		_connection = new Strophe.Connection(_service);
 		_connection.rawInput = self.rawInput.bind(self);
 		_connection.rawOutput = self.rawOutput.bind(self);
 
