@@ -63,7 +63,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					/* falls through */
 				case Strophe.Status.ATTACHED:
 					Candy.Core.log('[Connection] Attached');
-					$(Candy).on('candy:core:roster:fetched', Candy.Core.Action.Jabber.Presence);
+					$(Candy).on('candy:core:roster:fetched', function () {
+						Candy.Core.Action.Jabber.Presence();
+					});
 					Candy.Core.Action.Jabber.Roster();
 					Candy.Core.Action.Jabber.Autojoin();
 					Candy.Core.Action.Jabber.GetIgnoreList();
