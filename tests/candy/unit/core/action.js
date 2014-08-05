@@ -25,6 +25,10 @@ define([
 			sinon.stub(Strophe.Bosh.prototype, '_processRequest');
 		});
 
+		bdd.after(function () {
+			Strophe.Bosh.prototype._processRequest.restore();
+		});
+
 		bdd.beforeEach(function () {
 			Candy.Core.init(
 				'http://foo.bar/http-bind',
