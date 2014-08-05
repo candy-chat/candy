@@ -281,3 +281,13 @@ Candy.Core.ChatUser.prototype.setPreviousNick = function(previousNick) {
 Candy.Core.ChatUser.prototype.getPreviousNick = function() {
 	return this.data.previousNick;
 };
+
+/** Function: getContact
+ * Gets the contact matching this user from our roster
+ *
+ * Returns:
+ *   (Candy.Core.Contact) - contact from roster
+ */
+Candy.Core.ChatUser.prototype.getContact = function() {
+	return Candy.Core.getRoster().get(this.data.realJid);
+};

@@ -9,6 +9,7 @@ define([
   , 'intern/order!candy/src/candy.js'
   , 'intern/order!candy/src/core.js'
   , 'intern/order!candy/src/core/chatUser.js'
+  , 'intern/order!candy/src/core/contact.js'
 ], function (bdd, expect) {
   bdd.describe('Candy.Core.ChatUser', function () {
     var chatUser;
@@ -131,6 +132,34 @@ define([
         expect(chatUser.getPreviousNick()).to.equal(undefined);
         chatUser.setPreviousNick('oldNick');
         expect(chatUser.getPreviousNick()).to.equal('oldNick');
+      });
+    });
+
+    bdd.describe("getting the user's contact from our roster", function () {
+      bdd.describe('when the user is not in our roster', function () {
+        bdd.it('returns null', function () {
+          expect(chatUser.getContact()).to.be.undefined;
+        });
+      });
+
+      bdd.describe('when the user is in our roster', function () {
+        var contact;
+
+        bdd.before(function () {
+          contact = new Candy.Core.Contact({
+            jid: 'foo@bar.com',
+            name: 'Some Name',
+            subscription: 'both',
+            groups: ['Friends'],
+            resources: {}
+          });
+
+          Candy.Core.getRoster().add(contact);
+        });
+
+        bdd.it('returns the contact', function () {
+          expect(chatUser.getContact()).to.eql(contact);
+        });
       });
     });
   });
