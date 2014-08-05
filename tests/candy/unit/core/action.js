@@ -101,7 +101,7 @@ define([
 
 				bdd.it('emits an event indicating that the roster was loaded from cache', function () {
 					var foo;
-					$(Candy).on('candy:core.roster.loaded', function (ev, params) { foo = params; });
+					$(Candy).on('candy:core:roster:loaded', function (ev, params) { foo = params; });
 					Candy.Core.Action.Jabber.Roster();
 					expect(foo).to.be.eql({roster: Candy.Core.getRoster()});
 				});
@@ -164,7 +164,7 @@ define([
 
 				bdd.it('emits an event indicating that the roster was fetched', function () {
 					var foo;
-					$(Candy).on('candy:core.roster.fetched', function (ev, params) { foo = params; });
+					$(Candy).on('candy:core:roster:fetched', function (ev, params) { foo = params; });
 					receiveResponse();
 					expect(foo).to.be.eql({roster: Candy.Core.getRoster()});
 				});
@@ -205,7 +205,7 @@ define([
 
 						bdd.it('emits an event indicating that the roster was updated', function () {
 							var eventParams = null;
-							$(Candy).on('candy:core.roster.updated', function (ev, params) { eventParams = params; });
+							$(Candy).on('candy:core:roster:updated', function (ev, params) { eventParams = params; });
 							receivePush();
 							expect(eventParams).to.eql({contact: modifiedUser});
 						});
@@ -230,7 +230,7 @@ define([
 						bdd.it('emits an event indicating that the roster was updated', function () {
 							var eventParams = null;
 							var contact = Candy.Core.getRoster().get('foo@bar.com');
-							$(Candy).on('candy:core.roster.removed', function (ev, params) { eventParams = params; });
+							$(Candy).on('candy:core:roster:removed', function (ev, params) { eventParams = params; });
 							receivePush();
 							expect(eventParams).to.eql({contact: contact});
 						});
@@ -275,7 +275,7 @@ define([
 
 						bdd.it('emits an event indicating that the roster item was added', function () {
 							var eventParams = null;
-							$(Candy).on('candy:core.roster.added', function (ev, params) { eventParams = params; });
+							$(Candy).on('candy:core:roster:added', function (ev, params) { eventParams = params; });
 							receivePush();
 							var contact = Candy.Core.getRoster().get('new@guy.com');
 							expect(eventParams).to.eql({contact: contact});
