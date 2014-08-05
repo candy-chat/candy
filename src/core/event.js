@@ -666,7 +666,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						action = 'join';
 					} else {
 						nick = Strophe.getResourceFromJid(from);
-						user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
+						user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'), item.attr('jid'));
 						// Room existed but client (myself) is not yet registered
 						if(room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
 							room.setUser(user);

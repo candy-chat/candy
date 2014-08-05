@@ -14,21 +14,25 @@ define([
     var chatUser;
 
     bdd.beforeEach(function () {
-      chatUser = new Candy.Core.ChatUser('foo bar@baz.com', 'SomeNick', 'admin', 'member');
+      chatUser = new Candy.Core.ChatUser('foo bar@conference.baz.com/SomeNick', 'SomeNick', 'admin', 'member', 'foo@bar.com');
     });
 
     bdd.it('reveals its JID', function () {
-      expect(chatUser.getJid()).to.equal('foo bar@baz.com');
+      expect(chatUser.getJid()).to.equal('foo bar@conference.baz.com/SomeNick');
     });
 
     bdd.it('reveals its escaped JID', function () {
-      expect(chatUser.getEscapedJid()).to.equal('foo\\20bar@baz.com');
+      expect(chatUser.getEscapedJid()).to.equal('foo\\20bar@conference.baz.com/SomeNick');
     });
 
     bdd.it('allows setting its JID', function () {
       chatUser.setJid('doo dah@bah.com');
       expect(chatUser.getJid()).to.equal('doo dah@bah.com');
       expect(chatUser.getEscapedJid()).to.equal('doo\\20dah@bah.com');
+    });
+
+    bdd.it('reveals its real JID', function () {
+      expect(chatUser.getRealJid()).to.equal('foo@bar.com');
     });
 
     bdd.it('reveals its nick', function () {
