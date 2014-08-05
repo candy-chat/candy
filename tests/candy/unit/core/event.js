@@ -82,7 +82,7 @@ define([
 						from: participantJid
 					})
 					.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
-					.c('item', {affiliation: 'admin', role: 'moderator', jid: 'doo@dah.com'});
+					.c('item', {affiliation: 'admin', role: 'moderator', jid: 'doo@dah.com/somewhere'});
 
 					testHelper.receiveStanza(fakeConnection, presence);
 				};
@@ -96,7 +96,7 @@ define([
 					expect(rosterEntry.getNick()).to.eql('secondwitch');
 					expect(rosterEntry.getRole()).to.eql('moderator');
 					expect(rosterEntry.getAffiliation()).to.eql('admin');
-					expect(rosterEntry.getRealJid()).to.eql('doo@dah.com');
+					expect(rosterEntry.getRealJid()).to.eql('doo@dah.com/somewhere');
 				});
 			});
 

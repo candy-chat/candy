@@ -289,5 +289,5 @@ Candy.Core.ChatUser.prototype.getPreviousNick = function() {
  *   (Candy.Core.Contact) - contact from roster
  */
 Candy.Core.ChatUser.prototype.getContact = function() {
-	return Candy.Core.getRoster().get(this.data.realJid);
+	return Candy.Core.getRoster().get(Strophe.getBareJidFromJid(this.data.realJid));
 };

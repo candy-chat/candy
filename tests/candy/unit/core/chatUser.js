@@ -15,7 +15,7 @@ define([
     var chatUser;
 
     bdd.beforeEach(function () {
-      chatUser = new Candy.Core.ChatUser('foo bar@conference.baz.com/SomeNick', 'SomeNick', 'admin', 'member', 'foo@bar.com');
+      chatUser = new Candy.Core.ChatUser('foo bar@conference.baz.com/SomeNick', 'SomeNick', 'admin', 'member', 'foo@bar.com/somewhere');
     });
 
     bdd.it('reveals its JID', function () {
@@ -33,7 +33,7 @@ define([
     });
 
     bdd.it('reveals its real JID', function () {
-      expect(chatUser.getRealJid()).to.equal('foo@bar.com');
+      expect(chatUser.getRealJid()).to.equal('foo@bar.com/somewhere');
     });
 
     bdd.it('reveals its nick', function () {
