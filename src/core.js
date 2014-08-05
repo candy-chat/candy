@@ -72,6 +72,10 @@ Candy.Core = (function(self, Strophe, $) {
 			 * Specify `''` (an empty string) to request a random resource.
 			 */
 			resource: Candy.about.name,
+			/** Boolean: useParticipantRealJid
+			 * If set true, will direct one-on-one chats to participant's real JID rather than their MUC jid
+			 */
+			useParticipantRealJid: false,
 			/**
 			 * Roster version we claim to already have. Used when loading a cached roster.
 			 * Defaults to null, indicating we don't have the roster.

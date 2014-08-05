@@ -73,7 +73,7 @@ Candy.View.Pane = (function(self, $) {
       }
 
       var roomId = Candy.Util.jidToId(roomJid);
-      self.Chat.rooms[roomJid] = {id: roomId, usercount: 0, name: roomName, type: roomType, messageCount: 0, scrollPosition: -1};
+      self.Chat.rooms[roomJid] = {id: roomId, usercount: 0, name: roomName, type: roomType, messageCount: 0, scrollPosition: -1, targetJid: roomJid};
 
       $('#chat-rooms').append(Mustache.to_html(Candy.View.Template.Room.pane, {
         roomId: roomId,

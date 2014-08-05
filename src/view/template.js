@@ -85,7 +85,7 @@ Candy.View.Template = (function(self){
 	self.Roster = {
 		pane: '<div class="roster-pane"></div>',
 		user: '<div class="user role-{{role}} affiliation-{{affiliation}}{{#me}} me{{/me}}"' +
-				' id="user-{{roomId}}-{{userId}}" data-jid="{{userJid}}"' +
+				' id="user-{{roomId}}-{{userId}}" data-jid="{{userJid}}" data-real-jid="{{realJid}}"' +
 				' data-nick="{{nick}}" data-role="{{role}}" data-affiliation="{{affiliation}}">' +
 				'<div class="label">{{displayNick}}</div><ul>' +
 				'<li class="context" id="context-{{roomId}}-{{userId}}">&#x25BE;</li>' +
