@@ -792,13 +792,17 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				} else if(msg.children('body').length > 0) {
 					// Private chat message
 					if(msg.attr('type') === 'chat' || msg.attr('type') === 'normal') {
-						var from = Candy.Util.unescapeJid(msg.attr('from'));
-						roomJid = Strophe.getBareJidFromJid(from);
+						var from = Candy.Util.unescapeJid(msg.attr('from')),
+							bareFrom = Strophe.getBareJidFromJid(from),
+							isNoConferenceRoomJid = !Candy.Core.getRoom(bareFrom);
 
-						// if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
-						var isNoConferenceRoomJid = !Candy.Core.getRoom(roomJid);
-
-						name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(from) : Strophe.getResourceFromJid(from);
+						if (isNoConferenceRoomJid) {
+							roomJid = bareFrom;
+							name = Strophe.getNodeFromJid(from);
+						} else {
+							roomJid = from;
+							name = Strophe.getResourceFromJid(from);
+						}
 						message = { from: from, name: name, body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
 					// Multi-user chat message
 					} else {
