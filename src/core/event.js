@@ -179,7 +179,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			/** Event: candy:core.roster.loaded
 			 * Notification of the roster having been loaded from cache
 			 */
-			$(Candy).triggerHandler('candy:core.roster.loaded');
+			$(Candy).triggerHandler('candy:core.roster.loaded', {roster: Candy.Core.getRoster()});
 
 			return true;
 		},
@@ -202,7 +202,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			/** Event: candy:core.roster.fetched
 			 * Notification of the roster having been fetched
 			 */
-			$(Candy).triggerHandler('candy:core.roster.fetched');
+			$(Candy).triggerHandler('candy:core.roster.fetched', {roster: Candy.Core.getRoster()});
 
 			return true;
 		},

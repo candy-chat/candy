@@ -100,10 +100,10 @@ define([
 				});
 
 				bdd.it('emits an event indicating that the roster was loaded from cache', function () {
-					var foo = false;
-					$(Candy).on('candy:core.roster.loaded', function () { foo = true; });
+					var foo;
+					$(Candy).on('candy:core.roster.loaded', function (ev, params) { foo = params; });
 					Candy.Core.Action.Jabber.Roster();
-					expect(foo).to.be.true;
+					expect(foo).to.be.eql({roster: Candy.Core.getRoster()});
 				});
 			});
 
@@ -163,10 +163,10 @@ define([
 				});
 
 				bdd.it('emits an event indicating that the roster was fetched', function () {
-					var foo = false;
-					$(Candy).on('candy:core.roster.fetched', function () { foo = true; });
+					var foo;
+					$(Candy).on('candy:core.roster.fetched', function (ev, params) { foo = params; });
 					receiveResponse();
-					expect(foo).to.be.true;
+					expect(foo).to.be.eql({roster: Candy.Core.getRoster()});
 				});
 
 				bdd.describe('updating roster items from pushes', function () {
