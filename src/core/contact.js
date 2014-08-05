@@ -11,7 +11,7 @@
  */
 'use strict';
 
-/* global Candy, Strophe, jQuery */
+/* global Candy, Strophe, $ */
 
 /** Class: Candy.Core.Contact
  * Roster contact
@@ -111,7 +111,7 @@ Candy.Core.Contact.prototype.getStatus = function() {
     self = this,
     highestResourcePriority;
 
-  jQuery.each(this.data.resources, function(resource, obj) {
+  $.each(this.data.resources, function(resource, obj) {
     var resourcePriority = parseInt(obj.priority, 10);
 
     if (obj.show === '' || obj.show === null || obj.show === undefined) {
