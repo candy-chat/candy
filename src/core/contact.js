@@ -69,6 +69,14 @@ Candy.Core.Contact.prototype.getName = function() {
   return Strophe.unescapeNode(this.data.name);
 };
 
+/** Function: getNick
+ * Gets user name
+ *
+ * Returns:
+ *   (String) - name
+ */
+Candy.Core.Contact.prototype.getNick = Candy.Core.Contact.prototype.getName;
+
 /** Function: getSubscription
  * Gets user subscription
  *

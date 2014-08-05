@@ -35,6 +35,10 @@ define([
       expect(contact.getName()).to.equal('Some Name');
     });
 
+    bdd.it('reveals its name as its Nick for compatability with ChatUser', function () {
+      expect(contact.getNick()).to.equal('Some Name');
+    });
+
     bdd.it('reveals its subscription', function () {
       expect(contact.getSubscription()).to.equal('both');
     });
