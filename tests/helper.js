@@ -32,8 +32,8 @@
 		return req;
 	};
 
-	self.receiveStanza = function (connection, stanza) {
-		connection._dataRecv(self.createRequest(stanza));
+	self.receiveStanza = function (stanza) {
+		Candy.Core.getConnection()._dataRecv(self.createRequest(stanza));
 	};
 
 	self.bootstrapTestClient = function () {
