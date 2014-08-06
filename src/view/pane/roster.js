@@ -73,6 +73,7 @@ Candy.View.Pane = (function(self, $) {
             roomId: roomId,
             userId : userId,
             userJid: user.getJid(),
+            realJid: user.getRealJid(),
             nick: user.getNick(),
             displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.nickname),
             role: user.getRole(),
@@ -187,8 +188,11 @@ Candy.View.Pane = (function(self, $) {
      * Click handler for opening a private room
      */
     userClick: function() {
-      var elem = $(this);
-      self.PrivateRoom.open(elem.attr('data-jid'), elem.attr('data-nick'), true);
+      var elem = $(this),
+        realJid = elem.attr('data-real-jid'),
+        useRealJid = Candy.Core.getOptions().useParticipantRealJid && (realJid !== undefined && realJid !== null && realJid !== ''),
+        targetJid = useRealJid && realJid ? Strophe.getBareJidFromJid(realJid) : elem.attr('data-jid');
+      self.PrivateRoom.open(targetJid, elem.attr('data-nick'), true, useRealJid);
     },
 
     /** Function: showJoinAnimation
