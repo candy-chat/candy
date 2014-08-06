@@ -78,7 +78,7 @@ define([
 					.up()
 					.c('item', {jid: 'doo@dah.com'});
 
-					testHelper.receiveStanza(Candy.Core.getConnection(), rosterResponse);
+					testHelper.receiveStanza(rosterResponse);
 				};
 
 				bdd.beforeEach(Candy.Core.Action.Jabber.Roster);
@@ -141,7 +141,7 @@ define([
 							.c('item', {jid: 'foo@bar.com', name: 'My Friend', subscription: 'to'})
 							.c('group').t('Friends');
 
-							testHelper.receiveStanza(Candy.Core.getConnection(), rosterPush);
+							testHelper.receiveStanza(rosterPush);
 
 							modifiedUser = Candy.Core.getRoster().get('foo@bar.com');
 						};
@@ -177,7 +177,7 @@ define([
 							.c('query', {xmlns: 'jabber:iq:roster'})
 							.c('item', {jid: 'foo@bar.com', subscription: 'remove'});
 
-							testHelper.receiveStanza(Candy.Core.getConnection(), rosterPush);
+							testHelper.receiveStanza(rosterPush);
 						};
 
 						bdd.it('removes the user from the roster', function () {
@@ -204,7 +204,7 @@ define([
 							.c('group').t('Friends').up()
 							.c('group').t('Close Friends').up();
 
-							testHelper.receiveStanza(Candy.Core.getConnection(), rosterPush);
+							testHelper.receiveStanza(rosterPush);
 						};
 
 						bdd.it('makes the new item available in the main roster', function () {
