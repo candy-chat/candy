@@ -63,7 +63,7 @@ define({
 	functionalSuites: [ 'tests/candy/functional/all' ],
 
 	// A regular expression matching URLs to files that should not be included in code coverage analysis
-	excludeInstrumentation: /^(?:tests|node_modules|bower_components|libs)\//,
+	excludeInstrumentation: /^(?:tests\/|node_modules\/|bower_components\/|libs\.[^.]+\.js)/,
 
 	reporters: ['runner', 'lcov']
 });
