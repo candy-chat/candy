@@ -493,73 +493,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 * Room specific events
 		 */
 		Room: {
-			/** Function: Leave
-			 * Leaves a room and cleans up related data and notifies view.
-			 *
-			 * Parameters:
-			 *   (String) msg - Raw XML Message
-			 *
-			 * Triggers:
-			 *   candy:core.presence.leave using {roomJid, roomName, type, reason, actor, user}
-			 *
-			 * Returns:
-			 *   (Boolean) - true
-			 */
-			Leave: function(msg) {
-				Candy.Core.log('[Jabber:Room] Leave');
-				msg = $(msg);
-				var from = Candy.Util.unescapeJid(msg.attr('from')),
-					roomJid = Strophe.getBareJidFromJid(from);
 
-				// if room is not joined yet, ignore.
-				if (!Candy.Core.getRoom(roomJid)) {
-					return true;
-				}
-
-				var roomName = Candy.Core.getRoom(roomJid).getName(),
-					item = msg.find('item'),
-					type = 'leave',
-					reason,
-					actor;
-
-				delete Candy.Core.getRooms()[roomJid];
-				// if user gets kicked, role is none and there's a status code 307
-				if(item.attr('role') === 'none') {
-					var code = msg.find('status').attr('code');
-					if(code === '307') {
-						type = 'kick';
-					} else if(code === '301') {
-						type = 'ban';
-					}
-					reason = item.find('reason').text();
-					actor  = item.find('actor').attr('jid');
-				}
-
-				var user = new Candy.Core.ChatUser(from, Strophe.getResourceFromJid(from), item.attr('affiliation'), item.attr('role'));
-
-				/** Event: candy:core.presence.leave
-				 * When the local client leaves a room
-				 *
-				 * Also triggered when the local client gets kicked or banned from a room.
-				 *
-				 * Parameters:
-				 *   (String) roomJid - Room
-				 *   (String) roomName - Name of room
-				 *   (String) type - Presence type [kick, ban, leave]
-				 *   (String) reason - When type equals kick|ban, this is the reason the moderator has supplied.
-				 *   (String) actor - When type equals kick|ban, this is the moderator which did the kick
-				 *   (Candy.Core.ChatUser) user - user which leaves the room
-				 */
-				$(Candy).triggerHandler('candy:core.presence.leave', {
-					'roomJid': roomJid,
-					'roomName': roomName,
-					'type': type,
-					'reason': reason,
-					'actor': actor,
-					'user': user
-				});
-				return true;
-			},
 
 			/** Function: Disco
 			 * Sets informations to rooms according to the disco info received.
@@ -641,14 +575,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					room = Candy.Core.getRoom(roomJid);
 				}
 
-				// Current User left a room
-				var currentUser = room.getUser() ? room.getUser() : Candy.Core.getUser();
-				if(Strophe.getResourceFromJid(from) === currentUser.getNick() && presenceType === 'unavailable' && nickChange === false) {
-					self.Jabber.Room.Leave(msg);
-					return true;
-				}
-
 				var roster = room.getRoster(),
+					currentUser = room.getUser() ? room.getUser() : Candy.Core.getUser(),
 					action, user,
 					nick,
 					item = msg.find('item');
@@ -681,6 +609,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				} else {
 					user = roster.get(from);
 					roster.remove(from);
+
 					if(nickChange) {
 						// user changed nick
 						nick = item.attr('nick');
@@ -697,6 +626,12 @@ Candy.Core.Event = (function(self, Strophe, $) {
 							} else if(msg.find('status').attr('code') === '301') {
 								action = 'ban';
 							}
+						}
+
+						if (Strophe.getResourceFromJid(from) === currentUser.getNick()) {
+							// Current User left a room
+							self.Jabber.Room._selfLeave(msg, from, roomJid, room.getName(), action);
+							return true;
 						}
 					}
 				}
@@ -716,6 +651,46 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					'user': user,
 					'action': action,
 					'currentUser': currentUser
+				});
+				return true;
+			},
+
+			_selfLeave: function(msg, from, roomJid, roomName, action) {
+				Candy.Core.log('[Jabber:Room] Leave');
+
+				Candy.Core.removeRoom(roomJid);
+
+				var item = msg.find('item'),
+					reason,
+					actor;
+
+				if(action === 'kick' || action === 'ban') {
+					reason = item.find('reason').text();
+					actor  = item.find('actor').attr('jid');
+				}
+
+				var user = new Candy.Core.ChatUser(from, Strophe.getResourceFromJid(from), item.attr('affiliation'), item.attr('role'));
+
+				/** Event: candy:core.presence.leave
+				 * When the local client leaves a room
+				 *
+				 * Also triggered when the local client gets kicked or banned from a room.
+				 *
+				 * Parameters:
+				 *   (String) roomJid - Room
+				 *   (String) roomName - Name of room
+				 *   (String) type - Presence type [kick, ban, leave]
+				 *   (String) reason - When type equals kick|ban, this is the reason the moderator has supplied.
+				 *   (String) actor - When type equals kick|ban, this is the moderator which did the kick
+				 *   (Candy.Core.ChatUser) user - user which leaves the room
+				 */
+				$(Candy).triggerHandler('candy:core.presence.leave', {
+					'roomJid': roomJid,
+					'roomName': roomName,
+					'type': action,
+					'reason': reason,
+					'actor': actor,
+					'user': user
 				});
 				return true;
 			},
