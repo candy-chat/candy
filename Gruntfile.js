@@ -159,7 +159,7 @@ module.exports = function(grunt) {
 			},
 			unit: {
 				options: {
-					runType: 'runner',
+					runType: 'client',
 					config: localInternConfig,
 					functionalSuites: []
 				}

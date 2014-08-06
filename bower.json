@@ -31,7 +31,7 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "~1.10.2",
+    "jquery": "2.1.1",
     "strophe": "1.1.3",
     "strophejs-plugins": "benlangfeld/strophejs-plugins#30fb089457addc37e01d69c3536dee868a90a9ad",
     "mustache": "0.3.0",
