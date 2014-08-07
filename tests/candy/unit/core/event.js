@@ -610,7 +610,42 @@ define([
 						expect(eventParams.message.attr('from')).to.eql('coven@chat.shakespeare.lit');
 					});
 
-					bdd.describe('with only the minimal required data', function () {});
+					bdd.describe('with only the minimal required data', function () {
+						var receiveMessage = function () {
+							var message = new Strophe.Builder('message', {
+								from: 'coven@chat.shakespeare.lit'
+							})
+							.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
+							.c('invite', {from: 'crone1@shakespeare.lit/desktop'});
+
+							testHelper.receiveStanza(message);
+						};
+
+						bdd.it('emits a candy:core:chat:invite event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+							expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+							expect(eventParams.reason).to.be.undefined;
+							expect(eventParams.password).to.be.undefined;
+							expect(eventParams.continuedThread).to.be.undefined;
+						});
+
+						bdd.it('emits a candy:core:chat:message:normal event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['type', 'message']);
+							expect(eventParams.type).to.eql('normal');
+							expect(eventParams.message.attr('from')).to.eql('coven@chat.shakespeare.lit');
+						});
+					});
 				});
 
 				bdd.describe('and contain a direct MUC invite', function () {
@@ -655,7 +690,44 @@ define([
 						expect(eventParams.message.attr('from')).to.eql('crone1@shakespeare.lit/desktop');
 					});
 
-					bdd.describe('with only the minimal required data', function () {});
+					bdd.describe('with only the minimal required data', function () {
+						var receiveMessage = function () {
+							var message = new Strophe.Builder('message', {
+								from: 'crone1@shakespeare.lit/desktop'
+							})
+							.c('x', {
+								xmlns: 'jabber:x:conference',
+								jid: 'coven@chat.shakespeare.lit'
+							});
+
+							testHelper.receiveStanza(message);
+						};
+
+						bdd.it('emits a candy:core:chat:invite event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+							expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+							expect(eventParams.reason).to.be.undefined;
+							expect(eventParams.password).to.be.undefined;
+							expect(eventParams.continuedThread).to.be.undefined;
+						});
+
+						bdd.it('emits a candy:core:chat:message:normal event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['type', 'message']);
+							expect(eventParams.type).to.eql('normal');
+							expect(eventParams.message.attr('from')).to.eql('crone1@shakespeare.lit/desktop');
+						});
+					});
 				});
 			});
 
@@ -722,7 +794,43 @@ define([
 						expect(eventParams.message.attr('from')).to.eql('coven@chat.shakespeare.lit');
 					});
 
-					bdd.describe('with only the minimal required data', function () {});
+					bdd.describe('with only the minimal required data', function () {
+						var receiveMessage = function () {
+							var message = new Strophe.Builder('message', {
+								from: 'coven@chat.shakespeare.lit',
+								type: 'normal'
+							})
+							.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
+							.c('invite', {from: 'crone1@shakespeare.lit/desktop'});
+
+							testHelper.receiveStanza(message);
+						};
+
+						bdd.it('emits a candy:core:chat:invite event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+							expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+							expect(eventParams.reason).to.be.undefined;
+							expect(eventParams.password).to.be.undefined;
+							expect(eventParams.continuedThread).to.be.undefined;
+						});
+
+						bdd.it('emits a candy:core:chat:message:normal event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['type', 'message']);
+							expect(eventParams.type).to.eql('normal');
+							expect(eventParams.message.attr('from')).to.eql('coven@chat.shakespeare.lit');
+						});
+					});
 				});
 
 				bdd.describe('and contain a direct MUC invite', function () {
@@ -768,7 +876,45 @@ define([
 						expect(eventParams.message.attr('from')).to.eql('crone1@shakespeare.lit/desktop');
 					});
 
-					bdd.describe('with only the minimal required data', function () {});
+					bdd.describe('with only the minimal required data', function () {
+						var receiveMessage = function () {
+							var message = new Strophe.Builder('message', {
+								from: 'crone1@shakespeare.lit/desktop',
+								type: 'normal'
+							})
+							.c('x', {
+								xmlns: 'jabber:x:conference',
+								jid: 'coven@chat.shakespeare.lit'
+							});
+
+							testHelper.receiveStanza(message);
+						};
+
+						bdd.it('emits a candy:core:chat:invite event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+							expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+							expect(eventParams.reason).to.be.undefined;
+							expect(eventParams.password).to.be.undefined;
+							expect(eventParams.continuedThread).to.be.undefined;
+						});
+
+						bdd.it('emits a candy:core:chat:message:normal event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['type', 'message']);
+							expect(eventParams.type).to.eql('normal');
+							expect(eventParams.message.attr('from')).to.eql('crone1@shakespeare.lit/desktop');
+						});
+					});
 				});
 			});
 
