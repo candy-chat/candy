@@ -386,7 +386,7 @@ define([
 						})
 						.c('x', {xmlns: 'http://jabber.org/protocol/muc'}).up()
 						.c('error', {by: 'coven@chat.shakespeare.lit', type: 'modify'})
-	    			.c('jid-malformed', {xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas'});
+						.c('jid-malformed', {xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas'});
 
 						testHelper.receiveStanza(presence);
 					};

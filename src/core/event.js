@@ -493,8 +493,6 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 * Room specific events
 		 */
 		Room: {
-
-
 			/** Function: Disco
 			 * Sets informations to rooms according to the disco info received.
 			 *
