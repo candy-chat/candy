@@ -866,9 +866,145 @@ define([
 						});
 					});
 
-					bdd.describe('including a subject change', function () {});
-					bdd.describe('including a typing notification', function () {});
-					bdd.describe('which indicates an error', function () {});
+					bdd.describe('including a chat state notification', function () {
+						bdd.describe('of state active', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									new Strophe.Builder('message', {
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'groupchat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('active', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+								expect(eventParams.chatstate).to.eql('active');
+							});
+						});
+
+						bdd.describe('of state composing', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									new Strophe.Builder('message', {
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'groupchat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('composing', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+								expect(eventParams.chatstate).to.eql('composing');
+							});
+						});
+
+						bdd.describe('of state paused', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									new Strophe.Builder('message', {
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'groupchat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('paused', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+								expect(eventParams.chatstate).to.eql('paused');
+							});
+						});
+
+						bdd.describe('of state inactive', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									new Strophe.Builder('message', {
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'groupchat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('inactive', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+								expect(eventParams.chatstate).to.eql('inactive');
+							});
+						});
+
+						bdd.describe('of state gone', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									new Strophe.Builder('message', {
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'groupchat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('gone', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+								expect(eventParams.chatstate).to.eql('gone');
+							});
+						});
+					});
+
+					bdd.describe('indicating a subject change', function () {});
+					bdd.describe('indicating an error', function () {});
 				});
 
 				bdd.describe('as a private message', function () {

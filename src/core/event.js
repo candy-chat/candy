@@ -782,8 +782,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						var resource = Strophe.getResourceFromJid(msg.attr('from'));
 						// Message from a user
 						if(resource) {
-							resource = Strophe.unescapeNode(resource);
-							message = { from: roomJid, name: resource, body: msg.children('body').text(), type: msg.attr('type') };
+							name = Strophe.unescapeNode(resource);
+							message = { from: roomJid, name: name, body: msg.children('body').text(), type: msg.attr('type') };
 						// Message from server (XEP-0045#registrar-statuscodes)
 						} else {
 							// we are not yet present in the room, let's just drop this message (issue #105)
@@ -799,41 +799,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						var xhtmlMessage = $($('<div>').append(xhtmlChild.children('body[xmlns="' + Strophe.NS.XHTML + '"]').first().contents()).html());
 						message.xhtmlMessage = xhtmlMessage;
 					}
-				// Typing notification
-				} else if(msg.children('composing').length > 0 || msg.children('inactive').length > 0 || msg.children('paused').length > 0) {
-					roomJid = Candy.Util.unescapeJid(msg.attr('from'));
-					name = Strophe.getResourceFromJid(roomJid);
-					var chatstate;
-					if(msg.children('composing').length > 0) {
-						chatstate = 'composing';
-					} else if(msg.children('paused').length > 0) {
-						chatstate = 'paused';
-					} else if(msg.children('inactive').length > 0) {
-						chatstate = 'inactive';
-					} else if(msg.children('gone').length > 0) {
-						chatstate = 'gone';
-					}
-					/** Event: candy:core.message.chatstate
-					 * Triggers on any recieved chatstate notification.
-					 *
-					 * The resulting message object contains the name of the person, the roomJid, and the indicated chatstate.
-					 *
-					 * The following lists explain those parameters:
-					 *
-					 * Message Object Parameters:
-					 *   (String) name - User name
-					 *   (String) roomJid - Room jid
-					 *   (String) chatstate - Chatstate being indicated. ("paused", "inactive", "composing", "gone")
-					 *
-					 * TODO:
-					 *   Perhaps handle blank "active" as specified by XEP-0085?
-					 */
-					$(Candy).triggerHandler('candy:core.message.chatstate', {
-						name: name,
-						roomJid: roomJid,
-						chatstate: chatstate
-					});
-					return true;
+
+					self.Jabber.Room._checkForChatStateNotification(msg, roomJid, name);
 				// Unhandled message
 				} else {
 					return true;
@@ -888,6 +855,30 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					timestamp: timestamp
 				});
 				return true;
+			},
+
+			_checkForChatStateNotification: function (msg, roomJid, name) {
+				var chatStateElements = msg.children('*[xmlns="http://jabber.org/protocol/chatstates"]');
+				if (chatStateElements.length > 0) {
+					/** Event: candy:core:message:chatstate
+					 * Triggers on any recieved chatstate notification.
+					 *
+					 * The resulting message object contains the name of the person, the roomJid, and the indicated chatstate.
+					 *
+					 * The following lists explain those parameters:
+					 *
+					 * Message Object Parameters:
+					 *   (String) name - User name
+					 *   (String) roomJid - Room jid
+					 *   (String) chatstate - Chatstate being indicated. ("active", "composing", "paused", "inactive", "gone")
+					 *
+					 */
+					$(Candy).triggerHandler('candy:core:message:chatstate', {
+						name: name,
+						roomJid: roomJid,
+						chatstate: chatStateElements[0].tagName
+					});
+				}
 			}
 		}
 	};
