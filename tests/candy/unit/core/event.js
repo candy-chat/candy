@@ -1004,13 +1004,44 @@ define([
 					});
 
 					bdd.describe('indicating a subject change', function () {});
-					bdd.describe('indicating an error', function () {});
 				});
 
 				bdd.describe('as a private message', function () {
 					bdd.describe('with a delay', function () {});
 					bdd.describe('including a typing notification', function () {});
-					bdd.describe('which indicates an error', function () {});
+				});
+
+				bdd.describe('indicating an error', function () {
+					var receiveMessage = function () {
+						testHelper.receiveStanza(
+							new Strophe.Builder('message', {
+								to: 'foo@bar.com',
+								from: 'coven@chat.shakespeare.lit',
+								type: 'error'
+							})
+							.c('error', {code: '403', type: 'auth'})
+							.c('forbidden', {xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas'})
+							.up()
+							.c('text', {xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas'}).t('Visitors are not allowed to send messages to all occupants')
+						);
+					};
+
+					bdd.it('emits a candy:core.message event', function () {
+						var eventParams;
+						$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.timestamp).to.be.undefined;
+
+						var message = eventParams.message;
+						expect(message).to.have.keys(['from', 'body', 'type']);
+						expect(message.from).to.eql('coven@chat.shakespeare.lit');
+						expect(message.type).to.eql('info');
+						expect(message.body).to.eql('Visitors are not allowed to send messages to all occupants');
+					});
 				});
 			});
 
