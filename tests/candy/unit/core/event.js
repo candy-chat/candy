@@ -1003,7 +1003,36 @@ define([
 						});
 					});
 
-					bdd.describe('indicating a subject change', function () {});
+					bdd.describe('indicating a subject change', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								new Strophe.Builder('message', {
+									to: 'foo@bar.com',
+									from: 'coven@chat.shakespeare.lit/thirdwitch',
+									type: 'groupchat'
+								})
+								.c('subject').t('Some new subject!')
+							);
+						};
+
+						bdd.it('emits a candy:core.message event', function () {
+							var eventParams;
+							$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+							expect(eventParams.timestamp).to.be.undefined;
+
+							var message = eventParams.message;
+							expect(message).to.have.keys(['from', 'name', 'body', 'type']);
+							expect(message.from).to.eql('coven@chat.shakespeare.lit');
+							expect(message.name).to.eql('coven');
+							expect(message.body).to.eql('Some new subject!');
+							expect(message.type).to.eql('subject');
+						});
+					});
 				});
 
 				bdd.describe('as a private message', function () {
