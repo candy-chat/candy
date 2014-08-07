@@ -466,22 +466,25 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 * Admin message
 				 *
 				 * Parameters:
-				 *   (String) type - Type of the message [default: message]
+				 *   (String) type - Type of the message
 				 *   (String) message - Message text
 				 */
-				$(Candy).triggerHandler('candy:core.chat.message.admin', { type: (type || 'message'), message: msg.children('body').text() });
+				$(Candy).triggerHandler('candy:core.chat.message.admin', {
+					type: type,
+					message: msg.children('body').text()
+				});
 			// Server Message
 			} else if(toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
 				/** Event: candy:core.chat.message.server
 				 * Server message (e.g. subject)
 				 *
 				 * Parameters:
-				 *   (String) type - Message type [default: message]
+				 *   (String) type - Message type
 				 *   (String) subject - Subject text
 				 *   (String) message - Message text
 				 */
 				$(Candy).triggerHandler('candy:core.chat.message.server', {
-					type: (type || 'message'),
+					type: type,
 					subject: msg.children('subject').text(),
 					message: msg.children('body').text()
 				});
