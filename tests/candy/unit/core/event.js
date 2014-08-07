@@ -772,7 +772,248 @@ define([
 				});
 			});
 
+			bdd.describe('which are a chat message', function () {
+				var receiveMessage = function () {
+					testHelper.receiveStanza(
+						new Strophe.Builder('message', {
+							to: 'foo@bar.com',
+							from: 'doo@dah.com/resource1',
+							type: 'chat'
+						})
+						.c('body').t('Some message text')
+						.up()
+						.c('html', {xmlns: 'http://jabber.org/protocol/xhtml-im'})
+						.c('body', {xmlns: 'http://www.w3.org/1999/xhtml'})
+						.c('p', {style: 'font-weight: bold;'}).t('hi!')
+					);
+				};
+
+				bdd.it('emits a candy:core.message event', function () {
+					var eventParams;
+					$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+					receiveMessage();
+
+					expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+					expect(eventParams.roomJid).to.eql('doo@dah.com');
+					expect(eventParams.timestamp).to.be.undefined;
+
+					var message = eventParams.message;
+					expect(message).to.have.keys(['from', 'name', 'body', 'type', 'isNoConferenceRoomJid', 'xhtmlMessage']);
+					expect(message.from).to.eql('doo@dah.com/resource1');
+					expect(message.name).to.eql('doo');
+					expect(message.type).to.eql('chat');
+					expect(message.body).to.eql('Some message text');
+					expect(message.isNoConferenceRoomJid).to.be.true;
+					expect(message.xhtmlMessage.attr('style')).to.eql('font-weight: bold;');
+				});
+
+				bdd.describe('with a delay', function () {
+					bdd.describe('according to XEP-0203', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								new Strophe.Builder('message', {
+									to: 'foo@bar.com',
+									from: 'doo@dah.com/resource1',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('delay', {
+									xmlns: 'urn:xmpp:delay',
+									from: 'coven@chat.shakespeare.lit',
+									stamp: '2002-09-10T23:08:25Z'
+							  }).t('Offline Storage')
+							);
+						};
+
+						bdd.it('emits a candy:core.message event with the timestamp', function () {
+							var eventParams;
+							$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams.timestamp).to.eql('2002-09-10T23:08:25Z');
+						});
+					});
+
+					bdd.describe('according to XEP-0091', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								new Strophe.Builder('message', {
+									to: 'foo@bar.com',
+									from: 'doo@dah.com/resource1',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('x', {
+									xmlns: 'jabber:x:delay',
+									from: 'coven@chat.shakespeare.lit',
+									stamp: '20020910T23:08:25'
+							  }).t('Offline Storage')
+							);
+						};
+
+						bdd.it('emits a candy:core.message event with the timestamp', function () {
+							var eventParams;
+							$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams.timestamp).to.eql('20020910T23:08:25');
+						});
+					});
+				});
+
+				bdd.describe('including a chat state notification', function () {
+					bdd.describe('of state active', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								new Strophe.Builder('message', {
+									to: 'foo@bar.com',
+									from: 'doo@dah.com/resource1',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('active', {xmlns: 'http://jabber.org/protocol/chatstates'})
+							);
+						};
+
+						bdd.it('emits a candy:core:message:chatstate event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+							expect(eventParams.name).to.eql('doo');
+							expect(eventParams.roomJid).to.eql('doo@dah.com');
+							expect(eventParams.chatstate).to.eql('active');
+						});
+					});
+
+					bdd.describe('of state composing', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								new Strophe.Builder('message', {
+									to: 'foo@bar.com',
+									from: 'doo@dah.com/resource1',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('composing', {xmlns: 'http://jabber.org/protocol/chatstates'})
+							);
+						};
+
+						bdd.it('emits a candy:core:message:chatstate event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+							expect(eventParams.name).to.eql('doo');
+							expect(eventParams.roomJid).to.eql('doo@dah.com');
+							expect(eventParams.chatstate).to.eql('composing');
+						});
+					});
+
+					bdd.describe('of state paused', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								new Strophe.Builder('message', {
+									to: 'foo@bar.com',
+									from: 'doo@dah.com/resource1',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('paused', {xmlns: 'http://jabber.org/protocol/chatstates'})
+							);
+						};
+
+						bdd.it('emits a candy:core:message:chatstate event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+							expect(eventParams.name).to.eql('doo');
+							expect(eventParams.roomJid).to.eql('doo@dah.com');
+							expect(eventParams.chatstate).to.eql('paused');
+						});
+					});
+
+					bdd.describe('of state inactive', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								new Strophe.Builder('message', {
+									to: 'foo@bar.com',
+									from: 'doo@dah.com/resource1',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('inactive', {xmlns: 'http://jabber.org/protocol/chatstates'})
+							);
+						};
+
+						bdd.it('emits a candy:core:message:chatstate event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+							expect(eventParams.name).to.eql('doo');
+							expect(eventParams.roomJid).to.eql('doo@dah.com');
+							expect(eventParams.chatstate).to.eql('inactive');
+						});
+					});
+
+					bdd.describe('of state gone', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								new Strophe.Builder('message', {
+									to: 'foo@bar.com',
+									from: 'doo@dah.com/resource1',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('gone', {xmlns: 'http://jabber.org/protocol/chatstates'})
+							);
+						};
+
+						bdd.it('emits a candy:core:message:chatstate event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+							expect(eventParams.name).to.eql('doo');
+							expect(eventParams.roomJid).to.eql('doo@dah.com');
+							expect(eventParams.chatstate).to.eql('gone');
+						});
+					});
+				});
+			});
+
 			bdd.describe('which are from a MUC room participant', function () {
+				var roomJid = 'coven@chat.shakespeare.lit';
+
+				var createRoom = function () {
+					var room = new Candy.Core.ChatRoom(roomJid);
+					Candy.Core.getRooms()[roomJid] = room;
+				};
+
+				bdd.beforeEach(createRoom);
+
 				bdd.describe('to the room', function () {
 					var receiveMessage = function () {
 						testHelper.receiveStanza(
@@ -1036,8 +1277,235 @@ define([
 				});
 
 				bdd.describe('as a private message', function () {
-					bdd.describe('with a delay', function () {});
-					bdd.describe('including a typing notification', function () {});
+					var receiveMessage = function () {
+						testHelper.receiveStanza(
+							new Strophe.Builder('message', {
+								to: 'foo@bar.com',
+								from: 'coven@chat.shakespeare.lit/thirdwitch',
+								type: 'chat'
+							})
+							.c('body').t('Some message text')
+							.up()
+							.c('html', {xmlns: 'http://jabber.org/protocol/xhtml-im'})
+							.c('body', {xmlns: 'http://www.w3.org/1999/xhtml'})
+							.c('p', {style: 'font-weight: bold;'}).t('hi!')
+						);
+					};
+
+					bdd.it('emits a candy:core.message event', function () {
+						var eventParams;
+						$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
+						expect(eventParams.timestamp).to.be.undefined;
+
+						var message = eventParams.message;
+						expect(message).to.have.keys(['from', 'name', 'body', 'type', 'isNoConferenceRoomJid', 'xhtmlMessage']);
+						expect(message.from).to.eql('coven@chat.shakespeare.lit/thirdwitch');
+						expect(message.name).to.eql('thirdwitch');
+						expect(message.type).to.eql('chat');
+						expect(message.body).to.eql('Some message text');
+						expect(message.isNoConferenceRoomJid).to.be.false;
+						expect(message.xhtmlMessage.attr('style')).to.eql('font-weight: bold;');
+					});
+
+					bdd.describe('with a delay', function () {
+						bdd.describe('according to XEP-0203', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									new Strophe.Builder('message', {
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'chat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('delay', {
+										xmlns: 'urn:xmpp:delay',
+										from: 'coven@chat.shakespeare.lit',
+										stamp: '2002-09-10T23:08:25Z'
+								  }).t('Offline Storage')
+								);
+							};
+
+							bdd.it('emits a candy:core.message event with the timestamp', function () {
+								var eventParams;
+								$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams.timestamp).to.eql('2002-09-10T23:08:25Z');
+							});
+						});
+
+						bdd.describe('according to XEP-0091', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									new Strophe.Builder('message', {
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'chat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('x', {
+										xmlns: 'jabber:x:delay',
+										from: 'coven@chat.shakespeare.lit',
+										stamp: '20020910T23:08:25'
+								  }).t('Offline Storage')
+								);
+							};
+
+							bdd.it('emits a candy:core.message event with the timestamp', function () {
+								var eventParams;
+								$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams.timestamp).to.eql('20020910T23:08:25');
+							});
+						});
+					});
+
+					bdd.describe('including a chat state notification', function () {
+						bdd.describe('of state active', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									new Strophe.Builder('message', {
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'chat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('active', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
+								expect(eventParams.chatstate).to.eql('active');
+							});
+						});
+
+						bdd.describe('of state composing', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									new Strophe.Builder('message', {
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'chat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('composing', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
+								expect(eventParams.chatstate).to.eql('composing');
+							});
+						});
+
+						bdd.describe('of state paused', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									new Strophe.Builder('message', {
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'chat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('paused', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
+								expect(eventParams.chatstate).to.eql('paused');
+							});
+						});
+
+						bdd.describe('of state inactive', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									new Strophe.Builder('message', {
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'chat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('inactive', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
+								expect(eventParams.chatstate).to.eql('inactive');
+							});
+						});
+
+						bdd.describe('of state gone', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									new Strophe.Builder('message', {
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'chat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('gone', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
+								expect(eventParams.chatstate).to.eql('gone');
+							});
+						});
+					});
 				});
 
 				bdd.describe('indicating an error', function () {
