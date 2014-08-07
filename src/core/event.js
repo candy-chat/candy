@@ -363,11 +363,11 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			msg = $(msg);
 
 			var fromJid = msg.attr('from'),
-				type = msg.attr('type') || 'undefined',
+				type = msg.attr('type') || 'normal',
 				toJid = msg.attr('to');
 
 			// Inspect the message type.
-			if (type === 'normal' || type === 'undefined') {
+			if (type === 'normal') {
 				var mediatedInvite = msg.find('invite'),
 					directInvite = msg.find('x[xmlns="jabber:x:conference"]');
 
@@ -398,7 +398,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					$(Candy).triggerHandler('candy:core:chat:invite', {
 						roomJid: fromJid,
 						from: mediatedInvite.attr('from') || 'undefined',
-						reason: mediatedInvite.find('reason').html() || '',
+						reason: mediatedInvite.find('reason').text() || '',
 						password: password,
 						continuedThread: continuedThread
 					});
@@ -429,12 +429,11 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 * that do not have the optional type attribute.
 				 *
 				 * Parameters:
-				 *   (String) type - Type of the message [default: message]
+				 *   (String) type - Type of the message
 				 *   (Object) message - Message object.
 				 */
-				// Detect message with type normal or with no type.
 				$(Candy).triggerHandler('candy:core:chat:message:normal', {
-					type: (type || 'normal'),
+					type: type,
 					message: msg
 				});
 
@@ -796,8 +795,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					}
 
 					var xhtmlChild = msg.children('html[xmlns="' + Strophe.NS.XHTML_IM + '"]');
-					if(Candy.View.getOptions().enableXHTML === true && xhtmlChild.length > 0) {
-						var xhtmlMessage = xhtmlChild.children('body[xmlns="' + Strophe.NS.XHTML + '"]').first().html();
+					if(xhtmlChild.length > 0) {
+						var xhtmlMessage = $($('<div>').append(xhtmlChild.children('body[xmlns="' + Strophe.NS.XHTML + '"]').first().contents()).html());
 						message.xhtmlMessage = xhtmlMessage;
 					}
 				// Typing notification
@@ -842,8 +841,14 @@ Candy.Core.Event = (function(self, Strophe, $) {
 
 				// besides the delayed delivery (XEP-0203), there exists also XEP-0091 which is the legacy delayed delivery.
 				// the x[xmlns=jabber:x:delay] is the format in XEP-0091.
-				var delay = msg.children('delay') ? msg.children('delay') : msg.children('x[xmlns="' + Strophe.NS.DELAY +'"]'),
-					timestamp = delay !== undefined ? delay.attr('stamp') : null;
+				var delay = msg.children('delay[xmlns="' + Strophe.NS.DELAY +'"]');
+
+				if (delay.length < 1) {
+					// The jQuery xpath implementation doesn't support the or operator
+					delay = msg.children('x[xmlns="' + Strophe.NS.JABBER_DELAY +'"]');
+				}
+
+				var timestamp = delay !== undefined ? delay.attr('stamp') : null;
 
 				/** Event: candy:core.message
 				 * Triggers on various message events (subject changed, private chat message, multi-user chat message).

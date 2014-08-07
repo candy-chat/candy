@@ -548,7 +548,410 @@ define([
 			bdd.describe('which contain an error', function () {});
 		});
 
-		bdd.describe('processing messages', function () {});
+		bdd.describe('processing messages', function () {
+			bdd.describe('which have no type', function () {
+				var receiveMessage = function () {
+					testHelper.receiveStanza(
+						new Strophe.Builder('message', {
+							from: 'foo@bar.com'
+						})
+						.c('body').t('Some message text')
+					);
+				};
+
+				bdd.it('emits a candy:core:chat:message:normal event', function () {
+					var eventParams;
+					$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+					receiveMessage();
+
+					expect(eventParams.type).to.eql('normal');
+					expect(eventParams.message.attr('from')).to.eql('foo@bar.com');
+				});
+
+				bdd.describe('and contain a mediated MUC invite', function () {
+					var receiveMessage = function () {
+						var message = new Strophe.Builder('message', {
+							from: 'coven@chat.shakespeare.lit'
+						})
+						.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
+						.c('invite', {from: 'crone1@shakespeare.lit/desktop'})
+							.c('reason').t('Hey Hecate, this is the place for all good witches!')
+							.up()
+							.c('continue', {thread: 'e0ffe42b28561960c6b12b944a092794b9683a38'})
+						.up().up()
+						.c('password').t('cauldronburn');
+
+						testHelper.receiveStanza(message);
+					};
+
+					bdd.it('emits a candy:core:chat:invite event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+						expect(eventParams.reason).to.eql('Hey Hecate, this is the place for all good witches!');
+						expect(eventParams.password).to.eql('cauldronburn');
+						expect(eventParams.continuedThread).to.eql('e0ffe42b28561960c6b12b944a092794b9683a38');
+					});
+
+					bdd.it('emits a candy:core:chat:message:normal event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['type', 'message']);
+						expect(eventParams.type).to.eql('normal');
+						expect(eventParams.message.attr('from')).to.eql('coven@chat.shakespeare.lit');
+					});
+
+					bdd.describe('with only the minimal required data', function () {});
+				});
+
+				bdd.describe('and contain a direct MUC invite', function () {
+					var receiveMessage = function () {
+						var message = new Strophe.Builder('message', {
+							from: 'crone1@shakespeare.lit/desktop'
+						})
+						.c('x', {
+							xmlns: 'jabber:x:conference',
+							continue: 'true',
+							jid: 'coven@chat.shakespeare.lit',
+							password: 'cauldronburn',
+							reason: 'Hey Hecate, this is the place for all good witches!',
+							thread: 'e0ffe42b28561960c6b12b944a092794b9683a38'
+						});
+
+						testHelper.receiveStanza(message);
+					};
+
+					bdd.it('emits a candy:core:chat:invite event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+						expect(eventParams.reason).to.eql('Hey Hecate, this is the place for all good witches!');
+						expect(eventParams.password).to.eql('cauldronburn');
+						expect(eventParams.continuedThread).to.eql('e0ffe42b28561960c6b12b944a092794b9683a38');
+					});
+
+					bdd.it('emits a candy:core:chat:message:normal event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['type', 'message']);
+						expect(eventParams.type).to.eql('normal');
+						expect(eventParams.message.attr('from')).to.eql('crone1@shakespeare.lit/desktop');
+					});
+
+					bdd.describe('with only the minimal required data', function () {});
+				});
+			});
+
+			bdd.describe('which are normal', function () {
+				var receiveMessage = function () {
+					testHelper.receiveStanza(
+						new Strophe.Builder('message', {
+							from: 'foo@bar.com',
+							type: 'normal'
+						})
+						.c('body').t('Some message text')
+					);
+				};
+
+				bdd.it('emits a candy:core:chat:message:normal event', function () {
+					var eventParams;
+					$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+					receiveMessage();
+
+					expect(eventParams.type).to.eql('normal');
+					expect(eventParams.message.attr('from')).to.eql('foo@bar.com');
+				});
+
+				bdd.describe('and contain a mediated MUC invite', function () {
+					var receiveMessage = function () {
+						var message = new Strophe.Builder('message', {
+							from: 'coven@chat.shakespeare.lit',
+							type: 'normal'
+						})
+						.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
+						.c('invite', {from: 'crone1@shakespeare.lit/desktop'})
+							.c('reason').t('Hey Hecate, this is the place for all good witches!')
+							.up()
+							.c('continue', {thread: 'e0ffe42b28561960c6b12b944a092794b9683a38'})
+						.up().up()
+						.c('password').t('cauldronburn');
+
+						testHelper.receiveStanza(message);
+					};
+
+					bdd.it('emits a candy:core:chat:invite event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+						expect(eventParams.reason).to.eql('Hey Hecate, this is the place for all good witches!');
+						expect(eventParams.password).to.eql('cauldronburn');
+						expect(eventParams.continuedThread).to.eql('e0ffe42b28561960c6b12b944a092794b9683a38');
+					});
+
+					bdd.it('emits a candy:core:chat:message:normal event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['type', 'message']);
+						expect(eventParams.type).to.eql('normal');
+						expect(eventParams.message.attr('from')).to.eql('coven@chat.shakespeare.lit');
+					});
+
+					bdd.describe('with only the minimal required data', function () {});
+				});
+
+				bdd.describe('and contain a direct MUC invite', function () {
+					var receiveMessage = function () {
+						var message = new Strophe.Builder('message', {
+							from: 'crone1@shakespeare.lit/desktop',
+							type: 'normal'
+						})
+						.c('x', {
+							xmlns: 'jabber:x:conference',
+							continue: 'true',
+							jid: 'coven@chat.shakespeare.lit',
+							password: 'cauldronburn',
+							reason: 'Hey Hecate, this is the place for all good witches!',
+							thread: 'e0ffe42b28561960c6b12b944a092794b9683a38'
+						});
+
+						testHelper.receiveStanza(message);
+					};
+
+					bdd.it('emits a candy:core:chat:invite event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+						expect(eventParams.reason).to.eql('Hey Hecate, this is the place for all good witches!');
+						expect(eventParams.password).to.eql('cauldronburn');
+						expect(eventParams.continuedThread).to.eql('e0ffe42b28561960c6b12b944a092794b9683a38');
+					});
+
+					bdd.it('emits a candy:core:chat:message:normal event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['type', 'message']);
+						expect(eventParams.type).to.eql('normal');
+						expect(eventParams.message.attr('from')).to.eql('crone1@shakespeare.lit/desktop');
+					});
+
+					bdd.describe('with only the minimal required data', function () {});
+				});
+			});
+
+			bdd.describe('which are from a MUC room participant', function () {
+				bdd.describe('to the room', function () {
+					var receiveMessage = function () {
+						testHelper.receiveStanza(
+							new Strophe.Builder('message', {
+								to: 'foo@bar.com',
+								from: 'coven@chat.shakespeare.lit/thirdwitch',
+								type: 'groupchat'
+							})
+							.c('body').t('Some message text')
+							.up()
+							.c('html', {xmlns: 'http://jabber.org/protocol/xhtml-im'})
+							.c('body', {xmlns: 'http://www.w3.org/1999/xhtml'})
+							.c('p', {style: 'font-weight: bold;'}).t('hi!')
+						);
+					};
+
+					bdd.it('emits a candy:core.message event', function () {
+						var eventParams;
+						$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.timestamp).to.be.undefined;
+
+						var message = eventParams.message;
+						expect(message).to.have.keys(['from', 'name', 'body', 'type', 'xhtmlMessage']);
+						expect(message.from).to.eql('coven@chat.shakespeare.lit');
+						expect(message.name).to.eql('thirdwitch');
+						expect(message.type).to.eql('groupchat');
+						expect(message.body).to.eql('Some message text');
+						expect(message.xhtmlMessage.attr('style')).to.eql('font-weight: bold;');
+					});
+
+					bdd.describe('with a delay', function () {
+						bdd.describe('according to XEP-0203', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									new Strophe.Builder('message', {
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'groupchat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('delay', {
+										xmlns: 'urn:xmpp:delay',
+										from: 'coven@chat.shakespeare.lit',
+										stamp: '2002-09-10T23:08:25Z'
+								  }).t('Offline Storage')
+								);
+							};
+
+							bdd.it('emits a candy:core.message event with the timestamp', function () {
+								var eventParams;
+								$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams.timestamp).to.eql('2002-09-10T23:08:25Z');
+							});
+						});
+
+						bdd.describe('according to XEP-0091', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									new Strophe.Builder('message', {
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'groupchat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('x', {
+										xmlns: 'jabber:x:delay',
+										from: 'coven@chat.shakespeare.lit',
+										stamp: '20020910T23:08:25'
+								  }).t('Offline Storage')
+								);
+							};
+
+							bdd.it('emits a candy:core.message event with the timestamp', function () {
+								var eventParams;
+								$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams.timestamp).to.eql('20020910T23:08:25');
+							});
+						});
+					});
+
+					bdd.describe('including a subject change', function () {});
+					bdd.describe('including a typing notification', function () {});
+					bdd.describe('which indicates an error', function () {});
+				});
+
+				bdd.describe('as a private message', function () {
+					bdd.describe('with a delay', function () {});
+					bdd.describe('including a typing notification', function () {});
+					bdd.describe('which indicates an error', function () {});
+				});
+			});
+
+			bdd.describe('which are from a MUC room itself', function () {
+				bdd.describe('in which we are present', function () {});
+				bdd.describe('in which we are not present', function () {});
+			});
+
+			bdd.describe('which are of a type not listed in the XMPP spec', function () {
+				var receiveMessage = function () {
+					testHelper.receiveStanza(
+						new Strophe.Builder('message', {
+							from: 'foo@bar.com',
+							type: 'randomtype'
+						})
+						.c('body').t('Some message text')
+					);
+				};
+
+				bdd.it('emits a candy:core:chat:message:other event', function () {
+					var eventParams;
+					$(Candy).on('candy:core:chat:message:other', function (ev, params) { eventParams = params; });
+
+					receiveMessage();
+
+					expect(eventParams.type).to.eql('randomtype');
+					expect(eventParams.message.attr('from')).to.eql('foo@bar.com');
+				});
+			});
+
+			bdd.describe('which are from a server admin (broadcast)', function () {
+				var receiveMessage = function () {
+					testHelper.receiveStanza(
+						new Strophe.Builder('message', {
+							from: 'bar.com',
+							type: 'headline'
+						})
+						.c('body').t('Some message text')
+					);
+				};
+
+				bdd.it('emits a candy:core.chat.message.admin event', function () {
+					var eventParams;
+					$(Candy).on('candy:core.chat.message.admin', function (ev, params) { eventParams = params; });
+
+					receiveMessage();
+
+					expect(eventParams.type).to.eql('headline');
+					expect(eventParams.message).to.eql('Some message text');
+				});
+			});
+
+			bdd.describe('which are from the server', function () {
+				var receiveMessage = function () {
+					testHelper.receiveStanza(
+						new Strophe.Builder('message', {
+							from: 'bar.com',
+							type: 'headline',
+							to: 'doo@dah.com'
+						})
+						.c('subject').t('Hey!').up()
+						.c('body').t('Some message text')
+					);
+				};
+
+				bdd.it('emits a candy:core.chat.message.server event', function () {
+					var eventParams;
+					$(Candy).on('candy:core.chat.message.server', function (ev, params) { eventParams = params; });
+
+					receiveMessage();
+
+					expect(eventParams.type).to.eql('headline');
+					expect(eventParams.subject).to.eql('Hey!');
+					expect(eventParams.message).to.eql('Some message text');
+				});
+			});
+		});
 
 		bdd.describe('processing room disco info', function () {});
 	});

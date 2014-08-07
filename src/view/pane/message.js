@@ -98,7 +98,7 @@ Candy.View.Pane = (function(self, $) {
      */
     show: function(roomJid, name, message, xhtmlMessage, timestamp) {
       message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
-      if(xhtmlMessage) {
+      if(Candy.View.getOptions().enableXHTML === true && xhtmlMessage) {
         xhtmlMessage = Candy.Util.parseAndCropXhtml(xhtmlMessage, Candy.View.getOptions().crop.message.body);
       }
 

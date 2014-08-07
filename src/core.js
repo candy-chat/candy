@@ -105,7 +105,8 @@ Candy.Core = (function(self, Strophe, $) {
 			_addNamespace('PRIVATE', 'jabber:iq:private');
 			_addNamespace('BOOKMARKS', 'storage:bookmarks');
 			_addNamespace('PRIVACY', 'jabber:iq:privacy');
-			_addNamespace('DELAY', 'jabber:x:delay');
+			_addNamespace('DELAY', 'urn:xmpp:delay');
+			_addNamespace('JABBER_DELAY', 'jabber:x:delay');
 			_addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
 		},
 
