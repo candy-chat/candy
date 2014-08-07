@@ -17,6 +17,10 @@ define([
 	bdd.describe('Candy.Core.Event', function () {
 		testHelper.setupTests(bdd, sinon);
 
+		bdd.describe('processing strophe connection status events', function () {});
+
+		bdd.describe('processing requests for client version', function () {});
+
 		bdd.describe('processing non-MUC presence', function () {
 			var receivePresence = function () {
 				var presence = new Strophe.Builder('presence', {
@@ -533,5 +537,19 @@ define([
 				});
 			});
 		});
+
+		bdd.describe('processing lists of bookmarks', function () {
+			bdd.describe('from pubsub', function () {});
+
+			bdd.describe('from private storage', function () {});
+		});
+
+		bdd.describe('processing privacy lists', function () {
+			bdd.describe('which contain an error', function () {});
+		});
+
+		bdd.describe('processing messages', function () {});
+
+		bdd.describe('processing room disco info', function () {});
 	});
 });
