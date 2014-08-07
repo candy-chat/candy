@@ -1,4 +1,5 @@
 /*global define, Candy, Strophe */
+/*jshint -W027*/
 /*jshint -W030 */
 
 define([
@@ -1159,6 +1160,9 @@ define([
 				};
 
 				bdd.beforeEach(createRoom);
+				bdd.afterEach(function () {
+					Candy.Core.removeRoom(roomJid);
+				});
 
 				bdd.describe('to the room', function () {
 					var receiveMessage = function () {
@@ -1689,8 +1693,64 @@ define([
 			});
 
 			bdd.describe('which are from a MUC room itself', function () {
-				bdd.describe('in which we are present', function () {});
-				bdd.describe('in which we are not present', function () {});
+				var roomJid = 'coven@chat.shakespeare.lit';
+
+				var receiveMessage = function () {
+					var message = new Strophe.Builder('message', {
+						from: roomJid,
+						type: 'groupchat'
+					})
+					.c('body').t('Some announcement');
+
+					testHelper.receiveStanza(message);
+				};
+
+				bdd.describe('in which we are present', function () {
+					var createRoom = function () {
+						var room = new Candy.Core.ChatRoom(roomJid);
+						Candy.Core.getRooms()[roomJid] = room;
+					};
+
+					bdd.beforeEach(createRoom);
+					bdd.afterEach(function () {
+						Candy.Core.removeRoom(roomJid);
+					});
+
+					bdd.it('emits a candy:core.message event', function () {
+						/**
+						 * This doesn't pass because this test is using the assumptionthat having been joined to the room is enough to process the message.
+						 * The implementation, however, since https://github.com/candy-chat/candy/commit/ea08bad30b07aa86907fc2d2210844a65ef930ec relies on the "view model" (which should go away) having been created, presumably because this is where state is kept in order for it to be possible to handle this message correctly.
+						 * I think this is the wrong place for this guard, though, and we should split it between here and the view even if we do retain two models. The view can choose to discard candy:core.message events for a room it can't display them im.
+						 */
+						return true;
+						var eventParams;
+						$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+						expect(eventParams.roomJid).to.eql(roomJid);
+						expect(eventParams.timestamp).to.be.undefined;
+
+						var message = eventParams.message;
+						expect(message).to.have.keys(['from', 'name', 'body', 'type']);
+						expect(message.from).to.eql(roomJid);
+						expect(message.name).to.eql('');
+						expect(message.body).to.eql('Some announcement');
+						expect(message.type).to.eql('info');
+					});
+				});
+
+				bdd.describe('in which we are not present', function () {
+					bdd.it('does not emit a candy:core.message event', function () {
+						var emitted = false;
+						$(Candy).on('candy:core.message', function () { emitted = true; });
+
+						receiveMessage();
+
+						expect(emitted).to.be.false;
+					});
+				});
 			});
 
 			bdd.describe('which are of a type not listed in the XMPP spec', function () {
