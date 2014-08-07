@@ -256,7 +256,7 @@ Candy.View.Pane = (function(self, $) {
      *   (String) message - Message
      */
     onInfoMessage: function(roomJid, subject, message) {
-      if(Candy.View.getCurrent().roomJid) { // Simply dismiss info message if no room joined so far. TODO: maybe we should show those messages on a dedicated pane?
+      if(Candy.View.getCurrent().roomJid && self.Chat.rooms[roomJid]) { // Simply dismiss info message if no room joined so far. TODO: maybe we should show those messages on a dedicated pane?
         var html = Mustache.to_html(Candy.View.Template.Chat.infoMessage, {
           subject: subject,
           message: $.i18n._(message),

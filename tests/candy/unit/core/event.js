@@ -1717,12 +1717,6 @@ define([
 					});
 
 					bdd.it('emits a candy:core.message event', function () {
-						/**
-						 * This doesn't pass because this test is using the assumptionthat having been joined to the room is enough to process the message.
-						 * The implementation, however, since https://github.com/candy-chat/candy/commit/ea08bad30b07aa86907fc2d2210844a65ef930ec relies on the "view model" (which should go away) having been created, presumably because this is where state is kept in order for it to be possible to handle this message correctly.
-						 * I think this is the wrong place for this guard, though, and we should split it between here and the view even if we do retain two models. The view can choose to discard candy:core.message events for a room it can't display them im.
-						 */
-						return true;
 						var eventParams;
 						$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
 
