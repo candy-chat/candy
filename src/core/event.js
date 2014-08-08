@@ -695,7 +695,6 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					'actor': actor,
 					'user': user
 				});
-				return true;
 			},
 
 			/** Function: PresenceError
