@@ -554,22 +554,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				var from = Candy.Util.unescapeJid(msg.attr('from')),
 					roomJid = Strophe.getBareJidFromJid(from),
 					presenceType = msg.attr('type'),
-					status = msg.find('status'),
-					nickAssign = false,
-					nickChange = false;
-
-				if(status.length) {
-					// check if status code indicates a nick assignment or nick change
-					for(var i = 0, l = status.length; i < l; i++) {
-						var $status = $(status[i]),
-							code = $status.attr('code');
-						if(code === '303') {
-							nickChange = true;
-						} else if(code === '210') {
-							nickAssign = true;
-						}
-					}
-				}
+					nickAssign = self.Jabber.Room._msgHasStatusCode(msg, 210),
+					nickChange = self.Jabber.Room._msgHasStatusCode(msg, 303);
 
 				// Current User joined a room
 				var room = Candy.Core.getRoom(roomJid);
@@ -624,9 +610,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					} else {
 						action = 'leave';
 						if(item.attr('role') === 'none') {
-							if(msg.find('status').attr('code') === '307') {
+							if(self.Jabber.Room._msgHasStatusCode(msg, 307)) {
 								action = 'kick';
-							} else if(msg.find('status').attr('code') === '301') {
+							} else if(self.Jabber.Room._msgHasStatusCode(msg, 301)) {
 								action = 'ban';
 							}
 						}
@@ -656,6 +642,10 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					'currentUser': currentUser
 				});
 				return true;
+			},
+
+			_msgHasStatusCode: function (msg, code) {
+				return msg.find('status[code="' + code + '"]').length > 0;
 			},
 
 			_selfLeave: function(msg, from, roomJid, roomName, action) {
