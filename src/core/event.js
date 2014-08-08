@@ -362,31 +362,13 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			Candy.Core.log('[Jabber] Message');
 			msg = $(msg);
 
-			var fromJid = msg.attr('from'),
-				type = msg.attr('type') || 'normal',
-				toJid = msg.attr('to');
+			var type = msg.attr('type') || 'normal';
 
-			// Inspect the message type.
 			switch (type) {
 				case 'normal':
-					var mediatedInvite = msg.find('invite'),
-						directInvite = msg.find('x[xmlns="jabber:x:conference"]');
+					var invite = self.Jabber._findInvite(msg);
 
-					if(mediatedInvite.length > 0) {
-						var passwordNode = msg.find('password'),
-							password,
-							reasonNode = mediatedInvite.find('reason'),
-							reason,
-							continueNode = mediatedInvite.find('continue');
-
-						if(passwordNode.text() !== '') {
-							password = passwordNode.text();
-						}
-
-						if(reasonNode.text() !== '') {
-							reason = reasonNode.text();
-						}
-
+					if (invite) {
 						/** Event: candy:core:chat:invite
 						 * Incoming chat invite for a MUC.
 						 *
@@ -397,33 +379,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						 *   (String) password - Password for the room
 						 *   (String) continuedThread - The thread ID if this is a continuation of a 1-on-1 chat
 						 */
-						$(Candy).triggerHandler('candy:core:chat:invite', {
-							roomJid: fromJid,
-							from: mediatedInvite.attr('from'),
-							reason: reason,
-							password: password,
-							continuedThread: continueNode.attr('thread')
-						});
-					}
-
-					if(directInvite.length > 0) {
-						/** Event: candy:core:chat:invite
-						 * Incoming chat invite for a MUC.
-						 *
-						 * Parameters:
-						 *   (String) roomJid - The room the invite is to
-						 *   (String) from - User JID that invite is from text
-						 *   (String) reason - Reason for invite
-						 *   (String) password - Password for the room
-						 *   (String) continuedThread - The thread ID if this is a continuation of a 1-on-1 chat
-						 */
-						$(Candy).triggerHandler('candy:core:chat:invite', {
-							roomJid: directInvite.attr('jid'),
-							from: fromJid,
-							reason: directInvite.attr('reason'),
-							password: directInvite.attr('password'),
-							continuedThread: directInvite.attr('thread')
-						});
+						$(Candy).triggerHandler('candy:core:chat:invite', invite);
 					}
 
 					/** Event: candy:core:chat:message:normal
@@ -441,7 +397,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					break;
 				case 'headline':
 					// Admin message
-					if(!toJid) {
+					if(!msg.attr('to')) {
 						/** Event: candy:core.chat.message.admin
 						 * Admin message
 						 *
@@ -494,6 +450,48 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			}
 
 			return true;
+		},
+
+		_findInvite: function (msg) {
+			var mediatedInvite = msg.find('invite'),
+				directInvite = msg.find('x[xmlns="jabber:x:conference"]'),
+				invite;
+
+			if(mediatedInvite.length > 0) {
+				var passwordNode = msg.find('password'),
+					password,
+					reasonNode = mediatedInvite.find('reason'),
+					reason,
+					continueNode = mediatedInvite.find('continue');
+
+				if(passwordNode.text() !== '') {
+					password = passwordNode.text();
+				}
+
+				if(reasonNode.text() !== '') {
+					reason = reasonNode.text();
+				}
+
+				invite = {
+					roomJid: msg.attr('from'),
+					from: mediatedInvite.attr('from'),
+					reason: reason,
+					password: password,
+					continuedThread: continueNode.attr('thread')
+				};
+			}
+
+			if(directInvite.length > 0) {
+				invite = {
+					roomJid: directInvite.attr('jid'),
+					from: msg.attr('from'),
+					reason: directInvite.attr('reason'),
+					password: directInvite.attr('password'),
+					continuedThread: directInvite.attr('thread')
+				};
+			}
+
+			return invite;
 		},
 
 		/** Class: Candy.Core.Event.Jabber.Room
