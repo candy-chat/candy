@@ -1,4 +1,4 @@
-/*global define, Strophe, Candy */
+/*global define, Strophe, Candy, $ */
 
 'use strict';
 
@@ -68,6 +68,9 @@
 		fakeConnection.addHandler(fakeConnection.roster._onReceiveIQ.bind(fakeConnection.roster), Strophe.NS.ROSTER, 'iq', "set", null, null);
 
 		Candy.Core.registerEventHandlers();
+
+		// Remove all event handlers
+		$(Candy).off();
 
 		return fakeConnection;
 	};

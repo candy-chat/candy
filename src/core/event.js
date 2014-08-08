@@ -363,26 +363,27 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			msg = $(msg);
 
 			var fromJid = msg.attr('from'),
-				type = msg.attr('type') || 'undefined',
+				type = msg.attr('type') || 'normal',
 				toJid = msg.attr('to');
 
 			// Inspect the message type.
-			if (type === 'normal' || type === 'undefined') {
+			if (type === 'normal') {
 				var mediatedInvite = msg.find('invite'),
 					directInvite = msg.find('x[xmlns="jabber:x:conference"]');
 
 				if(mediatedInvite.length > 0) {
 					var passwordNode = msg.find('password'),
-						password = null,
-						continueNode = mediatedInvite.find('continue'),
-						continuedThread = null;
+						password,
+						reasonNode = mediatedInvite.find('reason'),
+						reason,
+						continueNode = mediatedInvite.find('continue');
 
-					if(passwordNode) {
+					if(passwordNode.text() !== '') {
 						password = passwordNode.text();
 					}
 
-					if(continueNode) {
-						continuedThread = continueNode.attr('thread');
+					if(reasonNode.text() !== '') {
+						reason = reasonNode.text();
 					}
 
 					/** Event: candy:core:chat:invite
@@ -391,16 +392,16 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					 * Parameters:
 					 *   (String) roomJid - The room the invite is to
 					 *   (String) from - User JID that invite is from text
-					 *   (String) reason - Reason for invite [default: '']
-					 *   (String) password - Password for the room [default: null]
-					 *   (String) continuedThread - The thread ID if this is a continuation of a 1-on-1 chat [default: null]
+					 *   (String) reason - Reason for invite
+					 *   (String) password - Password for the room
+					 *   (String) continuedThread - The thread ID if this is a continuation of a 1-on-1 chat
 					 */
 					$(Candy).triggerHandler('candy:core:chat:invite', {
 						roomJid: fromJid,
-						from: mediatedInvite.attr('from') || 'undefined',
-						reason: mediatedInvite.find('reason').html() || '',
+						from: mediatedInvite.attr('from'),
+						reason: reason,
 						password: password,
-						continuedThread: continuedThread
+						continuedThread: continueNode.attr('thread')
 					});
 				}
 
@@ -411,14 +412,14 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					 * Parameters:
 					 *   (String) roomJid - The room the invite is to
 					 *   (String) from - User JID that invite is from text
-					 *   (String) reason - Reason for invite [default: '']
-					 *   (String) password - Password for the room [default: null]
-					 *   (String) continuedThread - The thread ID if this is a continuation of a 1-on-1 chat [default: null]
+					 *   (String) reason - Reason for invite
+					 *   (String) password - Password for the room
+					 *   (String) continuedThread - The thread ID if this is a continuation of a 1-on-1 chat
 					 */
 					$(Candy).triggerHandler('candy:core:chat:invite', {
 						roomJid: directInvite.attr('jid'),
 						from: fromJid,
-						reason: directInvite.attr('reason') || '',
+						reason: directInvite.attr('reason'),
 						password: directInvite.attr('password'),
 						continuedThread: directInvite.attr('thread')
 					});
@@ -429,12 +430,11 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 * that do not have the optional type attribute.
 				 *
 				 * Parameters:
-				 *   (String) type - Type of the message [default: message]
+				 *   (String) type - Type of the message
 				 *   (Object) message - Message object.
 				 */
-				// Detect message with type normal or with no type.
 				$(Candy).triggerHandler('candy:core:chat:message:normal', {
-					type: (type || 'normal'),
+					type: type,
 					message: msg
 				});
 
@@ -466,22 +466,25 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 * Admin message
 				 *
 				 * Parameters:
-				 *   (String) type - Type of the message [default: message]
+				 *   (String) type - Type of the message
 				 *   (String) message - Message text
 				 */
-				$(Candy).triggerHandler('candy:core.chat.message.admin', { type: (type || 'message'), message: msg.children('body').text() });
+				$(Candy).triggerHandler('candy:core.chat.message.admin', {
+					type: type,
+					message: msg.children('body').text()
+				});
 			// Server Message
 			} else if(toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
 				/** Event: candy:core.chat.message.server
 				 * Server message (e.g. subject)
 				 *
 				 * Parameters:
-				 *   (String) type - Message type [default: message]
+				 *   (String) type - Message type
 				 *   (String) subject - Subject text
 				 *   (String) message - Message text
 				 */
 				$(Candy).triggerHandler('candy:core.chat.message.server', {
-					type: (type || 'message'),
+					type: type,
 					subject: msg.children('subject').text(),
 					message: msg.children('body').text()
 				});
@@ -493,8 +496,6 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 * Room specific events
 		 */
 		Room: {
-
-
 			/** Function: Disco
 			 * Sets informations to rooms according to the disco info received.
 			 *
@@ -785,12 +786,12 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						var resource = Strophe.getResourceFromJid(msg.attr('from'));
 						// Message from a user
 						if(resource) {
-							resource = Strophe.unescapeNode(resource);
-							message = { from: roomJid, name: resource, body: msg.children('body').text(), type: msg.attr('type') };
+							name = Strophe.unescapeNode(resource);
+							message = { from: roomJid, name: name, body: msg.children('body').text(), type: msg.attr('type') };
 						// Message from server (XEP-0045#registrar-statuscodes)
 						} else {
 							// we are not yet present in the room, let's just drop this message (issue #105)
-							if(!Candy.View.Pane.Chat.rooms[msg.attr('from')]) {
+							if(!Candy.Core.getRooms()[msg.attr('from')]) {
 								return true;
 							}
 							message = { from: roomJid, name: '', body: msg.children('body').text(), type: 'info' };
@@ -798,45 +799,12 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					}
 
 					var xhtmlChild = msg.children('html[xmlns="' + Strophe.NS.XHTML_IM + '"]');
-					if(Candy.View.getOptions().enableXHTML === true && xhtmlChild.length > 0) {
-						var xhtmlMessage = xhtmlChild.children('body[xmlns="' + Strophe.NS.XHTML + '"]').first().html();
+					if(xhtmlChild.length > 0) {
+						var xhtmlMessage = $($('<div>').append(xhtmlChild.children('body[xmlns="' + Strophe.NS.XHTML + '"]').first().contents()).html());
 						message.xhtmlMessage = xhtmlMessage;
 					}
-				// Typing notification
-				} else if(msg.children('composing').length > 0 || msg.children('inactive').length > 0 || msg.children('paused').length > 0) {
-					roomJid = Candy.Util.unescapeJid(msg.attr('from'));
-					name = Strophe.getResourceFromJid(roomJid);
-					var chatstate;
-					if(msg.children('composing').length > 0) {
-						chatstate = 'composing';
-					} else if(msg.children('paused').length > 0) {
-						chatstate = 'paused';
-					} else if(msg.children('inactive').length > 0) {
-						chatstate = 'inactive';
-					} else if(msg.children('gone').length > 0) {
-						chatstate = 'gone';
-					}
-					/** Event: candy:core.message.chatstate
-					 * Triggers on any recieved chatstate notification.
-					 *
-					 * The resulting message object contains the name of the person, the roomJid, and the indicated chatstate.
-					 *
-					 * The following lists explain those parameters:
-					 *
-					 * Message Object Parameters:
-					 *   (String) name - User name
-					 *   (String) roomJid - Room jid
-					 *   (String) chatstate - Chatstate being indicated. ("paused", "inactive", "composing", "gone")
-					 *
-					 * TODO:
-					 *   Perhaps handle blank "active" as specified by XEP-0085?
-					 */
-					$(Candy).triggerHandler('candy:core.message.chatstate', {
-						name: name,
-						roomJid: roomJid,
-						chatstate: chatstate
-					});
-					return true;
+
+					self.Jabber.Room._checkForChatStateNotification(msg, roomJid, name);
 				// Unhandled message
 				} else {
 					return true;
@@ -844,8 +812,14 @@ Candy.Core.Event = (function(self, Strophe, $) {
 
 				// besides the delayed delivery (XEP-0203), there exists also XEP-0091 which is the legacy delayed delivery.
 				// the x[xmlns=jabber:x:delay] is the format in XEP-0091.
-				var delay = msg.children('delay') ? msg.children('delay') : msg.children('x[xmlns="' + Strophe.NS.DELAY +'"]'),
-					timestamp = delay !== undefined ? delay.attr('stamp') : null;
+				var delay = msg.children('delay[xmlns="' + Strophe.NS.DELAY +'"]');
+
+				if (delay.length < 1) {
+					// The jQuery xpath implementation doesn't support the or operator
+					delay = msg.children('x[xmlns="' + Strophe.NS.JABBER_DELAY +'"]');
+				}
+
+				var timestamp = delay !== undefined ? delay.attr('stamp') : null;
 
 				/** Event: candy:core.message
 				 * Triggers on various message events (subject changed, private chat message, multi-user chat message).
@@ -885,6 +859,30 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					timestamp: timestamp
 				});
 				return true;
+			},
+
+			_checkForChatStateNotification: function (msg, roomJid, name) {
+				var chatStateElements = msg.children('*[xmlns="http://jabber.org/protocol/chatstates"]');
+				if (chatStateElements.length > 0) {
+					/** Event: candy:core:message:chatstate
+					 * Triggers on any recieved chatstate notification.
+					 *
+					 * The resulting message object contains the name of the person, the roomJid, and the indicated chatstate.
+					 *
+					 * The following lists explain those parameters:
+					 *
+					 * Message Object Parameters:
+					 *   (String) name - User name
+					 *   (String) roomJid - Room jid
+					 *   (String) chatstate - Chatstate being indicated. ("active", "composing", "paused", "inactive", "gone")
+					 *
+					 */
+					$(Candy).triggerHandler('candy:core:message:chatstate', {
+						name: name,
+						roomJid: roomJid,
+						chatstate: chatStateElements[0].tagName
+					});
+				}
 			}
 		}
 	};

@@ -92,7 +92,7 @@ module.exports = function(grunt) {
 			},
 			bundle: {
 				files: ['src/**/*.js'],
-				tasks: ['jshint', 'uglify:bundle', 'uglify:min', 'notify:bundle', 'intern:unit']
+				tasks: ['todo:src', 'jshint', 'uglify:bundle', 'uglify:min', 'notify:bundle', 'intern:unit']
 			},
 			libs: {
 				files: ['bower_components/*/**/*.js', 'vendor_libs/*/**/*.js'],
@@ -100,11 +100,11 @@ module.exports = function(grunt) {
 			},
 			tests: {
 				files: ['tests/candy/unit/**/*.js'],
-				tasks: ['jshint', 'intern:unit']
+				tasks: ['todo:tests', 'jshint', 'intern:unit']
 			},
 			functional_tests: {
 				files: ['tests/candy/functional/**/*.js'],
-				tasks: ['jshint', 'intern:functional']
+				tasks: ['todo:tests', 'jshint', 'intern:functional']
 			}
 		},
 		natural_docs: {
@@ -179,6 +179,11 @@ module.exports = function(grunt) {
 			all: {
 				src: 'lcov.info',
 			}
+		},
+		todo: {
+			options: {},
+			src: ['src/**/*.js'],
+			tests: ['tests/**/*.js']
 		}
 	});
 
@@ -193,9 +198,10 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('intern');
 	grunt.loadNpmTasks('grunt-clear');
 	grunt.loadNpmTasks('grunt-coveralls');
+	grunt.loadNpmTasks('grunt-todo');
 
 	grunt.registerTask('test', ['intern:all']);
-	grunt.registerTask('ci', ['jshint', 'build', 'intern:all', 'coveralls:all', 'docs']);
+	grunt.registerTask('ci', ['todo', 'jshint', 'build', 'intern:all', 'coveralls:all', 'docs']);
 	grunt.registerTask('build', ['uglify:libs', 'uglify:libs-min', 'uglify:bundle', 'uglify:min']);
 	grunt.registerTask('default', [
 		'jshint', 'build', 'notify:default', 'intern:unit'

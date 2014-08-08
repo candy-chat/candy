@@ -1,4 +1,5 @@
-/*global define, Candy, Strophe */
+/*global define, Candy, $pres, $msg */
+/*jshint -W027*/
 /*jshint -W030 */
 
 define([
@@ -17,9 +18,15 @@ define([
 	bdd.describe('Candy.Core.Event', function () {
 		testHelper.setupTests(bdd, sinon);
 
+		// TODO: Test me
+		bdd.describe('processing strophe connection status events', function () {});
+
+		// TODO: Test me
+		bdd.describe('processing requests for client version', function () {});
+
 		bdd.describe('processing non-MUC presence', function () {
 			var receivePresence = function () {
-				var presence = new Strophe.Builder('presence', {
+				var presence = $pres({
 					from: 'foo@bar.com',
 					id: 'abc123'
 				});
@@ -59,7 +66,7 @@ define([
 				};
 
 				var receiveJoinPresence = function () {
-					var presence = new Strophe.Builder('presence', {
+					var presence = $pres({
 						from: participantJid
 					})
 					.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
@@ -102,7 +109,7 @@ define([
 
 					bdd.describe('voluntarily', function () {
 						var receiveLeavePresence = function () {
-							var presence = new Strophe.Builder('presence', {
+							var presence = $pres({
 								from: participantJid,
 								type: 'unavailable'
 							})
@@ -136,7 +143,7 @@ define([
 
 					bdd.describe('because they were kicked', function () {
 						var receiveLeavePresence = function () {
-							var presence = new Strophe.Builder('presence', {
+							var presence = $pres({
 								from: participantJid,
 								type: 'unavailable'
 							})
@@ -159,7 +166,7 @@ define([
 
 					bdd.describe('because they were banned', function () {
 						var receiveLeavePresence = function () {
-							var presence = new Strophe.Builder('presence', {
+							var presence = $pres({
 								from: participantJid,
 								type: 'unavailable'
 							})
@@ -183,7 +190,7 @@ define([
 
 				bdd.describe('when a user changes their room nick', function () {
 					var receiveLeavePresence = function () {
-						var presence = new Strophe.Builder('presence', {
+						var presence = $pres({
 							from: participantJid,
 							type: 'unavailable'
 						})
@@ -227,7 +234,7 @@ define([
 
 				bdd.describe('when a user updates affiliation/role', function () {
 					var receiveUpdatePresence = function () {
-						var presence = new Strophe.Builder('presence', {
+						var presence = $pres({
 							from: participantJid
 						})
 						.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
@@ -268,7 +275,7 @@ define([
 					var ourJid = roomJid + '/SomeNick';
 
 					var receiveJoinPresence = function () {
-						var presence = new Strophe.Builder('presence', {
+						var presence = $pres({
 							from: ourJid
 						})
 						.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
@@ -284,7 +291,7 @@ define([
 
 					bdd.describe('voluntarily', function () {
 						var receiveLeavePresence = function () {
-							var presence = new Strophe.Builder('presence', {
+							var presence = $pres({
 								from: ourJid,
 								type: 'unavailable'
 							})
@@ -322,7 +329,7 @@ define([
 
 					bdd.describe('because we were kicked', function () {
 						var receiveLeavePresence = function () {
-							var presence = new Strophe.Builder('presence', {
+							var presence = $pres({
 								from: ourJid,
 								type: 'unavailable'
 							})
@@ -350,7 +357,7 @@ define([
 
 					bdd.describe('because we were banned', function () {
 						var receiveLeavePresence = function () {
-							var presence = new Strophe.Builder('presence', {
+							var presence = $pres({
 								from: ourJid,
 								type: 'unavailable'
 							})
@@ -379,14 +386,14 @@ define([
 
 				bdd.describe('which is an error', function () {
 					var receiveErrorPresence = function () {
-						var presence = new Strophe.Builder('presence', {
+						var presence = $pres({
 							from: roomJid,
 							type: 'error',
 							id: 'abc123'
 						})
 						.c('x', {xmlns: 'http://jabber.org/protocol/muc'}).up()
 						.c('error', {by: 'coven@chat.shakespeare.lit', type: 'modify'})
-	    			.c('jid-malformed', {xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas'});
+						.c('jid-malformed', {xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas'});
 
 						testHelper.receiveStanza(presence);
 					};
@@ -419,7 +426,7 @@ define([
 					participantJid = roomJid + '/SomeNick';
 
 				var receiveJoinPresence = function () {
-					var presence = new Strophe.Builder('presence', {
+					var presence = $pres({
 						from: participantJid
 					})
 					.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
@@ -482,7 +489,7 @@ define([
 					var newParticipantJid = roomJid + '/ServerAssignedNick';
 
 					var receiveJoinPresenceAssignedNick = function () {
-						var presence = new Strophe.Builder('presence', {
+						var presence = $pres({
 							from: newParticipantJid
 						})
 						.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
@@ -533,5 +540,1288 @@ define([
 				});
 			});
 		});
+
+		// TODO: Test me
+		bdd.describe('processing lists of bookmarks', function () {
+			bdd.describe('from pubsub', function () {});
+
+			bdd.describe('from private storage', function () {});
+		});
+
+		// TODO: Test me
+		bdd.describe('processing privacy lists', function () {
+			bdd.describe('which contain an error', function () {});
+		});
+
+		bdd.describe('processing messages', function () {
+			bdd.describe('which have no type', function () {
+				var receiveMessage = function () {
+					testHelper.receiveStanza(
+						$msg({
+							from: 'foo@bar.com'
+						})
+						.c('body').t('Some message text')
+					);
+				};
+
+				bdd.it('emits a candy:core:chat:message:normal event', function () {
+					var eventParams;
+					$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+					receiveMessage();
+
+					expect(eventParams.type).to.eql('normal');
+					expect(eventParams.message.attr('from')).to.eql('foo@bar.com');
+				});
+
+				bdd.describe('and contain a mediated MUC invite', function () {
+					var receiveMessage = function () {
+						var message = $msg({
+							from: 'coven@chat.shakespeare.lit'
+						})
+						.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
+						.c('invite', {from: 'crone1@shakespeare.lit/desktop'})
+							.c('reason').t('Hey Hecate, this is the place for all good witches!')
+							.up()
+							.c('continue', {thread: 'e0ffe42b28561960c6b12b944a092794b9683a38'})
+						.up().up()
+						.c('password').t('cauldronburn');
+
+						testHelper.receiveStanza(message);
+					};
+
+					bdd.it('emits a candy:core:chat:invite event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+						expect(eventParams.reason).to.eql('Hey Hecate, this is the place for all good witches!');
+						expect(eventParams.password).to.eql('cauldronburn');
+						expect(eventParams.continuedThread).to.eql('e0ffe42b28561960c6b12b944a092794b9683a38');
+					});
+
+					bdd.it('emits a candy:core:chat:message:normal event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['type', 'message']);
+						expect(eventParams.type).to.eql('normal');
+						expect(eventParams.message.attr('from')).to.eql('coven@chat.shakespeare.lit');
+					});
+
+					bdd.describe('with only the minimal required data', function () {
+						var receiveMessage = function () {
+							var message = $msg({
+								from: 'coven@chat.shakespeare.lit'
+							})
+							.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
+							.c('invite', {from: 'crone1@shakespeare.lit/desktop'});
+
+							testHelper.receiveStanza(message);
+						};
+
+						bdd.it('emits a candy:core:chat:invite event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+							expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+							expect(eventParams.reason).to.be.undefined;
+							expect(eventParams.password).to.be.undefined;
+							expect(eventParams.continuedThread).to.be.undefined;
+						});
+
+						bdd.it('emits a candy:core:chat:message:normal event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['type', 'message']);
+							expect(eventParams.type).to.eql('normal');
+							expect(eventParams.message.attr('from')).to.eql('coven@chat.shakespeare.lit');
+						});
+					});
+				});
+
+				bdd.describe('and contain a direct MUC invite', function () {
+					var receiveMessage = function () {
+						var message = $msg({
+							from: 'crone1@shakespeare.lit/desktop'
+						})
+						.c('x', {
+							xmlns: 'jabber:x:conference',
+							continue: 'true',
+							jid: 'coven@chat.shakespeare.lit',
+							password: 'cauldronburn',
+							reason: 'Hey Hecate, this is the place for all good witches!',
+							thread: 'e0ffe42b28561960c6b12b944a092794b9683a38'
+						});
+
+						testHelper.receiveStanza(message);
+					};
+
+					bdd.it('emits a candy:core:chat:invite event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+						expect(eventParams.reason).to.eql('Hey Hecate, this is the place for all good witches!');
+						expect(eventParams.password).to.eql('cauldronburn');
+						expect(eventParams.continuedThread).to.eql('e0ffe42b28561960c6b12b944a092794b9683a38');
+					});
+
+					bdd.it('emits a candy:core:chat:message:normal event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['type', 'message']);
+						expect(eventParams.type).to.eql('normal');
+						expect(eventParams.message.attr('from')).to.eql('crone1@shakespeare.lit/desktop');
+					});
+
+					bdd.describe('with only the minimal required data', function () {
+						var receiveMessage = function () {
+							var message = $msg({
+								from: 'crone1@shakespeare.lit/desktop'
+							})
+							.c('x', {
+								xmlns: 'jabber:x:conference',
+								jid: 'coven@chat.shakespeare.lit'
+							});
+
+							testHelper.receiveStanza(message);
+						};
+
+						bdd.it('emits a candy:core:chat:invite event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+							expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+							expect(eventParams.reason).to.be.undefined;
+							expect(eventParams.password).to.be.undefined;
+							expect(eventParams.continuedThread).to.be.undefined;
+						});
+
+						bdd.it('emits a candy:core:chat:message:normal event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['type', 'message']);
+							expect(eventParams.type).to.eql('normal');
+							expect(eventParams.message.attr('from')).to.eql('crone1@shakespeare.lit/desktop');
+						});
+					});
+				});
+			});
+
+			bdd.describe('which are normal', function () {
+				var receiveMessage = function () {
+					testHelper.receiveStanza(
+						$msg({
+							from: 'foo@bar.com',
+							type: 'normal'
+						})
+						.c('body').t('Some message text')
+					);
+				};
+
+				bdd.it('emits a candy:core:chat:message:normal event', function () {
+					var eventParams;
+					$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+					receiveMessage();
+
+					expect(eventParams.type).to.eql('normal');
+					expect(eventParams.message.attr('from')).to.eql('foo@bar.com');
+				});
+
+				bdd.describe('and contain a mediated MUC invite', function () {
+					var receiveMessage = function () {
+						var message = $msg({
+							from: 'coven@chat.shakespeare.lit',
+							type: 'normal'
+						})
+						.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
+						.c('invite', {from: 'crone1@shakespeare.lit/desktop'})
+							.c('reason').t('Hey Hecate, this is the place for all good witches!')
+							.up()
+							.c('continue', {thread: 'e0ffe42b28561960c6b12b944a092794b9683a38'})
+						.up().up()
+						.c('password').t('cauldronburn');
+
+						testHelper.receiveStanza(message);
+					};
+
+					bdd.it('emits a candy:core:chat:invite event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+						expect(eventParams.reason).to.eql('Hey Hecate, this is the place for all good witches!');
+						expect(eventParams.password).to.eql('cauldronburn');
+						expect(eventParams.continuedThread).to.eql('e0ffe42b28561960c6b12b944a092794b9683a38');
+					});
+
+					bdd.it('emits a candy:core:chat:message:normal event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['type', 'message']);
+						expect(eventParams.type).to.eql('normal');
+						expect(eventParams.message.attr('from')).to.eql('coven@chat.shakespeare.lit');
+					});
+
+					bdd.describe('with only the minimal required data', function () {
+						var receiveMessage = function () {
+							var message = $msg({
+								from: 'coven@chat.shakespeare.lit',
+								type: 'normal'
+							})
+							.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
+							.c('invite', {from: 'crone1@shakespeare.lit/desktop'});
+
+							testHelper.receiveStanza(message);
+						};
+
+						bdd.it('emits a candy:core:chat:invite event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+							expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+							expect(eventParams.reason).to.be.undefined;
+							expect(eventParams.password).to.be.undefined;
+							expect(eventParams.continuedThread).to.be.undefined;
+						});
+
+						bdd.it('emits a candy:core:chat:message:normal event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['type', 'message']);
+							expect(eventParams.type).to.eql('normal');
+							expect(eventParams.message.attr('from')).to.eql('coven@chat.shakespeare.lit');
+						});
+					});
+				});
+
+				bdd.describe('and contain a direct MUC invite', function () {
+					var receiveMessage = function () {
+						var message = $msg({
+							from: 'crone1@shakespeare.lit/desktop',
+							type: 'normal'
+						})
+						.c('x', {
+							xmlns: 'jabber:x:conference',
+							continue: 'true',
+							jid: 'coven@chat.shakespeare.lit',
+							password: 'cauldronburn',
+							reason: 'Hey Hecate, this is the place for all good witches!',
+							thread: 'e0ffe42b28561960c6b12b944a092794b9683a38'
+						});
+
+						testHelper.receiveStanza(message);
+					};
+
+					bdd.it('emits a candy:core:chat:invite event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+						expect(eventParams.reason).to.eql('Hey Hecate, this is the place for all good witches!');
+						expect(eventParams.password).to.eql('cauldronburn');
+						expect(eventParams.continuedThread).to.eql('e0ffe42b28561960c6b12b944a092794b9683a38');
+					});
+
+					bdd.it('emits a candy:core:chat:message:normal event', function () {
+						var eventParams;
+						$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['type', 'message']);
+						expect(eventParams.type).to.eql('normal');
+						expect(eventParams.message.attr('from')).to.eql('crone1@shakespeare.lit/desktop');
+					});
+
+					bdd.describe('with only the minimal required data', function () {
+						var receiveMessage = function () {
+							var message = $msg({
+								from: 'crone1@shakespeare.lit/desktop',
+								type: 'normal'
+							})
+							.c('x', {
+								xmlns: 'jabber:x:conference',
+								jid: 'coven@chat.shakespeare.lit'
+							});
+
+							testHelper.receiveStanza(message);
+						};
+
+						bdd.it('emits a candy:core:chat:invite event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:invite', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['roomJid', 'from', 'reason', 'password', 'continuedThread']);
+							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+							expect(eventParams.from).to.eql('crone1@shakespeare.lit/desktop');
+							expect(eventParams.reason).to.be.undefined;
+							expect(eventParams.password).to.be.undefined;
+							expect(eventParams.continuedThread).to.be.undefined;
+						});
+
+						bdd.it('emits a candy:core:chat:message:normal event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:chat:message:normal', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['type', 'message']);
+							expect(eventParams.type).to.eql('normal');
+							expect(eventParams.message.attr('from')).to.eql('crone1@shakespeare.lit/desktop');
+						});
+					});
+				});
+			});
+
+			bdd.describe('which are a chat message', function () {
+				var receiveMessage = function () {
+					testHelper.receiveStanza(
+						$msg({
+							to: 'foo@bar.com',
+							from: 'doo@dah.com/resource1',
+							type: 'chat'
+						})
+						.c('body').t('Some message text')
+						.up()
+						.c('html', {xmlns: 'http://jabber.org/protocol/xhtml-im'})
+						.c('body', {xmlns: 'http://www.w3.org/1999/xhtml'})
+						.c('p', {style: 'font-weight: bold;'}).t('hi!')
+					);
+				};
+
+				bdd.it('emits a candy:core.message event', function () {
+					var eventParams;
+					$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+					receiveMessage();
+
+					expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+					expect(eventParams.roomJid).to.eql('doo@dah.com');
+					expect(eventParams.timestamp).to.be.undefined;
+
+					var message = eventParams.message;
+					expect(message).to.have.keys(['from', 'name', 'body', 'type', 'isNoConferenceRoomJid', 'xhtmlMessage']);
+					expect(message.from).to.eql('doo@dah.com/resource1');
+					expect(message.name).to.eql('doo');
+					expect(message.type).to.eql('chat');
+					expect(message.body).to.eql('Some message text');
+					expect(message.isNoConferenceRoomJid).to.be.true;
+					expect(message.xhtmlMessage.attr('style')).to.eql('font-weight: bold;');
+				});
+
+				bdd.describe('with a delay', function () {
+					bdd.describe('according to XEP-0203', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								$msg({
+									to: 'foo@bar.com',
+									from: 'doo@dah.com/resource1',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('delay', {
+									xmlns: 'urn:xmpp:delay',
+									from: 'coven@chat.shakespeare.lit',
+									stamp: '2002-09-10T23:08:25Z'
+							  }).t('Offline Storage')
+							);
+						};
+
+						bdd.it('emits a candy:core.message event with the timestamp', function () {
+							var eventParams;
+							$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams.timestamp).to.eql('2002-09-10T23:08:25Z');
+						});
+					});
+
+					bdd.describe('according to XEP-0091', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								$msg({
+									to: 'foo@bar.com',
+									from: 'doo@dah.com/resource1',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('x', {
+									xmlns: 'jabber:x:delay',
+									from: 'coven@chat.shakespeare.lit',
+									stamp: '20020910T23:08:25'
+							  }).t('Offline Storage')
+							);
+						};
+
+						bdd.it('emits a candy:core.message event with the timestamp', function () {
+							var eventParams;
+							$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams.timestamp).to.eql('20020910T23:08:25');
+						});
+					});
+				});
+
+				bdd.describe('including a chat state notification', function () {
+					bdd.describe('of state active', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								$msg({
+									to: 'foo@bar.com',
+									from: 'doo@dah.com/resource1',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('active', {xmlns: 'http://jabber.org/protocol/chatstates'})
+							);
+						};
+
+						bdd.it('emits a candy:core:message:chatstate event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+							expect(eventParams.name).to.eql('doo');
+							expect(eventParams.roomJid).to.eql('doo@dah.com');
+							expect(eventParams.chatstate).to.eql('active');
+						});
+					});
+
+					bdd.describe('of state composing', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								$msg({
+									to: 'foo@bar.com',
+									from: 'doo@dah.com/resource1',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('composing', {xmlns: 'http://jabber.org/protocol/chatstates'})
+							);
+						};
+
+						bdd.it('emits a candy:core:message:chatstate event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+							expect(eventParams.name).to.eql('doo');
+							expect(eventParams.roomJid).to.eql('doo@dah.com');
+							expect(eventParams.chatstate).to.eql('composing');
+						});
+					});
+
+					bdd.describe('of state paused', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								$msg({
+									to: 'foo@bar.com',
+									from: 'doo@dah.com/resource1',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('paused', {xmlns: 'http://jabber.org/protocol/chatstates'})
+							);
+						};
+
+						bdd.it('emits a candy:core:message:chatstate event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+							expect(eventParams.name).to.eql('doo');
+							expect(eventParams.roomJid).to.eql('doo@dah.com');
+							expect(eventParams.chatstate).to.eql('paused');
+						});
+					});
+
+					bdd.describe('of state inactive', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								$msg({
+									to: 'foo@bar.com',
+									from: 'doo@dah.com/resource1',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('inactive', {xmlns: 'http://jabber.org/protocol/chatstates'})
+							);
+						};
+
+						bdd.it('emits a candy:core:message:chatstate event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+							expect(eventParams.name).to.eql('doo');
+							expect(eventParams.roomJid).to.eql('doo@dah.com');
+							expect(eventParams.chatstate).to.eql('inactive');
+						});
+					});
+
+					bdd.describe('of state gone', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								$msg({
+									to: 'foo@bar.com',
+									from: 'doo@dah.com/resource1',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('gone', {xmlns: 'http://jabber.org/protocol/chatstates'})
+							);
+						};
+
+						bdd.it('emits a candy:core:message:chatstate event', function () {
+							var eventParams;
+							$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+							expect(eventParams.name).to.eql('doo');
+							expect(eventParams.roomJid).to.eql('doo@dah.com');
+							expect(eventParams.chatstate).to.eql('gone');
+						});
+					});
+				});
+			});
+
+			bdd.describe('which are from a MUC room participant', function () {
+				var roomJid = 'coven@chat.shakespeare.lit';
+
+				var createRoom = function () {
+					var room = new Candy.Core.ChatRoom(roomJid);
+					Candy.Core.getRooms()[roomJid] = room;
+				};
+
+				bdd.beforeEach(createRoom);
+				bdd.afterEach(function () {
+					Candy.Core.removeRoom(roomJid);
+				});
+
+				bdd.describe('to the room', function () {
+					var receiveMessage = function () {
+						testHelper.receiveStanza(
+							$msg({
+								to: 'foo@bar.com',
+								from: 'coven@chat.shakespeare.lit/thirdwitch',
+								type: 'groupchat'
+							})
+							.c('body').t('Some message text')
+							.up()
+							.c('html', {xmlns: 'http://jabber.org/protocol/xhtml-im'})
+							.c('body', {xmlns: 'http://www.w3.org/1999/xhtml'})
+							.c('p', {style: 'font-weight: bold;'}).t('hi!')
+						);
+					};
+
+					bdd.it('emits a candy:core.message event', function () {
+						var eventParams;
+						$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.timestamp).to.be.undefined;
+
+						var message = eventParams.message;
+						expect(message).to.have.keys(['from', 'name', 'body', 'type', 'xhtmlMessage']);
+						expect(message.from).to.eql('coven@chat.shakespeare.lit');
+						expect(message.name).to.eql('thirdwitch');
+						expect(message.type).to.eql('groupchat');
+						expect(message.body).to.eql('Some message text');
+						expect(message.xhtmlMessage.attr('style')).to.eql('font-weight: bold;');
+					});
+
+					bdd.describe('with a delay', function () {
+						bdd.describe('according to XEP-0203', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									$msg({
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'groupchat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('delay', {
+										xmlns: 'urn:xmpp:delay',
+										from: 'coven@chat.shakespeare.lit',
+										stamp: '2002-09-10T23:08:25Z'
+								  }).t('Offline Storage')
+								);
+							};
+
+							bdd.it('emits a candy:core.message event with the timestamp', function () {
+								var eventParams;
+								$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams.timestamp).to.eql('2002-09-10T23:08:25Z');
+							});
+						});
+
+						bdd.describe('according to XEP-0091', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									$msg({
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'groupchat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('x', {
+										xmlns: 'jabber:x:delay',
+										from: 'coven@chat.shakespeare.lit',
+										stamp: '20020910T23:08:25'
+								  }).t('Offline Storage')
+								);
+							};
+
+							bdd.it('emits a candy:core.message event with the timestamp', function () {
+								var eventParams;
+								$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams.timestamp).to.eql('20020910T23:08:25');
+							});
+						});
+					});
+
+					bdd.describe('including a chat state notification', function () {
+						bdd.describe('of state active', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									$msg({
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'groupchat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('active', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+								expect(eventParams.chatstate).to.eql('active');
+							});
+						});
+
+						bdd.describe('of state composing', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									$msg({
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'groupchat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('composing', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+								expect(eventParams.chatstate).to.eql('composing');
+							});
+						});
+
+						bdd.describe('of state paused', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									$msg({
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'groupchat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('paused', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+								expect(eventParams.chatstate).to.eql('paused');
+							});
+						});
+
+						bdd.describe('of state inactive', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									$msg({
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'groupchat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('inactive', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+								expect(eventParams.chatstate).to.eql('inactive');
+							});
+						});
+
+						bdd.describe('of state gone', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									$msg({
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'groupchat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('gone', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+								expect(eventParams.chatstate).to.eql('gone');
+							});
+						});
+					});
+
+					bdd.describe('indicating a subject change', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								$msg({
+									to: 'foo@bar.com',
+									from: 'coven@chat.shakespeare.lit/thirdwitch',
+									type: 'groupchat'
+								})
+								.c('subject').t('Some new subject!')
+							);
+						};
+
+						bdd.it('emits a candy:core.message event', function () {
+							var eventParams;
+							$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+							expect(eventParams.timestamp).to.be.undefined;
+
+							var message = eventParams.message;
+							expect(message).to.have.keys(['from', 'name', 'body', 'type']);
+							expect(message.from).to.eql('coven@chat.shakespeare.lit');
+							expect(message.name).to.eql('coven');
+							expect(message.body).to.eql('Some new subject!');
+							expect(message.type).to.eql('subject');
+						});
+					});
+				});
+
+				bdd.describe('as a private message', function () {
+					var receiveMessage = function () {
+						testHelper.receiveStanza(
+							$msg({
+								to: 'foo@bar.com',
+								from: 'coven@chat.shakespeare.lit/thirdwitch',
+								type: 'chat'
+							})
+							.c('body').t('Some message text')
+							.up()
+							.c('html', {xmlns: 'http://jabber.org/protocol/xhtml-im'})
+							.c('body', {xmlns: 'http://www.w3.org/1999/xhtml'})
+							.c('p', {style: 'font-weight: bold;'}).t('hi!')
+						);
+					};
+
+					bdd.it('emits a candy:core.message event', function () {
+						var eventParams;
+						$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
+						expect(eventParams.timestamp).to.be.undefined;
+
+						var message = eventParams.message;
+						expect(message).to.have.keys(['from', 'name', 'body', 'type', 'isNoConferenceRoomJid', 'xhtmlMessage']);
+						expect(message.from).to.eql('coven@chat.shakespeare.lit/thirdwitch');
+						expect(message.name).to.eql('thirdwitch');
+						expect(message.type).to.eql('chat');
+						expect(message.body).to.eql('Some message text');
+						expect(message.isNoConferenceRoomJid).to.be.false;
+						expect(message.xhtmlMessage.attr('style')).to.eql('font-weight: bold;');
+					});
+
+					bdd.describe('with a delay', function () {
+						bdd.describe('according to XEP-0203', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									$msg({
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'chat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('delay', {
+										xmlns: 'urn:xmpp:delay',
+										from: 'coven@chat.shakespeare.lit',
+										stamp: '2002-09-10T23:08:25Z'
+								  }).t('Offline Storage')
+								);
+							};
+
+							bdd.it('emits a candy:core.message event with the timestamp', function () {
+								var eventParams;
+								$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams.timestamp).to.eql('2002-09-10T23:08:25Z');
+							});
+						});
+
+						bdd.describe('according to XEP-0091', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									$msg({
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'chat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('x', {
+										xmlns: 'jabber:x:delay',
+										from: 'coven@chat.shakespeare.lit',
+										stamp: '20020910T23:08:25'
+								  }).t('Offline Storage')
+								);
+							};
+
+							bdd.it('emits a candy:core.message event with the timestamp', function () {
+								var eventParams;
+								$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams.timestamp).to.eql('20020910T23:08:25');
+							});
+						});
+					});
+
+					bdd.describe('including a chat state notification', function () {
+						bdd.describe('of state active', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									$msg({
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'chat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('active', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
+								expect(eventParams.chatstate).to.eql('active');
+							});
+						});
+
+						bdd.describe('of state composing', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									$msg({
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'chat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('composing', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
+								expect(eventParams.chatstate).to.eql('composing');
+							});
+						});
+
+						bdd.describe('of state paused', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									$msg({
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'chat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('paused', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
+								expect(eventParams.chatstate).to.eql('paused');
+							});
+						});
+
+						bdd.describe('of state inactive', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									$msg({
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'chat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('inactive', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
+								expect(eventParams.chatstate).to.eql('inactive');
+							});
+						});
+
+						bdd.describe('of state gone', function () {
+							var receiveMessage = function () {
+								testHelper.receiveStanza(
+									$msg({
+										to: 'foo@bar.com',
+										from: 'coven@chat.shakespeare.lit/thirdwitch',
+										type: 'chat'
+									})
+									.c('body').t('Some message text')
+									.up()
+									.c('gone', {xmlns: 'http://jabber.org/protocol/chatstates'})
+								);
+							};
+
+							bdd.it('emits a candy:core:message:chatstate event', function () {
+								var eventParams;
+								$(Candy).on('candy:core:message:chatstate', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams).to.have.keys(['name', 'roomJid', 'chatstate']);
+								expect(eventParams.name).to.eql('thirdwitch');
+								expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
+								expect(eventParams.chatstate).to.eql('gone');
+							});
+						});
+					});
+				});
+
+				bdd.describe('indicating an error', function () {
+					var receiveMessage = function () {
+						testHelper.receiveStanza(
+							$msg({
+								to: 'foo@bar.com',
+								from: 'coven@chat.shakespeare.lit',
+								type: 'error'
+							})
+							.c('error', {code: '403', type: 'auth'})
+							.c('forbidden', {xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas'})
+							.up()
+							.c('text', {xmlns: 'urn:ietf:params:xml:ns:xmpp-stanzas'}).t('Visitors are not allowed to send messages to all occupants')
+						);
+					};
+
+					bdd.it('emits a candy:core.message event', function () {
+						var eventParams;
+						$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.timestamp).to.be.undefined;
+
+						var message = eventParams.message;
+						expect(message).to.have.keys(['from', 'body', 'type']);
+						expect(message.from).to.eql('coven@chat.shakespeare.lit');
+						expect(message.type).to.eql('info');
+						expect(message.body).to.eql('Visitors are not allowed to send messages to all occupants');
+					});
+				});
+			});
+
+			bdd.describe('which are from a MUC room itself', function () {
+				var roomJid = 'coven@chat.shakespeare.lit';
+
+				var receiveMessage = function () {
+					var message = $msg({
+						from: roomJid,
+						type: 'groupchat'
+					})
+					.c('body').t('Some announcement');
+
+					testHelper.receiveStanza(message);
+				};
+
+				bdd.describe('in which we are present', function () {
+					var createRoom = function () {
+						var room = new Candy.Core.ChatRoom(roomJid);
+						Candy.Core.getRooms()[roomJid] = room;
+					};
+
+					bdd.beforeEach(createRoom);
+					bdd.afterEach(function () {
+						Candy.Core.removeRoom(roomJid);
+					});
+
+					bdd.it('emits a candy:core.message event', function () {
+						var eventParams;
+						$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+						expect(eventParams.roomJid).to.eql(roomJid);
+						expect(eventParams.timestamp).to.be.undefined;
+
+						var message = eventParams.message;
+						expect(message).to.have.keys(['from', 'name', 'body', 'type']);
+						expect(message.from).to.eql(roomJid);
+						expect(message.name).to.eql('');
+						expect(message.body).to.eql('Some announcement');
+						expect(message.type).to.eql('info');
+					});
+				});
+
+				bdd.describe('in which we are not present', function () {
+					bdd.it('does not emit a candy:core.message event', function () {
+						var emitted = false;
+						$(Candy).on('candy:core.message', function () { emitted = true; });
+
+						receiveMessage();
+
+						expect(emitted).to.be.false;
+					});
+				});
+			});
+
+			bdd.describe('which are of a type not listed in the XMPP spec', function () {
+				var receiveMessage = function () {
+					testHelper.receiveStanza(
+						$msg({
+							from: 'foo@bar.com',
+							type: 'randomtype'
+						})
+						.c('body').t('Some message text')
+					);
+				};
+
+				bdd.it('emits a candy:core:chat:message:other event', function () {
+					var eventParams;
+					$(Candy).on('candy:core:chat:message:other', function (ev, params) { eventParams = params; });
+
+					receiveMessage();
+
+					expect(eventParams.type).to.eql('randomtype');
+					expect(eventParams.message.attr('from')).to.eql('foo@bar.com');
+				});
+			});
+
+			bdd.describe('which are from a server admin (broadcast)', function () {
+				var receiveMessage = function () {
+					testHelper.receiveStanza(
+						$msg({
+							from: 'bar.com',
+							type: 'headline'
+						})
+						.c('body').t('Some message text')
+					);
+				};
+
+				bdd.it('emits a candy:core.chat.message.admin event', function () {
+					var eventParams;
+					$(Candy).on('candy:core.chat.message.admin', function (ev, params) { eventParams = params; });
+
+					receiveMessage();
+
+					expect(eventParams.type).to.eql('headline');
+					expect(eventParams.message).to.eql('Some message text');
+				});
+			});
+
+			bdd.describe('which are from the server', function () {
+				var receiveMessage = function () {
+					testHelper.receiveStanza(
+						$msg({
+							from: 'bar.com',
+							type: 'headline',
+							to: 'doo@dah.com'
+						})
+						.c('subject').t('Hey!').up()
+						.c('body').t('Some message text')
+					);
+				};
+
+				bdd.it('emits a candy:core.chat.message.server event', function () {
+					var eventParams;
+					$(Candy).on('candy:core.chat.message.server', function (ev, params) { eventParams = params; });
+
+					receiveMessage();
+
+					expect(eventParams.type).to.eql('headline');
+					expect(eventParams.subject).to.eql('Hey!');
+					expect(eventParams.message).to.eql('Some message text');
+				});
+			});
+		});
+
+		// TODO: Test me
+		bdd.describe('processing room disco info', function () {});
 	});
 });
