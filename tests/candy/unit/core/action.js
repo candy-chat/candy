@@ -1,4 +1,4 @@
-/*global define, Candy, Strophe */
+/*global define, Candy, Strophe, $iq */
 /*jshint -W030 */
 
 define([
@@ -67,7 +67,7 @@ define([
 
 			bdd.describe('once the roster is received', function () {
 				var receiveResponse = function () {
-					var rosterResponse = new Strophe.Builder('iq', {
+					var rosterResponse = $iq({
 						type: 'result',
 						id: '1:roster'
 					})
@@ -134,7 +134,7 @@ define([
 						var modifiedUser;
 
 						var receivePush = function () {
-							var rosterPush = new Strophe.Builder('iq', {
+							var rosterPush = $iq({
 								type: 'set'
 							})
 							.c('query', {xmlns: 'jabber:iq:roster'})
@@ -171,7 +171,7 @@ define([
 
 					bdd.describe('removing a user', function () {
 						var receivePush = function () {
-							var rosterPush = new Strophe.Builder('iq', {
+							var rosterPush = $iq({
 								type: 'set'
 							})
 							.c('query', {xmlns: 'jabber:iq:roster'})
@@ -196,7 +196,7 @@ define([
 
 					bdd.describe('adding a user', function () {
 						var receivePush = function () {
-							var rosterPush = new Strophe.Builder('iq', {
+							var rosterPush = $iq({
 								type: 'set'
 							})
 							.c('query', {xmlns: 'jabber:iq:roster'})

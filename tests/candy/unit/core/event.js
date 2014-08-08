@@ -1,4 +1,4 @@
-/*global define, Candy, Strophe */
+/*global define, Candy, $pres, $msg */
 /*jshint -W027*/
 /*jshint -W030 */
 
@@ -24,7 +24,7 @@ define([
 
 		bdd.describe('processing non-MUC presence', function () {
 			var receivePresence = function () {
-				var presence = new Strophe.Builder('presence', {
+				var presence = $pres({
 					from: 'foo@bar.com',
 					id: 'abc123'
 				});
@@ -64,7 +64,7 @@ define([
 				};
 
 				var receiveJoinPresence = function () {
-					var presence = new Strophe.Builder('presence', {
+					var presence = $pres({
 						from: participantJid
 					})
 					.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
@@ -107,7 +107,7 @@ define([
 
 					bdd.describe('voluntarily', function () {
 						var receiveLeavePresence = function () {
-							var presence = new Strophe.Builder('presence', {
+							var presence = $pres({
 								from: participantJid,
 								type: 'unavailable'
 							})
@@ -141,7 +141,7 @@ define([
 
 					bdd.describe('because they were kicked', function () {
 						var receiveLeavePresence = function () {
-							var presence = new Strophe.Builder('presence', {
+							var presence = $pres({
 								from: participantJid,
 								type: 'unavailable'
 							})
@@ -164,7 +164,7 @@ define([
 
 					bdd.describe('because they were banned', function () {
 						var receiveLeavePresence = function () {
-							var presence = new Strophe.Builder('presence', {
+							var presence = $pres({
 								from: participantJid,
 								type: 'unavailable'
 							})
@@ -188,7 +188,7 @@ define([
 
 				bdd.describe('when a user changes their room nick', function () {
 					var receiveLeavePresence = function () {
-						var presence = new Strophe.Builder('presence', {
+						var presence = $pres({
 							from: participantJid,
 							type: 'unavailable'
 						})
@@ -232,7 +232,7 @@ define([
 
 				bdd.describe('when a user updates affiliation/role', function () {
 					var receiveUpdatePresence = function () {
-						var presence = new Strophe.Builder('presence', {
+						var presence = $pres({
 							from: participantJid
 						})
 						.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
@@ -273,7 +273,7 @@ define([
 					var ourJid = roomJid + '/SomeNick';
 
 					var receiveJoinPresence = function () {
-						var presence = new Strophe.Builder('presence', {
+						var presence = $pres({
 							from: ourJid
 						})
 						.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
@@ -289,7 +289,7 @@ define([
 
 					bdd.describe('voluntarily', function () {
 						var receiveLeavePresence = function () {
-							var presence = new Strophe.Builder('presence', {
+							var presence = $pres({
 								from: ourJid,
 								type: 'unavailable'
 							})
@@ -327,7 +327,7 @@ define([
 
 					bdd.describe('because we were kicked', function () {
 						var receiveLeavePresence = function () {
-							var presence = new Strophe.Builder('presence', {
+							var presence = $pres({
 								from: ourJid,
 								type: 'unavailable'
 							})
@@ -355,7 +355,7 @@ define([
 
 					bdd.describe('because we were banned', function () {
 						var receiveLeavePresence = function () {
-							var presence = new Strophe.Builder('presence', {
+							var presence = $pres({
 								from: ourJid,
 								type: 'unavailable'
 							})
@@ -384,7 +384,7 @@ define([
 
 				bdd.describe('which is an error', function () {
 					var receiveErrorPresence = function () {
-						var presence = new Strophe.Builder('presence', {
+						var presence = $pres({
 							from: roomJid,
 							type: 'error',
 							id: 'abc123'
@@ -424,7 +424,7 @@ define([
 					participantJid = roomJid + '/SomeNick';
 
 				var receiveJoinPresence = function () {
-					var presence = new Strophe.Builder('presence', {
+					var presence = $pres({
 						from: participantJid
 					})
 					.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
@@ -487,7 +487,7 @@ define([
 					var newParticipantJid = roomJid + '/ServerAssignedNick';
 
 					var receiveJoinPresenceAssignedNick = function () {
-						var presence = new Strophe.Builder('presence', {
+						var presence = $pres({
 							from: newParticipantJid
 						})
 						.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
@@ -553,7 +553,7 @@ define([
 			bdd.describe('which have no type', function () {
 				var receiveMessage = function () {
 					testHelper.receiveStanza(
-						new Strophe.Builder('message', {
+						$msg({
 							from: 'foo@bar.com'
 						})
 						.c('body').t('Some message text')
@@ -572,7 +572,7 @@ define([
 
 				bdd.describe('and contain a mediated MUC invite', function () {
 					var receiveMessage = function () {
-						var message = new Strophe.Builder('message', {
+						var message = $msg({
 							from: 'coven@chat.shakespeare.lit'
 						})
 						.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
@@ -613,7 +613,7 @@ define([
 
 					bdd.describe('with only the minimal required data', function () {
 						var receiveMessage = function () {
-							var message = new Strophe.Builder('message', {
+							var message = $msg({
 								from: 'coven@chat.shakespeare.lit'
 							})
 							.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
@@ -651,7 +651,7 @@ define([
 
 				bdd.describe('and contain a direct MUC invite', function () {
 					var receiveMessage = function () {
-						var message = new Strophe.Builder('message', {
+						var message = $msg({
 							from: 'crone1@shakespeare.lit/desktop'
 						})
 						.c('x', {
@@ -693,7 +693,7 @@ define([
 
 					bdd.describe('with only the minimal required data', function () {
 						var receiveMessage = function () {
-							var message = new Strophe.Builder('message', {
+							var message = $msg({
 								from: 'crone1@shakespeare.lit/desktop'
 							})
 							.c('x', {
@@ -735,7 +735,7 @@ define([
 			bdd.describe('which are normal', function () {
 				var receiveMessage = function () {
 					testHelper.receiveStanza(
-						new Strophe.Builder('message', {
+						$msg({
 							from: 'foo@bar.com',
 							type: 'normal'
 						})
@@ -755,7 +755,7 @@ define([
 
 				bdd.describe('and contain a mediated MUC invite', function () {
 					var receiveMessage = function () {
-						var message = new Strophe.Builder('message', {
+						var message = $msg({
 							from: 'coven@chat.shakespeare.lit',
 							type: 'normal'
 						})
@@ -797,7 +797,7 @@ define([
 
 					bdd.describe('with only the minimal required data', function () {
 						var receiveMessage = function () {
-							var message = new Strophe.Builder('message', {
+							var message = $msg({
 								from: 'coven@chat.shakespeare.lit',
 								type: 'normal'
 							})
@@ -836,7 +836,7 @@ define([
 
 				bdd.describe('and contain a direct MUC invite', function () {
 					var receiveMessage = function () {
-						var message = new Strophe.Builder('message', {
+						var message = $msg({
 							from: 'crone1@shakespeare.lit/desktop',
 							type: 'normal'
 						})
@@ -879,7 +879,7 @@ define([
 
 					bdd.describe('with only the minimal required data', function () {
 						var receiveMessage = function () {
-							var message = new Strophe.Builder('message', {
+							var message = $msg({
 								from: 'crone1@shakespeare.lit/desktop',
 								type: 'normal'
 							})
@@ -922,7 +922,7 @@ define([
 			bdd.describe('which are a chat message', function () {
 				var receiveMessage = function () {
 					testHelper.receiveStanza(
-						new Strophe.Builder('message', {
+						$msg({
 							to: 'foo@bar.com',
 							from: 'doo@dah.com/resource1',
 							type: 'chat'
@@ -959,7 +959,7 @@ define([
 					bdd.describe('according to XEP-0203', function () {
 						var receiveMessage = function () {
 							testHelper.receiveStanza(
-								new Strophe.Builder('message', {
+								$msg({
 									to: 'foo@bar.com',
 									from: 'doo@dah.com/resource1',
 									type: 'chat'
@@ -987,7 +987,7 @@ define([
 					bdd.describe('according to XEP-0091', function () {
 						var receiveMessage = function () {
 							testHelper.receiveStanza(
-								new Strophe.Builder('message', {
+								$msg({
 									to: 'foo@bar.com',
 									from: 'doo@dah.com/resource1',
 									type: 'chat'
@@ -1017,7 +1017,7 @@ define([
 					bdd.describe('of state active', function () {
 						var receiveMessage = function () {
 							testHelper.receiveStanza(
-								new Strophe.Builder('message', {
+								$msg({
 									to: 'foo@bar.com',
 									from: 'doo@dah.com/resource1',
 									type: 'chat'
@@ -1044,7 +1044,7 @@ define([
 					bdd.describe('of state composing', function () {
 						var receiveMessage = function () {
 							testHelper.receiveStanza(
-								new Strophe.Builder('message', {
+								$msg({
 									to: 'foo@bar.com',
 									from: 'doo@dah.com/resource1',
 									type: 'chat'
@@ -1071,7 +1071,7 @@ define([
 					bdd.describe('of state paused', function () {
 						var receiveMessage = function () {
 							testHelper.receiveStanza(
-								new Strophe.Builder('message', {
+								$msg({
 									to: 'foo@bar.com',
 									from: 'doo@dah.com/resource1',
 									type: 'chat'
@@ -1098,7 +1098,7 @@ define([
 					bdd.describe('of state inactive', function () {
 						var receiveMessage = function () {
 							testHelper.receiveStanza(
-								new Strophe.Builder('message', {
+								$msg({
 									to: 'foo@bar.com',
 									from: 'doo@dah.com/resource1',
 									type: 'chat'
@@ -1125,7 +1125,7 @@ define([
 					bdd.describe('of state gone', function () {
 						var receiveMessage = function () {
 							testHelper.receiveStanza(
-								new Strophe.Builder('message', {
+								$msg({
 									to: 'foo@bar.com',
 									from: 'doo@dah.com/resource1',
 									type: 'chat'
@@ -1167,7 +1167,7 @@ define([
 				bdd.describe('to the room', function () {
 					var receiveMessage = function () {
 						testHelper.receiveStanza(
-							new Strophe.Builder('message', {
+							$msg({
 								to: 'foo@bar.com',
 								from: 'coven@chat.shakespeare.lit/thirdwitch',
 								type: 'groupchat'
@@ -1203,7 +1203,7 @@ define([
 						bdd.describe('according to XEP-0203', function () {
 							var receiveMessage = function () {
 								testHelper.receiveStanza(
-									new Strophe.Builder('message', {
+									$msg({
 										to: 'foo@bar.com',
 										from: 'coven@chat.shakespeare.lit/thirdwitch',
 										type: 'groupchat'
@@ -1231,7 +1231,7 @@ define([
 						bdd.describe('according to XEP-0091', function () {
 							var receiveMessage = function () {
 								testHelper.receiveStanza(
-									new Strophe.Builder('message', {
+									$msg({
 										to: 'foo@bar.com',
 										from: 'coven@chat.shakespeare.lit/thirdwitch',
 										type: 'groupchat'
@@ -1261,7 +1261,7 @@ define([
 						bdd.describe('of state active', function () {
 							var receiveMessage = function () {
 								testHelper.receiveStanza(
-									new Strophe.Builder('message', {
+									$msg({
 										to: 'foo@bar.com',
 										from: 'coven@chat.shakespeare.lit/thirdwitch',
 										type: 'groupchat'
@@ -1288,7 +1288,7 @@ define([
 						bdd.describe('of state composing', function () {
 							var receiveMessage = function () {
 								testHelper.receiveStanza(
-									new Strophe.Builder('message', {
+									$msg({
 										to: 'foo@bar.com',
 										from: 'coven@chat.shakespeare.lit/thirdwitch',
 										type: 'groupchat'
@@ -1315,7 +1315,7 @@ define([
 						bdd.describe('of state paused', function () {
 							var receiveMessage = function () {
 								testHelper.receiveStanza(
-									new Strophe.Builder('message', {
+									$msg({
 										to: 'foo@bar.com',
 										from: 'coven@chat.shakespeare.lit/thirdwitch',
 										type: 'groupchat'
@@ -1342,7 +1342,7 @@ define([
 						bdd.describe('of state inactive', function () {
 							var receiveMessage = function () {
 								testHelper.receiveStanza(
-									new Strophe.Builder('message', {
+									$msg({
 										to: 'foo@bar.com',
 										from: 'coven@chat.shakespeare.lit/thirdwitch',
 										type: 'groupchat'
@@ -1369,7 +1369,7 @@ define([
 						bdd.describe('of state gone', function () {
 							var receiveMessage = function () {
 								testHelper.receiveStanza(
-									new Strophe.Builder('message', {
+									$msg({
 										to: 'foo@bar.com',
 										from: 'coven@chat.shakespeare.lit/thirdwitch',
 										type: 'groupchat'
@@ -1397,7 +1397,7 @@ define([
 					bdd.describe('indicating a subject change', function () {
 						var receiveMessage = function () {
 							testHelper.receiveStanza(
-								new Strophe.Builder('message', {
+								$msg({
 									to: 'foo@bar.com',
 									from: 'coven@chat.shakespeare.lit/thirdwitch',
 									type: 'groupchat'
@@ -1429,7 +1429,7 @@ define([
 				bdd.describe('as a private message', function () {
 					var receiveMessage = function () {
 						testHelper.receiveStanza(
-							new Strophe.Builder('message', {
+							$msg({
 								to: 'foo@bar.com',
 								from: 'coven@chat.shakespeare.lit/thirdwitch',
 								type: 'chat'
@@ -1466,7 +1466,7 @@ define([
 						bdd.describe('according to XEP-0203', function () {
 							var receiveMessage = function () {
 								testHelper.receiveStanza(
-									new Strophe.Builder('message', {
+									$msg({
 										to: 'foo@bar.com',
 										from: 'coven@chat.shakespeare.lit/thirdwitch',
 										type: 'chat'
@@ -1494,7 +1494,7 @@ define([
 						bdd.describe('according to XEP-0091', function () {
 							var receiveMessage = function () {
 								testHelper.receiveStanza(
-									new Strophe.Builder('message', {
+									$msg({
 										to: 'foo@bar.com',
 										from: 'coven@chat.shakespeare.lit/thirdwitch',
 										type: 'chat'
@@ -1524,7 +1524,7 @@ define([
 						bdd.describe('of state active', function () {
 							var receiveMessage = function () {
 								testHelper.receiveStanza(
-									new Strophe.Builder('message', {
+									$msg({
 										to: 'foo@bar.com',
 										from: 'coven@chat.shakespeare.lit/thirdwitch',
 										type: 'chat'
@@ -1551,7 +1551,7 @@ define([
 						bdd.describe('of state composing', function () {
 							var receiveMessage = function () {
 								testHelper.receiveStanza(
-									new Strophe.Builder('message', {
+									$msg({
 										to: 'foo@bar.com',
 										from: 'coven@chat.shakespeare.lit/thirdwitch',
 										type: 'chat'
@@ -1578,7 +1578,7 @@ define([
 						bdd.describe('of state paused', function () {
 							var receiveMessage = function () {
 								testHelper.receiveStanza(
-									new Strophe.Builder('message', {
+									$msg({
 										to: 'foo@bar.com',
 										from: 'coven@chat.shakespeare.lit/thirdwitch',
 										type: 'chat'
@@ -1605,7 +1605,7 @@ define([
 						bdd.describe('of state inactive', function () {
 							var receiveMessage = function () {
 								testHelper.receiveStanza(
-									new Strophe.Builder('message', {
+									$msg({
 										to: 'foo@bar.com',
 										from: 'coven@chat.shakespeare.lit/thirdwitch',
 										type: 'chat'
@@ -1632,7 +1632,7 @@ define([
 						bdd.describe('of state gone', function () {
 							var receiveMessage = function () {
 								testHelper.receiveStanza(
-									new Strophe.Builder('message', {
+									$msg({
 										to: 'foo@bar.com',
 										from: 'coven@chat.shakespeare.lit/thirdwitch',
 										type: 'chat'
@@ -1661,7 +1661,7 @@ define([
 				bdd.describe('indicating an error', function () {
 					var receiveMessage = function () {
 						testHelper.receiveStanza(
-							new Strophe.Builder('message', {
+							$msg({
 								to: 'foo@bar.com',
 								from: 'coven@chat.shakespeare.lit',
 								type: 'error'
@@ -1696,7 +1696,7 @@ define([
 				var roomJid = 'coven@chat.shakespeare.lit';
 
 				var receiveMessage = function () {
-					var message = new Strophe.Builder('message', {
+					var message = $msg({
 						from: roomJid,
 						type: 'groupchat'
 					})
@@ -1750,7 +1750,7 @@ define([
 			bdd.describe('which are of a type not listed in the XMPP spec', function () {
 				var receiveMessage = function () {
 					testHelper.receiveStanza(
-						new Strophe.Builder('message', {
+						$msg({
 							from: 'foo@bar.com',
 							type: 'randomtype'
 						})
@@ -1772,7 +1772,7 @@ define([
 			bdd.describe('which are from a server admin (broadcast)', function () {
 				var receiveMessage = function () {
 					testHelper.receiveStanza(
-						new Strophe.Builder('message', {
+						$msg({
 							from: 'bar.com',
 							type: 'headline'
 						})
@@ -1794,7 +1794,7 @@ define([
 			bdd.describe('which are from the server', function () {
 				var receiveMessage = function () {
 					testHelper.receiveStanza(
-						new Strophe.Builder('message', {
+						$msg({
 							from: 'bar.com',
 							type: 'headline',
 							to: 'doo@dah.com'
