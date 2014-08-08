@@ -18,8 +18,10 @@ define([
 	bdd.describe('Candy.Core.Event', function () {
 		testHelper.setupTests(bdd, sinon);
 
+		// TODO: Test me
 		bdd.describe('processing strophe connection status events', function () {});
 
+		// TODO: Test me
 		bdd.describe('processing requests for client version', function () {});
 
 		bdd.describe('processing non-MUC presence', function () {
@@ -539,12 +541,14 @@ define([
 			});
 		});
 
+		// TODO: Test me
 		bdd.describe('processing lists of bookmarks', function () {
 			bdd.describe('from pubsub', function () {});
 
 			bdd.describe('from private storage', function () {});
 		});
 
+		// TODO: Test me
 		bdd.describe('processing privacy lists', function () {
 			bdd.describe('which contain an error', function () {});
 		});
@@ -1817,6 +1821,7 @@ define([
 			});
 		});
 
+		// TODO: Test me
 		bdd.describe('processing room disco info', function () {});
 	});
 });
