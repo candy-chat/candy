@@ -367,128 +367,132 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				toJid = msg.attr('to');
 
 			// Inspect the message type.
-			if (type === 'normal') {
-				var mediatedInvite = msg.find('invite'),
-					directInvite = msg.find('x[xmlns="jabber:x:conference"]');
+			switch (type) {
+				case 'normal':
+					var mediatedInvite = msg.find('invite'),
+						directInvite = msg.find('x[xmlns="jabber:x:conference"]');
 
-				if(mediatedInvite.length > 0) {
-					var passwordNode = msg.find('password'),
-						password,
-						reasonNode = mediatedInvite.find('reason'),
-						reason,
-						continueNode = mediatedInvite.find('continue');
+					if(mediatedInvite.length > 0) {
+						var passwordNode = msg.find('password'),
+							password,
+							reasonNode = mediatedInvite.find('reason'),
+							reason,
+							continueNode = mediatedInvite.find('continue');
 
-					if(passwordNode.text() !== '') {
-						password = passwordNode.text();
+						if(passwordNode.text() !== '') {
+							password = passwordNode.text();
+						}
+
+						if(reasonNode.text() !== '') {
+							reason = reasonNode.text();
+						}
+
+						/** Event: candy:core:chat:invite
+						 * Incoming chat invite for a MUC.
+						 *
+						 * Parameters:
+						 *   (String) roomJid - The room the invite is to
+						 *   (String) from - User JID that invite is from text
+						 *   (String) reason - Reason for invite
+						 *   (String) password - Password for the room
+						 *   (String) continuedThread - The thread ID if this is a continuation of a 1-on-1 chat
+						 */
+						$(Candy).triggerHandler('candy:core:chat:invite', {
+							roomJid: fromJid,
+							from: mediatedInvite.attr('from'),
+							reason: reason,
+							password: password,
+							continuedThread: continueNode.attr('thread')
+						});
 					}
 
-					if(reasonNode.text() !== '') {
-						reason = reasonNode.text();
+					if(directInvite.length > 0) {
+						/** Event: candy:core:chat:invite
+						 * Incoming chat invite for a MUC.
+						 *
+						 * Parameters:
+						 *   (String) roomJid - The room the invite is to
+						 *   (String) from - User JID that invite is from text
+						 *   (String) reason - Reason for invite
+						 *   (String) password - Password for the room
+						 *   (String) continuedThread - The thread ID if this is a continuation of a 1-on-1 chat
+						 */
+						$(Candy).triggerHandler('candy:core:chat:invite', {
+							roomJid: directInvite.attr('jid'),
+							from: fromJid,
+							reason: directInvite.attr('reason'),
+							password: directInvite.attr('password'),
+							continuedThread: directInvite.attr('thread')
+						});
 					}
 
-					/** Event: candy:core:chat:invite
-					 * Incoming chat invite for a MUC.
+					/** Event: candy:core:chat:message:normal
+					 * Messages with the type attribute of normal or those
+					 * that do not have the optional type attribute.
 					 *
 					 * Parameters:
-					 *   (String) roomJid - The room the invite is to
-					 *   (String) from - User JID that invite is from text
-					 *   (String) reason - Reason for invite
-					 *   (String) password - Password for the room
-					 *   (String) continuedThread - The thread ID if this is a continuation of a 1-on-1 chat
+					 *   (String) type - Type of the message
+					 *   (Object) message - Message object.
 					 */
-					$(Candy).triggerHandler('candy:core:chat:invite', {
-						roomJid: fromJid,
-						from: mediatedInvite.attr('from'),
-						reason: reason,
-						password: password,
-						continuedThread: continueNode.attr('thread')
+					$(Candy).triggerHandler('candy:core:chat:message:normal', {
+						type: type,
+						message: msg
 					});
-				}
-
-				if(directInvite.length > 0) {
-					/** Event: candy:core:chat:invite
-					 * Incoming chat invite for a MUC.
+					break;
+				case 'headline':
+					// Admin message
+					if(!toJid) {
+						/** Event: candy:core.chat.message.admin
+						 * Admin message
+						 *
+						 * Parameters:
+						 *   (String) type - Type of the message
+						 *   (String) message - Message text
+						 */
+						$(Candy).triggerHandler('candy:core.chat.message.admin', {
+							type: type,
+							message: msg.children('body').text()
+						});
+					// Server Message
+					} else {
+						/** Event: candy:core.chat.message.server
+						 * Server message (e.g. subject)
+						 *
+						 * Parameters:
+						 *   (String) type - Message type
+						 *   (String) subject - Subject text
+						 *   (String) message - Message text
+						 */
+						$(Candy).triggerHandler('candy:core.chat.message.server', {
+							type: type,
+							subject: msg.children('subject').text(),
+							message: msg.children('body').text()
+						});
+					}
+					break;
+				case 'groupchat':
+				case 'chat':
+				case 'error':
+					// Room message
+					self.Jabber.Room.Message(msg);
+					break;
+				default:
+					/** Event: candy:core:chat:message:other
+					 * Messages with a type other than the ones listed in RFC3921
+					 * section 2.1.1. This allows plugins to catch custom message
+					 * types.
 					 *
 					 * Parameters:
-					 *   (String) roomJid - The room the invite is to
-					 *   (String) from - User JID that invite is from text
-					 *   (String) reason - Reason for invite
-					 *   (String) password - Password for the room
-					 *   (String) continuedThread - The thread ID if this is a continuation of a 1-on-1 chat
+					 *   (String) type - Type of the message [default: message]
+					 *   (Object) message - Message object.
 					 */
-					$(Candy).triggerHandler('candy:core:chat:invite', {
-						roomJid: directInvite.attr('jid'),
-						from: fromJid,
-						reason: directInvite.attr('reason'),
-						password: directInvite.attr('password'),
-						continuedThread: directInvite.attr('thread')
+					// Detect message with type normal or with no type.
+					$(Candy).triggerHandler('candy:core:chat:message:other', {
+						type: type,
+						message: msg
 					});
-				}
-
-				/** Event: candy:core:chat:message:normal
-				 * Messages with the type attribute of normal or those
-				 * that do not have the optional type attribute.
-				 *
-				 * Parameters:
-				 *   (String) type - Type of the message
-				 *   (Object) message - Message object.
-				 */
-				$(Candy).triggerHandler('candy:core:chat:message:normal', {
-					type: type,
-					message: msg
-				});
-
-				return true;
-			} else if (type !== 'groupchat' && type !== 'chat' && type !== 'error' && type !== 'headline') {
-				/** Event: candy:core:chat:message:other
-				 * Messages with a type other than the ones listed in RFC3921
-				 * section 2.1.1. This allows plugins to catch custom message
-				 * types.
-				 *
-				 * Parameters:
-				 *   (String) type - Type of the message [default: message]
-				 *   (Object) message - Message object.
-				 */
-				// Detect message with type normal or with no type.
-				$(Candy).triggerHandler('candy:core:chat:message:other', {
-					type: type,
-					message: msg
-				});
-				return true;
 			}
 
-			// Room message
-			if(fromJid !== Strophe.getDomainFromJid(fromJid) && (type === 'groupchat' || type === 'chat' || type === 'error')) {
-				self.Jabber.Room.Message(msg);
-			// Admin message
-			} else if(!toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
-				/** Event: candy:core.chat.message.admin
-				 * Admin message
-				 *
-				 * Parameters:
-				 *   (String) type - Type of the message
-				 *   (String) message - Message text
-				 */
-				$(Candy).triggerHandler('candy:core.chat.message.admin', {
-					type: type,
-					message: msg.children('body').text()
-				});
-			// Server Message
-			} else if(toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
-				/** Event: candy:core.chat.message.server
-				 * Server message (e.g. subject)
-				 *
-				 * Parameters:
-				 *   (String) type - Message type
-				 *   (String) subject - Subject text
-				 *   (String) message - Message text
-				 */
-				$(Candy).triggerHandler('candy:core.chat.message.server', {
-					type: type,
-					subject: msg.children('subject').text(),
-					message: msg.children('body').text()
-				});
-			}
 			return true;
 		},
 
