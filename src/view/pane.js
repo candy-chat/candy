@@ -1189,7 +1189,7 @@ Candy.View.Pane = (function(self, $) {
 					 */
 					$(Candy).triggerHandler('candy:view.room.after-show', evtData);
 
-				} else if(elem.is(':visible')) {
+				} else {
 					elem.hide();
 
 					/** Event: candy:view.room.after-hide
