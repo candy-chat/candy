@@ -210,11 +210,13 @@ Candy.View.Pane = (function(self, $) {
      */
     adminMessage: function(subject, message) {
       if(Candy.View.getCurrent().roomJid) { // Simply dismiss admin message if no room joined so far. TODO: maybe we should show those messages on a dedicated pane?
+        var timestamp = new Date();
         var html = Mustache.to_html(Candy.View.Template.Chat.adminMessage, {
           subject: subject,
           message: message,
           sender: $.i18n._('administratorMessageSubject'),
-          time: Candy.Util.localizedTime(new Date().toGMTString())
+          time: Candy.Util.localizedTime(timestamp),
+          timestamp: timestamp.toISOString()
         });
         $('#chat-rooms').children().each(function() {
           self.Room.appendToMessagePane($(this).attr('data-roomjid'), html);
@@ -257,10 +259,12 @@ Candy.View.Pane = (function(self, $) {
      */
     onInfoMessage: function(roomJid, subject, message) {
       if(Candy.View.getCurrent().roomJid && self.Chat.rooms[roomJid]) { // Simply dismiss info message if no room joined so far. TODO: maybe we should show those messages on a dedicated pane?
+        var timestamp = new Date();
         var html = Mustache.to_html(Candy.View.Template.Chat.infoMessage, {
           subject: subject,
           message: $.i18n._(message),
-          time: Candy.Util.localizedTime(new Date().toGMTString())
+          time: Candy.Util.localizedTime(timestamp),
+          timestamp: timestamp.toISOString()
         });
         self.Room.appendToMessagePane(roomJid, html);
         if (Candy.View.getCurrent().roomJid === roomJid) {

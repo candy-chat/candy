@@ -102,6 +102,13 @@ Candy.View.Pane = (function(self, $) {
         xhtmlMessage = Candy.Util.parseAndCropXhtml(xhtmlMessage, Candy.View.getOptions().crop.message.body);
       }
 
+      timestamp = timestamp || new Date();
+
+      // Assume we have an ISO-8601 date string and convert it to a Date object
+      if (!timestamp.toDateString) {
+        timestamp = Candy.Util.iso8601toDate(timestamp);
+      }
+
       var evtData = {
         'roomJid': roomJid,
         'name': name,
@@ -140,7 +147,8 @@ Candy.View.Pane = (function(self, $) {
           name: name,
           displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.nickname),
           message: message,
-          time: Candy.Util.localizedTime(timestamp || new Date().toGMTString())
+          time: Candy.Util.localizedTime(timestamp),
+          timestamp: timestamp.toISOString()
         }
       };
 
