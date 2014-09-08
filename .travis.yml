@@ -4,8 +4,8 @@ node_js:
 env:
   global:
   - SAUCE_USERNAME: candy-chat-ci
+  - SAUCE_ACCESS_KEY: 6c3e7f58-b230-4b91-8bcb-290cf28c1457
   - CANDY_VAGRANT: false
-  - secure: j3WtBCNS0sF73F/5yjw2O4XHus7HdeQT1AfUxaEt9+lX5v8IUKu4y/kUHE7bGjFC+eb8zsh+R49oZm9RFTwtTrfl+Chiz9h9I6S++ofXX8G/UKJgYXPVY98qrcHeIhWpm1N3G1B4/yxHN8NtzVmWK+Tg/LxX+75gnNxaoLR4Zgo=
 before_script:
 - sudo apt-get install -y nginx
 - sudo mkdir -p /usr/share/nginx/html
