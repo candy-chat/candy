@@ -76,11 +76,14 @@
 	};
 
 	self.setupTests = function (bdd, sinon) {
+		var clock;
 		bdd.before(function () {
+			clock = sinon.useFakeTimers();
 			sinon.stub(Strophe.Bosh.prototype, '_processRequest');
 		});
 
 		bdd.after(function () {
+			clock.restore();
 			Strophe.Bosh.prototype._processRequest.restore();
 		});
 

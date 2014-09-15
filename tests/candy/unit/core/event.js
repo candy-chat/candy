@@ -1017,6 +1017,28 @@ define([
 					});
 				});
 
+				bdd.describe('without a delay', function() {
+					var receiveMessage = function () {
+						testHelper.receiveStanza(
+							$msg({
+								to: 'foo@bar.com',
+								from: 'doo@dah.com/resource1',
+								type: 'chat'
+							})
+							.c('body').t('Some message text')
+						);
+					};
+
+					bdd.it('emits a candy:core.message event with the timestamp', function () {
+						var eventParams;
+						$(Candy).on('candy:core.message', function (ev, params) { console.error(params); eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams.timestamp).to.eql('20020910T23:08:25');
+					});
+				});
+
 				bdd.describe('including a chat state notification', function () {
 					bdd.describe('of state active', function () {
 						var receiveMessage = function () {
