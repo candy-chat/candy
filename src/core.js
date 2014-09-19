@@ -275,8 +275,12 @@ Candy.Core = (function(self, Strophe, $) {
 	 *   (Integer) sid - Session ID
 	 *   (Integer) rid - rid
 	 */
-	self.attach = function(jid, sid, rid) {
-		_user = new self.ChatUser(jid, Strophe.getNodeFromJid(jid));
+	self.attach = function(jid, sid, rid, nick) {
+		if (nick) {
+			_user = new self.ChatUser(jid, nick);
+		} else {
+			_user = new self.ChatUser(jid, Strophe.getNodeFromJid(jid));
+		}
 		self.registerEventHandlers();
 		_connection.attach(jid, sid, rid, Candy.Core.Event.Strophe.Connect);
 	};
