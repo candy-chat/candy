@@ -524,13 +524,18 @@ Candy.View.Pane = (function(self, $) {
        *  (String) presetJid - optional user jid. if set, the user will only be prompted for password.
        */
       showLoginForm: function(message, presetJid) {
+        var domains = Candy.Core.getOptions()['domains'];
+        domains = domains ? domains.map( function(d) {return {'domain':d};} )
+                           : null;
         self.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
           _labelNickname: $.i18n._('labelNickname'),
           _labelUsername: $.i18n._('labelUsername'),
+          domains: domains,
           _labelPassword: $.i18n._('labelPassword'),
           _loginSubmit: $.i18n._('loginSubmit'),
           displayPassword: !Candy.Core.isAnonymousConnection(),
           displayUsername: !presetJid,
+          displayDomain: domains ? true : false,
           displayNickname: Candy.Core.isAnonymousConnection(),
           presetJid: presetJid ? presetJid : false
         }));
@@ -539,12 +544,20 @@ Candy.View.Pane = (function(self, $) {
         // register submit handler
         $('#login-form').submit(function() {
           var username = $('#username').val(),
-            password = $('#password').val();
+            password = $('#password').val(),
+            domain = $('#domain');
+          domain = domain.length ? domain.val().split(' ')[0] : null;
 
           if (!Candy.Core.isAnonymousConnection()) {
-            // guess the input and create a jid out of it
-            var jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
+            if( domain ) { // domain is stipulated
+                // Ensure there is no domain part in username
+                username = username.split('@')[0];
+                var jid = username + '@' + domain;
+            } else {  // domain not stipulated
+                // guess the input and create a jid out of it
+                var jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
               username + '@' + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
+            }
 
             if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
               Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('loginInvalid'));
@@ -975,3 +988,5 @@ Candy.View.Pane = (function(self, $) {
 
   return self;
 }(Candy.View.Pane || {}, jQuery));
+
+// vim: ts=4 softtabstop=4 shiftwidth=4 expandtab

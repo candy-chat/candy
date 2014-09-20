@@ -62,6 +62,7 @@ Candy.Core = (function(self, Strophe, $) {
 			 */
 			autojoin: undefined,
 			debug: false,
+			domains: null,
 			disableWindowUnload: false,
 			/** Integer: presencePriority
 			 * Default priority for presence messages in order to receive messages across different resources
