@@ -810,7 +810,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					delay = msg.children('x[xmlns="' + Strophe.NS.JABBER_DELAY +'"]');
 				}
 
-				var timestamp = delay !== undefined ? delay.attr('stamp') : null;
+				var timestamp = delay.length > 0 ? delay.attr('stamp') : (new Date()).toISOString();
 
 				/** Event: candy:core.message
 				 * Triggers on various message events (subject changed, private chat message, multi-user chat message).
