@@ -62,6 +62,12 @@ Candy.Core = (function(self, Strophe, $) {
 			 */
 			autojoin: undefined,
 			debug: false,
+			/** List: domains
+			 * If non-null, causes login form to offer this pre-set
+			 * list of domains to choose between when logging in.
+			 * Any user-provided domain is discarded and the
+			 * selected domain is appended
+			 */
 			domains: null,
 			disableWindowUnload: false,
 			/** Integer: presencePriority
