@@ -646,6 +646,10 @@ ul {
 	margin-left: -330px;
 }
 
+#chat-modal a {
+	color: blue;
+}
+
 #chat-modal span.at-symbol {
 	float: left;
 	padding: 6px;
