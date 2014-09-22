@@ -524,7 +524,7 @@ Candy.View.Pane = (function(self, $) {
        *  (String) presetJid - optional user jid. if set, the user will only be prompted for password.
        */
       showLoginForm: function(message, presetJid) {
-        var domains = Candy.Core.getOptions()['domains'];
+        var domains = Candy.Core.getOptions().domains;
         domains = domains ? domains.map( function(d) {return {'domain':d};} )
                            : null;
         self.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
@@ -549,13 +549,14 @@ Candy.View.Pane = (function(self, $) {
           domain = domain.length ? domain.val().split(' ')[0] : null;
 
           if (!Candy.Core.isAnonymousConnection()) {
+            var jid;
             if( domain ) { // domain is stipulated
                 // Ensure there is no domain part in username
                 username = username.split('@')[0];
-                var jid = username + '@' + domain;
+                jid = username + '@' + domain;
             } else {  // domain not stipulated
                 // guess the input and create a jid out of it
-                var jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
+                jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
               username + '@' + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
             }
 
