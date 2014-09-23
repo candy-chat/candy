@@ -552,7 +552,7 @@ Candy.View.Pane = (function(self, $) {
             var jid;
             if(domain) { // domain is stipulated
               // Ensure there is no domain part in username
-              username = Strophe.getNodeFromJid( username );
+              username = username.split('@')[0];
               jid = username + '@' + domain;
             } else {  // domain not stipulated
               // guess the input and create a jid out of it
