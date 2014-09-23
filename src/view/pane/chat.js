@@ -550,13 +550,13 @@ Candy.View.Pane = (function(self, $) {
 
           if (!Candy.Core.isAnonymousConnection()) {
             var jid;
-            if( domain ) { // domain is stipulated
-                // Ensure there is no domain part in username
-                username = username.split('@')[0];
-                jid = username + '@' + domain;
+            if(domain) { // domain is stipulated
+              // Ensure there is no domain part in username
+              username = Strophe.getNodeFromJid( username );
+              jid = username + '@' + domain;
             } else {  // domain not stipulated
-                // guess the input and create a jid out of it
-                jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
+              // guess the input and create a jid out of it
+              jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
               username + '@' + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
             }
 
@@ -989,5 +989,3 @@ Candy.View.Pane = (function(self, $) {
 
   return self;
 }(Candy.View.Pane || {}, jQuery));
-
-// vim: ts=4 softtabstop=4 shiftwidth=4 expandtab
