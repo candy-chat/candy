@@ -575,7 +575,7 @@ ul {
 	width: 15px;
 }
 
-#chat-modal {
+#chat-modal.modal-common {
 	background: #eee;
 	width: 300px;
 	padding: 20px 5px;
@@ -641,7 +641,7 @@ ul {
 	color: #333;
 }
 
-#chat-modal {
+#chat-modal.login-with-domains {
 	width: 650px;
 	margin-left: -330px;
 }

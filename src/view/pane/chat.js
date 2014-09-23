@@ -435,8 +435,9 @@ Candy.View.Pane = (function(self, $) {
        *   (String) html - HTML code to put into the modal window
        *   (Boolean) showCloseControl - set to true if a close button should be displayed [default false]
        *   (Boolean) showSpinner - set to true if a loading spinner should be shown [default false]
+       *   (String) modalClass - custom class (or space-separate classes) to attach to the modal
        */
-      show: function(html, showCloseControl, showSpinner) {
+      show: function(html, showCloseControl, showSpinner, modalClass) {
         if(showCloseControl) {
           self.Chat.Modal.showCloseControl();
         } else {
@@ -446,6 +447,13 @@ Candy.View.Pane = (function(self, $) {
           self.Chat.Modal.showSpinner();
         } else {
           self.Chat.Modal.hideSpinner();
+        }
+        // Reset classes to 'modal-common' only in case .show() is called
+        // with different arguments before .hide() can remove the last applied
+        // custom class
+        $('#chat-modal').removeClass().addClass( 'modal-common' );
+        if( modalClass ) {
+          $('#chat-modal').addClass( modalClass );
         }
         $('#chat-modal').stop(false, true);
         $('#chat-modal-body').html(html);
@@ -460,6 +468,8 @@ Candy.View.Pane = (function(self, $) {
        *   (Function) callback - Calls the specified function after modal window has been hidden.
        */
       hide: function(callback) {
+        // Reset classes to include only `modal-common`.
+        $('#chat-modal').removeClass().addClass( 'modal-common' );
         $('#chat-modal').fadeOut('fast', function() {
           $('#chat-modal-body').text('');
           $('#chat-modal-overlay').hide();
@@ -527,6 +537,7 @@ Candy.View.Pane = (function(self, $) {
         var domains = Candy.Core.getOptions().domains;
         domains = domains ? domains.map( function(d) {return {'domain':d};} )
                            : null;
+        var customClass = domains ? 'login-with-domains' : null;
         self.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
           _labelNickname: $.i18n._('labelNickname'),
           _labelUsername: $.i18n._('labelUsername'),
@@ -538,7 +549,7 @@ Candy.View.Pane = (function(self, $) {
           displayDomain: domains ? true : false,
           displayNickname: Candy.Core.isAnonymousConnection(),
           presetJid: presetJid ? presetJid : false
-        }));
+        }), null, null, customClass);
         $('#login-form').children(':input:first').focus();
 
         // register submit handler
