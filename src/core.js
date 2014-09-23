@@ -61,6 +61,11 @@ Candy.Core = (function(self, Strophe, $) {
 			 * You may want to define an array of rooms to autojoin: `['room1@conference.host.tld', 'room2...]` (ejabberd, Openfire, ...)
 			 */
 			autojoin: undefined,
+			/** String: conferenceDomain
+			 * Holds the prefix for an XMPP chat server's conference subdomain.
+			 * If not set, assumes no specific subdomain.
+			 */
+			conferenceDomain: undefined,
 			debug: false,
 			disableWindowUnload: false,
 			/** Integer: presencePriority
