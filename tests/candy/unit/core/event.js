@@ -95,12 +95,13 @@ define([
 
 						receiveJoinPresence();
 
-						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
 						expect(eventParams.roomName).to.eql('coven');
 						expect(eventParams.user).to.eql(room.getRoster().get(participantJid));
 						expect(eventParams.action).to.eql('join');
 						expect(eventParams.currentUser).to.eql(Candy.Core.getUser());
+						expect(eventParams.isNewRoom).to.eql(false);
 					});
 				});
 
@@ -132,12 +133,13 @@ define([
 							var user = room.getRoster().get(participantJid);
 							receiveLeavePresence();
 
-							expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser']);
+							expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
 							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
 							expect(eventParams.roomName).to.eql('coven');
 							expect(eventParams.user).to.eql(user);
 							expect(eventParams.action).to.eql('leave');
 							expect(eventParams.currentUser).to.eql(Candy.Core.getUser());
+							expect(eventParams.isNewRoom).to.eql(false);
 						});
 					});
 
@@ -223,12 +225,13 @@ define([
 
 						receiveLeavePresence();
 
-						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
 						expect(eventParams.roomJid).to.eql(roomJid);
 						expect(eventParams.roomName).to.eql('coven');
 						expect(eventParams.user).to.eql(room.getRoster().get(newJid));
 						expect(eventParams.action).to.eql('nickchange');
 						expect(eventParams.currentUser).to.eql(Candy.Core.getUser());
+						expect(eventParams.isNewRoom).to.eql(false);
 					});
 				});
 
@@ -262,12 +265,13 @@ define([
 
 						receiveUpdatePresence();
 
-						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
 						expect(eventParams.roomJid).to.eql(roomJid);
 						expect(eventParams.roomName).to.eql('coven');
 						expect(eventParams.user).to.eql(room.getRoster().get(participantJid));
 						expect(eventParams.action).to.eql('join');
 						expect(eventParams.currentUser).to.eql(Candy.Core.getUser());
+						expect(eventParams.isNewRoom).to.eql(false);
 					});
 				});
 
@@ -440,6 +444,37 @@ define([
 
 				bdd.beforeEach(setMe);
 
+				bdd.describe('and the room is being created', function() {
+					var receiveJoinPresence = function () {
+						var presence = $pres({
+							from: participantJid
+						})
+						.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
+						.c('item', {affiliation: 'admin', role: 'moderator', jid: 'doo@dah.com/somewhere'})
+						.c('status', {code: '110'})
+						.c('status', {code: '201'});
+
+						testHelper.receiveStanza(presence);
+
+						room = Candy.Core.getRooms()[roomJid];
+					};
+
+					bdd.it('on a new room it emits a candy:core.presence.room event with isNewRoom set', function () {
+						var eventParams;
+						$(Candy).on('candy:core.presence.room', function (ev, params) { eventParams = params; });
+
+						receiveJoinPresence();
+
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.roomName).to.eql('coven');
+						expect(eventParams.user).to.eql(room.getRoster().get(participantJid));
+						expect(eventParams.action).to.eql('join');
+						expect(eventParams.currentUser).to.eql(room.getUser());
+						expect(eventParams.isNewRoom).to.eql(true);
+					});
+				});
+
 				bdd.it('creates the room instance in our collection', function () {
 					expect(Candy.Core.getRooms()).not.to.have.key('roomJid');
 
@@ -477,12 +512,13 @@ define([
 
 					receiveJoinPresence();
 
-					expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser']);
+					expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
 					expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
 					expect(eventParams.roomName).to.eql('coven');
 					expect(eventParams.user).to.eql(room.getRoster().get(participantJid));
 					expect(eventParams.action).to.eql('join');
 					expect(eventParams.currentUser).to.eql(room.getUser());
+					expect(eventParams.isNewRoom).to.eql(false);
 				});
 
 				bdd.describe('when I am assigned a different nick to the one I asked for', function () {
@@ -530,12 +566,13 @@ define([
 
 						receiveJoinPresenceAssignedNick();
 
-						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
 						expect(eventParams.roomName).to.eql('coven');
 						expect(eventParams.user).to.eql(room.getRoster().get(newParticipantJid));
 						expect(eventParams.action).to.eql('join');
 						expect(eventParams.currentUser).to.eql(room.getUser());
+						expect(eventParams.isNewRoom).to.eql(false);
 					});
 				});
 			});
