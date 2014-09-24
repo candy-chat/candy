@@ -451,9 +451,9 @@ Candy.View.Pane = (function(self, $) {
         // Reset classes to 'modal-common' only in case .show() is called
         // with different arguments before .hide() can remove the last applied
         // custom class
-        $('#chat-modal').removeClass().addClass( 'modal-common' );
+        $('#chat-modal').removeClass().addClass('modal-common');
         if( modalClass ) {
-          $('#chat-modal').addClass( modalClass );
+          $('#chat-modal').addClass(modalClass);
         }
         $('#chat-modal').stop(false, true);
         $('#chat-modal-body').html(html);
@@ -469,7 +469,7 @@ Candy.View.Pane = (function(self, $) {
        */
       hide: function(callback) {
         // Reset classes to include only `modal-common`.
-        $('#chat-modal').removeClass().addClass( 'modal-common' );
+        $('#chat-modal').removeClass().addClass('modal-common');
         $('#chat-modal').fadeOut('fast', function() {
           $('#chat-modal-body').text('');
           $('#chat-modal-overlay').hide();
