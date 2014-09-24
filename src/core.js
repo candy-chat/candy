@@ -63,21 +63,23 @@ Candy.Core = (function(self, Strophe, $) {
 			autojoin: undefined,
 			debug: false,
 			/** List: domains
-			 * If non-null, causes login form to offer this pre-set list of
-             * domains to choose between when logging in.  Any user-provided
-             * domain is discarded and the selected domain is appended.
-             * For each list item, only characters up to the first whitespace
-             * are used, so you can append extra information to each item if
-             * desired.
+			 * If non-null, causes login form to offer this
+                         * pre-set list of domains to choose between when
+                         * logging in.  Any user-provided domain is discarded
+                         * and the selected domain is appended.
+                         * For each list item, only characters up to the first
+                         * whitespace are used, so you can append extra
+                         * information to each item if desired.
 			 */
 			domains: null,
-            /** Boolean: hideDomainList
-              * If true, the domain list defined above is suppressed.  Without
-              * a selector displayed, the default domain (usually the first one
-              * listed) will be used as described above.  Probably only makes
-              * sense with a single domain defined.
-              */
-            hideDomainList: false,
+                        /** Boolean: hideDomainList
+                         * If true, the domain list defined above is suppressed.
+                         * Without a selector displayed, the default domain
+                         * (usually the first one listed) will be used as
+                         * described above.  Probably only makes sense with a
+                         * single domain defined.
+                         */
+                        hideDomainList: false,
 			disableWindowUnload: false,
 			/** Integer: presencePriority
 			 * Default priority for presence messages in order to receive messages across different resources
