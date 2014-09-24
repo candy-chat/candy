@@ -535,9 +535,11 @@ Candy.View.Pane = (function(self, $) {
        */
       showLoginForm: function(message, presetJid) {
         var domains = Candy.Core.getOptions().domains;
+        var hideDomainList = Candy.Core.getOptions().hideDomainList;
         domains = domains ? domains.map( function(d) {return {'domain':d};} )
                            : null;
-        var customClass = domains ? 'login-with-domains' : null;
+        var customClass = domains && !hideDomainList ? 'login-with-domains'
+                                                     : null;
         self.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
           _labelNickname: $.i18n._('labelNickname'),
           _labelUsername: $.i18n._('labelUsername'),
@@ -550,6 +552,10 @@ Candy.View.Pane = (function(self, $) {
           displayNickname: Candy.Core.isAnonymousConnection(),
           presetJid: presetJid ? presetJid : false
         }), null, null, customClass);
+        if(hideDomainList) {
+          $('#domain').hide();
+          $('.at-symbol').hide();
+        }
         $('#login-form').children(':input:first').focus();
 
         // register submit handler
