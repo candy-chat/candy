@@ -42,7 +42,12 @@ Candy.View = (function(self, $) {
 				message: { nickname: 15, body: 1000 },
 				roster: { nickname: 15 }
 			},
-			enableXHTML: false
+			enableXHTML: false,
+			/** String: termsMessage
+			 * If non-null, displayed at top of login form.  NB:
+			 * may be replaced with status message when appropriate.
+			 */
+			termsMessage: null
 		},
 
 		/** PrivateFunction: _setupTranslation
