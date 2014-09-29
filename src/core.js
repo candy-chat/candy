@@ -84,6 +84,11 @@ Candy.Core = (function(self, Strophe, $) {
 			/** Integer: presencePriority
 			 * Default priority for presence messages in order to receive messages across different resources
 			 */
+			/** String: initialMessage
+			 * If non-null, displayed at top of login form.  NB:
+			 * may be replaced with status message when appropriate.
+			 */
+			initialMessage: null,
 			presencePriority: 1,
 			/** String: resource
 			 * JID resource to use when connecting to the server.
