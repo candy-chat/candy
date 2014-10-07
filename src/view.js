@@ -43,11 +43,11 @@ Candy.View = (function(self, $) {
 				roster: { nickname: 15 }
 			},
 			enableXHTML: false,
-			/** String: termsMessage
+			/** String: initialLoginMessage
 			 * If non-null, displayed at top of login form.  NB:
 			 * may be replaced with status message when appropriate.
 			 */
-			termsMessage: null
+			initialLoginMessage: null
 		},
 
 		/** PrivateFunction: _setupTranslation

@@ -316,8 +316,8 @@ Candy.View.Observer = (function(self, $) {
 	 *   (Object) args - {presetJid}
 	 */
 	self.Login = function(event, args) {
-		var termsMsg = Candy.View.getOptions().termsMessage;
-		Candy.View.Pane.Chat.Modal.showLoginForm(termsMsg, args.presetJid);
+		var initialLoginMessage = Candy.View.getOptions().initialLoginMessage;
+		Candy.View.Pane.Chat.Modal.showLoginForm(initialLoginMessage, args.presetJid);
 	};
 
 	/** Class: Candy.View.Observer.AutojoinMissing

@@ -641,12 +641,12 @@ ul {
 	color: #333;
 }
 
-#chat-modal.login-with-domains {
+#chat-modal.modal-login-with-domains {
 	width: 650px;
 	margin-left: -330px;
 }
 
-#chat-modal a {
+#chat-modal-body a {
 	color: blue;
 }
 

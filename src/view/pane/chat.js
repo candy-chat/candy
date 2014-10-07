@@ -538,7 +538,7 @@ Candy.View.Pane = (function(self, $) {
         var hideDomainList = Candy.Core.getOptions().hideDomainList;
         domains = domains ? domains.map( function(d) {return {'domain':d};} )
                            : null;
-        var customClass = domains && !hideDomainList ? 'login-with-domains'
+        var customClass = domains && !hideDomainList ? 'modal-login-with-domains'
                                                      : null;
         self.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
           _labelNickname: $.i18n._('labelNickname'),
