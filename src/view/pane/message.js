@@ -148,7 +148,8 @@ Candy.View.Pane = (function(self, $) {
           displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.nickname),
           message: message,
           time: Candy.Util.localizedTime(timestamp),
-          timestamp: timestamp.toISOString()
+          timestamp: timestamp.toISOString(),
+          roomjid: roomJid
         }
       };
 
