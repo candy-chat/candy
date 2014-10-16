@@ -74,7 +74,7 @@ Candy.View.Pane = (function(self, $) {
       Candy.Core.Action.Jabber.Room.Message(targetJid, message, roomType, xhtmlMessage);
       // Private user chat. Jabber won't notify the user who has sent the message. Just show it as the user hits the button...
       if(roomType === 'chat' && message) {
-        self.Message.show(roomJid, self.Room.getUser(roomJid).getNick(), message);
+        self.Message.show(roomJid, self.Room.getUser(roomJid).getNick(), message, undefined, undefined, Candy.Core.getUser().getJid());
       }
       // Clear input and set focus to it
       $(this).children('.field').val('').focus();
