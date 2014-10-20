@@ -104,7 +104,11 @@ Candy.View.Template = (function(self){
 		form: '<form method="post" id="login-form" class="login-form">' +
 			'{{#displayNickname}}<label for="username">{{_labelNickname}}</label><input type="text" id="username" name="username"/>{{/displayNickname}}' +
 			'{{#displayUsername}}<label for="username">{{_labelUsername}}</label>' +
-			'<input type="text" id="username" name="username"/>{{/displayUsername}}' +
+			'<input type="text" id="username" name="username"/>' +
+			'{{#displayDomain}} <span class="at-symbol">@</span> ' +
+			'<select id="domain" name="domain">{{#domains}}<option value="{{domain}}">{{domain}}</option>{{/domains}}</select>' +
+			'{{/displayDomain}}' +
+			'{{/displayUsername}}' +
 			'{{#presetJid}}<input type="hidden" id="username" name="username" value="{{presetJid}}"/>{{/presetJid}}' +
 			'{{#displayPassword}}<label for="password">{{_labelPassword}}</label>' +
 			'<input type="password" id="password" name="password" />{{/displayPassword}}' +

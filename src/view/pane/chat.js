@@ -439,8 +439,9 @@ Candy.View.Pane = (function(self, $) {
        *   (String) html - HTML code to put into the modal window
        *   (Boolean) showCloseControl - set to true if a close button should be displayed [default false]
        *   (Boolean) showSpinner - set to true if a loading spinner should be shown [default false]
+       *   (String) modalClass - custom class (or space-separate classes) to attach to the modal
        */
-      show: function(html, showCloseControl, showSpinner) {
+      show: function(html, showCloseControl, showSpinner, modalClass) {
         if(showCloseControl) {
           self.Chat.Modal.showCloseControl();
         } else {
@@ -450,6 +451,13 @@ Candy.View.Pane = (function(self, $) {
           self.Chat.Modal.showSpinner();
         } else {
           self.Chat.Modal.hideSpinner();
+        }
+        // Reset classes to 'modal-common' only in case .show() is called
+        // with different arguments before .hide() can remove the last applied
+        // custom class
+        $('#chat-modal').removeClass().addClass('modal-common');
+        if( modalClass ) {
+          $('#chat-modal').addClass(modalClass);
         }
         $('#chat-modal').stop(false, true);
         $('#chat-modal-body').html(html);
@@ -464,6 +472,8 @@ Candy.View.Pane = (function(self, $) {
        *   (Function) callback - Calls the specified function after modal window has been hidden.
        */
       hide: function(callback) {
+        // Reset classes to include only `modal-common`.
+        $('#chat-modal').removeClass().addClass('modal-common');
         $('#chat-modal').fadeOut('fast', function() {
           $('#chat-modal-body').text('');
           $('#chat-modal-overlay').hide();
@@ -528,27 +538,48 @@ Candy.View.Pane = (function(self, $) {
        *  (String) presetJid - optional user jid. if set, the user will only be prompted for password.
        */
       showLoginForm: function(message, presetJid) {
+        var domains = Candy.Core.getOptions().domains;
+        var hideDomainList = Candy.Core.getOptions().hideDomainList;
+        domains = domains ? domains.map( function(d) {return {'domain':d};} )
+                           : null;
+        var customClass = domains && !hideDomainList ? 'login-with-domains'
+                                                     : null;
         self.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
           _labelNickname: $.i18n._('labelNickname'),
           _labelUsername: $.i18n._('labelUsername'),
+          domains: domains,
           _labelPassword: $.i18n._('labelPassword'),
           _loginSubmit: $.i18n._('loginSubmit'),
           displayPassword: !Candy.Core.isAnonymousConnection(),
           displayUsername: !presetJid,
+          displayDomain: domains ? true : false,
           displayNickname: Candy.Core.isAnonymousConnection(),
           presetJid: presetJid ? presetJid : false
-        }));
+        }), null, null, customClass);
+        if(hideDomainList) {
+          $('#domain').hide();
+          $('.at-symbol').hide();
+        }
         $('#login-form').children(':input:first').focus();
 
         // register submit handler
         $('#login-form').submit(function() {
           var username = $('#username').val(),
-            password = $('#password').val();
+            password = $('#password').val(),
+            domain = $('#domain');
+          domain = domain.length ? domain.val().split(' ')[0] : null;
 
           if (!Candy.Core.isAnonymousConnection()) {
-            // guess the input and create a jid out of it
-            var jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
+            var jid;
+            if(domain) { // domain is stipulated
+              // Ensure there is no domain part in username
+              username = username.split('@')[0];
+              jid = username + '@' + domain;
+            } else {  // domain not stipulated
+              // guess the input and create a jid out of it
+              jid = Candy.Core.getUser() && username.indexOf("@") < 0 ?
               username + '@' + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
+            }
 
             if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
               Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('loginInvalid'));
