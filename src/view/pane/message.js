@@ -74,7 +74,7 @@ Candy.View.Pane = (function(self, $) {
       Candy.Core.Action.Jabber.Room.Message(targetJid, message, roomType, xhtmlMessage);
       // Private user chat. Jabber won't notify the user who has sent the message. Just show it as the user hits the button...
       if(roomType === 'chat' && message) {
-        self.Message.show(roomJid, self.Room.getUser(roomJid).getNick(), message);
+        self.Message.show(roomJid, self.Room.getUser(roomJid).getNick(), message, undefined, undefined, Candy.Core.getUser().getJid());
       }
       // Clear input and set focus to it
       $(this).children('.field').val('').focus();
@@ -96,7 +96,7 @@ Candy.View.Pane = (function(self, $) {
      *   candy.view.message.before-render using {template, templateData}
      *   candy:view.message.after-show using {roomJid, name, message, element}
      */
-    show: function(roomJid, name, message, xhtmlMessage, timestamp) {
+    show: function(roomJid, name, message, xhtmlMessage, timestamp, from) {
       message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
       if(Candy.View.getOptions().enableXHTML === true && xhtmlMessage) {
         xhtmlMessage = Candy.Util.parseAndCropXhtml(xhtmlMessage, Candy.View.getOptions().crop.message.body);
@@ -113,7 +113,8 @@ Candy.View.Pane = (function(self, $) {
         'roomJid': roomJid,
         'name': name,
         'message': message,
-        'xhtmlMessage': xhtmlMessage
+        'xhtmlMessage': xhtmlMessage,
+        'from': from
       };
 
       /** Event: candy:view.message.before-show
@@ -149,7 +150,8 @@ Candy.View.Pane = (function(self, $) {
           message: message,
           time: Candy.Util.localizedTime(timestamp),
           timestamp: timestamp.toISOString(),
-          roomjid: roomJid
+          roomjid: roomJid,
+          from: from
         }
       };
 
