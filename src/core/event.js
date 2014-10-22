@@ -808,9 +808,14 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				// the x[xmlns=jabber:x:delay] is the format in XEP-0091.
 				var delay = msg.children('delay[xmlns="' + Strophe.NS.DELAY +'"]');
 
+				message.delay = false; // Default delay to being false.
+
 				if (delay.length < 1) {
 					// The jQuery xpath implementation doesn't support the or operator
 					delay = msg.children('x[xmlns="' + Strophe.NS.JABBER_DELAY +'"]');
+				} else {
+					// Add delay to the message object so that we can more easily tell if it's a delayed message or not.
+					message.delay = true;
 				}
 
 				var timestamp = delay.length > 0 ? delay.attr('stamp') : (new Date()).toISOString();
@@ -833,6 +838,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *                                     this user (not via the room) then the username is the node
 				 *                                     and not the resource.
 				 *                                     This flag tells if this is the case.
+				 *   (Boolean) delay - If there is a value for the delay element on a message it is a delayed message.
+				 *										 This flag tells if this is the case.
 				 *
 				 * Parameters:
 				 *   (String) roomJid - Room jid. For one-on-one messages, this is sanitized to the bare JID for indexing purposes.

@@ -1014,13 +1014,14 @@ define([
 							);
 						};
 
-						bdd.it('emits a candy:core.message event with the timestamp', function () {
+						bdd.it('emits a candy:core.message event with the timestamp and a delay marker', function () {
 							var eventParams;
 							$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
 
 							receiveMessage();
 
 							expect(eventParams.timestamp).to.eql('2002-09-10T23:08:25Z');
+							expect(eventParams.message.delay).to.eql(true);
 						});
 					});
 
