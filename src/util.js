@@ -510,7 +510,7 @@ Candy.Util = (function(self, $){
 		 */
 		linkify: function(text) {
 			text = text.replace(/(^|[^\/])(www\.[^\.]+\.[\S]+(\b|$))/gi, '$1http://$2');
-			return text.replace(/(\b(https?|ftp|file):\/\/[\-A-Z0-9+&@#\/%?=~_|!:,.;]*[\-A-Z0-9+&@#\/%=~_|])/ig, '<a href="$1" target="_blank">$1</a>');
+			return text.replace(/(\b(https?|ftp|file):\/\/[\-A-Z0-9+&@#\/\[\]%?=~_|!:,.;]*[\-A-Z0-9+&@#\/%=~_|])/ig, '<a href="$1" target="_blank">$1</a>');
 		},
 
 		/** Function: escape
