@@ -27,8 +27,6 @@ define({
 		{ browserName: 'internet explorer', version: '11', platform: 'Windows 8.1' },
 		{ browserName: 'internet explorer', version: '10', platform: 'Windows 8' },
 		{ browserName: 'internet explorer', version: '9', platform: 'Windows 7' },
-		{ browserName: 'internet explorer', version: '8', platform: 'Windows 7' },
-		{ browserName: 'internet explorer', version: '7', platform: 'Windows XP' },
 		{ browserName: 'firefox', version: '30', platform: [ 'OS X 10.9', 'Windows 7', 'Linux' ] },
 		{ browserName: 'chrome', version: '31', platform: [ 'OS X 10.9', 'Windows 7', 'Linux' ] },
 		{ browserName: 'safari', version: '6', platform: 'OS X 10.8' },

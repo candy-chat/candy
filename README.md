@@ -14,7 +14,7 @@ Features
 - 100% well-documented JavaScript source code
 - Built for Jabber (XMPP), using famous technologies
 - Used and approved in a productive environment with up to 400 concurrent users
-- Works with all major web browsers including IE7
+- Works with all major web browsers including IE9
 
 Plugins
 -------
