@@ -36,10 +36,10 @@ Candy.View.Template = (function(self){
 				'<span id="chat-modal-body"></span>' +
 				'<img src="{{assetsPath}}img/modal-spinner.gif" id="chat-modal-spinner" />' +
 				'</div><div id="chat-modal-overlay"></div>',
-		adminMessage: '<li><small>{{time}}</small><div class="adminmessage">' +
+		adminMessage: '<li><small data-timestamp="{{timestamp}}">{{time}}</small><div class="adminmessage">' +
 				'<span class="label">{{sender}}</span>' +
 				'<span class="spacer">▸</span>{{subject}} {{message}}</div></li>',
-		infoMessage: '<li><small>{{time}}</small><div class="infomessage">' +
+		infoMessage: '<li><small data-timestamp="{{timestamp}}">{{time}}</small><div class="infomessage">' +
 				'<span class="spacer">•</span>{{subject}} {{message}}</div></li>',
 		toolbar: '<ul id="chat-toolbar">' +
 				'<li id="emoticons-icon" data-tooltip="{{tooltipEmoticons}}"></li>' +
@@ -73,7 +73,7 @@ Candy.View.Template = (function(self){
 	self.Room = {
 		pane: '<div class="room-pane roomtype-{{roomType}}" id="chat-room-{{roomId}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">' +
 			'{{> roster}}{{> messages}}{{> form}}</div>',
-		subject: '<li><small>{{time}}</small><div class="subject">' +
+		subject: '<li><small data-timestamp="{{timestamp}}">{{time}}</small><div class="subject">' +
 				'<span class="label">{{roomName}}</span>' +
 				'<span class="spacer">▸</span>{{_roomSubject}} {{{subject}}}</div></li>',
 		form: '<div class="message-form-wrapper">' +
@@ -95,7 +95,7 @@ Candy.View.Template = (function(self){
 
 	self.Message = {
 		pane: '<div class="message-pane-wrapper"><ul class="message-pane"></ul></div>',
-		item: '<li><small>{{time}}</small><div>' +
+		item: '<li><small data-timestamp="{{timestamp}}">{{time}}</small><div>' +
 				'<a class="label" href="#" class="name">{{displayName}}</a>' +
 				'<span class="spacer">▸</span>{{{message}}}</div></li>'
 	};
@@ -104,7 +104,11 @@ Candy.View.Template = (function(self){
 		form: '<form method="post" id="login-form" class="login-form">' +
 			'{{#displayNickname}}<label for="username">{{_labelNickname}}</label><input type="text" id="username" name="username"/>{{/displayNickname}}' +
 			'{{#displayUsername}}<label for="username">{{_labelUsername}}</label>' +
-			'<input type="text" id="username" name="username"/>{{/displayUsername}}' +
+			'<input type="text" id="username" name="username"/>' +
+			'{{#displayDomain}} <span class="at-symbol">@</span> ' +
+			'<select id="domain" name="domain">{{#domains}}<option value="{{domain}}">{{domain}}</option>{{/domains}}</select>' +
+			'{{/displayDomain}}' +
+			'{{/displayUsername}}' +
 			'{{#presetJid}}<input type="hidden" id="username" name="username" value="{{presetJid}}"/>{{/presetJid}}' +
 			'{{#displayPassword}}<label for="password">{{_labelPassword}}</label>' +
 			'<input type="password" id="password" name="password" />{{/displayPassword}}' +

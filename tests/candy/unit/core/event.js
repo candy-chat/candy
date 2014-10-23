@@ -95,12 +95,13 @@ define([
 
 						receiveJoinPresence();
 
-						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
 						expect(eventParams.roomName).to.eql('coven');
 						expect(eventParams.user).to.eql(room.getRoster().get(participantJid));
 						expect(eventParams.action).to.eql('join');
 						expect(eventParams.currentUser).to.eql(Candy.Core.getUser());
+						expect(eventParams.isNewRoom).to.eql(false);
 					});
 				});
 
@@ -132,12 +133,13 @@ define([
 							var user = room.getRoster().get(participantJid);
 							receiveLeavePresence();
 
-							expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser']);
+							expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
 							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
 							expect(eventParams.roomName).to.eql('coven');
 							expect(eventParams.user).to.eql(user);
 							expect(eventParams.action).to.eql('leave');
 							expect(eventParams.currentUser).to.eql(Candy.Core.getUser());
+							expect(eventParams.isNewRoom).to.eql(false);
 						});
 					});
 
@@ -223,12 +225,13 @@ define([
 
 						receiveLeavePresence();
 
-						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
 						expect(eventParams.roomJid).to.eql(roomJid);
 						expect(eventParams.roomName).to.eql('coven');
 						expect(eventParams.user).to.eql(room.getRoster().get(newJid));
 						expect(eventParams.action).to.eql('nickchange');
 						expect(eventParams.currentUser).to.eql(Candy.Core.getUser());
+						expect(eventParams.isNewRoom).to.eql(false);
 					});
 				});
 
@@ -262,12 +265,13 @@ define([
 
 						receiveUpdatePresence();
 
-						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
 						expect(eventParams.roomJid).to.eql(roomJid);
 						expect(eventParams.roomName).to.eql('coven');
 						expect(eventParams.user).to.eql(room.getRoster().get(participantJid));
 						expect(eventParams.action).to.eql('join');
 						expect(eventParams.currentUser).to.eql(Candy.Core.getUser());
+						expect(eventParams.isNewRoom).to.eql(false);
 					});
 				});
 
@@ -440,6 +444,37 @@ define([
 
 				bdd.beforeEach(setMe);
 
+				bdd.describe('and the room is being created', function() {
+					var receiveJoinPresence = function () {
+						var presence = $pres({
+							from: participantJid
+						})
+						.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
+						.c('item', {affiliation: 'admin', role: 'moderator', jid: 'doo@dah.com/somewhere'})
+						.c('status', {code: '110'})
+						.c('status', {code: '201'});
+
+						testHelper.receiveStanza(presence);
+
+						room = Candy.Core.getRooms()[roomJid];
+					};
+
+					bdd.it('on a new room it emits a candy:core.presence.room event with isNewRoom set', function () {
+						var eventParams;
+						$(Candy).on('candy:core.presence.room', function (ev, params) { eventParams = params; });
+
+						receiveJoinPresence();
+
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.roomName).to.eql('coven');
+						expect(eventParams.user).to.eql(room.getRoster().get(participantJid));
+						expect(eventParams.action).to.eql('join');
+						expect(eventParams.currentUser).to.eql(room.getUser());
+						expect(eventParams.isNewRoom).to.eql(true);
+					});
+				});
+
 				bdd.it('creates the room instance in our collection', function () {
 					expect(Candy.Core.getRooms()).not.to.have.key('roomJid');
 
@@ -477,12 +512,13 @@ define([
 
 					receiveJoinPresence();
 
-					expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser']);
+					expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
 					expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
 					expect(eventParams.roomName).to.eql('coven');
 					expect(eventParams.user).to.eql(room.getRoster().get(participantJid));
 					expect(eventParams.action).to.eql('join');
 					expect(eventParams.currentUser).to.eql(room.getUser());
+					expect(eventParams.isNewRoom).to.eql(false);
 				});
 
 				bdd.describe('when I am assigned a different nick to the one I asked for', function () {
@@ -530,12 +566,13 @@ define([
 
 						receiveJoinPresenceAssignedNick();
 
-						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
 						expect(eventParams.roomName).to.eql('coven');
 						expect(eventParams.user).to.eql(room.getRoster().get(newParticipantJid));
 						expect(eventParams.action).to.eql('join');
 						expect(eventParams.currentUser).to.eql(room.getUser());
+						expect(eventParams.isNewRoom).to.eql(false);
 					});
 				});
 			});
@@ -947,7 +984,6 @@ define([
 
 					expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
 					expect(eventParams.roomJid).to.eql('doo@dah.com');
-					expect(eventParams.timestamp).to.be.undefined;
 
 					var message = eventParams.message;
 					expect(message).to.have.keys(['from', 'name', 'body', 'type', 'isNoConferenceRoomJid', 'xhtmlMessage']);
@@ -1014,6 +1050,30 @@ define([
 
 							expect(eventParams.timestamp).to.eql('20020910T23:08:25');
 						});
+					});
+				});
+
+				bdd.describe('without a delay', function() {
+					var receiveMessage = function () {
+						testHelper.receiveStanza(
+							$msg({
+								to: 'foo@bar.com',
+								from: 'doo@dah.com/resource1',
+								type: 'chat'
+							})
+							.c('body').t('Some message text')
+						);
+					};
+
+					bdd.it('emits a candy:core.message event with the timestamp', function () {
+						// TODO: Sinon.useFakeTimers() is undefined, so we can't make this test reliable. See https://groups.google.com/forum/#!topic/sinonjs/_TQugVk441s
+						return;
+						var eventParams;
+						$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams.timestamp).to.eql('20140413T10:56:00.000');
 					});
 				});
 
@@ -1192,7 +1252,6 @@ define([
 
 						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
-						expect(eventParams.timestamp).to.be.undefined;
 
 						var message = eventParams.message;
 						expect(message).to.have.keys(['from', 'name', 'body', 'type', 'xhtmlMessage']);
@@ -1418,7 +1477,6 @@ define([
 
 							expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
 							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
-							expect(eventParams.timestamp).to.be.undefined;
 
 							var message = eventParams.message;
 							expect(message).to.have.keys(['from', 'name', 'body', 'type']);
@@ -1454,7 +1512,6 @@ define([
 
 						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
-						expect(eventParams.timestamp).to.be.undefined;
 
 						var message = eventParams.message;
 						expect(message).to.have.keys(['from', 'name', 'body', 'type', 'isNoConferenceRoomJid', 'xhtmlMessage']);
@@ -1685,7 +1742,6 @@ define([
 
 						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
-						expect(eventParams.timestamp).to.be.undefined;
 
 						var message = eventParams.message;
 						expect(message).to.have.keys(['from', 'body', 'type']);
@@ -1728,7 +1784,6 @@ define([
 
 						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
 						expect(eventParams.roomJid).to.eql(roomJid);
-						expect(eventParams.timestamp).to.be.undefined;
 
 						var message = eventParams.message;
 						expect(message).to.have.keys(['from', 'name', 'body', 'type']);

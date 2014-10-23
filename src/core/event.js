@@ -554,6 +554,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				var from = Candy.Util.unescapeJid(msg.attr('from')),
 					roomJid = Strophe.getBareJidFromJid(from),
 					presenceType = msg.attr('type'),
+					isNewRoom = self.Jabber.Room._msgHasStatusCode(msg, 201),
 					nickAssign = self.Jabber.Room._msgHasStatusCode(msg, 210),
 					nickChange = self.Jabber.Room._msgHasStatusCode(msg, 303);
 
@@ -633,13 +634,15 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (Candy.Core.ChatUser) user - User which does the presence update
 				 *   (String) action - Action [kick, ban, leave, join]
 				 *   (Candy.Core.ChatUser) currentUser - Current local user
+				 *   (Boolean) isNewRoom - Whether the room is new (has just been created)
 				 */
 				$(Candy).triggerHandler('candy:core.presence.room', {
 					'roomJid': roomJid,
 					'roomName': room.getName(),
 					'user': user,
 					'action': action,
-					'currentUser': currentUser
+					'currentUser': currentUser,
+					'isNewRoom': isNewRoom
 				});
 				return true;
 			},
@@ -810,7 +813,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					delay = msg.children('x[xmlns="' + Strophe.NS.JABBER_DELAY +'"]');
 				}
 
-				var timestamp = delay !== undefined ? delay.attr('stamp') : null;
+				var timestamp = delay.length > 0 ? delay.attr('stamp') : (new Date()).toISOString();
 
 				/** Event: candy:core.message
 				 * Triggers on various message events (subject changed, private chat message, multi-user chat message).

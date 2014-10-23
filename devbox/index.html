@@ -6,9 +6,9 @@
   <link rel="shortcut icon" href="candy/res/img/favicon.png" type="image/gif" />
   <link rel="stylesheet" type="text/css" href="candy/res/default.css" />
 
-  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-  <script type="text/javascript" src="candy/libs.min.js"></script>
-  <script type="text/javascript" src="candy/candy.min.js"></script>
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.js"></script>
+  <script type="text/javascript" src="candy/libs.bundle.js"></script>
+  <script type="text/javascript" src="candy/candy.bundle.js"></script>
   <script type="text/javascript">
     $(document).ready(function() {
       //Candy.init('/http-bind/', { // uncomment & comment next line if you'd like to use BOSH
@@ -23,7 +23,7 @@
           //     -> array of rooms to join after connecting
           autojoin: ['test@conference.localhost']
         },
-        view: { resources: 'candy/res/' }
+        view: { assets: 'candy/res/' }
       });
 
       Candy.Core.connect('localhost');

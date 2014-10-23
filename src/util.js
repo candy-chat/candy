@@ -243,7 +243,14 @@ Candy.Util = (function(self, $){
 			return undefined;
 		}
 
-		var date = self.iso8601toDate(dateTime);
+		// See if we were passed a Date object
+		var date;
+		if (dateTime.toDateString) {
+			date = dateTime;
+		} else {
+			date = self.iso8601toDate(dateTime);
+		}
+
 		if(date.toDateString() === new Date().toDateString()) {
 			return date.format($.i18n._('timeFormat'));
 		} else {

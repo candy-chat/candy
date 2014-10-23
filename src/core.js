@@ -61,7 +61,30 @@ Candy.Core = (function(self, Strophe, $) {
 			 * You may want to define an array of rooms to autojoin: `['room1@conference.host.tld', 'room2...]` (ejabberd, Openfire, ...)
 			 */
 			autojoin: undefined,
+			/** String: conferenceDomain
+			 * Holds the prefix for an XMPP chat server's conference subdomain.
+			 * If not set, assumes no specific subdomain.
+			 */
+			conferenceDomain: undefined,
 			debug: false,
+			/** List: domains
+			 * If non-null, causes login form to offer this
+                         * pre-set list of domains to choose between when
+                         * logging in.  Any user-provided domain is discarded
+                         * and the selected domain is appended.
+                         * For each list item, only characters up to the first
+                         * whitespace are used, so you can append extra
+                         * information to each item if desired.
+			 */
+			domains: null,
+                        /** Boolean: hideDomainList
+                         * If true, the domain list defined above is suppressed.
+                         * Without a selector displayed, the default domain
+                         * (usually the first one listed) will be used as
+                         * described above.  Probably only makes sense with a
+                         * single domain defined.
+                         */
+                        hideDomainList: false,
 			disableWindowUnload: false,
 			/** Integer: presencePriority
 			 * Default priority for presence messages in order to receive messages across different resources
@@ -275,8 +298,12 @@ Candy.Core = (function(self, Strophe, $) {
 	 *   (Integer) sid - Session ID
 	 *   (Integer) rid - rid
 	 */
-	self.attach = function(jid, sid, rid) {
-		_user = new self.ChatUser(jid, Strophe.getNodeFromJid(jid));
+	self.attach = function(jid, sid, rid, nick) {
+		if (nick) {
+			_user = new self.ChatUser(jid, nick);
+		} else {
+			_user = new self.ChatUser(jid, Strophe.getNodeFromJid(jid));
+		}
 		self.registerEventHandlers();
 		_connection.attach(jid, sid, rid, Candy.Core.Event.Strophe.Connect);
 	};

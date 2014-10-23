@@ -174,11 +174,13 @@ Candy.View.Pane = (function(self, $) {
      */
     setSubject: function(roomJid, subject) {
       subject = Candy.Util.Parser.linkify(Candy.Util.Parser.escape(subject));
+      var timestamp = new Date();
       var html = Mustache.to_html(Candy.View.Template.Room.subject, {
         subject: subject,
         roomName: self.Chat.rooms[roomJid].name,
         _roomSubject: $.i18n._('roomSubject'),
-        time: Candy.Util.localizedTime(new Date().toGMTString())
+        time: Candy.Util.localizedTime(timestamp),
+        timestamp: timestamp.toISOString()
       });
       self.Room.appendToMessagePane(roomJid, html);
       self.Room.scrollToBottom(roomJid);

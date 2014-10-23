@@ -304,7 +304,7 @@ Candy.View.Observer = (function(self, $) {
 				// Message received from alternative resource. Release the resource lock.
 				room.targetJid = args.roomJid;
 			}
-			Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.message.xhtmlMessage, args.timestamp);
+			Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.message.xhtmlMessage, args.timestamp, args.message.from);
 		}
 	};
 
