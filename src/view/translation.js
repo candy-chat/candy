@@ -154,25 +154,25 @@ Candy.View.Translation = {
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},
 	'fr' : {
-		'status': 'Status : %s',
+		'status': 'Status&thinsp;: %s',
 		'statusConnecting': 'Connexion…',
 		'statusConnected' : 'Connecté',
 		'statusDisconnecting': 'Déconnexion…',
 		'statusDisconnected' : 'Déconnecté',
 		'statusAuthfail': 'L’identification a échoué',
 
-		'roomSubject'  : 'Sujet :',
+		'roomSubject'  : 'Sujet&thinsp;:',
 		'messageSubmit': 'Envoyer',
 
-		'labelUsername': 'Nom d’utilisateur :',
-		'labelNickname': 'Pseudo :',
-		'labelPassword': 'Mot de passe :',
+		'labelUsername': 'Nom d’utilisateur&thinsp;:',
+		'labelNickname': 'Pseudo&thinsp;:',
+		'labelPassword': 'Mot de passe&thinsp;:',
 		'loginSubmit'  : 'Connexion',
 		'loginInvalid' : 'JID invalide',
 
-		'reason'				: 'Motif :',
-		'subject'				: 'Titre :',
-		'reasonWas'				: 'Motif : %s.',
+		'reason'				: 'Motif&thinsp;:',
+		'subject'				: 'Titre&thinsp;:',
+		'reasonWas'				: 'Motif&thinsp;: %s.',
 		'kickActionLabel'		: 'Kick',
 		'youHaveBeenKickedBy'   : 'Vous avez été expulsé du salon %1$s (%2$s)',
 		'youHaveBeenKicked'     : 'Vous avez été expulsé du salon %s',
@@ -193,7 +193,7 @@ Candy.View.Translation = {
 		'userHasBeenKickedFromRoom': '%s a été expulsé du salon.',
 		'userHasBeenBannedFromRoom': '%s a été banni du salon.',
 
-		'presenceUnknownWarningSubject': 'Note :',
+		'presenceUnknownWarningSubject': 'Note&thinsp;:',
 		'presenceUnknownWarning'       : 'Cet utilisateur n’est malheureusement plus connecté, le message ne sera pas envoyé.',
 
 		'dateFormat': 'dd/mm/yyyy',
@@ -214,8 +214,8 @@ Candy.View.Translation = {
 
 		'nicknameConflict': 'Ce nom d’utilisateur est déjà utilisé. Veuillez en choisir un autre.',
 
-		'errorMembersOnly': 'Vous ne pouvez pas entrer dans le salon %s : droits insuffisants.',
-		'errorMaxOccupantsReached': 'Vous ne pouvez pas entrer dans le salon %s : limite d’utilisateurs atteinte.',
+		'errorMembersOnly': 'Vous ne pouvez pas entrer dans le salon %s&thinsp;: droits insuffisants.',
+		'errorMaxOccupantsReached': 'Vous ne pouvez pas entrer dans le salon %s&thinsp;: limite d’utilisateurs atteinte.',
 
 		'antiSpamMessage' : 'Merci de ne pas spammer. Vous avez été bloqué pendant une courte période.'
 	},
