@@ -62,6 +62,11 @@ Candy.Core = (function(self, Strophe, $) {
 			 */
 			autojoin: undefined,
 			debug: false,
+			/** Boolean: disableCoreNotifications
+			 * If set to `true`, the built-in notifications (sounds and badges) are disabled.
+			 * This is useful if you are using a plugin to handle notifications.
+			 */
+			disableCoreNotifications: false,
 			disableWindowUnload: false,
 			/** Integer: presencePriority
 			 * Default priority for presence messages in order to receive messages across different resources
