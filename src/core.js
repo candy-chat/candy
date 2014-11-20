@@ -51,9 +51,7 @@ Candy.Core = (function(self, Strophe, $) {
 		 */
 		_status,
 		/** PrivateVariable: _options
-		 * Options:
-		 *   (Boolean) debug - Debug (Default: false)
-		 *   (Array|Boolean) autojoin - Autojoin these channels. When boolean true, do not autojoin, wait if the server sends something.
+		 * Config options
 		 */
 		_options = {
 			/** Boolean: autojoin
@@ -66,25 +64,36 @@ Candy.Core = (function(self, Strophe, $) {
 			 * If not set, assumes no specific subdomain.
 			 */
 			conferenceDomain: undefined,
+			/** Boolean: debug
+			 * Enable debug
+			 */
 			debug: false,
 			/** List: domains
 			 * If non-null, causes login form to offer this
-                         * pre-set list of domains to choose between when
-                         * logging in.  Any user-provided domain is discarded
-                         * and the selected domain is appended.
-                         * For each list item, only characters up to the first
-                         * whitespace are used, so you can append extra
-                         * information to each item if desired.
+			 * pre-set list of domains to choose between when
+			 * logging in.  Any user-provided domain is discarded
+			 * and the selected domain is appended.
+			 * For each list item, only characters up to the first
+			 * whitespace are used, so you can append extra
+			 * information to each item if desired.
 			 */
 			domains: null,
-                        /** Boolean: hideDomainList
-                         * If true, the domain list defined above is suppressed.
-                         * Without a selector displayed, the default domain
-                         * (usually the first one listed) will be used as
-                         * described above.  Probably only makes sense with a
-                         * single domain defined.
-                         */
-                        hideDomainList: false,
+			/** Boolean: hideDomainList
+			 * If true, the domain list defined above is suppressed.
+			 * Without a selector displayed, the default domain
+			 * (usually the first one listed) will be used as
+			 * described above.  Probably only makes sense with a
+			 * single domain defined.
+			 */
+			hideDomainList: false,
+			/** Boolean: disableCoreNotifications
+			 * If set to `true`, the built-in notifications (sounds and badges) are disabled.
+			 * This is useful if you are using a plugin to handle notifications.
+			 */
+			disableCoreNotifications: false,
+			/** Boolean: disableWindowUnload
+			 * Disable window unload handler which usually disconnects from XMPP
+			 */
 			disableWindowUnload: false,
 			/** Integer: presencePriority
 			 * Default priority for presence messages in order to receive messages across different resources
