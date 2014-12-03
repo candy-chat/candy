@@ -986,7 +986,7 @@ define([
 					expect(eventParams.roomJid).to.eql('doo@dah.com');
 
 					var message = eventParams.message;
-					expect(message).to.have.keys(['from', 'name', 'body', 'type', 'isNoConferenceRoomJid', 'xhtmlMessage']);
+					expect(message).to.have.keys(['from', 'name', 'body', 'type', 'delay', 'isNoConferenceRoomJid', 'xhtmlMessage']);
 					expect(message.from).to.eql('doo@dah.com/resource1');
 					expect(message.name).to.eql('doo');
 					expect(message.type).to.eql('chat');
@@ -1255,7 +1255,7 @@ define([
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
 
 						var message = eventParams.message;
-						expect(message).to.have.keys(['from', 'name', 'body', 'type', 'xhtmlMessage']);
+						expect(message).to.have.keys(['from', 'name', 'body', 'type', 'delay', 'xhtmlMessage']);
 						expect(message.from).to.eql('coven@chat.shakespeare.lit');
 						expect(message.name).to.eql('thirdwitch');
 						expect(message.type).to.eql('groupchat');
@@ -1480,7 +1480,7 @@ define([
 							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
 
 							var message = eventParams.message;
-							expect(message).to.have.keys(['from', 'name', 'body', 'type']);
+							expect(message).to.have.keys(['from', 'name', 'body', 'type', 'delay']);
 							expect(message.from).to.eql('coven@chat.shakespeare.lit');
 							expect(message.name).to.eql('coven');
 							expect(message.body).to.eql('Some new subject!');
@@ -1515,7 +1515,7 @@ define([
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
 
 						var message = eventParams.message;
-						expect(message).to.have.keys(['from', 'name', 'body', 'type', 'isNoConferenceRoomJid', 'xhtmlMessage']);
+						expect(message).to.have.keys(['from', 'name', 'body', 'type', 'delay', 'isNoConferenceRoomJid', 'xhtmlMessage']);
 						expect(message.from).to.eql('coven@chat.shakespeare.lit/thirdwitch');
 						expect(message.name).to.eql('thirdwitch');
 						expect(message.type).to.eql('chat');
@@ -1745,7 +1745,7 @@ define([
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
 
 						var message = eventParams.message;
-						expect(message).to.have.keys(['from', 'body', 'type']);
+						expect(message).to.have.keys(['from', 'body', 'type', 'delay']);
 						expect(message.from).to.eql('coven@chat.shakespeare.lit');
 						expect(message.type).to.eql('info');
 						expect(message.body).to.eql('Visitors are not allowed to send messages to all occupants');
@@ -1787,7 +1787,7 @@ define([
 						expect(eventParams.roomJid).to.eql(roomJid);
 
 						var message = eventParams.message;
-						expect(message).to.have.keys(['from', 'name', 'body', 'type']);
+						expect(message).to.have.keys(['from', 'name', 'body', 'type', 'delay']);
 						expect(message.from).to.eql(roomJid);
 						expect(message.name).to.eql('');
 						expect(message.body).to.eql('Some announcement');
