@@ -59,6 +59,11 @@ Candy.Core = (function(self, Strophe, $) {
 			 * You may want to define an array of rooms to autojoin: `['room1@conference.host.tld', 'room2...]` (ejabberd, Openfire, ...)
 			 */
 			autojoin: undefined,
+			/** Boolean: disconnectWithoutTabs
+			 * If you set to `false`, when you close all of the tabs, the service does not disconnect.
+			 * Set to `true`, when you close all of the tabs, the service will disconnect.
+			 */
+			disconnectWithoutTabs: true,
 			/** String: conferenceDomain
 			 * Holds the prefix for an XMPP chat server's conference subdomain.
 			 * If not set, assumes no specific subdomain.
