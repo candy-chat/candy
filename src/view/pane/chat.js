@@ -175,9 +175,11 @@ Candy.View.Pane = (function(self, $) {
      *   (Boolean) - false, this will stop the event from bubbling
      */
     allTabsClosed: function() {
-      Candy.Core.disconnect();
-      self.Chat.Toolbar.hide();
-      return;
+      if (Candy.Core.getOptions().disconnectWithoutTabs) {
+        Candy.Core.disconnect();
+        self.Chat.Toolbar.hide();
+        return;
+      }
     },
 
     /** Function: fitTabs
