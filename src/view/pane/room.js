@@ -298,8 +298,13 @@ Candy.View.Pane = (function(self, $) {
      *   (String) roomJid - Room JID
      */
     onScrollToBottom: function(roomJid) {
-      var messagePane = self.Room.getPane(roomJid, '.message-pane-wrapper');
-      messagePane.scrollTop(messagePane.prop('scrollHeight'));
+      var messagePane = self.Room.getPane(roomJid, '.message-pane');
+
+      if (Candy.View.Pane.Chat.rooms[roomJid].enableScroll === true) {
+        messagePane.scrollTop(messagePane.prop('scrollHeight'));
+      } else {
+        return false;
+      }
     },
 
     /** Function: onScrollToStoredPosition
