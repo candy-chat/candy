@@ -109,6 +109,11 @@ Candy.View.Pane = (function(self, $) {
         timestamp = Candy.Util.iso8601toDate(timestamp);
       }
 
+      // Before we add the new message, check to see if we should be automatically scrolling or not.
+      var messagePane = self.Room.getPane(roomJid, '.message-pane');
+      var enableScroll = (messagePane.scrollTop() + messagePane.outerHeight()) === messagePane.prop('scrollHeight');
+      Candy.View.Pane.Chat.rooms[roomJid].enableScroll = enableScroll;
+
       var evtData = {
         'roomJid': roomJid,
         'name': name,
