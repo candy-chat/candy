@@ -54,6 +54,7 @@
     "jshint-stylish": "^0.2.0",
     "sinon": "^1.10.3",
     "sinon-chai": "^2.5.0",
+    "lolex": "^1.2.0",
     "grunt-todo": "~0.4.0"
   }
 }
