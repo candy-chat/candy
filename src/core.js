@@ -231,6 +231,11 @@ Candy.Core = (function(self, Strophe, $) {
 	 * Use with caution from outside of Candy.
 	 */
 	self.registerEventHandlers = function() {
+		self.addHandler(Candy.Core.Event.Jabber.Presence, Strophe.NS.CLIENT, 'presence', function(event) {
+			console.log('maybemaybemaybemaybemaybemaybe???');
+			console.log(event);
+			return event;
+		});
 		self.addHandler(self.Event.Jabber.Version, Strophe.NS.VERSION, 'iq');
 		self.addHandler(self.Event.Jabber.Presence, null, 'presence');
 		self.addHandler(self.Event.Jabber.Message, null, 'message');
@@ -241,6 +246,28 @@ Candy.Core = (function(self, Strophe, $) {
 		self.addHandler(_connection.disco._onDiscoItems.bind(_connection.disco), Strophe.NS.DISCO_ITEMS, 'iq', 'get');
 		self.addHandler(_connection.caps._delegateCapabilities.bind(_connection.caps), Strophe.NS.CAPS);
 	};
+
+
+
+	/** Function: addHandler
+	 * Wrapper for Strophe.Connection.addHandler() to add a stanza handler for the connection.
+	 *
+	 * Parameters:
+	 *   (Function) handler - The user callback.
+	 *   (String) ns - The namespace to match.
+	 *   (String) name - The stanza name to match.
+	 *   (String) type - The stanza type attribute to match.
+	 *   (String) id - The stanza id attribute to match.
+	 *   (String) from - The stanza from attribute to match.
+	 *   (String) options - The handler options
+	 *
+	 * Returns:
+	 *   A reference to the handler that can be used to remove it.
+	 */
+	self.addHandler = function(handler, ns, name, type, id, from, options) {
+		return _connection.addHandler(handler, ns, name, type, id, from, options);
+	};
+
 
 	/** Function: connect
 	 * Connect to the jabber host.

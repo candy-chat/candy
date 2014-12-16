@@ -142,23 +142,45 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 *   (Boolean) - true
 		 */
 		Presence: function(msg) {
+			console.log('----0-0-0-0-0------');
+			console.log(msg);
+			console.log('endednendnendnencne');
 			Candy.Core.log('[Jabber] Presence');
 			msg = $(msg);
-			if(msg.children('x[xmlns^="' + Strophe.NS.MUC + '"]').length > 0) {
+			if (msg.children('x[xmlns^="' + Strophe.NS.MUC + '"]').length > 0) {
 				if (msg.attr('type') === 'error') {
 					self.Jabber.Room.PresenceError(msg);
 				} else {
 					self.Jabber.Room.Presence(msg);
 				}
 			} else {
-				/** Event: candy:core.presence
-				 * Presence updates. Emitted only when not a muc presence.
-				 *
-				 * Parameters:
-				 *   (JID) from - From Jid
-				 *   (String) stanza - Stanza
-				 */
-				$(Candy).triggerHandler('candy:core.presence', {'from': msg.attr('from'), 'stanza': msg});
+				var type = msg.attr('type');
+				if (msg.attr('xmlns') === Strophe.NS.CLIENT && (type === 'get' || type === 'unavailable')) {
+					var evtData = {
+						from: msg.attr('from'),
+						type: type,
+						stanza: msg
+					};
+
+					/** Event: candy:core.presence.roster
+					 * Presence updates for people who aren't in a muc (global roster).
+					 *
+					 * Parameters:
+					 *   (JID) from - From Jid
+					 *   (String) stanza - Stanza
+					 */
+					$(Candy).triggerHandler('candy:core.presence.roster', evtData);
+
+				} else {
+					/** Event: candy:core.presence
+					 * Presence updates. Emitted only when not a muc presence.
+					 *
+					 * Parameters:
+					 *   (JID) from - From Jid
+					 *   (String) stanza - Stanza
+					 */
+					$(Candy).triggerHandler('candy:core.presence', {'from': msg.attr('from'), 'stanza': msg});
+				}
 			}
 			return true;
 		},
