@@ -142,9 +142,6 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		 *   (Boolean) - true
 		 */
 		Presence: function(msg) {
-			console.log('----0-0-0-0-0------');
-			console.log(msg);
-			console.log('endednendnendnencne');
 			Candy.Core.log('[Jabber] Presence');
 			msg = $(msg);
 			if (msg.children('x[xmlns^="' + Strophe.NS.MUC + '"]').length > 0) {
@@ -155,10 +152,15 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				}
 			} else {
 				var type = msg.attr('type');
-				if (msg.attr('xmlns') === Strophe.NS.CLIENT && (type === 'get' || type === 'unavailable')) {
+
+				if (msg.attr('xmlns') === Strophe.NS.CLIENT && (type === 'unavailable' || msg.children('priority').length > 0)) {
+					if (type !== 'unavailable') {
+						type = 'available';
+					}
+
 					var evtData = {
 						from: msg.attr('from'),
-						type: type,
+						msgType: type,
 						stanza: msg
 					};
 
@@ -167,7 +169,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					 *
 					 * Parameters:
 					 *   (JID) from - From Jid
-					 *   (String) stanza - Stanza
+					 *	 (String) msgType - type of message (available, unavailable)
+					 *   (Object) stanza - Stanza
 					 */
 					$(Candy).triggerHandler('candy:core.presence.roster', evtData);
 

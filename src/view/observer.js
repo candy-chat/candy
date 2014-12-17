@@ -148,7 +148,6 @@ Candy.View.Observer = (function(self, $) {
 		 *   - <notifyPrivateChats>
 		 */
 		update: function(event, args) {
-			var evtData;
 			// Client left
 			if(args.type === 'leave') {
 				var user = Candy.View.Pane.Room.getUser(args.roomJid);
@@ -184,7 +183,7 @@ Candy.View.Observer = (function(self, $) {
 					});
 				}, 5000);
 
-				evtData = { type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user };
+				var evtData = { type: args.type, reason: args.reason, roomJid: args.roomJid, user: args.user };
 
 				/** Event: candy:view.presence
 				 * Presence update when kicked or banned
