@@ -146,7 +146,6 @@ Candy.View.Pane = (function(self, $) {
         } else {
           self.Chat.infoMessage(roomJid, $.i18n._('userLeftRoom', [user.getNick()]));
         }
-
       } else if(action === 'nickchange') {
         usercountDiff = 0;
         self.Roster.changeNick(roomId, user);
@@ -162,6 +161,10 @@ Candy.View.Pane = (function(self, $) {
       } else if(action === 'ban') {
         self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
         self.Chat.onInfoMessage(roomJid, $.i18n._('userHasBeenBannedFromRoom', [user.getNick()]));
+      } else if (action === 'available' || action === 'unavailable') {
+        var $userItem = $('.room-pane[data-roomjid="' + roomJid + '"] .roster-wrapper .user[data-jid="' + user.getEscapedJid() + '"]');
+        $userItem.attr('data-status', action);
+        $userItem.children('i.roster-status').attr('class', 'roster-status ' + action);
       }
 
       // Update user count

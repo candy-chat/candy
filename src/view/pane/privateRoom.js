@@ -67,11 +67,13 @@ Candy.View.Pane = (function(self, $) {
       if (Candy.Core.getUser().isInPrivacyList('ignore', roomJid)) {
         return false;
       }
+
       if(!self.Chat.rooms[roomJid]) {
         if(self.Room.init(roomJid, roomName, 'chat') === false) {
           return false;
         }
       }
+
       if(switchToRoom) {
         self.Room.show(roomJid);
       }
@@ -81,10 +83,16 @@ Candy.View.Pane = (function(self, $) {
       self.PrivateRoom.setStatus(roomJid, 'join');
 
 
-
-      // We can't track the presence of a user if it's not a conference jid
       if(isNoConferenceRoomJid) {
-        self.Chat.infoMessage(roomJid, $.i18n._('presenceUnknownWarningSubject'), $.i18n._('presenceUnknownWarning'));
+        // Check the contact, if available.
+        var contact = Candy.Core.getRoster().get(roomJid);
+
+        if (contact) {
+          self.Roster.update(roomJid, contact, contact.getStatus(), user);
+        } else {
+          // We can't track the presence of a user if it's not a conference jid or they're not in a global roster.
+          self.Chat.infoMessage(roomJid, $.i18n._('presenceUnknownWarningSubject'), $.i18n._('presenceUnknownWarning'));
+        }
       }
 
       evtData.element = self.Room.getPane(roomJid);

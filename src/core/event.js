@@ -152,6 +152,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				}
 			} else {
 				var type = msg.attr('type');
+				var from = msg.attr('from');
 
 				if (msg.attr('xmlns') === Strophe.NS.CLIENT && (type === 'unavailable' || msg.children('priority').length > 0)) {
 					if (type !== 'unavailable') {
@@ -159,7 +160,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					}
 
 					var evtData = {
-						from: msg.attr('from'),
+						from: from,
 						msgType: type,
 						stanza: msg
 					};
@@ -253,7 +254,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				return true;
 			}
 
-			if (updatedItem.subscription === "remove") {
+			if (updatedItem.subscription === 'remove') {
 				var contact = Candy.Core.getRoster().get(updatedItem.jid);
 				Candy.Core.getRoster().remove(updatedItem.jid);
 				/** Event: candy:core.roster.removed
