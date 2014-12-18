@@ -93,6 +93,14 @@ Candy.View.Template = (function(self){
 				'<li class="ignore" data-tooltip="{{tooltipIgnored}}"></li></ul></div>'
 	};
 
+	self.UserInfoPanel = {
+		pane: '{{#photo}}<img class="avatar" width="200" src="data:{{type}};base64,{{binaryValue}}"/>{{/photo}}' +
+			'<div class="name">{{#fullName}}{{fullName}} ({{nickName}}){{/fullName}}{{^fullName}}{{nickName}}{{/fullName}}</div>' +
+			'{{#role}}<div class="role">{{role}}</div>{{/role}}' +
+			'{{#organisation}}<div class="orgunit">{{unit}}</div>{{/organisation}}' +
+			'{{#email}}<div class="email">{{userID}}</div>{{/email}}'
+	};
+
 	self.Message = {
 		pane: '<div class="message-pane-wrapper"><ul class="message-pane"></ul></div>',
 		item: '<li><small data-timestamp="{{timestamp}}">{{time}}</small><div>' +
