@@ -69,11 +69,13 @@ Candy.View.Pane = (function(self, $) {
       // a user joined the room
       if(action === 'join') {
         usercountDiff = 1;
+        var contact = user.getContact();
         var html = Mustache.to_html(Candy.View.Template.Roster.user, {
             roomId: roomId,
             userId : userId,
             userJid: user.getJid(),
             realJid: user.getRealJid(),
+            status: contact ? contact.getStatus() : 'unavailable',
             nick: user.getNick(),
             displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.nickname),
             role: user.getRole(),
