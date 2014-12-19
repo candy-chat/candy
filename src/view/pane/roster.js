@@ -161,7 +161,8 @@ Candy.View.Pane = (function(self, $) {
       } else if(action === 'ban') {
         self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
         self.Chat.onInfoMessage(roomJid, $.i18n._('userHasBeenBannedFromRoom', [user.getNick()]));
-      } else if (action === 'available' || action === 'unavailable') {
+      } else if (action === "available" || action === "unavailable" || action === "dnd" ||
+                       action === "xa" || action === "away" || action === "chat") {
         var $userItem = $('.room-pane[data-roomjid="' + roomJid + '"] .roster-wrapper .user[data-jid="' + user.getEscapedJid() + '"]');
         $userItem.attr('data-status', action);
         $userItem.children('i.roster-status').attr('class', 'roster-status ' + action);

@@ -158,6 +158,10 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					type = 'available';
 				}
 
+				if (msg.children('show').length > 0) {
+					type = msg.children('show')[0].innerHTML;
+				}
+
 				// If there's an open one-on-one, notify of an unavailable status
 				if (Candy.View.Pane.Room.getPane(Strophe.getBareJidFromJid(from))) {
 					var $userItem = $('.user[data-jid="' + Strophe.getBareJidFromJid(from) + '"]');
