@@ -10,5 +10,6 @@
 	"trailing": true,
 	"maxdepth": 4,
 	"laxcomma": true,
-	"browser": true
+	"browser": true,
+	"quotmark": false
 }

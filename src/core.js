@@ -231,7 +231,6 @@ Candy.Core = (function(self, Strophe, $) {
 	 * Use with caution from outside of Candy.
 	 */
 	self.registerEventHandlers = function() {
-		self.addHandler(Candy.Core.Event.Jabber.Presence, Strophe.NS.CLIENT, 'presence');
 		self.addHandler(self.Event.Jabber.Version, Strophe.NS.VERSION, 'iq');
 		self.addHandler(self.Event.Jabber.Presence, null, 'presence');
 		self.addHandler(self.Event.Jabber.Message, null, 'message');

@@ -65,11 +65,11 @@ Candy.View.Pane = (function(self, $) {
        *   (jQuery.Element) element - User element
        */
       $(Candy).triggerHandler('candy:view.roster.before-update', evtData);
-
       // a user joined the room
       if(action === 'join') {
         usercountDiff = 1;
         var contact = user.getContact();
+
         var html = Mustache.to_html(Candy.View.Template.Roster.user, {
             roomId: roomId,
             userId : userId,
@@ -82,7 +82,7 @@ Candy.View.Pane = (function(self, $) {
             affiliation: user.getAffiliation(),
             me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
             tooltipRole: $.i18n._('tooltipRole'),
-            tooltipIgnored: $.i18n._('tooltipIgnored')
+            tooltipIgnored: $.i18n._('tooltipIgnored'),
           });
 
         if(userElem.length < 1) {

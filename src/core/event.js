@@ -150,42 +150,48 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				} else {
 					self.Jabber.Room.Presence(msg);
 				}
-			} else {
+			} else if (msg.attr('xmlns') === Strophe.NS.CLIENT) {
 				var type = msg.attr('type');
 				var from = msg.attr('from');
 
-				if (msg.attr('xmlns') === Strophe.NS.CLIENT && (type === 'unavailable' || msg.children('priority').length > 0)) {
-					if (type !== 'unavailable') {
-						type = 'available';
-					}
-
-					var evtData = {
-						from: from,
-						msgType: type,
-						stanza: msg
-					};
-
-					/** Event: candy:core.presence.roster
-					 * Presence updates for people who aren't in a muc (global roster).
-					 *
-					 * Parameters:
-					 *   (JID) from - From Jid
-					 *	 (String) msgType - type of message (available, unavailable)
-					 *   (Object) stanza - Stanza
-					 */
-					$(Candy).triggerHandler('candy:core.presence.roster', evtData);
-
-				} else {
-					/** Event: candy:core.presence
-					 * Presence updates. Emitted only when not a muc presence.
-					 *
-					 * Parameters:
-					 *   (JID) from - From Jid
-					 *   (String) stanza - Stanza
-					 */
-					$(Candy).triggerHandler('candy:core.presence', {'from': msg.attr('from'), 'stanza': msg});
+				if (msg.children('priority').length > 0) {
+					type = 'available';
 				}
+
+				// If there's an open one-on-one, notify of an unavailable status
+				if (Candy.View.Pane.Room.getPane(Strophe.getBareJidFromJid(from))) {
+					var $userItem = $('.user[data-jid="' + Strophe.getBareJidFromJid(from) + '"]');
+		      $userItem.attr('data-status', type);
+		      $userItem.children('i.roster-status').attr('class', 'roster-status ' + type);
+				}
+
+				var evtData = {
+					from: from,
+					msgType: type,
+					stanza: msg
+				};
+
+				/** Event: candy:core.presence.roster
+				 * Presence updates for people who aren't in a muc (global roster).
+				 *
+				 * Parameters:
+				 *   (JID) from - From Jid
+				 *	 (String) msgType - type of message (available, unavailable)
+				 *   (Object) stanza - Stanza
+				 */
+				$(Candy).triggerHandler('candy:core.presence.roster', evtData);
+
+			} else {
+				/** Event: candy:core.presence
+				 * Presence updates. Emitted only when not a muc presence.
+				 *
+				 * Parameters:
+				 *   (JID) from - From Jid
+				 *   (String) stanza - Stanza
+				 */
+				$(Candy).triggerHandler('candy:core.presence', {'from': msg.attr('from'), 'stanza': msg});
 			}
+
 			return true;
 		},
 
