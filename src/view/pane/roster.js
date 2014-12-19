@@ -67,11 +67,15 @@ Candy.View.Pane = (function(self, $) {
       $(Candy).triggerHandler('candy:view.roster.before-update', evtData);
 
       // a user joined the room
+      
       if(action === 'join') {
+        var contact;
+        var status = (contact = user.getContact()) ? contact.getStatus() : 'unavailable';
         usercountDiff = 1;
         var contact = user.getContact();
         var html = Mustache.to_html(Candy.View.Template.Roster.user, {
             roomId: roomId,
+            status: status,
             userId : userId,
             userJid: user.getJid(),
             realJid: user.getRealJid(),
