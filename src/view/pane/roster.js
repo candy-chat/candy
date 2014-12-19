@@ -69,13 +69,18 @@ Candy.View.Pane = (function(self, $) {
       if(action === 'join') {
         usercountDiff = 1;
         var contact = user.getContact();
+        var status = contact ? contact.getStatus() : 'unavailable';
+
+        if (user.getJid() === Candy.Core.getUser().getJid() && Candy.Core.getConnection().connected) {
+          status = 'available';
+        }
 
         var html = Mustache.to_html(Candy.View.Template.Roster.user, {
             roomId: roomId,
             userId : userId,
             userJid: user.getJid(),
             realJid: user.getRealJid(),
-            status: contact ? contact.getStatus() : 'unavailable',
+            status: status,
             nick: user.getNick(),
             displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.nickname),
             role: user.getRole(),
@@ -161,8 +166,7 @@ Candy.View.Pane = (function(self, $) {
       } else if(action === 'ban') {
         self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
         self.Chat.onInfoMessage(roomJid, $.i18n._('userHasBeenBannedFromRoom', [user.getNick()]));
-      } else if (action === "available" || action === "unavailable" || action === "dnd" ||
-                       action === "xa" || action === "away" || action === "chat") {
+      } else if (action === 'available' || action === 'unavailable') {
         var $userItem = $('.room-pane[data-roomjid="' + roomJid + '"] .roster-wrapper .user[data-jid="' + user.getEscapedJid() + '"]');
         $userItem.attr('data-status', action);
         $userItem.children('i.roster-status').attr('class', 'roster-status ' + action);
