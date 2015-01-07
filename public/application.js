@@ -15,7 +15,7 @@ $(document).ready(function() {
 			}
 		} else {
 			$('html,body').stop().animate({'scrollTop': Math.floor(showcase.offset().top) + 1});
-			var protocol = 'https:' == document.location.protocol ? 'http' : 'https';
+			var protocol = 'https:' == document.location.protocol ? 'https' : 'http';
 			showcase.html('<iframe src="' + protocol + '://dev.openflex.net/candy" scrolling="no" frameborder="0"></iframe>');
 			showcase.addClass('demomode');
 			$(this).text('ONLINE').addClass('demomode');
