@@ -1,5 +1,5 @@
 function showArrow(button) {
-	
+
 }
 
 $(document).ready(function() {
@@ -15,7 +15,8 @@ $(document).ready(function() {
 			}
 		} else {
 			$('html,body').stop().animate({'scrollTop': Math.floor(showcase.offset().top) + 1});
-			showcase.html('<iframe src="http://dev.openflex.net/candy" scrolling="no" frameborder="0"></iframe>');
+			var protocol = 'https:' == document.location.protocol ? 'http' : 'https';
+			showcase.html('<iframe src="' + protocol + '://dev.openflex.net/candy" scrolling="no" frameborder="0"></iframe>');
 			showcase.addClass('demomode');
 			$(this).text('ONLINE').addClass('demomode');
 			$('#demoarrow').stop(true, true).fadeIn();
@@ -23,5 +24,5 @@ $(document).ready(function() {
 				_gaq.push(['_trackEvent', 'Demo', 'Start']);
 			}
 		}
-	});	
+	});
 });
