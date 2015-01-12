@@ -138,8 +138,13 @@ Candy.View.Pane = (function(self, $) {
      */
     tabClick: function(e) {
       // remember scroll position of current room
-      var currentRoomJid = Candy.View.getCurrent().roomJid;
-      self.Chat.rooms[currentRoomJid].scrollPosition = self.Room.getPane(currentRoomJid, '.message-pane-wrapper').scrollTop();
+      $(Candy).on('candy:view.room.after-show', function() {
+        var currentRoomJid = Candy.View.getCurrent().roomJid;
+        var roomPane = self.Room.getPane(currentRoomJid, '.message-pane');
+        if (roomPane) {
+          $(roomPane).scrollTop(roomPane[0].scrollHeight);
+        }
+      });
 
       self.Room.show($(this).attr('data-roomjid'));
       e.preventDefault();
