@@ -704,7 +704,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 
 					var xhtmlChild = msg.children('html[xmlns="' + Strophe.NS.XHTML_IM + '"]');
 					if(Candy.View.getOptions().enableXHTML === true && xhtmlChild.length > 0) {
-						var xhtmlMessage = xhtmlChild.children('body[xmlns="' + Strophe.NS.XHTML + '"]').first().html();
+						var xhtmlMessage = xhtmlChild.children('body').first().html();
 						message.xhtmlMessage = xhtmlMessage;
 					}
 				// Typing notification

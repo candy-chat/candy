@@ -167,11 +167,11 @@ ul {
 }
 
 #chat-statusmessage-control {
-	background: url(img/action/statusmessage-off.png);
+	background-image: url(img/action/statusmessage-off.png);
 }
 
 #chat-statusmessage-control.checked {
-	background: url(img/action/statusmessage-on.png);
+	background-image: url(img/action/statusmessage-on.png);
 }
 
 #chat-toolbar .usercount {

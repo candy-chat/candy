@@ -56,10 +56,10 @@ Candy.View.Translation = {
 		'userLeftRoom'             : '%s left the room.',
 		'userHasBeenKickedFromRoom': '%s has been kicked from the room.',
 		'userHasBeenBannedFromRoom': '%s has been banned from the room.',
-		'userChangedNick': '%1$s has changed his nickname to %2$s.',
+		'userChangedNick': '%1$s has changed their nickname to %2$s.',
 
 		'presenceUnknownWarningSubject': 'Notice:',
-		'presenceUnknownWarning'       : 'This user might be offline. We can\'t track his presence.',
+		'presenceUnknownWarning'       : 'This user might be offline. We can\'t track their presence.',
 
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
