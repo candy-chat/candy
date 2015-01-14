@@ -1302,7 +1302,7 @@ Candy.View.Pane = (function(self, $) {
 		 *
 		 * This is done to hopefully prevent browsers from getting slow after a certain amount of messages in the DOM.
 		 *
-		 * The slice is only done when autoscroll is on, because otherwise someone might lose exactly the message he want to look for.
+		 * The slice is only done when autoscroll is on, because otherwise someone might lose exactly the message they want to look for.
 		 *
 		 * Parameters:
 		 *   (String) roomJid - Room JID
@@ -1617,7 +1617,7 @@ Candy.View.Pane = (function(self, $) {
 		 *
 		 * Parameters:
 		 *   (String) roomJid - Public room jid
-		 *   (Candy.Core.ChatUser) user - User which changes his nick
+		 *   (Candy.Core.ChatUser) user - User which changes their nick
 		 */
 		changeNick: function changeNick(roomJid, user) {
 			Candy.Core.log('[View:Pane:PrivateRoom] changeNick');
