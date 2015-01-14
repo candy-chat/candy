@@ -92,6 +92,7 @@ Candy.View.Pane = (function(self, $) {
       }));
       self.Chat.addTab(roomJid, roomName, roomType);
       self.Room.getPane(roomJid, '.message-form').submit(self.Message.submit);
+      self.Room.scrollToBottom(roomJid);
 
       evtData.element = self.Room.getPane(roomJid);
 
