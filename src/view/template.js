@@ -38,9 +38,9 @@ Candy.View.Template = (function(self){
 				'</div><div id="chat-modal-overlay"></div>',
 		adminMessage: '<li><small data-timestamp="{{timestamp}}">{{time}}</small><div class="adminmessage">' +
 				'<span class="label">{{sender}}</span>' +
-				'<span class="spacer">▸</span>{{subject}} {{message}}</div></li>',
+				'<span class="spacer">▸</span>{{subject}} {{{message}}}</div></li>',
 		infoMessage: '<li><small data-timestamp="{{timestamp}}">{{time}}</small><div class="infomessage">' +
-				'<span class="spacer">•</span>{{subject}} {{message}}</div></li>',
+				'<span class="spacer">•</span>{{subject}} {{{message}}}</div></li>',
 		toolbar: '<ul id="chat-toolbar">' +
 				'<li id="emoticons-icon" data-tooltip="{{tooltipEmoticons}}"></li>' +
 				'<li id="chat-sound-control" class="checked" data-tooltip="{{tooltipSound}}">{{> soundcontrol}}</li>' +
