@@ -215,11 +215,9 @@ Candy.View.Pane = (function(self, $) {
      */
     adminMessage: function(subject, message) {
       if(Candy.View.getCurrent().roomJid) { // Simply dismiss admin message if no room joined so far. TODO: maybe we should show those messages on a dedicated pane?
+        message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
         if(Candy.View.getOptions().enableXHTML === true) {
           message = Candy.Util.parseAndCropXhtml(message, Candy.View.getOptions().crop.message.body);
-        }
-        else {
-          message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
         }
         var timestamp = new Date();
         var html = Mustache.to_html(Candy.View.Template.Chat.adminMessage, {
@@ -270,11 +268,9 @@ Candy.View.Pane = (function(self, $) {
      */
     onInfoMessage: function(roomJid, subject, message) {
       if(Candy.View.getCurrent().roomJid && self.Chat.rooms[roomJid]) { // Simply dismiss info message if no room joined so far. TODO: maybe we should show those messages on a dedicated pane?
+        message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
         if(Candy.View.getOptions().enableXHTML === true) {
           message = Candy.Util.parseAndCropXhtml(message, Candy.View.getOptions().crop.message.body);
-        }
-        else {
-          message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
         }
         var timestamp = new Date();
         var html = Mustache.to_html(Candy.View.Template.Chat.infoMessage, {
