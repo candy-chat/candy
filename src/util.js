@@ -494,7 +494,7 @@ Candy.Util = (function(self, $){
 		emotify: function(text) {
 			var i;
 			for(i = this.emoticons.length-1; i >= 0; i--) {
-				text = text.replace(this.emoticons[i].regex, '$2<img class="emoticon" alt="$1" src="' + this._emoticonPath + this.emoticons[i].image + '" />$3');
+				text = text.replace(this.emoticons[i].regex, '$2<img class="emoticon" alt="$1" title="$1" src="' + this._emoticonPath + this.emoticons[i].image + '" />$3');
 			}
 			return text;
 		},
