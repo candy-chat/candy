@@ -58,9 +58,6 @@ Candy.View.Translation = {
 		'userHasBeenBannedFromRoom': '%s has been banned from the room.',
 		'userChangedNick': '%1$s is now known as %2$s.',
 
-		'presenceUnknownWarningSubject': 'Notice:',
-		'presenceUnknownWarning'       : 'This user might be offline. We can\'t track their presence.',
-
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
 
@@ -126,9 +123,6 @@ Candy.View.Translation = {
 		'userHasBeenBannedFromRoom': '%s ist aus dem Raum verbannt worden.',
 		'userChangedNick': '%1$s hat den Nicknamen zu %2$s geändert.',
 
-		'presenceUnknownWarningSubject': 'Hinweis:',
-		'presenceUnknownWarning'       : 'Dieser Benutzer könnte bereits abgemeldet sein. Wir können seine Anwesenheit nicht verfolgen.',
-
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
 
@@ -193,9 +187,6 @@ Candy.View.Translation = {
 		'userHasBeenKickedFromRoom': '%s a été expulsé du salon.',
 		'userHasBeenBannedFromRoom': '%s a été banni du salon.',
 
-		'presenceUnknownWarningSubject': 'Note&thinsp;:',
-		'presenceUnknownWarning'       : 'Cet utilisateur n’est malheureusement plus connecté, le message ne sera pas envoyé.',
-
 		'dateFormat': 'dd/mm/yyyy',
 		'timeFormat': 'HH:MM:ss',
 
@@ -257,9 +248,6 @@ Candy.View.Translation = {
 		'userLeftRoom'             : '%s heeft de chat verlaten.',
 		'userHasBeenKickedFromRoom': '%s is verwijderd.',
 		'userHasBeenBannedFromRoom': '%s is geblokkeerd.',
-
-		'presenceUnknownWarningSubject': 'Mededeling:',
-		'presenceUnknownWarning'       : 'Deze gebruiker is waarschijnlijk offline, we kunnen zijn/haar aanwezigheid niet vaststellen.',
 
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
@@ -323,9 +311,6 @@ Candy.View.Translation = {
 		'userHasBeenKickedFromRoom': '%s ha sido expulsado de la sala.',
 		'userHasBeenBannedFromRoom': '%s ha sido expulsado permanentemente de la sala.',
 
-		'presenceUnknownWarningSubject': 'Atención:',
-		'presenceUnknownWarning'       : 'Éste usuario podría estar desconectado..',
-
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
 
@@ -385,9 +370,6 @@ Candy.View.Translation = {
 		'userLeftRoom': '%s 离开房间',
 		'userHasBeenKickedFromRoom': '%s 被请出这个房间',
 		'userHasBeenBannedFromRoom': '%s 被管理者禁言',
-
-		'presenceUnknownWarningSubject': '注意:',
-		'presenceUnknownWarning': '这个会员可能已经下线，不能追踪到他的连接信息',
 
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
@@ -451,9 +433,6 @@ Candy.View.Translation = {
 		'userHasBeenKickedFromRoom' : '%sは部屋からキックされました。',
 		'userHasBeenBannedFromRoom' : '%sは部屋からアカウントバンされました。',
 
-		'presenceUnknownWarningSubject' : '忠告：',
-		'presenceUnknownWarning'    : 'このユーザーのステータスは不明です。',
-
 		'dateFormat'        : 'dd.mm.yyyy',
 		'timeFormat'        : 'HH:MM:ss',
 
@@ -515,9 +494,6 @@ Candy.View.Translation = {
 		'userLeftRoom'             : '%s har lämnat rummet.',
 		'userHasBeenKickedFromRoom': '%s har blivit utsparkad ur rummet.',
 		'userHasBeenBannedFromRoom': '%s har blivit bannlyst från rummet.',
-
-		'presenceUnknownWarningSubject': 'Notera:',
-		'presenceUnknownWarning'       : 'Denna användare kan vara offline. Vi kan inte följa dennes närvaro.',
 
 		'dateFormat': 'yyyy-mm-dd',
 		'timeFormat': 'HH:MM:ss',
@@ -581,9 +557,6 @@ Candy.View.Translation = {
 		'userHasBeenKickedFromRoom': '%s è stato espulso dalla stanza.',
 		'userHasBeenBannedFromRoom': '%s è stato escluso dalla stanza.',
 
-		'presenceUnknownWarningSubject': 'Nota:',
-		'presenceUnknownWarning'       : 'Questo utente potrebbe essere offline. Non possiamo tracciare la sua presenza.',
-
 		'dateFormat': 'dd/mm/yyyy',
 		'timeFormat': 'HH:MM:ss',
 
@@ -645,8 +618,6 @@ Candy.View.Translation = {
 		'userLeftRoom'             : '%s saiu da sala.',
 		'userHasBeenKickedFromRoom': '%s foi excluido da sala.',
 		'userHasBeenBannedFromRoom': '%s foi excluido permanentemente da sala.',
-
-		'presenceUnknownWarning'       : 'Este usuário pode estar desconectado. Não é possível determinar o status.',
 
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
@@ -710,9 +681,6 @@ Candy.View.Translation = {
 		'userHasBeenKickedFromRoom': '%s foi derrubado da sala.',
 		'userHasBeenBannedFromRoom': '%s foi banido da sala.',
 
-		'presenceUnknownWarningSubject': 'Aviso:',
-		'presenceUnknownWarning' : 'Este usuário pode estar desconectado.. Não conseguimos rastrear sua presença..',
-
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
 
@@ -775,9 +743,6 @@ Candy.View.Translation = {
 		'userHasBeenKickedFromRoom': '%s выброшен из чата.',
 		'userHasBeenBannedFromRoom': '%s запрещён доступ в чат.',
 
-		'presenceUnknownWarningSubject': 'Уведомление:',
-		'presenceUnknownWarning'       : 'Этот пользователь вероятнее всего оффлайн.',
-
 		'dateFormat': 'mm.dd.yyyy',
 		'timeFormat': 'HH:MM:ss',
 
@@ -839,9 +804,6 @@ Candy.View.Translation = {
 		'userLeftRoom'             : '%s ha deixat la sala.',
 		'userHasBeenKickedFromRoom': '%s ha estat expulsat de la sala.',
 		'userHasBeenBannedFromRoom': '%s ha estat expulsat permanentment de la sala.',
-
-		'presenceUnknownWarningSubject': 'Atenció:',
-		'presenceUnknownWarning'       : 'Aquest usuari podria estar desconnectat ...',
 
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
