@@ -358,6 +358,36 @@ Candy.Util = (function(self, $){
 		return ie;
 	};
 
+	/** Class: isMobile
+	  * Checks to see if we're on a mobile device.
+	  */
+
+	self.isMobile = {
+		Android: function() {
+			return navigator.userAgent.match(/Android/i);
+		},
+
+		BlackBerry: function() {
+			return navigator.userAgent.match(/BlackBerry/i);
+		},
+
+		iOS: function() {
+			return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+		},
+
+		Opera: function() {
+			return navigator.userAgent.match(/Opera Mini/i);
+		},
+
+		Windows: function() {
+			return navigator.userAgent.match(/IEMobile/i);
+		},
+
+		any: function() {
+			return (self.isMobile.Android() || self.isMobile.BlackBerry() || self.isMobile.iOS() || self.isMobile.Opera() || self.isMobile.Windows());
+		}
+	};
+
 	/** Class: Candy.Util.Parser
 	 * Parser for emoticons, links and also supports escaping.
 	 */
