@@ -113,7 +113,7 @@ Candy.View.Pane = (function(self, $) {
       var unreadElem = this.getTab(roomJid).find('.unread');
       unreadElem.show().text(unreadElem.text() !== '' ? parseInt(unreadElem.text(), 10) + 1 : 1);
       // only increase window unread messages in private chats
-      if (self.Chat.rooms[roomJid].type === 'chat') {
+      if (self.Chat.rooms[roomJid].type === 'chat' || Candy.View.getOptions().updateWindowOnAllMessages === true) {
         self.Window.increaseUnreadMessages();
       }
     },

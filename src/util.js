@@ -649,5 +649,17 @@ Candy.Util = (function(self, $){
 		/* jshint +W073 */
 	};
 
+	/** Function: getParentWindow
+	 * Get the top level window, for title setting and such
+	 */
+	self.getParentWindow = function() {
+		var check_window = window;
+		while (check_window.frameElement !== null) {
+			check_window = window.parent;
+		}
+		return check_window;
+	};
+
+	
 	return self;
 }(Candy.Util || {}, jQuery));
