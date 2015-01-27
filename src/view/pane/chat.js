@@ -997,6 +997,9 @@ Candy.View.Pane = (function(self, $) {
             value = input.val(),
             emoticon = $(this).attr('alt') + ' ';
           input.val(value ? value + ' ' + emoticon : emoticon).focus();
+
+          // Once you make a selction, hide the menu.
+          menu.hide();
         });
 
         var posLeft = Candy.Util.getPosLeftAccordingToWindowBounds(menu, pos.left),
