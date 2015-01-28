@@ -293,15 +293,15 @@ Candy.View.Pane = (function(self, $) {
           e.stopPropagation();
         });
         $('#chat-autoscroll-control').click(self.Chat.Toolbar.onAutoscrollControlClick);
-		if(window.HTMLAudioElement) {
+		if( !!document.createElement('audio').canPlayType ) {
 			var a = document.createElement('audio');
-			if( !!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, '')) ) {
+			if( !!(a.canPlayType('audio/mpeg;').replace(/no/, '')) ) {
 				self.Chat.Toolbar._supportsNativeAudio = "mp3";
 			}
-			else if( !!(a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, '')) ) {
+			else if( !!(a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, '')) ) {
 				self.Chat.Toolbar._supportsNativeAudio = "ogg";
 			}
-			else if ( !!(a.canPlayType && a.canPlayType('audio/mp4; codecs="mp4a.40.2"').replace(/no/, '')) ) {
+			else if ( !!(a.canPlayType('audio/mp4; codecs="mp4a.40.2"').replace(/no/, '')) ) {
 				self.Chat.Toolbar._supportsNativeAudio = "m4a";
 			}
 		}
