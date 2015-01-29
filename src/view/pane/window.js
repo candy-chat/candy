@@ -33,7 +33,7 @@ Candy.View.Pane = (function(self) {
     /** PrivateVariable: _plainTitle
      * Document title
      */
-    _plainTitle: document.title,
+    _plainTitle: window.top.document.title,
     /** PrivateVariable: _unreadMessagesCount
      * Unread messages count
      */
@@ -81,7 +81,7 @@ Candy.View.Pane = (function(self) {
      */
     clearUnreadMessages: function() {
       self.Window._unreadMessagesCount = 0;
-      document.title = self.Window._plainTitle;
+      window.top.document.title = self.Window._plainTitle;
     },
 
     /** Function: renderUnreadMessages
@@ -91,7 +91,7 @@ Candy.View.Pane = (function(self) {
      *   (Integer) count - Number of unread messages to show in window title
      */
     renderUnreadMessages: function(count) {
-      document.title = Candy.View.Template.Window.unreadmessages.replace('{{count}}', count).replace('{{title}}', self.Window._plainTitle);
+      window.top.document.title = Candy.View.Template.Window.unreadmessages.replace('{{count}}', count).replace('{{title}}', self.Window._plainTitle);
     },
 
     /** Function: onFocus
