@@ -9,5 +9,7 @@
 	"unused": true,
 	"trailing": true,
 	"maxdepth": 4,
-	"laxcomma": true
+	"laxcomma": true,
+	"browser": true,
+	"quotmark": false
 }

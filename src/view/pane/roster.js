@@ -65,24 +65,29 @@ Candy.View.Pane = (function(self, $) {
        *   (jQuery.Element) element - User element
        */
       $(Candy).triggerHandler('candy:view.roster.before-update', evtData);
-
       // a user joined the room
       if(action === 'join') {
         usercountDiff = 1;
         var contact = user.getContact();
+        var status = contact ? contact.getStatus() : 'unavailable';
+
+        if (user.getJid() === Candy.Core.getUser().getJid() && Candy.Core.getConnection().connected) {
+          status = 'available';
+        }
+
         var html = Mustache.to_html(Candy.View.Template.Roster.user, {
             roomId: roomId,
             userId : userId,
             userJid: user.getJid(),
             realJid: user.getRealJid(),
-            status: contact ? contact.getStatus() : 'unavailable',
+            status: status,
             nick: user.getNick(),
             displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.nickname),
             role: user.getRole(),
             affiliation: user.getAffiliation(),
             me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
             tooltipRole: $.i18n._('tooltipRole'),
-            tooltipIgnored: $.i18n._('tooltipIgnored')
+            tooltipIgnored: $.i18n._('tooltipIgnored'),
           });
 
         if(userElem.length < 1) {
@@ -146,7 +151,6 @@ Candy.View.Pane = (function(self, $) {
         } else {
           self.Chat.infoMessage(roomJid, $.i18n._('userLeftRoom', [user.getNick()]));
         }
-
       } else if(action === 'nickchange') {
         usercountDiff = 0;
         self.Roster.changeNick(roomId, user);
@@ -162,6 +166,10 @@ Candy.View.Pane = (function(self, $) {
       } else if(action === 'ban') {
         self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
         self.Chat.onInfoMessage(roomJid, $.i18n._('userHasBeenBannedFromRoom', [user.getNick()]));
+      } else if (action === 'available' || action === 'unavailable') {
+        var $userItem = $('.room-pane[data-roomjid="' + roomJid + '"] .roster-wrapper .user[data-jid="' + user.getEscapedJid() + '"]');
+        $userItem.attr('data-status', action);
+        $userItem.children('i.roster-status').attr('class', 'roster-status ' + action);
       }
 
       // Update user count

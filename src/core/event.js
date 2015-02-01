@@ -144,12 +144,47 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		Presence: function(msg) {
 			Candy.Core.log('[Jabber] Presence');
 			msg = $(msg);
-			if(msg.children('x[xmlns^="' + Strophe.NS.MUC + '"]').length > 0) {
+			if (msg.children('x[xmlns^="' + Strophe.NS.MUC + '"]').length > 0) {
 				if (msg.attr('type') === 'error') {
 					self.Jabber.Room.PresenceError(msg);
 				} else {
 					self.Jabber.Room.Presence(msg);
 				}
+			} else if (msg.attr('xmlns') === Strophe.NS.CLIENT) {
+				var type = msg.attr('type');
+				var from = msg.attr('from');
+
+				if (msg.children('priority').length > 0) {
+					type = 'available';
+				}
+
+				if (msg.children('show').length > 0) {
+					type = msg.children('show')[0].innerHTML;
+				}
+
+				// If there's an open one-on-one, notify of an unavailable status
+				if (Candy.View.Pane.Room.getPane(Strophe.getBareJidFromJid(from))) {
+					var $userItem = $('.user[data-jid="' + Strophe.getBareJidFromJid(from) + '"]');
+		      $userItem.attr('data-status', type);
+		      $userItem.children('i.roster-status').attr('class', 'roster-status ' + type);
+				}
+
+				var evtData = {
+					from: from,
+					msgType: type,
+					stanza: msg
+				};
+
+				/** Event: candy:core.presence.roster
+				 * Presence updates for people who aren't in a muc (global roster).
+				 *
+				 * Parameters:
+				 *   (JID) from - From Jid
+				 *	 (String) msgType - type of message (available, unavailable)
+				 *   (Object) stanza - Stanza
+				 */
+				$(Candy).triggerHandler('candy:core.presence.roster', evtData);
+
 			} else {
 				/** Event: candy:core.presence
 				 * Presence updates. Emitted only when not a muc presence.
@@ -160,6 +195,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 */
 				$(Candy).triggerHandler('candy:core.presence', {'from': msg.attr('from'), 'stanza': msg});
 			}
+
 			return true;
 		},
 
@@ -228,7 +264,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				return true;
 			}
 
-			if (updatedItem.subscription === "remove") {
+			if (updatedItem.subscription === 'remove') {
 				var contact = Candy.Core.getRoster().get(updatedItem.jid);
 				Candy.Core.getRoster().remove(updatedItem.jid);
 				/** Event: candy:core.roster.removed
