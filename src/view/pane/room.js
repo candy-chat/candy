@@ -333,7 +333,7 @@ Candy.View.Pane = (function(self, $) {
      */
     setFocusToForm: function(roomJid) {
       // If we're on mobile, don't focus the input field.
-      if (Candy.Util.isMobile.any()) { return true; }
+      if (Candy.Util.isMobile()) { return true; }
 
       var pane = self.Room.getPane(roomJid, '.message-form');
       if (pane) {
