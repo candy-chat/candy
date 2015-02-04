@@ -11,7 +11,7 @@
  */
 'use strict';
 
-/* global Candy, document, jQuery */
+/* global Candy, jQuery, window */
 
 /** Class: Candy.View.Pane
  * Candy view pane handles everything regarding DOM updates etc.
