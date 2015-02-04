@@ -7,6 +7,7 @@ env:
   - SAUCE_ACCESS_KEY: 6c3e7f58-b230-4b91-8bcb-290cf28c1457
   - CANDY_VAGRANT: false
 before_script:
+- sudo apt-get update
 - sudo apt-get install -y nginx
 - sudo mkdir -p /usr/share/nginx/html
 - sudo cp ${TRAVIS_BUILD_DIR}/devbox/nginx-default.conf /etc/nginx/sites-available/default

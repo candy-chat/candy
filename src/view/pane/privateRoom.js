@@ -80,13 +80,6 @@ Candy.View.Pane = (function(self, $) {
       self.Roster.update(roomJid, user, 'join', user);
       self.PrivateRoom.setStatus(roomJid, 'join');
 
-
-
-      // We can't track the presence of a user if it's not a conference jid
-      if(isNoConferenceRoomJid) {
-        self.Chat.infoMessage(roomJid, $.i18n._('presenceUnknownWarningSubject'), $.i18n._('presenceUnknownWarning'));
-      }
-
       evtData.element = self.Room.getPane(roomJid);
       /** Event: candy:view.private-room.after-open
        * After opening a new private room
