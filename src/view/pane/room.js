@@ -332,6 +332,9 @@ Candy.View.Pane = (function(self, $) {
      *   (String) roomJid - Room JID
      */
     setFocusToForm: function(roomJid) {
+      // If we're on mobile, don't focus the input field.
+      if (Candy.Util.isMobile()) { return true; }
+
       var pane = self.Room.getPane(roomJid, '.message-form');
       if (pane) {
         // IE8 will fail maybe, because the field isn't there yet.
