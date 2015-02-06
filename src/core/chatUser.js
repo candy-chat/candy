@@ -45,7 +45,8 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role, realJid) {
 		role: role,
 		privacyLists: {},
 		customData: {},
-		previousNick: undefined
+		previousNick: undefined,
+		status: 'unavailable'
 	};
 };
 
@@ -290,4 +291,24 @@ Candy.Core.ChatUser.prototype.getPreviousNick = function() {
  */
 Candy.Core.ChatUser.prototype.getContact = function() {
 	return Candy.Core.getRoster().get(Strophe.getBareJidFromJid(this.data.realJid));
+};
+
+/** Function: setStatus
+ * Set the user's status
+ *
+ * Parameters:
+ *   (String) status - the new status
+ */
+Candy.Core.ChatUser.prototype.setStatus = function(status) {
+	this.data.status = status;
+};
+
+/** Function: getStatus
+ * Gets the user's status.
+ *
+ * Returns:
+ *   (String) - status
+ */
+Candy.Core.ChatUser.prototype.getStatus = function() {
+	return this.data.status;
 };

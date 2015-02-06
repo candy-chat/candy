@@ -87,6 +87,7 @@ define([
 						expect(rosterEntry.getRole()).to.eql('moderator');
 						expect(rosterEntry.getAffiliation()).to.eql('admin');
 						expect(rosterEntry.getRealJid()).to.eql('doo@dah.com/somewhere');
+						expect(rosterEntry.getStatus()).to.eql('available');
 					});
 
 					bdd.it('emits a candy:core.presence.room event', function () {
@@ -94,6 +95,44 @@ define([
 						$(Candy).on('candy:core.presence.room', function (ev, params) { eventParams = params; });
 
 						receiveJoinPresence();
+
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
+						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.roomName).to.eql('coven');
+						expect(eventParams.user).to.eql(room.getRoster().get(participantJid));
+						expect(eventParams.action).to.eql('join');
+						expect(eventParams.currentUser).to.eql(Candy.Core.getUser());
+						expect(eventParams.isNewRoom).to.eql(false);
+					});
+				});
+
+				bdd.describe('when a user updates their status in a room', function () {
+					bdd.beforeEach(receiveJoinPresence);
+
+					var receiveUpdatePresence = function () {
+						var presence = $pres({
+							from: participantJid
+						})
+						.c('show').t('busy')
+						.up()
+						.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
+						.c('item', {affiliation: 'admin', role: 'moderator', jid: 'doo@dah.com/somewhere'});
+
+						testHelper.receiveStanza(presence);
+					};
+
+					bdd.it("updates the user's status in the room roster", function () {
+						receiveUpdatePresence();
+
+						var rosterEntry = room.getRoster().get(participantJid);
+						expect(rosterEntry.getStatus()).to.eql('busy');
+					});
+
+					bdd.it('emits a candy:core.presence.room event', function () {
+						var eventParams;
+						$(Candy).on('candy:core.presence.room', function (ev, params) { eventParams = params; });
+
+						receiveUpdatePresence();
 
 						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'user', 'action', 'currentUser', 'isNewRoom']);
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');

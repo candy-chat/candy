@@ -569,6 +569,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					currentUser = room.getUser() ? room.getUser() : Candy.Core.getUser(),
 					action, user,
 					nick,
+					show = msg.find('show'),
 					item = msg.find('item');
 				// User joined a room
 				if(presenceType !== 'unavailable') {
@@ -592,8 +593,13 @@ Candy.Core.Event = (function(self, Strophe, $) {
 							room.setUser(user);
 							currentUser = user;
 						}
+						user.setStatus('available');
 						roster.add(user);
 						action = 'join';
+					}
+
+					if (show.length > 0) {
+						user.setStatus(show.text());
 					}
 				// User left a room
 				} else {
