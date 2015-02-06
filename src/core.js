@@ -318,6 +318,8 @@ Candy.Core = (function(self, Strophe, $) {
 		} else {
 			_user = new self.ChatUser(jid, Strophe.getNodeFromJid(jid));
 		}
+		// Reset before every connection attempt to make sure reconnections work after authfail, alltabsclosed, ...
+		_connection.reset();
 		self.registerEventHandlers();
 		_connection.attach(jid, sid, rid, Candy.Core.Event.Strophe.Connect);
 	};
