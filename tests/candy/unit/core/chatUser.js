@@ -162,5 +162,16 @@ define([
         });
       });
     });
+
+    bdd.describe("status", function () {
+      bdd.it('is unavailable by default', function () {
+        expect(chatUser.getStatus()).to.equal('unavailable');
+      });
+
+      bdd.it('can be set', function () {
+        chatUser.setStatus('busy');
+        expect(chatUser.getStatus()).to.equal('busy');
+      });
+    });
   });
 });
