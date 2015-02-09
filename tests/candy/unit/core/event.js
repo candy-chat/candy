@@ -630,6 +630,11 @@ define([
 		});
 
 		bdd.describe('processing messages', function () {
+			var setMe = function () {
+				var me = new Candy.Core.ChatUser('foo@bar.com', 'Me oh me', 'admin', 'member');
+				Candy.Core.setUser(me);
+			};
+
 			bdd.describe('which have no type', function () {
 				var receiveMessage = function () {
 					testHelper.receiveStanza(
@@ -1021,8 +1026,9 @@ define([
 
 					receiveMessage();
 
-					expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+					expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
 					expect(eventParams.roomJid).to.eql('doo@dah.com');
+					expect(eventParams.roomName).to.eql('doo');
 
 					var message = eventParams.message;
 					expect(message).to.have.keys(['from', 'name', 'body', 'type', 'delay', 'isNoConferenceRoomJid', 'xhtmlMessage']);
@@ -1032,6 +1038,122 @@ define([
 					expect(message.body).to.eql('Some message text');
 					expect(message.isNoConferenceRoomJid).to.be.true;
 					expect(message.xhtmlMessage.attr('style')).to.eql('font-weight: bold;');
+				});
+
+				bdd.describe('which is a carbon', function () {
+					bdd.describe('sent', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								$msg({
+									to: 'foo@bar.com/resource1',
+									from: 'foo@bar.com',
+									type: 'chat'
+								})
+								.c('sent', {xmlns: 'urn:xmpp:carbons:2'})
+								.c('forwarded', {xmlns: 'urn:xmpp:forward:0'})
+								.c('message', {
+									to: 'doo@dah.com/resource1',
+									from: 'foo@bar.com/resource2',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('html', {xmlns: 'http://jabber.org/protocol/xhtml-im'})
+								.c('body', {xmlns: 'http://www.w3.org/1999/xhtml'})
+								.c('p', {style: 'font-weight: bold;'}).t('hi!')
+							);
+						};
+
+						bdd.it('emits a candy:core.message event tagged as carbon', function () {
+							var eventParams;
+							$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+							setMe();
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
+							expect(eventParams.roomJid).to.eql('doo@dah.com');
+							expect(eventParams.roomName).to.eql('doo');
+							expect(eventParams.carbon).to.eql(true);
+
+							var message = eventParams.message;
+							expect(message).to.have.keys(['from', 'name', 'body', 'type', 'delay', 'isNoConferenceRoomJid', 'xhtmlMessage']);
+							expect(message.from).to.eql('foo@bar.com/resource2');
+							expect(message.name).to.eql('Me oh me');
+							expect(message.type).to.eql('chat');
+							expect(message.body).to.eql('Some message text');
+							expect(message.isNoConferenceRoomJid).to.be.true;
+							expect(message.xhtmlMessage.attr('style')).to.eql('font-weight: bold;');
+						});
+					});
+
+					bdd.describe('received', function () {
+						var receiveMessage = function () {
+							testHelper.receiveStanza(
+								$msg({
+									to: 'foo@bar.com/resource1',
+									from: 'foo@bar.com',
+									type: 'chat'
+								})
+								.c('received', {xmlns: 'urn:xmpp:carbons:2'})
+								.c('forwarded', {xmlns: 'urn:xmpp:forward:0'})
+								.c('message', {
+									to: 'foo@bar.com/resource2',
+									from: 'doo@dah.com/resource1',
+									type: 'chat'
+								})
+								.c('body').t('Some message text')
+								.up()
+								.c('html', {xmlns: 'http://jabber.org/protocol/xhtml-im'})
+								.c('body', {xmlns: 'http://www.w3.org/1999/xhtml'})
+								.c('p', {style: 'font-weight: bold;'}).t('hi!')
+							);
+						};
+
+						bdd.it('emits a candy:core.message event tagged as carbon', function () {
+							var eventParams;
+							$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
+							expect(eventParams.roomJid).to.eql('doo@dah.com');
+							expect(eventParams.roomName).to.eql('doo');
+							expect(eventParams.carbon).to.eql(true);
+
+							var message = eventParams.message;
+							expect(message).to.have.keys(['from', 'name', 'body', 'type', 'delay', 'isNoConferenceRoomJid', 'xhtmlMessage']);
+							expect(message.from).to.eql('doo@dah.com/resource1');
+							expect(message.name).to.eql('doo');
+							expect(message.type).to.eql('chat');
+							expect(message.body).to.eql('Some message text');
+							expect(message.isNoConferenceRoomJid).to.be.true;
+							expect(message.xhtmlMessage.attr('style')).to.eql('font-weight: bold;');
+						});
+
+						bdd.describe('and they are in our roster', function () {
+							bdd.beforeEach(function () {
+								var contact = new Candy.Core.Contact({
+									jid: 'doo@dah.com',
+									name: 'Some Name',
+									subscription: 'both',
+									groups: ['Friends'],
+									resources: {}
+							 	});
+
+							 	Candy.Core.getRoster().add(contact);
+							});
+
+							bdd.it('uses the contact name as the originating name of the message', function () {
+								var eventParams;
+								$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+								receiveMessage();
+
+								expect(eventParams.message.name).to.eql('Some Name');
+							});
+						});
+					});
 				});
 
 				bdd.describe('and they are in our roster', function () {
@@ -1053,6 +1175,7 @@ define([
 
 						receiveMessage();
 
+						expect(eventParams.roomName).to.eql('Some Name');
 						expect(eventParams.message.name).to.eql('Some Name');
 					});
 				});
@@ -1325,8 +1448,9 @@ define([
 
 						receiveMessage();
 
-						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.roomName).to.eql('coven');
 
 						var message = eventParams.message;
 						expect(message).to.have.keys(['from', 'name', 'body', 'type', 'delay', 'xhtmlMessage']);
@@ -1573,8 +1697,9 @@ define([
 
 							receiveMessage();
 
-							expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+							expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
 							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+							expect(eventParams.roomName).to.eql('coven');
 
 							var message = eventParams.message;
 							expect(message).to.have.keys(['from', 'name', 'body', 'type', 'delay']);
@@ -1608,8 +1733,9 @@ define([
 
 						receiveMessage();
 
-						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
+						expect(eventParams.roomName).to.eql('thirdwitch');
 
 						var message = eventParams.message;
 						expect(message).to.have.keys(['from', 'name', 'body', 'type', 'delay', 'isNoConferenceRoomJid', 'xhtmlMessage']);
@@ -1861,8 +1987,9 @@ define([
 
 						receiveMessage();
 
-						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
+						expect(eventParams.roomName).to.eql('coven');
 
 						var message = eventParams.message;
 						expect(message).to.have.keys(['from', 'body', 'type', 'delay']);
@@ -1903,8 +2030,9 @@ define([
 
 						receiveMessage();
 
-						expect(eventParams).to.have.keys(['roomJid', 'message', 'timestamp']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
 						expect(eventParams.roomJid).to.eql(roomJid);
+						expect(eventParams.roomName).to.eql('');
 
 						var message = eventParams.message;
 						expect(message).to.have.keys(['from', 'name', 'body', 'type', 'delay']);

@@ -90,13 +90,14 @@ Candy.View.Pane = (function(self, $) {
      *   (String) message - Message
      *   (String) xhtmlMessage - XHTML formatted message [if options enableXHTML is true]
      *   (String) timestamp - [optional] Timestamp of the message, if not present, current date.
+     *   (Boolean) carbon - [optional] Indication of wether or not the message was a carbon
      *
      * Triggers:
      *   candy:view.message.before-show using {roomJid, name, message}
      *   candy.view.message.before-render using {template, templateData}
      *   candy:view.message.after-show using {roomJid, name, message, element}
      */
-    show: function(roomJid, name, message, xhtmlMessage, timestamp, from) {
+    show: function(roomJid, name, message, xhtmlMessage, timestamp, from, carbon) {
       message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
       if(Candy.View.getOptions().enableXHTML === true && xhtmlMessage) {
         xhtmlMessage = Candy.Util.parseAndCropXhtml(xhtmlMessage, Candy.View.getOptions().crop.message.body);
@@ -189,41 +190,44 @@ Candy.View.Pane = (function(self, $) {
         }
       });
 
-      var notifyEvtData = {
-        name: name,
-        displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.nickname),
-        roomJid: roomJid,
-        message: message,
-        time: Candy.Util.localizedTime(timestamp),
-        timestamp: timestamp.toISOString()
-      };
-      /** Event: candy:view.message.notify
-       * Notify the user (optionally) that a new message has been received
-       *
-       * Parameters:
-       *   (Object) templateData - Template data consists of:
-       *                           - (String) name - Name of the sending user
-       *                           - (String) displayName - Cropped name of the sending user
-       *                           - (String) roomJid - JID into which the message was sent
-       *                           - (String) message - Message text
-       *                           - (String) time - Localized time of message
-       *                           - (String) timestamp - ISO formatted timestamp of message
-       */
-      $(Candy).triggerHandler('candy:view.message.notify', notifyEvtData);
+      if (!carbon) {
+        var notifyEvtData = {
+          name: name,
+          displayName: Candy.Util.crop(name, Candy.View.getOptions().crop.message.nickname),
+          roomJid: roomJid,
+          message: message,
+          time: Candy.Util.localizedTime(timestamp),
+          timestamp: timestamp.toISOString()
+        };
+        /** Event: candy:view.message.notify
+         * Notify the user (optionally) that a new message has been received
+         *
+         * Parameters:
+         *   (Object) templateData - Template data consists of:
+         *                           - (String) name - Name of the sending user
+         *                           - (String) displayName - Cropped name of the sending user
+         *                           - (String) roomJid - JID into which the message was sent
+         *                           - (String) message - Message text
+         *                           - (String) time - Localized time of message
+         *                           - (String) timestamp - ISO formatted timestamp of message
+         *                           - (Boolean) carbon - Indication of wether or not the message was a carbon
+         */
+        $(Candy).triggerHandler('candy:view.message.notify', notifyEvtData);
 
-      // Check to see if in-core notifications are disabled
-      if(!Candy.Core.getOptions().disableCoreNotifications) {
-        // Notify the user about a new private message
-        if(Candy.View.getCurrent().roomJid !== roomJid || !self.Window.hasFocus()) {
-          self.Chat.increaseUnreadMessages(roomJid);
-          if(Candy.View.Pane.Chat.rooms[roomJid].type === 'chat' && !self.Window.hasFocus()) {
-            self.Chat.Toolbar.playSound();
+        // Check to see if in-core notifications are disabled
+        if(!Candy.Core.getOptions().disableCoreNotifications) {
+          // Notify the user about a new private message
+          if(Candy.View.getCurrent().roomJid !== roomJid || !self.Window.hasFocus()) {
+            self.Chat.increaseUnreadMessages(roomJid);
+            if(Candy.View.Pane.Chat.rooms[roomJid].type === 'chat' && !self.Window.hasFocus()) {
+              self.Chat.Toolbar.playSound();
+            }
           }
         }
-      }
 
-      if(Candy.View.getCurrent().roomJid === roomJid) {
-        self.Room.scrollToBottom(roomJid);
+        if(Candy.View.getCurrent().roomJid === roomJid) {
+          self.Room.scrollToBottom(roomJid);
+        }
       }
 
       evtData.element = elem;

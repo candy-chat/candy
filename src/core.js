@@ -145,6 +145,7 @@ Candy.Core = (function(self, Strophe, $) {
 			_addNamespace('DELAY', 'urn:xmpp:delay');
 			_addNamespace('JABBER_DELAY', 'jabber:x:delay');
 			_addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
+			_addNamespace('CARBONS', 'urn:xmpp:carbons:2');
 		},
 
 		_getEscapedJidFromJid = function(jid) {
