@@ -242,5 +242,18 @@ define([
 				});
 			});
 		});
+
+		bdd.describe('enabling message carbons', function() {
+			bdd.it('sends a carbons enable request stanza', function () {
+				var request = sinon.spy(Candy.Core.getConnection(), 'send');
+
+				Candy.Core.Action.Jabber.EnableCarbons();
+
+				var stanza = testHelper.stanzaFromRequest(request);
+				expect(stanza.prop('tagName')).to.eql('iq');
+				expect(stanza.attr('type')).to.eql('set');
+				expect(stanza.children('enable').attr('xmlns')).to.eql('urn:xmpp:carbons:2');
+			});
+		});
 	});
 });

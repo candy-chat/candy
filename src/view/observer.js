@@ -283,7 +283,7 @@ Candy.View.Observer = (function(self, $) {
 	self.Message = function(event, args) {
 		if(args.message.type === 'subject') {
 			if (!Candy.View.Pane.Chat.rooms[args.roomJid]) {
-				Candy.View.Pane.Room.init(args.roomJid, args.message.name);
+				Candy.View.Pane.Room.init(args.roomJid, args.roomName);
 				Candy.View.Pane.Room.show(args.roomJid);
 			}
 			Candy.View.Pane.Room.setSubject(args.roomJid, args.message.body);
@@ -292,10 +292,10 @@ Candy.View.Observer = (function(self, $) {
 		} else {
 			// Initialize room if it's a message for a new private user chat
 			if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
-				Candy.View.Pane.PrivateRoom.open(args.roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
+				Candy.View.Pane.PrivateRoom.open(args.roomJid, args.roomName, false, args.message.isNoConferenceRoomJid);
 			}
 			var room = Candy.View.Pane.Chat.rooms[args.roomJid];
-			if (room.targetJid === args.roomJid) {
+			if (room.targetJid === args.roomJid && !args.carbon) {
 				// No messages yet received. Lock the room to this resource.
 				room.targetJid = args.message.from;
 			} else if (room.targetJid === args.message.from) {
@@ -304,7 +304,7 @@ Candy.View.Observer = (function(self, $) {
 				// Message received from alternative resource. Release the resource lock.
 				room.targetJid = args.roomJid;
 			}
-			Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.message.xhtmlMessage, args.timestamp, args.message.from);
+			Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.message.xhtmlMessage, args.timestamp, args.message.from, args.carbon);
 		}
 	};
 

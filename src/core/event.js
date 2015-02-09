@@ -67,6 +67,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						Candy.Core.Action.Jabber.Presence();
 					});
 					Candy.Core.Action.Jabber.Roster();
+					Candy.Core.Action.Jabber.EnableCarbons();
 					Candy.Core.Action.Jabber.Autojoin();
 					Candy.Core.Action.Jabber.GetIgnoreList();
 					break;
@@ -752,53 +753,92 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 */
 			Message: function(msg) {
 				Candy.Core.log('[Jabber:Room] Message');
+
+				var carbon = false,
+					partnerJid = Candy.Util.unescapeJid(msg.attr('from'));
+
+				if (msg.children('sent[xmlns="' + Strophe.NS.CARBONS + '"]').length > 0) {
+					carbon = true;
+					msg = $(msg.children('sent').children('forwarded').children('message'));
+					partnerJid = Candy.Util.unescapeJid(msg.attr('to'));
+				}
+
+				if (msg.children('received[xmlns="' + Strophe.NS.CARBONS + '"]').length > 0) {
+					carbon = true;
+					msg = $(msg.children('received').children('forwarded').children('message'));
+					partnerJid = Candy.Util.unescapeJid(msg.attr('from'));
+				}
+
 				// Room subject
-				var roomJid, message, name, room, sender;
+				var roomJid, roomName, from, message, name, room, sender;
 				if(msg.children('subject').length > 0 && msg.children('subject').text().length > 0 && msg.attr('type') === 'groupchat') {
-					roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
-					message = { from: roomJid, name: Strophe.getNodeFromJid(roomJid), body: msg.children('subject').text(), type: 'subject' };
+					roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(partnerJid));
+					from = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
+					roomName = Strophe.getNodeFromJid(roomJid);
+					message = { from: from, name: Strophe.getNodeFromJid(from), body: msg.children('subject').text(), type: 'subject' };
 				// Error messsage
 				} else if(msg.attr('type') === 'error') {
 					var error = msg.children('error');
 					if(error.children('text').length > 0) {
-						roomJid = msg.attr('from');
-						message = { from: roomJid, type: 'info', body: error.children('text').text() };
+						roomJid = partnerJid;
+						roomName = Strophe.getNodeFromJid(roomJid);
+						message = { from: msg.attr('from'), type: 'info', body: error.children('text').text() };
 					}
 				// Chat message
 				} else if(msg.children('body').length > 0) {
 					// Private chat message
 					if(msg.attr('type') === 'chat' || msg.attr('type') === 'normal') {
-						var from = Candy.Util.unescapeJid(msg.attr('from')),
+						from = Candy.Util.unescapeJid(msg.attr('from'));
+						var barePartner = Strophe.getBareJidFromJid(partnerJid),
 							bareFrom = Strophe.getBareJidFromJid(from),
-							isNoConferenceRoomJid = !Candy.Core.getRoom(bareFrom);
+							isNoConferenceRoomJid = !Candy.Core.getRoom(barePartner);
 
 						if (isNoConferenceRoomJid) {
-							roomJid = bareFrom;
-							sender = Candy.Core.getRoster().get(bareFrom);
+							roomJid = barePartner;
+
+							var partner = Candy.Core.getRoster().get(barePartner);
+							if (partner) {
+								roomName = partner.getName();
+							} else {
+								roomName = Strophe.getNodeFromJid(barePartner);
+							}
+
+							if (bareFrom === Candy.Core.getUser().getJid()) {
+								sender = Candy.Core.getUser();
+							} else {
+								sender = Candy.Core.getRoster().get(bareFrom);
+							}
 							if (sender) {
 								name = sender.getName();
 							} else {
 								name = Strophe.getNodeFromJid(from);
 							}
 						} else {
+							roomJid = partnerJid;
 							room = Candy.Core.getRoom(Candy.Util.unescapeJid(Strophe.getBareJidFromJid(from)));
-							roomJid = from;
 							sender = room.getRoster().get(from);
 							if (sender) {
 								name = sender.getName();
 							} else {
 								name = Strophe.getResourceFromJid(from);
 							}
+							roomName = name;
 						}
 						message = { from: from, name: name, body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
 					// Multi-user chat message
 					} else {
-						roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
-						room = Candy.Core.getRoom(roomJid);
-						var resource = Strophe.getResourceFromJid(msg.attr('from'));
+						from = Candy.Util.unescapeJid(msg.attr('from'));
+						roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(partnerJid));
+						var resource = Strophe.getResourceFromJid(partnerJid);
 						// Message from a user
 						if(resource) {
-							sender = room.getRoster().get(msg.attr('from'));
+							room = Candy.Core.getRoom(roomJid);
+							roomName = room.getName();
+							if (resource === Candy.Core.getUser().getNick()) {
+								sender = Candy.Core.getUser();
+							} else {
+								sender = room.getRoster().get(from);
+							}
 							if (sender) {
 								name = sender.getName();
 							} else {
@@ -808,9 +848,10 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						// Message from server (XEP-0045#registrar-statuscodes)
 						} else {
 							// we are not yet present in the room, let's just drop this message (issue #105)
-							if(!Candy.Core.getRooms()[msg.attr('from')]) {
+							if(!Candy.Core.getRooms()[partnerJid]) {
 								return true;
 							}
+							roomName = '';
 							message = { from: roomJid, name: '', body: msg.children('body').text(), type: 'info' };
 						}
 					}
@@ -853,7 +894,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *
 				 * Message Object Parameters:
 				 *   (String) from - The unmodified JID that the stanza came from
-				 *   (String) name - Room name
+				 *   (String) name - Sender name
 				 *   (String) body - Message text
 				 *   (String) type - Message type ([normal, chat, groupchat])
 				 *                   or 'info' which is used internally for displaying informational messages
@@ -866,6 +907,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *
 				 * Parameters:
 				 *   (String) roomJid - Room jid. For one-on-one messages, this is sanitized to the bare JID for indexing purposes.
+				 *   (String) roomName - Name of the contact
 				 *   (Object) message - Depending on what kind of message, the object consists of different key-value pairs:
 				 *                        - Room Subject: {name, body, type}
 				 *                        - Error message: {type = 'info', body}
@@ -873,14 +915,17 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *                        - MUC msg from a user: {name, body, type}
 				 *                        - MUC msg from server: {name = '', body, type = 'info'}
 				 *   (String) timestamp - Timestamp, only when it's an offline message
+				 *   (Boolean) carbon - Indication of wether or not the message was a carbon
 				 *
 				 * TODO:
 				 *   Streamline those events sent and rename the parameters.
 				 */
 				$(Candy).triggerHandler('candy:core.message', {
 					roomJid: roomJid,
+					roomName: roomName,
 					message: message,
-					timestamp: timestamp
+					timestamp: timestamp,
+					carbon: carbon
 				});
 				return true;
 			},

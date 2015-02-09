@@ -163,6 +163,17 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			}
 		},
 
+		/** Function: EnableCarbons
+		 * Enable message carbons (XEP-0280)
+		 */
+		EnableCarbons: function() {
+			Candy.Core.getConnection().sendIQ($iq({
+				type: 'set'
+			})
+			.c('enable', {xmlns: Strophe.NS.CARBONS })
+			.tree());
+		},
+
 		/** Function: ResetIgnoreList
 		 * Create new ignore privacy list (and reset the previous one, if it exists).
 		 */
