@@ -4,14 +4,18 @@
 define([
     'intern!bdd'
   , 'intern/chai!expect'
+  , 'sinon'
+  , 'intern/order!candy/tests/helper.js'
   , 'intern/order!jquery'
   , 'intern/order!candy/libs.bundle.js'
   , 'intern/order!candy/src/candy.js'
   , 'intern/order!candy/src/core.js'
   , 'intern/order!candy/src/core/chatUser.js'
   , 'intern/order!candy/src/core/contact.js'
-], function (bdd, expect) {
+], function (bdd, expect, sinon, testHelper) {
   bdd.describe('Candy.Core.ChatUser', function () {
+    testHelper.setupTests(bdd, sinon);
+
     var chatUser;
 
     bdd.beforeEach(function () {
@@ -145,7 +149,7 @@ define([
       bdd.describe('when the user is in our roster', function () {
         var contact;
 
-        bdd.before(function () {
+        bdd.beforeEach(function () {
           contact = new Candy.Core.Contact({
             jid: 'foo@bar.com',
             name: 'Some Name',
