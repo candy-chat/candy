@@ -4,14 +4,18 @@
 define([
     'intern!bdd'
   , 'intern/chai!expect'
+  , 'sinon'
+  , 'intern/order!candy/tests/helper.js'
   , 'intern/order!jquery'
   , 'intern/order!candy/libs.bundle.js'
   , 'intern/order!candy/src/candy.js'
   , 'intern/order!candy/src/core.js'
   , 'intern/order!candy/src/core/chatUser.js'
   , 'intern/order!candy/src/core/contact.js'
-], function (bdd, expect) {
+], function (bdd, expect, sinon, testHelper) {
   bdd.describe('Candy.Core.ChatUser', function () {
+    testHelper.setupTests(bdd, sinon);
+
     var chatUser;
 
     bdd.beforeEach(function () {
@@ -43,6 +47,34 @@ define([
     bdd.it('allows setting its nick', function () {
       chatUser.setNick('OtherNick');
       expect(chatUser.getNick()).to.equal('OtherNick');
+    });
+
+    bdd.describe('revealing its name', function () {
+      bdd.describe('when the user is not in our roster', function () {
+        bdd.it('returns the nick', function () {
+          expect(chatUser.getName()).to.equal('SomeNick');
+        });
+      });
+
+      bdd.describe('when the user is in our roster', function () {
+        var contact;
+
+        bdd.beforeEach(function () {
+          contact = new Candy.Core.Contact({
+            jid: 'foo@bar.com',
+            name: 'Some Name',
+            subscription: 'both',
+            groups: ['Friends'],
+            resources: {}
+          });
+
+          Candy.Core.getRoster().add(contact);
+        });
+
+        bdd.it("returns the contact's name", function () {
+          expect(chatUser.getName()).to.eql('Some Name');
+        });
+      });
     });
 
     bdd.it('reveals its role', function () {
@@ -145,7 +177,7 @@ define([
       bdd.describe('when the user is in our roster', function () {
         var contact;
 
-        bdd.before(function () {
+        bdd.beforeEach(function () {
           contact = new Candy.Core.Contact({
             jid: 'foo@bar.com',
             name: 'Some Name',

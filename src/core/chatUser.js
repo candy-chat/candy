@@ -125,6 +125,21 @@ Candy.Core.ChatUser.prototype.setNick = function(nick) {
 	this.data.nick = nick;
 };
 
+/** Function: getName
+ * Gets user's name (from contact or nick)
+ *
+ * Returns:
+ *   (String) - name
+ */
+Candy.Core.ChatUser.prototype.getName = function() {
+	var contact = this.getContact();
+	if (contact) {
+		return contact.getName();
+	} else {
+		return this.getNick();
+	}
+};
+
 /** Function: getRole
  * Gets user role
  *

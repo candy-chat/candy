@@ -753,7 +753,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			Message: function(msg) {
 				Candy.Core.log('[Jabber:Room] Message');
 				// Room subject
-				var roomJid, message, name;
+				var roomJid, message, name, room, sender;
 				if(msg.children('subject').length > 0 && msg.children('subject').text().length > 0 && msg.attr('type') === 'groupchat') {
 					roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
 					message = { from: roomJid, name: Strophe.getNodeFromJid(roomJid), body: msg.children('subject').text(), type: 'subject' };
@@ -774,19 +774,36 @@ Candy.Core.Event = (function(self, Strophe, $) {
 
 						if (isNoConferenceRoomJid) {
 							roomJid = bareFrom;
-							name = Strophe.getNodeFromJid(from);
+							try {
+								sender = Candy.Core.getRoster().get(bareFrom);
+								name = sender.getName();
+							} catch(e) {
+								name = Strophe.getNodeFromJid(from);
+							}
 						} else {
+							room = Candy.Core.getRoom(Candy.Util.unescapeJid(Strophe.getBareJidFromJid(from)));
 							roomJid = from;
-							name = Strophe.getResourceFromJid(from);
+							try {
+								sender = room.getRoster().get(from);
+								name = sender.getName();
+							} catch(e) {
+								name = Strophe.getResourceFromJid(from);
+							}
 						}
 						message = { from: from, name: name, body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
 					// Multi-user chat message
 					} else {
 						roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
+						room = Candy.Core.getRoom(roomJid);
 						var resource = Strophe.getResourceFromJid(msg.attr('from'));
 						// Message from a user
 						if(resource) {
-							name = Strophe.unescapeNode(resource);
+							try {
+								sender = room.getRoster().get(msg.attr('from'));
+								name = sender.getName();
+							} catch(e) {
+								name = Strophe.unescapeNode(resource);
+							}
 							message = { from: roomJid, name: name, body: msg.children('body').text(), type: msg.attr('type') };
 						// Message from server (XEP-0045#registrar-statuscodes)
 						} else {
