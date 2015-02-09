@@ -23,9 +23,10 @@ define([
 
 				Candy.Core.Action.Jabber.Roster();
 
-				expect(testHelper.str(request.firstCall.args[0])).to.eql(
-					"<iq type='get' id='1:roster' xmlns='jabber:client'><query xmlns='jabber:iq:roster'/></iq>"
-				);
+				var stanza = testHelper.stanzaFromRequest(request);
+				expect(stanza.prop('tagName')).to.eql('iq');
+				expect(stanza.attr('type')).to.eql('get');
+				expect(stanza.children('query').attr('xmlns')).to.eql('jabber:iq:roster');
 			});
 
 			bdd.describe('if roster versioning is supported server side', function () {
@@ -52,9 +53,8 @@ define([
 
 					Candy.Core.Action.Jabber.Roster();
 
-					expect(testHelper.str(request.firstCall.args[0])).to.eql(
-						"<iq type='get' id='1:roster' xmlns='jabber:client'><query xmlns='jabber:iq:roster' ver='abc'/></iq>"
-					);
+					var stanza = testHelper.stanzaFromRequest(request);
+					expect(stanza.children('query').attr('ver')).to.eql('abc');
 				});
 
 				bdd.it('emits an event indicating that the roster was loaded from cache', function () {

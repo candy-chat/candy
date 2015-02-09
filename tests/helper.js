@@ -14,11 +14,10 @@
 		});
 	}
 }(function testHelper(self) {
-	self.str = function(builder) {
-		if (builder.tree) {
-			return Strophe.serialize(builder.tree());
-		}
-		return Strophe.serialize(builder);
+	self.stanzaFromRequest = function (request) {
+		var builder = request.firstCall.args[0];
+		if (builder.tree) { builder.tree(); }
+		return $(builder);
 	};
 
 	self.createRequest = function (stanza) {
