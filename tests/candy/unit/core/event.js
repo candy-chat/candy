@@ -1034,6 +1034,29 @@ define([
 					expect(message.xhtmlMessage.attr('style')).to.eql('font-weight: bold;');
 				});
 
+				bdd.describe('and they are in our roster', function () {
+					bdd.beforeEach(function () {
+						var contact = new Candy.Core.Contact({
+							jid: 'doo@dah.com',
+							name: 'Some Name',
+							subscription: 'both',
+							groups: ['Friends'],
+							resources: {}
+					 	});
+
+					 	Candy.Core.getRoster().add(contact);
+					});
+
+					bdd.it('uses the contact name as the originating name of the message', function () {
+						var eventParams;
+						$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+						receiveMessage();
+
+						expect(eventParams.message.name).to.eql('Some Name');
+					});
+				});
+
 				bdd.describe('with a delay', function () {
 					bdd.describe('according to XEP-0203', function () {
 						var receiveMessage = function () {
@@ -1256,14 +1279,26 @@ define([
 			});
 
 			bdd.describe('which are from a MUC room participant', function () {
-				var roomJid = 'coven@chat.shakespeare.lit';
+				var roomJid = 'coven@chat.shakespeare.lit',
+					participantJid = roomJid + '/thirdwitch';
 
 				var createRoom = function () {
 					var room = new Candy.Core.ChatRoom(roomJid);
 					Candy.Core.getRooms()[roomJid] = room;
 				};
 
+				var receiveJoinPresence = function () {
+					var presence = $pres({
+						from: participantJid
+					})
+					.c('x', {xmlns: 'http://jabber.org/protocol/muc#user'})
+					.c('item', {affiliation: 'admin', role: 'moderator', jid: 'foo@bar.com/somewhere'});
+
+					testHelper.receiveStanza(presence);
+				};
+
 				bdd.beforeEach(createRoom);
+				bdd.beforeEach(receiveJoinPresence);
 				bdd.afterEach(function () {
 					Candy.Core.removeRoom(roomJid);
 				});
@@ -1300,6 +1335,29 @@ define([
 						expect(message.type).to.eql('groupchat');
 						expect(message.body).to.eql('Some message text');
 						expect(message.xhtmlMessage.attr('style')).to.eql('font-weight: bold;');
+					});
+
+					bdd.describe('and they are in our roster', function () {
+						bdd.beforeEach(function () {
+							var contact = new Candy.Core.Contact({
+								jid: 'foo@bar.com',
+								name: 'Some Name',
+								subscription: 'both',
+								groups: ['Friends'],
+								resources: {}
+						 	});
+
+						 	Candy.Core.getRoster().add(contact);
+						});
+
+						bdd.it('uses the contact name as the originating name of the message', function () {
+							var eventParams;
+							$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams.message.name).to.eql('Some Name');
+						});
 					});
 
 					bdd.describe('with a delay', function () {
@@ -1561,6 +1619,29 @@ define([
 						expect(message.body).to.eql('Some message text');
 						expect(message.isNoConferenceRoomJid).to.be.false;
 						expect(message.xhtmlMessage.attr('style')).to.eql('font-weight: bold;');
+					});
+
+					bdd.describe('and they are in our roster', function () {
+						bdd.beforeEach(function () {
+							var contact = new Candy.Core.Contact({
+								jid: 'foo@bar.com',
+								name: 'Some Name',
+								subscription: 'both',
+								groups: ['Friends'],
+								resources: {}
+						 	});
+
+						 	Candy.Core.getRoster().add(contact);
+						});
+
+						bdd.it('uses the contact name as the originating name of the message', function () {
+							var eventParams;
+							$(Candy).on('candy:core.message', function (ev, params) { eventParams = params; });
+
+							receiveMessage();
+
+							expect(eventParams.message.name).to.eql('Some Name');
+						});
 					});
 
 					bdd.describe('with a delay', function () {
