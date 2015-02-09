@@ -49,6 +49,34 @@ define([
       expect(chatUser.getNick()).to.equal('OtherNick');
     });
 
+    bdd.describe('revealing its name', function () {
+      bdd.describe('when the user is not in our roster', function () {
+        bdd.it('returns the nick', function () {
+          expect(chatUser.getName()).to.equal('SomeNick');
+        });
+      });
+
+      bdd.describe('when the user is in our roster', function () {
+        var contact;
+
+        bdd.beforeEach(function () {
+          contact = new Candy.Core.Contact({
+            jid: 'foo@bar.com',
+            name: 'Some Name',
+            subscription: 'both',
+            groups: ['Friends'],
+            resources: {}
+          });
+
+          Candy.Core.getRoster().add(contact);
+        });
+
+        bdd.it("returns the contact's name", function () {
+          expect(chatUser.getName()).to.eql('Some Name');
+        });
+      });
+    });
+
     bdd.it('reveals its role', function () {
       expect(chatUser.getRole()).to.equal('member');
     });
