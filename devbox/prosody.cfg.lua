@@ -67,6 +67,7 @@ modules_enabled = {
 		--"welcome"; -- Welcome users who register accounts
 		--"watchregistrations"; -- Alert admins of registrations
 		--"motd"; -- Send a message to users when they log in
+		"carbons";
 	-- Debian: do not remove this module, or you lose syslog
 	-- support
 		"posix"; -- POSIX functionality, sends server to background, enables syslog, etc.
