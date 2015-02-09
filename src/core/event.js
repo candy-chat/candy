@@ -774,19 +774,19 @@ Candy.Core.Event = (function(self, Strophe, $) {
 
 						if (isNoConferenceRoomJid) {
 							roomJid = bareFrom;
-							try {
-								sender = Candy.Core.getRoster().get(bareFrom);
+							sender = Candy.Core.getRoster().get(bareFrom);
+							if (sender) {
 								name = sender.getName();
-							} catch(e) {
+							} else {
 								name = Strophe.getNodeFromJid(from);
 							}
 						} else {
 							room = Candy.Core.getRoom(Candy.Util.unescapeJid(Strophe.getBareJidFromJid(from)));
 							roomJid = from;
-							try {
-								sender = room.getRoster().get(from);
+							sender = room.getRoster().get(from);
+							if (sender) {
 								name = sender.getName();
-							} catch(e) {
+							} else {
 								name = Strophe.getResourceFromJid(from);
 							}
 						}
@@ -798,10 +798,10 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						var resource = Strophe.getResourceFromJid(msg.attr('from'));
 						// Message from a user
 						if(resource) {
-							try {
-								sender = room.getRoster().get(msg.attr('from'));
+							sender = room.getRoster().get(msg.attr('from'));
+							if (sender) {
 								name = sender.getName();
-							} catch(e) {
+							} else {
 								name = Strophe.unescapeNode(resource);
 							}
 							message = { from: roomJid, name: name, body: msg.children('body').text(), type: msg.attr('type') };
