@@ -294,8 +294,11 @@ Candy.View.Pane = (function(self, $) {
         });
         $('#chat-autoscroll-control').click(self.Chat.Toolbar.onAutoscrollControlClick);
 
-        var a = document.createElement('audio');
-        self.Chat.Toolbar._supportsNativeAudio = !!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, ''));
+        var a = document.createElement("audio");
+        try {
+        	self.Chat.Toolbar._supportsNativeAudio = !!(a.canPlayType && a.canPlayType("audio/mpeg;").replace(/no/, ""));
+        } catch(e){ }
+
         $('#chat-sound-control').click(self.Chat.Toolbar.onSoundControlClick);
         if(Candy.Util.cookieExists('candy-nosound')) {
           $('#chat-sound-control').click();
