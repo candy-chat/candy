@@ -293,18 +293,20 @@ Candy.View.Pane = (function(self, $) {
           e.stopPropagation();
         });
         $('#chat-autoscroll-control').click(self.Chat.Toolbar.onAutoscrollControlClick);
-		if( !!document.createElement('audio').canPlayType ) {
-			var a = document.createElement('audio');
-			if( !!(a.canPlayType('audio/mpeg;').replace(/no/, '')) ) {
-				self.Chat.Toolbar._supportsNativeAudio = "mp3";
+		try {
+			if( !!document.createElement('audio').canPlayType ) {
+				var a = document.createElement('audio');
+				if( !!(a.canPlayType('audio/mpeg;').replace(/no/, '')) ) {
+					self.Chat.Toolbar._supportsNativeAudio = "mp3";
+				}
+				else if( !!(a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, '')) ) {
+					self.Chat.Toolbar._supportsNativeAudio = "ogg";
+				}
+				else if ( !!(a.canPlayType('audio/mp4; codecs="mp4a.40.2"').replace(/no/, '')) ) {
+					self.Chat.Toolbar._supportsNativeAudio = "m4a";
+				}
 			}
-			else if( !!(a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, '')) ) {
-				self.Chat.Toolbar._supportsNativeAudio = "ogg";
-			}
-			else if ( !!(a.canPlayType('audio/mp4; codecs="mp4a.40.2"').replace(/no/, '')) ) {
-				self.Chat.Toolbar._supportsNativeAudio = "m4a";
-			}
-		}
+		} catch(e){ }
         $('#chat-sound-control').click(self.Chat.Toolbar.onSoundControlClick);
         if(Candy.Util.cookieExists('candy-nosound')) {
           $('#chat-sound-control').click();
