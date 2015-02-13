@@ -293,20 +293,20 @@ Candy.View.Pane = (function(self, $) {
           e.stopPropagation();
         });
         $('#chat-autoscroll-control').click(self.Chat.Toolbar.onAutoscrollControlClick);
-		try {
-			if( !!document.createElement('audio').canPlayType ) {
-				var a = document.createElement('audio');
-				if( !!(a.canPlayType('audio/mpeg;').replace(/no/, '')) ) {
-					self.Chat.Toolbar._supportsNativeAudio = "mp3";
-				}
-				else if( !!(a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, '')) ) {
-					self.Chat.Toolbar._supportsNativeAudio = "ogg";
-				}
-				else if ( !!(a.canPlayType('audio/mp4; codecs="mp4a.40.2"').replace(/no/, '')) ) {
-					self.Chat.Toolbar._supportsNativeAudio = "m4a";
-				}
-			}
-		} catch(e){ }
+        try {
+          if( !!document.createElement('audio').canPlayType ) {
+            var a = document.createElement('audio');
+            if( !!(a.canPlayType('audio/mpeg;').replace(/no/, '')) ) {
+              self.Chat.Toolbar._supportsNativeAudio = "mp3";
+            }
+            else if( !!(a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, '')) ) {
+              self.Chat.Toolbar._supportsNativeAudio = "ogg";
+            }
+            else if ( !!(a.canPlayType('audio/mp4; codecs="mp4a.40.2"').replace(/no/, '')) ) {
+              self.Chat.Toolbar._supportsNativeAudio = "m4a";
+            }
+          }
+        } catch(e){ }
         $('#chat-sound-control').click(self.Chat.Toolbar.onSoundControlClick);
         if(Candy.Util.cookieExists('candy-nosound')) {
           $('#chat-sound-control').click();
@@ -357,7 +357,7 @@ Candy.View.Pane = (function(self, $) {
 
       /** Function: onPlaySound
        * Sound play event handler. Uses native (HTML5) audio if supported, 
-	   * otherwise it will attempt to use bgsound with autostart.
+       * otherwise it will attempt to use bgsound with autostart.
        *
        * Don't call this method directly. Call `playSound()` instead.
        * `playSound()` will only call this method if sound is enabled.
