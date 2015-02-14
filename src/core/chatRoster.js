@@ -13,14 +13,21 @@
 
 /* global Candy */
 
+var $ = window.jQuery;
+
 /** Class: Candy.Core.ChatRoster
  * Chat Roster
  */
-Candy.Core.ChatRoster = function () {
+Candy.Core.ChatRoster = function (roomJid) {
 	/** Object: items
 	 * Roster items
 	 */
 	this.items = {};
+
+  /** String: roomJid
+   * The jid of the room this roster belongs to.
+   */
+  this.roomJid = roomJid || null;
 };
 
 /** Function: add
@@ -31,6 +38,20 @@ Candy.Core.ChatRoster = function () {
  */
 Candy.Core.ChatRoster.prototype.add = function(user) {
 	this.items[user.getJid()] = user;
+
+  var evtData = {
+    user: user,
+    roomJid: this.roomJid
+  };
+
+  /** Event: candy:roster.user.after-add
+   * After initialising a room
+   *
+   * Parameters:
+   *   (ChatUser Object) user - the user that was added
+   *   (String) roomJid - the jid of the room the user is being added to
+   */
+  $(Candy).triggerHandler('candy:roster.user.after-add', evtData);
 };
 
 /** Function: remove
@@ -41,6 +62,20 @@ Candy.Core.ChatRoster.prototype.add = function(user) {
  */
 Candy.Core.ChatRoster.prototype.remove = function(jid) {
 	delete this.items[jid];
+
+  var evtData = {
+    userJid: jid,
+    roomJid: this.roomJid
+  };
+
+  /** Event: candy:roster.user.after-add
+   * After initialising a room
+   *
+   * Parameters:
+   *   (String) userJid - the user that was added
+   *   (String) roomJid - the jid of the room the user is being added to
+   */
+  $(Candy).triggerHandler('candy:roster.user.after-remove', evtData);
 };
 
 /** Function: get

@@ -36,7 +36,7 @@ Candy.Core.ChatRoom = function(roomJid) {
 	/** Variable: Roster
 	 * Candy.Core.ChatRoster instance
 	 */
-	this.roster = new Candy.Core.ChatRoster();
+	this.roster = new Candy.Core.ChatRoster(roomJid);
 };
 
 /** Function: setUser
