@@ -916,6 +916,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *                        - MUC msg from server: {name = '', body, type = 'info'}
 				 *   (String) timestamp - Timestamp, only when it's an offline message
 				 *   (Boolean) carbon - Indication of wether or not the message was a carbon
+				 *   (String) stanza - The raw XML stanza
 				 *
 				 * TODO:
 				 *   Streamline those events sent and rename the parameters.
@@ -925,7 +926,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					roomName: roomName,
 					message: message,
 					timestamp: timestamp,
-					carbon: carbon
+					carbon: carbon,
+					stanza: msg
 				});
 				return true;
 			},
