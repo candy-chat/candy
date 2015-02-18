@@ -1026,7 +1026,7 @@ define([
 
 					receiveMessage();
 
-					expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
+					expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon', 'stanza']);
 					expect(eventParams.roomJid).to.eql('doo@dah.com');
 					expect(eventParams.roomName).to.eql('doo');
 
