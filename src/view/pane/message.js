@@ -97,7 +97,7 @@ Candy.View.Pane = (function(self, $) {
      *   candy.view.message.before-render using {template, templateData}
      *   candy:view.message.after-show using {roomJid, name, message, element}
      */
-    show: function(roomJid, name, message, xhtmlMessage, timestamp, from, carbon) {
+    show: function(roomJid, name, message, xhtmlMessage, timestamp, from, carbon, stanza) {
       message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
       if(Candy.View.getOptions().enableXHTML === true && xhtmlMessage) {
         xhtmlMessage = Candy.Util.parseAndCropXhtml(xhtmlMessage, Candy.View.getOptions().crop.message.body);
@@ -120,7 +120,8 @@ Candy.View.Pane = (function(self, $) {
         'name': name,
         'message': message,
         'xhtmlMessage': xhtmlMessage,
-        'from': from
+        'from': from,
+        'stanza': stanza
       };
 
       /** Event: candy:view.message.before-show
@@ -158,7 +159,8 @@ Candy.View.Pane = (function(self, $) {
           timestamp: timestamp.toISOString(),
           roomjid: roomJid,
           from: from
-        }
+        },
+        stanza: stanza
       };
 
       /** Event: candy:view.message.before-render
