@@ -1026,7 +1026,7 @@ define([
 
 					receiveMessage();
 
-					expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
+					expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon', 'stanza']);
 					expect(eventParams.roomJid).to.eql('doo@dah.com');
 					expect(eventParams.roomName).to.eql('doo');
 
@@ -1071,7 +1071,7 @@ define([
 							setMe();
 							receiveMessage();
 
-							expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
+							expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon', 'stanza']);
 							expect(eventParams.roomJid).to.eql('doo@dah.com');
 							expect(eventParams.roomName).to.eql('doo');
 							expect(eventParams.carbon).to.eql(true);
@@ -1116,7 +1116,7 @@ define([
 
 							receiveMessage();
 
-							expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
+							expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon', 'stanza']);
 							expect(eventParams.roomJid).to.eql('doo@dah.com');
 							expect(eventParams.roomName).to.eql('doo');
 							expect(eventParams.carbon).to.eql(true);
@@ -1448,7 +1448,7 @@ define([
 
 						receiveMessage();
 
-						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon', 'stanza']);
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
 						expect(eventParams.roomName).to.eql('coven');
 
@@ -1697,7 +1697,7 @@ define([
 
 							receiveMessage();
 
-							expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
+							expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon', 'stanza']);
 							expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
 							expect(eventParams.roomName).to.eql('coven');
 
@@ -1733,7 +1733,7 @@ define([
 
 						receiveMessage();
 
-						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon', 'stanza']);
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit/thirdwitch');
 						expect(eventParams.roomName).to.eql('thirdwitch');
 
@@ -1987,7 +1987,7 @@ define([
 
 						receiveMessage();
 
-						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon', 'stanza']);
 						expect(eventParams.roomJid).to.eql('coven@chat.shakespeare.lit');
 						expect(eventParams.roomName).to.eql('coven');
 
@@ -2030,7 +2030,7 @@ define([
 
 						receiveMessage();
 
-						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon']);
+						expect(eventParams).to.have.keys(['roomJid', 'roomName', 'message', 'timestamp', 'carbon', 'stanza']);
 						expect(eventParams.roomJid).to.eql(roomJid);
 						expect(eventParams.roomName).to.eql('');
 
