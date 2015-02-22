@@ -827,5 +827,73 @@ Candy.View.Translation = {
 		'errorMaxOccupantsReached': 'No pots unir-te a la sala "%s": hi ha masses participants.',
 
 		'antiSpamMessage' : 'Si us plau, no facis spam. Has estat bloquejat temporalment.'
+	},
+	'cs' : {
+		'status': 'Stav: %s',
+		'statusConnecting': 'Připojování...',
+		'statusConnected' : 'Připojeno',
+		'statusDisconnecting': 'Odpojování...',
+		'statusDisconnected' : 'Odpojeno',
+		'statusAuthfail': 'Přihlášení selhalo',
+
+		'roomSubject'  : 'Předmět:',
+		'messageSubmit': 'Odeslat',
+
+		'labelUsername': 'Už. jméno:',
+		'labelNickname': 'Přezdívka:',
+		'labelPassword': 'Heslo:',
+		'loginSubmit'  : 'Přihlásit se',
+		'loginInvalid'  : 'Neplatné JID',
+
+		'reason'				: 'Důvod:',
+		'subject'				: 'Předmět:',
+		'reasonWas'				: 'Důvod byl: %s.',
+		'kickActionLabel'		: 'Vykopnout',
+		'youHaveBeenKickedBy'   : 'Byl jsi vyloučen z %2$s uživatelem %1$s',
+		'youHaveBeenKicked'     : 'Byl jsi vyloučen z %s',
+		'banActionLabel'		: 'Ban',
+		'youHaveBeenBannedBy'   : 'Byl jsi trvale vyloučen z %1$s uživatelem %2$s',
+		'youHaveBeenBanned'     : 'Byl jsi trvale vyloučen z %s',
+
+		'privateActionLabel' : 'Soukromý chat',
+		'ignoreActionLabel'  : 'Ignorovat',
+		'unignoreActionLabel' : 'Neignorovat',
+
+		'setSubjectActionLabel': 'Změnit předmět',
+
+		'administratorMessageSubject' : 'Adminitrátor',
+
+		'userJoinedRoom'           : '%s vešel do místnosti.',
+		'userLeftRoom'             : '%s opustil místnost.',
+		'userHasBeenKickedFromRoom': '%s byl vyloučen z místnosti.',
+		'userHasBeenBannedFromRoom': '%s byl trvale vyloučen z místnosti.',
+		'userChangedNick': '%1$s si změnil přezdívku na  %2$s.',
+
+		'presenceUnknownWarningSubject': 'Poznámka:',
+		'presenceUnknownWarning'       : 'Tento uživatel může být offiline. Nemůžeme sledovat jeho přítmonost..',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'Moderátor',
+		'tooltipIgnored'		: 'Tento uživatel je ignorován',
+		'tooltipEmoticons'		: 'Emotikony',
+		'tooltipSound'			: 'Přehrát zvuk při nové soukromé zprávě',
+		'tooltipAutoscroll'		: 'Automaticky rolovat',
+		'tooltipStatusmessage'	: 'Zobrazovat stavové zprávy',
+		'tooltipAdministration'	: 'Správa místnosti',
+		'tooltipUsercount'		: 'Uživatelé',
+
+		'enterRoomPassword' : 'Místnost "%s" je chráněna heslem.',
+		'enterRoomPasswordSubmit' : 'Připojit se do místnosti',
+		'passwordEnteredInvalid' : 'Neplatné heslo pro místnost "%s".',
+
+		'nicknameConflict': 'Takové přihlašovací jméno je již použito. Vyberte si prosím jiné.',
+
+		'errorMembersOnly': 'Nemůžete se připojit do místnosti "%s": Nedostatečné oprávnění.',
+		'errorMaxOccupantsReached': 'Nemůžete se připojit do místnosti "%s": Příliš mnoho uživatelů.',
+		'errorAutojoinMissing': 'Není nastaven parametr autojoin. Nastavte jej prosím.',
+
+		'antiSpamMessage' : 'Nespamujte prosím. Váš účet byl na chvilku zablokován.'
 	}
 };
