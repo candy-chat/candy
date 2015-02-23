@@ -330,9 +330,6 @@ Candy.Core = (function(self, Strophe, $) {
 	 */
 	self.disconnect = function() {
 		if(_connection.connected) {
-			$.each(self.getRooms(), function() {
-				Candy.Core.Action.Jabber.Room.Leave(this.getJid());
-			});
 			_connection.disconnect();
 		}
 	};
