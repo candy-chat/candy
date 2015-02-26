@@ -580,6 +580,74 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Per favore non scrivere messaggi pubblicitari. Sei stato bloccato per un po\' di tempo.'
 	},
+	'pl' : {
+		'status': 'Status: %s',
+		'statusConnecting': 'Łączę...',
+		'statusConnected' : 'Połączone',
+		'statusDisconnecting': 'Rozłączam...',
+		'statusDisconnected' : 'Rozłączone',
+		'statusAuthfail': 'Nieprawidłowa autoryzacja',
+
+		'roomSubject'  : 'Temat:',
+		'messageSubmit': 'Wyślij',
+
+		'labelUsername': 'Nazwa użytkownika:',
+		'labelNickname': 'Ksywka:',
+		'labelPassword': 'Hasło:',
+		'loginSubmit'  : 'Zaloguj',
+		'loginInvalid'  : 'Nieprawidłowy JID',
+
+		'reason'				: 'Przyczyna:',
+		'subject'				: 'Temat:',
+		'reasonWas'				: 'Z powodu: %s.',
+		'kickActionLabel'		: 'Wykop',
+		'youHaveBeenKickedBy'   : 'Zostałeś wykopany z %2$s przez %1$s',
+		'youHaveBeenKicked'     : 'Zostałeś wykopany z %s',
+		'banActionLabel'		: 'Ban',
+		'youHaveBeenBannedBy'   : 'Zostałeś zbanowany na %1$s przez %2$s',
+		'youHaveBeenBanned'     : 'Zostałeś zbanowany na %s',
+
+		'privateActionLabel' : 'Rozmowa prywatna',
+		'ignoreActionLabel'  : 'Zignoruj',
+		'unignoreActionLabel' : 'Przestań ignorować',
+
+		'setSubjectActionLabel': 'Zmień temat',
+
+		'administratorMessageSubject' : 'Administrator',
+
+		'userJoinedRoom'           : '%s wszedł do pokoju.',
+		'userLeftRoom'             : '%s opuścił pokój.',
+		'userHasBeenKickedFromRoom': '%s został wykopany z pokoju.',
+		'userHasBeenBannedFromRoom': '%s został zbanowany w pokoju.',
+		'userChangedNick': '%1$s zmienił ksywkę na %2$s.',
+
+		'presenceUnknownWarningSubject': 'Uwaga:',
+		'presenceUnknownWarning'       : 'Rozmówca może nie być połączony. Nie możemy ustalić jego obecności.',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'Moderator',
+		'tooltipIgnored'		: 'Ignorujesz tego rozmówcę',
+		'tooltipEmoticons'		: 'Emoty',
+		'tooltipSound'			: 'Sygnał dźwiękowy przy otrzymaniu wiadomości',
+		'tooltipAutoscroll'		: 'Autoprzewijanie',
+		'tooltipStatusmessage'		: 'Wyświetl statusy',
+		'tooltipAdministration'		: 'Administrator pokoju',
+		'tooltipUsercount'		: 'Obecni rozmówcy',
+
+		'enterRoomPassword' : 'Pokój "%s" wymaga hasła.',
+		'enterRoomPasswordSubmit' : 'Wejdź do pokoju',
+		'passwordEnteredInvalid' : 'Niewłaściwie hasło do pokoju "%s".',
+
+		'nicknameConflict': 'Nazwa w użyciu. Wybierz inną.',
+
+		'errorMembersOnly': 'Nie możesz wejść do pokoju "%s": Niepełne uprawnienia.',
+		'errorMaxOccupantsReached': 'Nie możesz wejść do pokoju "%s": Siedzi w nim zbyt wielu ludzi.',
+		'errorAutojoinMissing': 'Konfiguracja nie zawiera parametru automatycznego wejścia do pokoju. Wskaż pokój do którego chcesz wejść.',
+
+		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
+	},
 	'pt': {
 		'status': 'Status: %s',
 		'statusConnecting': 'Conectando...',
