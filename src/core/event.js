@@ -243,13 +243,6 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				var user = Candy.Core.getRoster().get(updatedItem.jid);
 				if (!user) {
 					user = self.Jabber._addRosterItem(updatedItem);
-					/** Event: candy:core.roster.added
-					 * Notification of a roster entry having been added
-	 				 *
-					 * Parameters:
-					 *   (Candy.Core.Contact) contact - The contact that was added
-					 */
-					$(Candy).triggerHandler('candy:core:roster:added', {contact: user});
 				} else {
 					/** Event: candy:core.roster.updated
 					 * Notification of a roster entry having been updated
@@ -267,6 +260,13 @@ Candy.Core.Event = (function(self, Strophe, $) {
 		_addRosterItem: function(item) {
 			var user = new Candy.Core.Contact(item);
 			Candy.Core.getRoster().add(user);
+			/** Event: candy:core.roster.added
+			 * Notification of a roster entry having been added
+				 *
+			 * Parameters:
+			 *   (Candy.Core.Contact) contact - The contact that was added
+			 */
+			$(Candy).triggerHandler('candy:core:roster:added', {contact: user});
 			return user;
 		},
 
