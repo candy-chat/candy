@@ -40,8 +40,32 @@ Candy.View.Pane = (function(self, $) {
      *   (String) roomType - Type of room: `groupchat` or `chat`
      */
     addTab: function(roomJid, roomName, roomType) {
-      var roomId = Candy.Util.jidToId(roomJid),
-        html = Mustache.to_html(Candy.View.Template.Chat.tab, {
+      var roomId = Candy.Util.jidToId(roomJid);
+
+      var evtData = {
+        roomJid: roomJid,
+        roomName: roomName,
+        roomType: roomType,
+        roomId: roomId
+      };
+
+      /** Event: candy:view.pane.before-tab
+       * Before sending a message
+       *
+       * Parameters:
+       *   (String) roomJid - JID of the room the tab is for.
+       *   (String) roomName - Name of the room.
+       *   (String) roomType - What type of room: `groupchat` or `chat`
+       *
+       * Returns:
+       *   Boolean|undefined - If you want to handle displaying the tab on your own, return false.
+       */
+      if ($(Candy).triggerHandler('candy:view.pane.before-tab', evtData) === false) {
+        event.preventDefault();
+        return;
+      }
+
+      var html = Mustache.to_html(Candy.View.Template.Chat.tab, {
           roomJid: roomJid,
           roomId: roomId,
           name: roomName || Strophe.getNodeFromJid(roomJid),
