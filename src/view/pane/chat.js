@@ -282,7 +282,7 @@ Candy.View.Pane = (function(self, $) {
      * Chat toolbar for things like emoticons toolbar, room management etc.
      */
     Toolbar: {
-      _supportsNativeAudio: false,
+      _supportsNativeAudio: null,
 
       /** Function: init
        * Register handler and enable or disable sound and status messages.
@@ -293,9 +293,20 @@ Candy.View.Pane = (function(self, $) {
           e.stopPropagation();
         });
         $('#chat-autoscroll-control').click(self.Chat.Toolbar.onAutoscrollControlClick);
-
-        var a = document.createElement('audio');
-        self.Chat.Toolbar._supportsNativeAudio = !!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, ''));
+        try {
+          if( !!document.createElement('audio').canPlayType ) {
+            var a = document.createElement('audio');
+            if( !!(a.canPlayType('audio/mpeg;').replace(/no/, '')) ) {
+              self.Chat.Toolbar._supportsNativeAudio = "mp3";
+            }
+            else if( !!(a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, '')) ) {
+              self.Chat.Toolbar._supportsNativeAudio = "ogg";
+            }
+            else if ( !!(a.canPlayType('audio/mp4; codecs="mp4a.40.2"').replace(/no/, '')) ) {
+              self.Chat.Toolbar._supportsNativeAudio = "m4a";
+            }
+          }
+        } catch(e){ }
         $('#chat-sound-control').click(self.Chat.Toolbar.onSoundControlClick);
         if(Candy.Util.cookieExists('candy-nosound')) {
           $('#chat-sound-control').click();
@@ -345,19 +356,19 @@ Candy.View.Pane = (function(self, $) {
       },
 
       /** Function: onPlaySound
-       * Sound play event handler. Uses native (HTML5) audio if supported
+       * Sound play event handler. Uses native (HTML5) audio if supported,
+       * otherwise it will attempt to use bgsound with autostart.
        *
        * Don't call this method directly. Call `playSound()` instead.
        * `playSound()` will only call this method if sound is enabled.
        */
       onPlaySound: function() {
         try {
-          if(self.Chat.Toolbar._supportsNativeAudio) {
-            new Audio(Candy.View.getOptions().assets + 'notify.mp3').play();
+          if(self.Chat.Toolbar._supportsNativeAudio !== null) {
+            new Audio(Candy.View.getOptions().assets + 'notify.' + self.Chat.Toolbar._supportsNativeAudio).play();
           } else {
-            var chatSoundPlayer = document.getElementById('chat-sound-player');
-            chatSoundPlayer.SetVariable('method:stop', '');
-            chatSoundPlayer.SetVariable('method:play', '');
+            $('#chat-sound-control bgsound').remove();
+            $('<bgsound/>').attr({ src: Candy.View.getOptions().assets + 'notify.mp3', loop: 1, autostart: true }).appendTo("#chat-sound-control");
           }
         } catch (e) {}
       },

@@ -137,8 +137,7 @@ Candy.View = (function(self, $) {
 			tabs: Candy.View.Template.Chat.tabs,
 			rooms: Candy.View.Template.Chat.rooms,
 			modal: Candy.View.Template.Chat.modal,
-			toolbar: Candy.View.Template.Chat.toolbar,
-			soundcontrol: Candy.View.Template.Chat.soundcontrol
+			toolbar: Candy.View.Template.Chat.toolbar
 		}));
 
 		// ... and let the elements dance.

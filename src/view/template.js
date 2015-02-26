@@ -43,18 +43,12 @@ Candy.View.Template = (function(self){
 				'<span class="spacer">•</span>{{subject}} {{message}}</div></li>',
 		toolbar: '<ul id="chat-toolbar">' +
 				'<li id="emoticons-icon" data-tooltip="{{tooltipEmoticons}}"></li>' +
-				'<li id="chat-sound-control" class="checked" data-tooltip="{{tooltipSound}}">{{> soundcontrol}}</li>' +
+				'<li id="chat-sound-control" class="checked" data-tooltip="{{tooltipSound}}"></li>' +
 				'<li id="chat-autoscroll-control" class="checked" data-tooltip="{{tooltipAutoscroll}}"></li>' +
 				'<li class="checked" id="chat-statusmessage-control" data-tooltip="{{tooltipStatusmessage}}">' +
 				'</li><li class="context" data-tooltip="{{tooltipAdministration}}"></li>' +
 				'<li class="usercount" data-tooltip="{{tooltipUsercount}}">' +
 				'<span id="chat-usercount"></span></li></ul>',
-		soundcontrol: '<script type="text/javascript">var audioplayerListener = new Object();' +
-						' audioplayerListener.onInit = function() { };' +
-						'</script><object id="chat-sound-player" type="application/x-shockwave-flash" data="{{assetsPath}}audioplayer.swf"' +
-						' width="0" height="0"><param name="movie" value="{{assetsPath}}audioplayer.swf" /><param name="AllowScriptAccess"' +
-						' value="always" /><param name="FlashVars" value="listener=audioplayerListener&amp;mp3={{assetsPath}}notify.mp3" />' +
-						'</object>',
 		Context: {
 			menu: '<div id="context-menu"><i class="arrow arrow-top"></i>' +
 				'<ul></ul><i class="arrow arrow-bottom"></i></div>',
