@@ -221,8 +221,7 @@ Candy.View.Pane = (function(self, $) {
           if(Candy.View.getCurrent().roomJid !== roomJid || !self.Window.hasFocus()) {
             self.Chat.increaseUnreadMessages(roomJid);
             if(!self.Window.hasFocus()) {
-              // Notify the user about a new private message
-              // OR Notify on all messages is configured
+              // Notify the user about a new private message OR on all messages if configured
               if(Candy.View.Pane.Chat.rooms[roomJid].type === 'chat' || Candy.View.getOptions().updateWindowOnAllMessages === true) {
                 self.Chat.Toolbar.playSound();
               }
