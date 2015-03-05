@@ -69,52 +69,15 @@ Candy.View.Pane = (function(self, $) {
       // a user joined the room
       if(action === 'join') {
         usercountDiff = 1;
-        var contact = user.getContact();
-        var html = Mustache.to_html(Candy.View.Template.Roster.user, {
-            roomId: roomId,
-            userId : userId,
-            userJid: user.getJid(),
-            realJid: user.getRealJid(),
-            status: user.getStatus(),
-            contact_status: contact ? contact.getStatus() : 'unavailable',
-            nick: user.getNick(),
-            displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.nickname),
-            role: user.getRole(),
-            affiliation: user.getAffiliation(),
-            me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
-            tooltipRole: $.i18n._('tooltipRole'),
-            tooltipIgnored: $.i18n._('tooltipIgnored')
-          });
 
         if(userElem.length < 1) {
-          var userInserted = false,
-            rosterPane = self.Room.getPane(roomJid, '.roster-pane');
-
-          // there are already users in the roster
-          if(rosterPane.children().length > 0) {
-            // insert alphabetically, sorted by status
-            var userSortCompare = self.Roster._userSortCompare(user.getNick(), user.getStatus());
-            rosterPane.children().each(function() {
-              var elem = $(this);
-              if(self.Roster._userSortCompare(elem.attr('data-nick'), elem.attr('data-status')) > userSortCompare) {
-                elem.before(html);
-                userInserted = true;
-                return false;
-              }
-              return true;
-            });
-          }
-          // first user in roster
-          if(!userInserted) {
-            rosterPane.append(html);
-          }
-
+          self.Roster._insertUser(roomJid, roomId, user, userId, currentUser);
           self.Roster.showJoinAnimation(user, userId, roomId, roomJid, currentUser);
         // user is in room but maybe the affiliation/role has changed
         } else {
           usercountDiff = 0;
-          userElem.replaceWith(html);
-          $('#user-' + roomId + '-' + userId).css({opacity: 1}).show();
+          userElem.remove();
+          self.Roster._insertUser(roomJid, roomId, user, userId, currentUser);
           // it's me, update the toolbar
           if(currentUser !== undefined && user.getNick() === currentUser.getNick() && self.Room.getUser(roomJid)) {
             self.Chat.Toolbar.update(roomJid);
@@ -145,7 +108,7 @@ Candy.View.Pane = (function(self, $) {
         if (self.Chat.rooms[roomJid].type === 'chat') {
           self.Chat.onInfoMessage(roomJid, $.i18n._('userLeftRoom', [user.getNick()]));
         } else {
-          self.Chat.infoMessage(roomJid, $.i18n._('userLeftRoom', [user.getNick()]));
+          self.Chat.infoMessage(roomJid, $.i18n._('userLeftRoom', [user.getNick()]), '');
         }
 
       } else if(action === 'nickchange') {
@@ -185,6 +148,47 @@ Candy.View.Pane = (function(self, $) {
        *   (jQuery.Element) element - User element
        */
       $(Candy).triggerHandler('candy:view.roster.after-update', evtData);
+    },
+
+    _insertUser: function(roomJid, roomId, user, userId, currentUser) {
+      var contact = user.getContact();
+      var html = Mustache.to_html(Candy.View.Template.Roster.user, {
+          roomId: roomId,
+          userId : userId,
+          userJid: user.getJid(),
+          realJid: user.getRealJid(),
+          status: user.getStatus(),
+          contact_status: contact ? contact.getStatus() : 'unavailable',
+          nick: user.getNick(),
+          displayNick: Candy.Util.crop(user.getNick(), Candy.View.getOptions().crop.roster.nickname),
+          role: user.getRole(),
+          affiliation: user.getAffiliation(),
+          me: currentUser !== undefined && user.getNick() === currentUser.getNick(),
+          tooltipRole: $.i18n._('tooltipRole'),
+          tooltipIgnored: $.i18n._('tooltipIgnored')
+        });
+
+      var userInserted = false,
+        rosterPane = self.Room.getPane(roomJid, '.roster-pane');
+
+      // there are already users in the roster
+      if(rosterPane.children().length > 0) {
+        // insert alphabetically, sorted by status
+        var userSortCompare = self.Roster._userSortCompare(user.getNick(), user.getStatus());
+        rosterPane.children().each(function() {
+          var elem = $(this);
+          if(self.Roster._userSortCompare(elem.attr('data-nick'), elem.attr('data-status')) > userSortCompare) {
+            elem.before(html);
+            userInserted = true;
+            return false;
+          }
+          return true;
+        });
+      }
+      // first user in roster
+      if(!userInserted) {
+        rosterPane.append(html);
+      }
     },
 
     _userSortCompare: function(nick, status) {
