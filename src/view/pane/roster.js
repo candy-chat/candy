@@ -92,11 +92,11 @@ Candy.View.Pane = (function(self, $) {
 
           // there are already users in the roster
           if(rosterPane.children().length > 0) {
-            // insert alphabetically
-            var userSortCompare = user.getNick().toUpperCase();
+            // insert alphabetically, sorted by status
+            var userSortCompare = self.Roster._userSortCompare(user.getNick(), user.getStatus());
             rosterPane.children().each(function() {
               var elem = $(this);
-              if(elem.attr('data-nick').toUpperCase() > userSortCompare) {
+              if(self.Roster._userSortCompare(elem.attr('data-nick'), elem.attr('data-status')) > userSortCompare) {
                 elem.before(html);
                 userInserted = true;
                 return false;
@@ -185,6 +185,21 @@ Candy.View.Pane = (function(self, $) {
        *   (jQuery.Element) element - User element
        */
       $(Candy).triggerHandler('candy:view.roster.after-update', evtData);
+    },
+
+    _userSortCompare: function(nick, status) {
+      var statusWeight;
+      switch (status) {
+        case 'available':
+          statusWeight = 1;
+          break;
+        case 'unavailable':
+          statusWeight = 9;
+          break;
+        default:
+          statusWeight = 8;
+      }
+      return statusWeight + nick.toUpperCase();
     },
 
     /** Function: userClick
