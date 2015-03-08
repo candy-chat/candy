@@ -241,10 +241,10 @@ Candy.Core = function(self, Strophe, $) {
             _connection.connect(_getEscapedJidFromJid(jidOrHost) + "/" + _options.resource, null, Candy.Core.Event.Strophe.Connect);
             _user = new self.ChatUser(null, nick);
         } else if (jidOrHost) {
-            Candy.Core.Event.Login(jidOrHost);
+            Candy.Core.Event.Login(null, jidOrHost);
         } else {
             // display login modal
-            Candy.Core.Event.Login();
+            Candy.Core.Event.Login(null, null);
         }
     };
     /** Function: attach
@@ -2027,19 +2027,22 @@ Candy.Core.Event = function(self, Strophe, $) {
 	 * Notify view that the login window should be displayed
 	 *
 	 * Parameters:
-	 *   (String) presetJid - Preset user JID
+	 *   (String) messageKey - i18n Message Key or null
+	 *   (String) presetJid - Preset user JID or null
 	 *
 	 * Triggers:
-	 *   candy:core.login using {presetJid}
+	 *   candy:core.login using {messageKey, presetJid}
 	 */
-    self.Login = function(presetJid) {
+    self.Login = function(messageKey, presetJid) {
         /** Event: candy:core.login
 		 * Triggered when the login window should be displayed
 		 *
 		 * Parameters:
+         *   (String) messageKey - i18n message key
 		 *   (String) presetJid - Preset user JID
 		 */
         $(Candy).triggerHandler("candy:core.login", {
+            messageKey: messageKey,
             presetJid: presetJid
         });
     };
@@ -2850,11 +2853,11 @@ Candy.View.Observer = function(self, $) {
 
               case Strophe.Status.DISCONNECTED:
                 var presetJid = Candy.Core.isAnonymousConnection() ? Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : null;
-                Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._("statusDisconnected"), presetJid);
+                Candy.Core.Event.Login($.i18n._("statusDisconnected"), presetJid);
                 break;
 
               case Strophe.Status.AUTHFAIL:
-                Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._("statusAuthfail"));
+                Candy.Core.Event.Login($.i18n._("statusAuthfail"), null);
                 break;
 
               default:
@@ -3035,10 +3038,13 @@ Candy.View.Observer = function(self, $) {
 	 *
 	 * Parameters:
 	 *   (jQuery.Event) event - jQuery Event object
-	 *   (Object) args - {presetJid}
+	 *   (Object) args - {messageKey, presetJid}
 	 */
     self.Login = function(event, args) {
-        Candy.View.Pane.Chat.Modal.showLoginForm(null, args.presetJid);
+        args = args || {};
+        args.messageKey = args.messageKey || null;
+        args.presetJid = args.presetJid || null;
+        Candy.View.Pane.Chat.Modal.showLoginForm(args.messageKey, args.presetJid);
     };
     /** Class: Candy.View.Observer.AutojoinMissing
 	 * Displays an error about missing autojoin information
@@ -3618,10 +3624,11 @@ Candy.View.Pane = function(self, $) {
 			 * Show the login form modal
 			 *
 			 * Parameters:
-			 *  (String) message - optional message to display above the form
-			 *	(String) presetJid - optional user jid. if set, the user will only be prompted for password.
+			 *  (String) messageKey - i18n message key to display above the form or null
+			 *	(String) presetJid -  if not null, the user will only be prompted for password.
 			 */
-            showLoginForm: function(message, presetJid) {
+            showLoginForm: function(messageKey, presetJid) {
+                var message = $.i18n._(messageKey);
                 self.Chat.Modal.show((message ? message : "") + Mustache.to_html(Candy.View.Template.Login.form, {
                     _labelNickname: $.i18n._("labelNickname"),
                     _labelUsername: $.i18n._("labelUsername"),
@@ -3640,7 +3647,7 @@ Candy.View.Pane = function(self, $) {
                         // guess the input and create a jid out of it
                         var jid = Candy.Core.getUser() && username.indexOf("@") < 0 ? username + "@" + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
                         if (jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
-                            Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._("loginInvalid"));
+                            Candy.Core.Event.Login("loginInvalid", jid);
                         } else {
                             //Candy.View.Pane.Chat.Modal.hide();
                             Candy.Core.connect(jid, password);
@@ -5142,6 +5149,7 @@ Candy.View.Translation = {
         roomSubject: "Sujet :",
         messageSubmit: "Envoyer",
         labelUsername: "Nom d'utilisateur :",
+        labelNickname: "Pseudo :",
         labelPassword: "Mot de passe :",
         loginSubmit: "Connexion",
         loginInvalid: "JID invalide",

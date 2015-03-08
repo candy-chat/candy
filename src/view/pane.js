@@ -611,10 +611,11 @@ Candy.View.Pane = (function(self, $) {
 			 * Show the login form modal
 			 *
 			 * Parameters:
-			 *  (String) message - optional message to display above the form
-			 *	(String) presetJid - optional user jid. if set, the user will only be prompted for password.
+			 *  (String) messageKey - i18n message key to display above the form or null
+			 *	(String) presetJid -  if not null, the user will only be prompted for password.
 			 */
-			showLoginForm: function(message, presetJid) {
+			showLoginForm: function(messageKey, presetJid) {
+                var message = $.i18n._(messageKey);
 				self.Chat.Modal.show((message ? message : '') + Mustache.to_html(Candy.View.Template.Login.form, {
 					_labelNickname: $.i18n._('labelNickname'),
 					_labelUsername: $.i18n._('labelUsername'),
@@ -638,7 +639,7 @@ Candy.View.Pane = (function(self, $) {
 							username + '@' + Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : username;
 
 						if(jid.indexOf("@") < 0 && !Candy.Core.getUser()) {
-							Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('loginInvalid'));
+							Candy.Core.Event.Login('loginInvalid', jid);
 						} else {
 							//Candy.View.Pane.Chat.Modal.hide();
 							Candy.Core.connect(jid, password);

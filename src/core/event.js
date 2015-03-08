@@ -26,19 +26,21 @@ Candy.Core.Event = (function(self, Strophe, $) {
 	 * Notify view that the login window should be displayed
 	 *
 	 * Parameters:
-	 *   (String) presetJid - Preset user JID
+	 *   (String) messageKey - i18n Message Key or null
+	 *   (String) presetJid - Preset user JID or null
 	 *
 	 * Triggers:
-	 *   candy:core.login using {presetJid}
+	 *   candy:core.login using {messageKey, presetJid}
 	 */
-	self.Login = function(presetJid) {
+	self.Login = function(messageKey, presetJid) {
 		/** Event: candy:core.login
 		 * Triggered when the login window should be displayed
 		 *
 		 * Parameters:
+         *   (String) messageKey - i18n message key
 		 *   (String) presetJid - Preset user JID
 		 */
-		$(Candy).triggerHandler('candy:core.login', { presetJid: presetJid } );
+		$(Candy).triggerHandler('candy:core.login', { messageKey:messageKey, presetJid: presetJid } );
 	};
 
 	/** Class: Candy.Core.Event.Strophe

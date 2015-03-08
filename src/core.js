@@ -212,10 +212,10 @@ Candy.Core = (function(self, Strophe, $) {
 			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + _options.resource, null, Candy.Core.Event.Strophe.Connect);
 			_user = new self.ChatUser(null, nick); // set jid to null because we'll later receive it
 		} else if(jidOrHost) {
-			Candy.Core.Event.Login(jidOrHost);
+			Candy.Core.Event.Login(null, jidOrHost);
 		} else {
 			// display login modal
-			Candy.Core.Event.Login();
+			Candy.Core.Event.Login(null, null);
 		}
 	};
 
