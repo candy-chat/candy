@@ -584,6 +584,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						user.setRole(role);
 						user.setAffiliation(affiliation);
 
+						user.setStatus("available");
+
 						// FIXME: currently role/affilation changes are handled with this action
 						action = 'join';
 					} else {
