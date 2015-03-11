@@ -103,11 +103,11 @@ Candy.View.Observer = (function(self, $) {
 
 				case Strophe.Status.DISCONNECTED:
 					var presetJid = Candy.Core.isAnonymousConnection() ? Strophe.getDomainFromJid(Candy.Core.getUser().getJid()) : null;
-					Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusDisconnected'), presetJid);
+					Candy.Core.Event.Login(presetJid, $.i18n._('statusDisconnected'));
 					break;
 
 				case Strophe.Status.AUTHFAIL:
-					Candy.View.Pane.Chat.Modal.showLoginForm($.i18n._('statusAuthfail'));
+					Candy.Core.Event.Login(null, $.i18n._('statusAuthfail'));
 					break;
 
 				default:
@@ -316,7 +316,7 @@ Candy.View.Observer = (function(self, $) {
 	 *   (Object) args - {presetJid}
 	 */
 	self.Login = function(event, args) {
-		Candy.View.Pane.Chat.Modal.showLoginForm(null, args.presetJid);
+		Candy.View.Pane.Chat.Modal.showLoginForm(args.presetJid, args.message);
 	};
 
 	/** Class: Candy.View.Observer.AutojoinMissing

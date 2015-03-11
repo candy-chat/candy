@@ -218,13 +218,13 @@ Candy.View.Pane = (function(self, $) {
 
         // Check to see if in-core notifications are disabled
         if(!Candy.Core.getOptions().disableCoreNotifications) {
-          if(Candy.View.getCurrent().roomJid !== roomJid || !self.Window.hasFocus()) {
+          if(Candy.View.getCurrent().roomJid !== roomJid) {
             self.Chat.increaseUnreadMessages(roomJid);
-            if(!self.Window.hasFocus()) {
-              // Notify the user about a new private message OR on all messages if configured
-              if(Candy.View.Pane.Chat.rooms[roomJid].type === 'chat' || Candy.View.getOptions().updateWindowOnAllMessages === true) {
-                self.Chat.Toolbar.playSound();
-              }
+          }
+          if(!self.Window.hasFocus()) {
+            // Notify the user about a new private message OR on all messages if configured
+            if(Candy.View.Pane.Chat.rooms[roomJid].type === 'chat' || Candy.View.getOptions().updateWindowOnAllMessages === true) {
+              self.Chat.Toolbar.playSound();
             }
           }
         }

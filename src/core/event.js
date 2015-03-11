@@ -27,18 +27,22 @@ Candy.Core.Event = (function(self, Strophe, $) {
 	 *
 	 * Parameters:
 	 *   (String) presetJid - Preset user JID
+	 *   (String) message - [optional] Message to be displayed
 	 *
 	 * Triggers:
 	 *   candy:core.login using {presetJid}
 	 */
-	self.Login = function(presetJid) {
+	self.Login = function(presetJid, message) {
 		/** Event: candy:core.login
 		 * Triggered when the login window should be displayed
 		 *
 		 * Parameters:
 		 *   (String) presetJid - Preset user JID
 		 */
-		$(Candy).triggerHandler('candy:core.login', { presetJid: presetJid } );
+		$(Candy).triggerHandler('candy:core.login', {
+			presetJid: presetJid,
+			message: message
+		});
 	};
 
 	/** Class: Candy.Core.Event.Strophe
