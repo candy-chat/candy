@@ -39,7 +39,7 @@ Candy.View = (function(self, $) {
 			assets: 'res/',
 			messages: { limit: 2000, remove: 500 },
 			crop: {
-        message: { nickname: 15, body: 1000, url: 64 },
+				message: { nickname: 15, body: 1000, url: 64 },
 				roster: { nickname: 15 }
 			},
 			enableXHTML: false
