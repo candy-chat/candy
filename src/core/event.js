@@ -98,7 +98,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					break;
 
 				default:
-					Candy.Core.log('[Connection] What?!');
+					Candy.Core.warn('[Connection] Unknown status received:', status);
 					break;
 			}
 			/** Event: candy:core.chat.connection
