@@ -514,15 +514,15 @@ Candy.Core = (function(self, Strophe, $) {
 	 */
 	self.warn = function() {
 		Function.prototype.apply.call(console.warn, console, arguments);
-	}
+	};
 
 	/** Function: error
 	 * Print a message to the browser's "error" log
 	 * Enabled regardless of debug mode
 	 */
-	self.warn = function() {
+	self.error = function() {
 		Function.prototype.apply.call(console.error, console, arguments);
-	}
+	};
 
 	return self;
 }(Candy.Core || {}, Strophe, jQuery));
