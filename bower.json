@@ -32,9 +32,12 @@
   ],
   "dependencies": {
     "jquery": "~1.11.0",
-    "strophe": "strophe/strophejs#1.2.1",
+    "strophe": "strophe/strophejs#72914b87f56cf12e5e6a40c293cb9c6397bc7d16",
     "strophejs-plugins": "strophe/strophejs-plugins#39d67d66e900bce8b990d9214bffe6593a96ddf7",
     "mustache": "0.3.0",
     "jquery-i18n": "1.1.1"
+  },
+  "resolutions": {
+    "strophe": "72914b87f56cf12e5e6a40c293cb9c6397bc7d16"
   }
 }
