@@ -106,9 +106,9 @@ Candy.View.Pane = (function(self, $) {
         self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
         // always show leave message in private room, even if status messages have been disabled
         if (self.Chat.rooms[roomJid].type === 'chat') {
-          self.Chat.onInfoMessage(roomJid, $.i18n._('userLeftRoom', [user.getNick()]));
+          self.Chat.onInfoMessage(roomJid, null, $.i18n._('userLeftRoom', [user.getNick()]));
         } else {
-          self.Chat.infoMessage(roomJid, $.i18n._('userLeftRoom', [user.getNick()]), '');
+          self.Chat.infoMessage(roomJid, null, $.i18n._('userLeftRoom', [user.getNick()]), '');
         }
 
       } else if(action === 'nickchange') {
@@ -117,15 +117,15 @@ Candy.View.Pane = (function(self, $) {
         self.Room.changeDataUserJidIfUserIsMe(roomId, user);
         self.PrivateRoom.changeNick(roomJid, user);
         var infoMessage = $.i18n._('userChangedNick', [user.getPreviousNick(), user.getNick()]);
-        self.Chat.infoMessage(roomJid, infoMessage);
+        self.Chat.infoMessage(roomJid, null, infoMessage);
       // user has been kicked
       } else if(action === 'kick') {
         self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
-        self.Chat.onInfoMessage(roomJid, $.i18n._('userHasBeenKickedFromRoom', [user.getNick()]));
+        self.Chat.onInfoMessage(roomJid, null, $.i18n._('userHasBeenKickedFromRoom', [user.getNick()]));
       // user has been banned
       } else if(action === 'ban') {
         self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
-        self.Chat.onInfoMessage(roomJid, $.i18n._('userHasBeenBannedFromRoom', [user.getNick()]));
+        self.Chat.onInfoMessage(roomJid, null, $.i18n._('userHasBeenBannedFromRoom', [user.getNick()]));
       }
 
       // Update user count
@@ -232,9 +232,9 @@ Candy.View.Pane = (function(self, $) {
         if(currentUser !== undefined && user.getNick() !== currentUser.getNick() && self.Room.getUser(roomJid)) {
           // always show join message in private room, even if status messages have been disabled
           if (self.Chat.rooms[roomJid].type === 'chat') {
-            self.Chat.onInfoMessage(roomJid, $.i18n._('userJoinedRoom', [user.getNick()]));
+            self.Chat.onInfoMessage(roomJid, null, $.i18n._('userJoinedRoom', [user.getNick()]));
           } else {
-            self.Chat.infoMessage(roomJid, $.i18n._('userJoinedRoom', [user.getNick()]));
+            self.Chat.infoMessage(roomJid, null, $.i18n._('userJoinedRoom', [user.getNick()]));
           }
         }
       }
