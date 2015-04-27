@@ -291,6 +291,7 @@ Candy.View.Pane = (function(self, $) {
      *   (String) message - Message
      */
     onInfoMessage: function(roomJid, subject, message) {
+      message = message || '';
       if(Candy.View.getCurrent().roomJid && self.Chat.rooms[roomJid]) { // Simply dismiss info message if no room joined so far. TODO: maybe we should show those messages on a dedicated pane?
         message = Candy.Util.Parser.all(message.substring(0, Candy.View.getOptions().crop.message.body));
         if(Candy.View.getOptions().enableXHTML === true) {
