@@ -784,6 +784,7 @@ Candy.View.Translation = {
 		'messageSubmit': 'Послать',
 
 		'labelUsername': 'Имя:',
+		'labelNickname': 'Ник:',
 		'labelPassword': 'Пароль:',
 		'loginSubmit'  : 'Логин',
 		'loginInvalid'  : 'Неверный JID',
@@ -810,8 +811,12 @@ Candy.View.Translation = {
 		'userLeftRoom'             : '%s вышел из чата.',
 		'userHasBeenKickedFromRoom': '%s выброшен из чата.',
 		'userHasBeenBannedFromRoom': '%s запрещён доступ в чат.',
+		'userChangedNick': '%1$s сменил имя на %2$s.',
 
-		'dateFormat': 'mm.dd.yyyy',
+		'presenceUnknownWarningSubject': 'Уведомление:',
+		'presenceUnknownWarning'       : 'Этот пользователь вероятнее всего оффлайн.',
+
+		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
 
 		'tooltipRole'			: 'Модератор',
@@ -831,6 +836,7 @@ Candy.View.Translation = {
 
 		'errorMembersOnly': 'Вы не можете войти в чат "%s": Недостаточно прав доступа.',
 		'errorMaxOccupantsReached': 'Вы не можете войти в чат "%s": Слишком много участников.',
+		'errorAutojoinMissing': 'Параметры автовхода не устновлены. Настройте их для продолжения.',
 
 		'antiSpamMessage' : 'Пожалуйста не рассылайте спам. Вас заблокировали на короткое время.'
 	},
