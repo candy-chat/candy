@@ -39,10 +39,11 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				from: Candy.Util.escapeJid(msg.attr('to')),
 				id: msg.attr('id')
 			}).c('query', {
-				name: Candy.about.name,
-				version: Candy.about.version,
-				os: navigator.userAgent
-			}));
+				xmlns: Strophe.NS.VERSION
+			})
+			.c('name', Core.about.name).up()
+			.c('version', Core.about.version).up()
+			.c('os', navigator.userAgent));
 		},
 
 		/** Function: SetNickname
