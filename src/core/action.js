@@ -41,8 +41,8 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			}).c('query', {
 				xmlns: Strophe.NS.VERSION
 			})
-			.c('name', Core.about.name).up()
-			.c('version', Core.about.version).up()
+			.c('name', Candy.about.name).up()
+			.c('version', Candy.about.version).up()
 			.c('os', navigator.userAgent));
 		},
 
