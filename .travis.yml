@@ -1,0 +1,22 @@
+language: node_js
+node_js:
+- '0.10'
+env:
+  global:
+  - SAUCE_USERNAME: candy-chat-ci
+  - SAUCE_ACCESS_KEY: 6c3e7f58-b230-4b91-8bcb-290cf28c1457
+  - CANDY_VAGRANT: false
+before_script:
+- sudo apt-get update
+- sudo apt-get install -y nginx
+- sudo mkdir -p /usr/share/nginx/html
+- sudo cp ${TRAVIS_BUILD_DIR}/devbox/nginx-default.conf /etc/nginx/sites-available/default
+- sudo /etc/init.d/nginx restart
+- sudo ln -fs ${TRAVIS_BUILD_DIR} /usr/share/nginx/html/candy
+- sudo ln -fs ${TRAVIS_BUILD_DIR}/devbox/index.html /usr/share/nginx/html/index.html
+- sudo apt-get install -y naturaldocs
+- npm install -g grunt-cli bower
+- npm install
+- bower install
+script:
+- grunt ci

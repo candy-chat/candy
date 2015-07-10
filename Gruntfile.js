@@ -1,13 +1,14 @@
 'use strict';
 
+var localInternConfig = process.env.CANDY_VAGRANT === 'false' ? 'tests/intern.local' : 'tests/intern.vagrant';
+
 module.exports = function(grunt) {
 
 	// Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-
 		jshint: {
-			all: ['Gruntfile.js', './src/**/*.js'],
+			all: ['Gruntfile.js', './src/**/*.js', './tests/**/*.js'],
 			options: {
 				jshintrc: "./.jshintrc",
 				reporter: require('jshint-stylish')
@@ -30,8 +31,11 @@ module.exports = function(grunt) {
 						'src/candy.js', 'src/core.js', 'src/view.js',
 						'src/util.js', 'src/core/action.js',
 						'src/core/chatRoom.js', 'src/core/chatRoster.js',
-						'src/core/chatUser.js', 'src/core/event.js',
-						'src/view/observer.js', 'src/view/pane.js',
+						'src/core/chatUser.js', 'src/core/contact.js',
+						'src/core/event.js', 'src/view/observer.js',
+						'src/view/pane/chat.js', 'src/view/pane/message.js',
+						'src/view/pane/privateRoom.js', 'src/view/pane/room.js',
+						'src/view/pane/roster.js', 'src/view/pane/window.js',
 						'src/view/template.js', 'src/view/translation.js'
 					]
 				},
@@ -53,14 +57,15 @@ module.exports = function(grunt) {
 			},
 			libs: {
 				files: {
-					'libs/libs.bundle.js': [
-						'libs/strophejs/strophe.js',
-						'libs/strophejs-plugins/muc/strophe.muc.js',
-						'libs/strophejs-plugins/disco/strophe.disco.js',
-						'libs/strophejs-plugins/caps/strophe.caps.jsonly.js',
-						'libs/mustache.js/mustache.js',
-						'libs/jquery-i18n/jquery.i18n.js',
-						'libs/dateformat/dateFormat.js'
+					'libs.bundle.js': [
+						'bower_components/strophe/strophe.js',
+						'bower_components/strophejs-plugins/muc/strophe.muc.js',
+						'bower_components/strophejs-plugins/roster/strophe.roster.js',
+						'bower_components/strophejs-plugins/disco/strophe.disco.js',
+						'bower_components/strophejs-plugins/caps/strophe.caps.jsonly.js',
+						'bower_components/mustache/mustache.js',
+						'bower_components/jquery-i18n/jquery.i18n.js',
+						'vendor_libs/dateformat/dateFormat.js'
 					]
 				},
 				options: {
@@ -73,23 +78,38 @@ module.exports = function(grunt) {
 			},
 			'libs-min': {
 				files: {
-					'libs/libs.min.js': ['libs/libs.bundle.js']
+					'libs.min.js': ['libs.bundle.js']
 				}
 			}
 		},
 		watch: {
+			clear: {
+				files: ['src/*.js', 'src/**/*.js', 'tests/**/*.js'],
+				tasks: ['clear']
+			},
+			grunt: {
+				files: ['Gruntfile.js']
+			},
 			bundle: {
-				files: ['src/*.js', 'src/**/*.js'],
-				tasks: ['jshint', 'uglify:bundle', 'uglify:min', 'notify:bundle']
+				files: ['src/**/*.js'],
+				tasks: ['todo:src', 'jshint', 'uglify:bundle', 'uglify:min', 'notify:bundle', 'intern:unit']
 			},
 			libs: {
-				files: ['libs/*/**/*.js'],
+				files: ['bower_components/*/**/*.js', 'vendor_libs/*/**/*.js'],
 				tasks: ['uglify:libs', 'uglify:libs-min', 'notify:libs']
+			},
+			tests: {
+				files: ['tests/candy/unit/**/*.js'],
+				tasks: ['todo:tests', 'jshint', 'intern:unit']
+			},
+			functional_tests: {
+				files: ['tests/candy/functional/**/*.js'],
+				tasks: ['todo:tests', 'jshint', 'intern:functional']
 			}
 		},
 		natural_docs: {
 			all: {
-				bin: process.env.NATURALDOCS_DIR + '/NaturalDocs',
+				bin: process.env.NATURALDOCS_DIR ? process.env.NATURALDOCS_DIR + '/NaturalDocs' : 'naturaldocs',
 				flags: ['-r'],
 				inputs: ['./src'],
 				output: './docs',
@@ -98,7 +118,7 @@ module.exports = function(grunt) {
 		},
 		clean: {
 			bundle: ['./candy.bundle.js', './candy.bundle.map', './candy.min.js'],
-			libs: ['./libs/libs.bundle.js', './libs/libs.bundle.map', './libs/libs.min.js'],
+			libs: ['./libs.bundle.js', './libs.bundle.map', './libs.min.js'],
 			docs: ['./docs']
 		},
 		mkdir: {
@@ -129,6 +149,41 @@ module.exports = function(grunt) {
 					message: 'JsHint & bundling done'
 				}
 			}
+		},
+		intern: {
+			all: {
+				options: {
+					runType: 'runner',
+					config: 'tests/intern'
+				}
+			},
+			unit: {
+				options: {
+					runType: 'runner',
+					config: localInternConfig,
+					functionalSuites: []
+				}
+			},
+			functional: {
+				options: {
+					runType: 'runner',
+					config: localInternConfig,
+					suites: []
+				}
+			}
+		},
+		coveralls: {
+			options: {
+				force: true // prevent from failing CI build if coveralls is down etc.
+			},
+			all: {
+				src: 'lcov.info',
+			}
+		},
+		todo: {
+			options: {},
+			src: ['src/**/*.js'],
+			tests: ['tests/**/*.js']
 		}
 	});
 
@@ -140,10 +195,16 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-mkdir');
 	grunt.loadNpmTasks('grunt-notify');
 	grunt.loadNpmTasks('grunt-sync-pkg');
+	grunt.loadNpmTasks('intern');
+	grunt.loadNpmTasks('grunt-clear');
+	grunt.loadNpmTasks('grunt-coveralls');
+	grunt.loadNpmTasks('grunt-todo');
 
+	grunt.registerTask('test', ['intern:all']);
+	grunt.registerTask('ci', ['todo', 'jshint', 'build', 'intern:all', 'coveralls:all', 'docs']);
+	grunt.registerTask('build', ['uglify:libs', 'uglify:libs-min', 'uglify:bundle', 'uglify:min']);
 	grunt.registerTask('default', [
-		'jshint', 'uglify:libs', 'uglify:libs-min',
-		'uglify:bundle', 'uglify:min', 'notify:default'
+		'jshint', 'build', 'notify:default', 'intern:unit'
 	]);
 	grunt.registerTask('docs', ['mkdir:docs', 'natural_docs', 'notify:docs']);
 };

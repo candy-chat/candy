@@ -36,25 +36,19 @@ Candy.View.Template = (function(self){
 				'<span id="chat-modal-body"></span>' +
 				'<img src="{{assetsPath}}img/modal-spinner.gif" id="chat-modal-spinner" />' +
 				'</div><div id="chat-modal-overlay"></div>',
-		adminMessage: '<li><small>{{time}}</small><div class="adminmessage">' +
+		adminMessage: '<li><small data-timestamp="{{timestamp}}">{{time}}</small><div class="adminmessage">' +
 				'<span class="label">{{sender}}</span>' +
-				'<span class="spacer">▸</span>{{subject}} {{message}}</div></li>',
-		infoMessage: '<li><small>{{time}}</small><div class="infomessage">' +
-				'<span class="spacer">•</span>{{subject}} {{message}}</div></li>',
+				'<span class="spacer">▸</span>{{subject}} {{{message}}}</div></li>',
+		infoMessage: '<li><small data-timestamp="{{timestamp}}">{{time}}</small><div class="infomessage">' +
+				'<span class="spacer">•</span>{{subject}} {{{message}}}</div></li>',
 		toolbar: '<ul id="chat-toolbar">' +
 				'<li id="emoticons-icon" data-tooltip="{{tooltipEmoticons}}"></li>' +
-				'<li id="chat-sound-control" class="checked" data-tooltip="{{tooltipSound}}">{{> soundcontrol}}</li>' +
+				'<li id="chat-sound-control" class="checked" data-tooltip="{{tooltipSound}}"></li>' +
 				'<li id="chat-autoscroll-control" class="checked" data-tooltip="{{tooltipAutoscroll}}"></li>' +
 				'<li class="checked" id="chat-statusmessage-control" data-tooltip="{{tooltipStatusmessage}}">' +
 				'</li><li class="context" data-tooltip="{{tooltipAdministration}}"></li>' +
 				'<li class="usercount" data-tooltip="{{tooltipUsercount}}">' +
 				'<span id="chat-usercount"></span></li></ul>',
-		soundcontrol: '<script type="text/javascript">var audioplayerListener = new Object();' +
-						' audioplayerListener.onInit = function() { };' +
-						'</script><object id="chat-sound-player" type="application/x-shockwave-flash" data="{{assetsPath}}audioplayer.swf"' +
-						' width="0" height="0"><param name="movie" value="{{assetsPath}}audioplayer.swf" /><param name="AllowScriptAccess"' +
-						' value="always" /><param name="FlashVars" value="listener=audioplayerListener&amp;mp3={{assetsPath}}notify.mp3" />' +
-						'</object>',
 		Context: {
 			menu: '<div id="context-menu"><i class="arrow arrow-top"></i>' +
 				'<ul></ul><i class="arrow arrow-bottom"></i></div>',
@@ -73,7 +67,7 @@ Candy.View.Template = (function(self){
 	self.Room = {
 		pane: '<div class="room-pane roomtype-{{roomType}}" id="chat-room-{{roomId}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">' +
 			'{{> roster}}{{> messages}}{{> form}}</div>',
-		subject: '<li><small>{{time}}</small><div class="subject">' +
+		subject: '<li><small data-timestamp="{{timestamp}}">{{time}}</small><div class="subject">' +
 				'<span class="label">{{roomName}}</span>' +
 				'<span class="spacer">▸</span>{{_roomSubject}} {{{subject}}}</div></li>',
 		form: '<div class="message-form-wrapper">' +
@@ -85,8 +79,8 @@ Candy.View.Template = (function(self){
 	self.Roster = {
 		pane: '<div class="roster-pane"></div>',
 		user: '<div class="user role-{{role}} affiliation-{{affiliation}}{{#me}} me{{/me}}"' +
-				' id="user-{{roomId}}-{{userId}}" data-jid="{{userJid}}"' +
-				' data-nick="{{nick}}" data-role="{{role}}" data-affiliation="{{affiliation}}">' +
+				' id="user-{{roomId}}-{{userId}}" data-jid="{{userJid}}" data-real-jid="{{realJid}}"' +
+				' data-nick="{{nick}}" data-role="{{role}}" data-affiliation="{{affiliation}}" data-status="{{status}}">' +
 				'<div class="label">{{displayNick}}</div><ul>' +
 				'<li class="context" id="context-{{roomId}}-{{userId}}">&#x25BE;</li>' +
 				'<li class="role role-{{role}} affiliation-{{affiliation}}" data-tooltip="{{tooltipRole}}"></li>' +
@@ -95,7 +89,7 @@ Candy.View.Template = (function(self){
 
 	self.Message = {
 		pane: '<div class="message-pane-wrapper"><ul class="message-pane"></ul></div>',
-		item: '<li><small>{{time}}</small><div>' +
+		item: '<li><small data-timestamp="{{timestamp}}">{{time}}</small><div>' +
 				'<a class="label" href="#" class="name">{{displayName}}</a>' +
 				'<span class="spacer">▸</span>{{{message}}}</div></li>'
 	};
@@ -104,7 +98,11 @@ Candy.View.Template = (function(self){
 		form: '<form method="post" id="login-form" class="login-form">' +
 			'{{#displayNickname}}<label for="username">{{_labelNickname}}</label><input type="text" id="username" name="username"/>{{/displayNickname}}' +
 			'{{#displayUsername}}<label for="username">{{_labelUsername}}</label>' +
-			'<input type="text" id="username" name="username"/>{{/displayUsername}}' +
+			'<input type="text" id="username" name="username"/>' +
+			'{{#displayDomain}} <span class="at-symbol">@</span> ' +
+			'<select id="domain" name="domain">{{#domains}}<option value="{{domain}}">{{domain}}</option>{{/domains}}</select>' +
+			'{{/displayDomain}}' +
+			'{{/displayUsername}}' +
 			'{{#presetJid}}<input type="hidden" id="username" name="username" value="{{presetJid}}"/>{{/presetJid}}' +
 			'{{#displayPassword}}<label for="password">{{_labelPassword}}</label>' +
 			'<input type="password" id="password" name="password" />{{/displayPassword}}' +

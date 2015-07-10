@@ -39,10 +39,11 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				from: Candy.Util.escapeJid(msg.attr('to')),
 				id: msg.attr('id')
 			}).c('query', {
-				name: Candy.about.name,
-				version: Candy.about.version,
-				os: navigator.userAgent
-			}));
+				xmlns: Strophe.NS.VERSION
+			})
+			.c('name', Candy.about.name).up()
+			.c('version', Candy.about.version).up()
+			.c('os', navigator.userAgent));
 		},
 
 		/** Function: SetNickname
@@ -72,10 +73,20 @@ Candy.Core.Action = (function(self, Strophe, $) {
 		 * Sends a request for a roster
 		 */
 		Roster: function() {
-			Candy.Core.getConnection().sendIQ($iq({
-				type: 'get',
-				xmlns: Strophe.NS.CLIENT
-			}).c('query', {xmlns: Strophe.NS.ROSTER}).tree());
+			var roster = Candy.Core.getConnection().roster,
+				options = Candy.Core.getOptions();
+			roster.registerCallback(Candy.Core.Event.Jabber.RosterPush);
+			$.each(options.initialRosterItems, function (i, item) {
+				// Blank out resources because their cached value is not relevant
+				item.resources = {};
+			});
+			roster.get(
+				Candy.Core.Event.Jabber.RosterFetch,
+				options.initialRosterVersion,
+				options.initialRosterItems
+			);
+			// Bootstrap our roster with cached items
+			Candy.Core.Event.Jabber.RosterLoad(roster.items);
 		},
 
 		/** Function: Presence
@@ -151,6 +162,17 @@ Candy.Core.Action = (function(self, Strophe, $) {
 				 */
 				$(Candy).triggerHandler('candy:core.autojoin-missing');
 			}
+		},
+
+		/** Function: EnableCarbons
+		 * Enable message carbons (XEP-0280)
+		 */
+		EnableCarbons: function() {
+			Candy.Core.getConnection().sendIQ($iq({
+				type: 'set'
+			})
+			.c('enable', {xmlns: Strophe.NS.CARBONS })
+			.tree());
 		},
 
 		/** Function: ResetIgnoreList
@@ -253,7 +275,6 @@ Candy.Core.Action = (function(self, Strophe, $) {
 			 */
 			Leave: function(roomJid) {
 				var user = Candy.Core.getRoom(roomJid).getUser();
-				roomJid = Candy.Util.escapeJid(roomJid);
 				if (user) {
 					Candy.Core.getConnection().muc.leave(roomJid, user.getNick(), function() {});
 				}

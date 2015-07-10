@@ -56,10 +56,7 @@ Candy.View.Translation = {
 		'userLeftRoom'             : '%s left the room.',
 		'userHasBeenKickedFromRoom': '%s has been kicked from the room.',
 		'userHasBeenBannedFromRoom': '%s has been banned from the room.',
-		'userChangedNick': '%1$s has changed his nickname to %2$s.',
-
-		'presenceUnknownWarningSubject': 'Notice:',
-		'presenceUnknownWarning'       : 'This user might be offline. We can\'t track his presence.',
+		'userChangedNick': '%1$s is now known as %2$s.',
 
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
@@ -126,9 +123,6 @@ Candy.View.Translation = {
 		'userHasBeenBannedFromRoom': '%s ist aus dem Raum verbannt worden.',
 		'userChangedNick': '%1$s hat den Nicknamen zu %2$s geändert.',
 
-		'presenceUnknownWarningSubject': 'Hinweis:',
-		'presenceUnknownWarning'       : 'Dieser Benutzer könnte bereits abgemeldet sein. Wir können seine Anwesenheit nicht verfolgen.',
-
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
 
@@ -154,25 +148,25 @@ Candy.View.Translation = {
 		'antiSpamMessage' : 'Bitte nicht spammen. Du wurdest für eine kurze Zeit blockiert.'
 	},
 	'fr' : {
-		'status': 'Status : %s',
+		'status': 'Status&thinsp;: %s',
 		'statusConnecting': 'Connexion…',
-		'statusConnected' : 'Connecté.',
+		'statusConnected' : 'Connecté',
 		'statusDisconnecting': 'Déconnexion…',
-		'statusDisconnected' : 'Déconnecté.',
-		'statusAuthfail': 'L\'authentification a échoué',
+		'statusDisconnected' : 'Déconnecté',
+		'statusAuthfail': 'L’identification a échoué',
 
-		'roomSubject'  : 'Sujet :',
+		'roomSubject'  : 'Sujet&thinsp;:',
 		'messageSubmit': 'Envoyer',
 
-		'labelUsername': 'Nom d\'utilisateur :',
-		'labelNickname': 'Pseudo :',
-		'labelPassword': 'Mot de passe :',
+		'labelUsername': 'Nom d’utilisateur&thinsp;:',
+		'labelNickname': 'Pseudo&thinsp;:',
+		'labelPassword': 'Mot de passe&thinsp;:',
 		'loginSubmit'  : 'Connexion',
-		'loginInvalid'  : 'JID invalide',
+		'loginInvalid' : 'JID invalide',
 
-		'reason'				: 'Motif :',
-		'subject'				: 'Titre :',
-		'reasonWas'				: 'Motif : %s.',
+		'reason'				: 'Motif&thinsp;:',
+		'subject'				: 'Titre&thinsp;:',
+		'reasonWas'				: 'Motif&thinsp;: %s.',
 		'kickActionLabel'		: 'Kick',
 		'youHaveBeenKickedBy'   : 'Vous avez été expulsé du salon %1$s (%2$s)',
 		'youHaveBeenKicked'     : 'Vous avez été expulsé du salon %s',
@@ -182,19 +176,16 @@ Candy.View.Translation = {
 
 		'privateActionLabel' : 'Chat privé',
 		'ignoreActionLabel'  : 'Ignorer',
-		'unignoreActionLabel' : 'Ne plus ignorer',
+		'unignoreActionLabel': 'Ne plus ignorer',
 
 		'setSubjectActionLabel': 'Changer le sujet',
 
 		'administratorMessageSubject' : 'Administrateur',
 
-		'userJoinedRoom'           : '%s vient d\'entrer dans le salon.',
+		'userJoinedRoom'           : '%s vient d’entrer dans le salon.',
 		'userLeftRoom'             : '%s vient de quitter le salon.',
 		'userHasBeenKickedFromRoom': '%s a été expulsé du salon.',
 		'userHasBeenBannedFromRoom': '%s a été banni du salon.',
-
-		'presenceUnknownWarningSubject': 'Note :',
-		'presenceUnknownWarning'       : 'Cet utilisateur n\'est malheureusement plus connecté, le message ne sera pas envoyé.',
 
 		'dateFormat': 'dd/mm/yyyy',
 		'timeFormat': 'HH:MM:ss',
@@ -202,22 +193,22 @@ Candy.View.Translation = {
 		'tooltipRole'			: 'Modérateur',
 		'tooltipIgnored'		: 'Vous ignorez cette personne',
 		'tooltipEmoticons'		: 'Smileys',
-		'tooltipSound'			: 'Jouer un son lors de la réception de nouveaux messages privés',
+		'tooltipSound'			: 'Jouer un son lors de la réception de messages privés',
 		'tooltipAutoscroll'		: 'Défilement automatique',
-		'tooltipStatusmessage'	: 'Messages d\'état',
+		'tooltipStatusmessage'	: 'Afficher les changements d’état',
 		'tooltipAdministration'	: 'Administration du salon',
-		'tooltipUsercount'		: 'Nombre d\'utilisateurs dans le salon',
+		'tooltipUsercount'		: 'Nombre d’utilisateurs dans le salon',
 
-		'enterRoomPassword' : 'Le salon "%s" est protégé par un mot de passe.',
-		'enterRoomPasswordSubmit' : 'Entrer dans le salon',
-		'passwordEnteredInvalid' : 'Le mot de passe pour le salon "%s" est invalide.',
+		'enterRoomPassword'			: 'Le salon %s est protégé par un mot de passe.',
+		'enterRoomPasswordSubmit'	: 'Entrer dans le salon',
+		'passwordEnteredInvalid'	: 'Le mot de passe pour le salon %s est invalide.',
 
-		'nicknameConflict': 'Le nom d\'utilisateur est déjà utilisé. Veuillez en choisir un autre.',
+		'nicknameConflict': 'Ce nom d’utilisateur est déjà utilisé. Veuillez en choisir un autre.',
 
-		'errorMembersOnly': 'Vous ne pouvez pas entrer dans le salon "%s" : droits insuffisants.',
-		'errorMaxOccupantsReached': 'Vous ne pouvez pas entrer dans le salon "%s": Limite d\'utilisateur atteint.',
+		'errorMembersOnly': 'Vous ne pouvez pas entrer dans le salon %s&thinsp;: droits insuffisants.',
+		'errorMaxOccupantsReached': 'Vous ne pouvez pas entrer dans le salon %s&thinsp;: limite d’utilisateurs atteinte.',
 
-		'antiSpamMessage' : 'Merci de ne pas envoyer de spam. Vous avez été bloqué pendant une courte période..'
+		'antiSpamMessage' : 'Merci de ne pas spammer. Vous avez été bloqué pendant une courte période.'
 	},
 	'nl' : {
 		'status': 'Status: %s',
@@ -257,9 +248,6 @@ Candy.View.Translation = {
 		'userLeftRoom'             : '%s heeft de chat verlaten.',
 		'userHasBeenKickedFromRoom': '%s is verwijderd.',
 		'userHasBeenBannedFromRoom': '%s is geblokkeerd.',
-
-		'presenceUnknownWarningSubject': 'Mededeling:',
-		'presenceUnknownWarning'       : 'Deze gebruiker is waarschijnlijk offline, we kunnen zijn/haar aanwezigheid niet vaststellen.',
 
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
@@ -323,9 +311,6 @@ Candy.View.Translation = {
 		'userHasBeenKickedFromRoom': '%s ha sido expulsado de la sala.',
 		'userHasBeenBannedFromRoom': '%s ha sido expulsado permanentemente de la sala.',
 
-		'presenceUnknownWarningSubject': 'Atención:',
-		'presenceUnknownWarning'       : 'Éste usuario podría estar desconectado..',
-
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
 
@@ -385,9 +370,6 @@ Candy.View.Translation = {
 		'userLeftRoom': '%s 离开房间',
 		'userHasBeenKickedFromRoom': '%s 被请出这个房间',
 		'userHasBeenBannedFromRoom': '%s 被管理者禁言',
-
-		'presenceUnknownWarningSubject': '注意:',
-		'presenceUnknownWarning': '这个会员可能已经下线，不能追踪到他的连接信息',
 
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
@@ -451,9 +433,6 @@ Candy.View.Translation = {
 		'userHasBeenKickedFromRoom' : '%sは部屋からキックされました。',
 		'userHasBeenBannedFromRoom' : '%sは部屋からアカウントバンされました。',
 
-		'presenceUnknownWarningSubject' : '忠告：',
-		'presenceUnknownWarning'    : 'このユーザーのステータスは不明です。',
-
 		'dateFormat'        : 'dd.mm.yyyy',
 		'timeFormat'        : 'HH:MM:ss',
 
@@ -515,9 +494,6 @@ Candy.View.Translation = {
 		'userLeftRoom'             : '%s har lämnat rummet.',
 		'userHasBeenKickedFromRoom': '%s har blivit utsparkad ur rummet.',
 		'userHasBeenBannedFromRoom': '%s har blivit bannlyst från rummet.',
-
-		'presenceUnknownWarningSubject': 'Notera:',
-		'presenceUnknownWarning'       : 'Denna användare kan vara offline. Vi kan inte följa dennes närvaro.',
 
 		'dateFormat': 'yyyy-mm-dd',
 		'timeFormat': 'HH:MM:ss',
@@ -581,9 +557,6 @@ Candy.View.Translation = {
 		'userHasBeenKickedFromRoom': '%s è stato espulso dalla stanza.',
 		'userHasBeenBannedFromRoom': '%s è stato escluso dalla stanza.',
 
-		'presenceUnknownWarningSubject': 'Nota:',
-		'presenceUnknownWarning'       : 'Questo utente potrebbe essere offline. Non possiamo tracciare la sua presenza.',
-
 		'dateFormat': 'dd/mm/yyyy',
 		'timeFormat': 'HH:MM:ss',
 
@@ -606,6 +579,74 @@ Candy.View.Translation = {
 		'errorMaxOccupantsReached': 'Non puoi unirti alla stanza "%s": Troppi partecipanti.',
 
 		'antiSpamMessage' : 'Per favore non scrivere messaggi pubblicitari. Sei stato bloccato per un po\' di tempo.'
+	},
+	'pl' : {
+		'status': 'Status: %s',
+		'statusConnecting': 'Łączę...',
+		'statusConnected' : 'Połączone',
+		'statusDisconnecting': 'Rozłączam...',
+		'statusDisconnected' : 'Rozłączone',
+		'statusAuthfail': 'Nieprawidłowa autoryzacja',
+
+		'roomSubject'  : 'Temat:',
+		'messageSubmit': 'Wyślij',
+
+		'labelUsername': 'Nazwa użytkownika:',
+		'labelNickname': 'Ksywka:',
+		'labelPassword': 'Hasło:',
+		'loginSubmit'  : 'Zaloguj',
+		'loginInvalid'  : 'Nieprawidłowy JID',
+
+		'reason'				: 'Przyczyna:',
+		'subject'				: 'Temat:',
+		'reasonWas'				: 'Z powodu: %s.',
+		'kickActionLabel'		: 'Wykop',
+		'youHaveBeenKickedBy'   : 'Zostałeś wykopany z %2$s przez %1$s',
+		'youHaveBeenKicked'     : 'Zostałeś wykopany z %s',
+		'banActionLabel'		: 'Ban',
+		'youHaveBeenBannedBy'   : 'Zostałeś zbanowany na %1$s przez %2$s',
+		'youHaveBeenBanned'     : 'Zostałeś zbanowany na %s',
+
+		'privateActionLabel' : 'Rozmowa prywatna',
+		'ignoreActionLabel'  : 'Zignoruj',
+		'unignoreActionLabel' : 'Przestań ignorować',
+
+		'setSubjectActionLabel': 'Zmień temat',
+
+		'administratorMessageSubject' : 'Administrator',
+
+		'userJoinedRoom'           : '%s wszedł do pokoju.',
+		'userLeftRoom'             : '%s opuścił pokój.',
+		'userHasBeenKickedFromRoom': '%s został wykopany z pokoju.',
+		'userHasBeenBannedFromRoom': '%s został zbanowany w pokoju.',
+		'userChangedNick': '%1$s zmienił ksywkę na %2$s.',
+
+		'presenceUnknownWarningSubject': 'Uwaga:',
+		'presenceUnknownWarning'       : 'Rozmówca może nie być połączony. Nie możemy ustalić jego obecności.',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'Moderator',
+		'tooltipIgnored'		: 'Ignorujesz tego rozmówcę',
+		'tooltipEmoticons'		: 'Emoty',
+		'tooltipSound'			: 'Sygnał dźwiękowy przy otrzymaniu wiadomości',
+		'tooltipAutoscroll'		: 'Autoprzewijanie',
+		'tooltipStatusmessage'		: 'Wyświetl statusy',
+		'tooltipAdministration'		: 'Administrator pokoju',
+		'tooltipUsercount'		: 'Obecni rozmówcy',
+
+		'enterRoomPassword' : 'Pokój "%s" wymaga hasła.',
+		'enterRoomPasswordSubmit' : 'Wejdź do pokoju',
+		'passwordEnteredInvalid' : 'Niewłaściwie hasło do pokoju "%s".',
+
+		'nicknameConflict': 'Nazwa w użyciu. Wybierz inną.',
+
+		'errorMembersOnly': 'Nie możesz wejść do pokoju "%s": Niepełne uprawnienia.',
+		'errorMaxOccupantsReached': 'Nie możesz wejść do pokoju "%s": Siedzi w nim zbyt wielu ludzi.',
+		'errorAutojoinMissing': 'Konfiguracja nie zawiera parametru automatycznego wejścia do pokoju. Wskaż pokój do którego chcesz wejść.',
+
+		'antiSpamMessage' : 'Please do not spam. You have been blocked for a short-time.'
 	},
 	'pt': {
 		'status': 'Status: %s',
@@ -645,8 +686,6 @@ Candy.View.Translation = {
 		'userLeftRoom'             : '%s saiu da sala.',
 		'userHasBeenKickedFromRoom': '%s foi excluido da sala.',
 		'userHasBeenBannedFromRoom': '%s foi excluido permanentemente da sala.',
-
-		'presenceUnknownWarning'       : 'Este usuário pode estar desconectado. Não é possível determinar o status.',
 
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
@@ -710,9 +749,6 @@ Candy.View.Translation = {
 		'userHasBeenKickedFromRoom': '%s foi derrubado da sala.',
 		'userHasBeenBannedFromRoom': '%s foi banido da sala.',
 
-		'presenceUnknownWarningSubject': 'Aviso:',
-		'presenceUnknownWarning' : 'Este usuário pode estar desconectado.. Não conseguimos rastrear sua presença..',
-
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
 
@@ -748,6 +784,7 @@ Candy.View.Translation = {
 		'messageSubmit': 'Послать',
 
 		'labelUsername': 'Имя:',
+		'labelNickname': 'Ник:',
 		'labelPassword': 'Пароль:',
 		'loginSubmit'  : 'Логин',
 		'loginInvalid'  : 'Неверный JID',
@@ -774,11 +811,12 @@ Candy.View.Translation = {
 		'userLeftRoom'             : '%s вышел из чата.',
 		'userHasBeenKickedFromRoom': '%s выброшен из чата.',
 		'userHasBeenBannedFromRoom': '%s запрещён доступ в чат.',
+		'userChangedNick': '%1$s сменил имя на %2$s.',
 
 		'presenceUnknownWarningSubject': 'Уведомление:',
 		'presenceUnknownWarning'       : 'Этот пользователь вероятнее всего оффлайн.',
 
-		'dateFormat': 'mm.dd.yyyy',
+		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
 
 		'tooltipRole'			: 'Модератор',
@@ -798,6 +836,7 @@ Candy.View.Translation = {
 
 		'errorMembersOnly': 'Вы не можете войти в чат "%s": Недостаточно прав доступа.',
 		'errorMaxOccupantsReached': 'Вы не можете войти в чат "%s": Слишком много участников.',
+		'errorAutojoinMissing': 'Параметры автовхода не устновлены. Настройте их для продолжения.',
 
 		'antiSpamMessage' : 'Пожалуйста не рассылайте спам. Вас заблокировали на короткое время.'
 	},
@@ -840,9 +879,6 @@ Candy.View.Translation = {
 		'userHasBeenKickedFromRoom': '%s ha estat expulsat de la sala.',
 		'userHasBeenBannedFromRoom': '%s ha estat expulsat permanentment de la sala.',
 
-		'presenceUnknownWarningSubject': 'Atenció:',
-		'presenceUnknownWarning'       : 'Aquest usuari podria estar desconnectat ...',
-
 		'dateFormat': 'dd.mm.yyyy',
 		'timeFormat': 'HH:MM:ss',
 
@@ -865,5 +901,73 @@ Candy.View.Translation = {
 		'errorMaxOccupantsReached': 'No pots unir-te a la sala "%s": hi ha masses participants.',
 
 		'antiSpamMessage' : 'Si us plau, no facis spam. Has estat bloquejat temporalment.'
-	}
+	},
+    'cs' : {
+        'status': 'Stav: %s',
+        'statusConnecting': 'Připojování...',
+        'statusConnected': 'Připojeno',
+        'statusDisconnecting': 'Odpojování...',
+        'statusDisconnected': 'Odpojeno',
+        'statusAuthfail': 'Přihlášení selhalo',
+
+        'roomSubject': 'Předmět:',
+        'messageSubmit': 'Odeslat',
+
+        'labelUsername': 'Už. jméno:',
+        'labelNickname': 'Přezdívka:',
+        'labelPassword': 'Heslo:',
+        'loginSubmit': 'Přihlásit se',
+        'loginInvalid': 'Neplatné JID',
+
+        'reason': 'Důvod:',
+        'subject': 'Předmět:',
+        'reasonWas': 'Důvod byl: %s.',
+        'kickActionLabel': 'Vykopnout',
+        'youHaveBeenKickedBy': 'Byl jsi vyloučen z %2$s uživatelem %1$s',
+        'youHaveBeenKicked': 'Byl jsi vyloučen z %s',
+        'banActionLabel': 'Ban',
+        'youHaveBeenBannedBy': 'Byl jsi trvale vyloučen z %1$s uživatelem %2$s',
+        'youHaveBeenBanned': 'Byl jsi trvale vyloučen z %s',
+
+        'privateActionLabel': 'Soukromý chat',
+        'ignoreActionLabel': 'Ignorovat',
+        'unignoreActionLabel': 'Neignorovat',
+
+        'setSubjectActionLabel': 'Změnit předmět',
+
+        'administratorMessageSubject': 'Adminitrátor',
+
+        'userJoinedRoom': '%s vešel do místnosti.',
+        'userLeftRoom': '%s opustil místnost.',
+        'userHasBeenKickedFromRoom': '%s byl vyloučen z místnosti.',
+        'userHasBeenBannedFromRoom': '%s byl trvale vyloučen z místnosti.',
+        'userChangedNick': '%1$s si změnil přezdívku na  %2$s.',
+
+        'presenceUnknownWarningSubject': 'Poznámka:',
+        'presenceUnknownWarning': 'Tento uživatel může být offiline. Nemůžeme sledovat jeho přítmonost..',
+
+        'dateFormat': 'dd.mm.yyyy',
+        'timeFormat': 'HH:MM:ss',
+
+        'tooltipRole': 'Moderátor',
+        'tooltipIgnored': 'Tento uživatel je ignorován',
+        'tooltipEmoticons': 'Emotikony',
+        'tooltipSound': 'Přehrát zvuk při nové soukromé zprávě',
+        'tooltipAutoscroll': 'Automaticky rolovat',
+        'tooltipStatusmessage': 'Zobrazovat stavové zprávy',
+        'tooltipAdministration': 'Správa místnosti',
+        'tooltipUsercount': 'Uživatelé',
+
+        'enterRoomPassword': 'Místnost "%s" je chráněna heslem.',
+        'enterRoomPasswordSubmit': 'Připojit se do místnosti',
+        'passwordEnteredInvalid': 'Neplatné heslo pro místnost "%s".',
+
+        'nicknameConflict': 'Takové přihlašovací jméno je již použito. Vyberte si prosím jiné.',
+
+        'errorMembersOnly': 'Nemůžete se připojit do místnosti "%s": Nedostatečné oprávnění.',
+        'errorMaxOccupantsReached': 'Nemůžete se připojit do místnosti "%s": Příliš mnoho uživatelů.',
+        'errorAutojoinMissing': 'Není nastaven parametr autojoin. Nastavte jej prosím.',
+
+        'antiSpamMessage': 'Nespamujte prosím. Váš účet byl na chvilku zablokován.'
+    }
 };

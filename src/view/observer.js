@@ -215,6 +215,14 @@ Candy.View.Observer = (function(self, $) {
 					Candy.View.Pane.Roster.update(args.user.getJid(), args.user, args.action, args.currentUser);
 					Candy.View.Pane.PrivateRoom.setStatus(args.user.getJid(), args.action);
 				}
+			} else {
+				// Presence for a one-on-one chat
+				var bareJid = Strophe.getBareJidFromJid(args.from),
+					room = Candy.View.Pane.Chat.rooms[bareJid];
+				if(!room) {
+					return false;
+				}
+				room.targetJid = bareJid; // Reset the room's target JID
 			}
 		},
 
@@ -275,18 +283,28 @@ Candy.View.Observer = (function(self, $) {
 	self.Message = function(event, args) {
 		if(args.message.type === 'subject') {
 			if (!Candy.View.Pane.Chat.rooms[args.roomJid]) {
-				Candy.View.Pane.Room.init(args.roomJid, args.message.name);
+				Candy.View.Pane.Room.init(args.roomJid, args.roomName);
 				Candy.View.Pane.Room.show(args.roomJid);
 			}
 			Candy.View.Pane.Room.setSubject(args.roomJid, args.message.body);
 		} else if(args.message.type === 'info') {
-			Candy.View.Pane.Chat.infoMessage(args.roomJid, args.message.body);
+			Candy.View.Pane.Chat.infoMessage(args.roomJid, null, args.message.body);
 		} else {
 			// Initialize room if it's a message for a new private user chat
 			if(args.message.type === 'chat' && !Candy.View.Pane.Chat.rooms[args.roomJid]) {
-				Candy.View.Pane.PrivateRoom.open(args.roomJid, args.message.name, false, args.message.isNoConferenceRoomJid);
+				Candy.View.Pane.PrivateRoom.open(args.roomJid, args.roomName, false, args.message.isNoConferenceRoomJid);
 			}
-			Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.message.xhtmlMessage, args.timestamp);
+			var room = Candy.View.Pane.Chat.rooms[args.roomJid];
+			if (room.targetJid === args.roomJid && !args.carbon) {
+				// No messages yet received. Lock the room to this resource.
+				room.targetJid = args.message.from;
+			} else if (room.targetJid === args.message.from) {
+				// We're already locked to the correct resource.
+			} else {
+				// Message received from alternative resource. Release the resource lock.
+				room.targetJid = args.roomJid;
+			}
+			Candy.View.Pane.Message.show(args.roomJid, args.message.name, args.message.body, args.message.xhtmlMessage, args.timestamp, args.message.from, args.carbon, args.stanza);
 		}
 	};
 

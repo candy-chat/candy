@@ -63,7 +63,11 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					/* falls through */
 				case Strophe.Status.ATTACHED:
 					Candy.Core.log('[Connection] Attached');
-					Candy.Core.Action.Jabber.Presence();
+					$(Candy).on('candy:core:roster:fetched', function () {
+						Candy.Core.Action.Jabber.Presence();
+					});
+					Candy.Core.Action.Jabber.Roster();
+					Candy.Core.Action.Jabber.EnableCarbons();
 					Candy.Core.Action.Jabber.Autojoin();
 					Candy.Core.Action.Jabber.GetIgnoreList();
 					break;
@@ -94,7 +98,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					break;
 
 				default:
-					Candy.Core.log('[Connection] What?!');
+					Candy.Core.warn('[Connection] Unknown status received:', status);
 					break;
 			}
 			/** Event: candy:core.chat.connection
@@ -158,6 +162,118 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				$(Candy).triggerHandler('candy:core.presence', {'from': msg.attr('from'), 'stanza': msg});
 			}
 			return true;
+		},
+
+		/** Function: RosterLoad
+		 * Acts on the result of loading roster items from a cache
+		 *
+		 * Parameters:
+		 *   (String) items - List of roster items
+		 *
+ 		 * Triggers:
+		 *   candy:core.roster.loaded
+		 *
+		 * Returns:
+		 *   (Boolean) - true
+		 */
+		RosterLoad: function(items) {
+			self.Jabber._addRosterItems(items);
+
+			/** Event: candy:core.roster.loaded
+			 * Notification of the roster having been loaded from cache
+			 */
+			$(Candy).triggerHandler('candy:core:roster:loaded', {roster: Candy.Core.getRoster()});
+
+			return true;
+		},
+
+		/** Function: RosterFetch
+		 * Acts on the result of a roster fetch
+		 *
+		 * Parameters:
+		 *   (String) items - List of roster items
+		 *
+ 		 * Triggers:
+		 *   candy:core.roster.fetched
+		 *
+		 * Returns:
+		 *   (Boolean) - true
+		 */
+		RosterFetch: function(items) {
+			self.Jabber._addRosterItems(items);
+
+			/** Event: candy:core.roster.fetched
+			 * Notification of the roster having been fetched
+			 */
+			$(Candy).triggerHandler('candy:core:roster:fetched', {roster: Candy.Core.getRoster()});
+
+			return true;
+		},
+
+		/** Function: RosterPush
+		 * Acts on a roster push
+		 *
+		 * Parameters:
+		 *   (String) stanza - Raw XML Message
+		 *
+ 		 * Triggers:
+		 *   candy:core.roster.added
+		 *   candy:core.roster.updated
+		 *   candy:core.roster.removed
+		 *
+		 * Returns:
+		 *   (Boolean) - true
+		 */
+		RosterPush: function(items, updatedItem) {
+			if (!updatedItem) {
+				return true;
+			}
+
+			if (updatedItem.subscription === "remove") {
+				var contact = Candy.Core.getRoster().get(updatedItem.jid);
+				Candy.Core.getRoster().remove(updatedItem.jid);
+				/** Event: candy:core.roster.removed
+				 * Notification of a roster entry having been removed
+ 				 *
+				 * Parameters:
+				 *   (Candy.Core.Contact) contact - The contact that was removed from the roster
+				 */
+				$(Candy).triggerHandler('candy:core:roster:removed', {contact: contact});
+			} else {
+				var user = Candy.Core.getRoster().get(updatedItem.jid);
+				if (!user) {
+					user = self.Jabber._addRosterItem(updatedItem);
+					/** Event: candy:core.roster.added
+					 * Notification of a roster entry having been added
+	 				 *
+					 * Parameters:
+					 *   (Candy.Core.Contact) contact - The contact that was added
+					 */
+					$(Candy).triggerHandler('candy:core:roster:added', {contact: user});
+				} else {
+					/** Event: candy:core.roster.updated
+					 * Notification of a roster entry having been updated
+	 				 *
+					 * Parameters:
+					 *   (Candy.Core.Contact) contact - The contact that was updated
+					 */
+					$(Candy).triggerHandler('candy:core:roster:updated', {contact: user});
+				}
+			}
+
+			return true;
+		},
+
+		_addRosterItem: function(item) {
+			var user = new Candy.Core.Contact(item);
+			Candy.Core.getRoster().add(user);
+			return user;
+		},
+
+		_addRosterItems: function(items) {
+			$.each(items, function(i, item) {
+				self.Jabber._addRosterItem(item);
+			});
 		},
 
 		/** Function: Bookmarks
@@ -247,205 +363,142 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			Candy.Core.log('[Jabber] Message');
 			msg = $(msg);
 
-			var fromJid = msg.attr('from'),
-				type = msg.attr('type') || 'undefined',
-				toJid = msg.attr('to');
+			var type = msg.attr('type') || 'normal';
 
-			// Inspect the message type.
-			if (type === 'normal' || type === 'undefined') {
-				var mediatedInvite = msg.find('invite'),
-					directInvite = msg.find('x[xmlns="jabber:x:conference"]');
+			switch (type) {
+				case 'normal':
+					var invite = self.Jabber._findInvite(msg);
 
-				if(mediatedInvite.length > 0) {
-					var passwordNode = msg.find('password'),
-						password = null,
-						continueNode = mediatedInvite.find('continue'),
-						continuedThread = null;
-
-					if(passwordNode) {
-						password = passwordNode.text();
+					if (invite) {
+						/** Event: candy:core:chat:invite
+						 * Incoming chat invite for a MUC.
+						 *
+						 * Parameters:
+						 *   (String) roomJid - The room the invite is to
+						 *   (String) from - User JID that invite is from text
+						 *   (String) reason - Reason for invite
+						 *   (String) password - Password for the room
+						 *   (String) continuedThread - The thread ID if this is a continuation of a 1-on-1 chat
+						 */
+						$(Candy).triggerHandler('candy:core:chat:invite', invite);
 					}
 
-					if(continueNode) {
-						continuedThread = continueNode.attr('thread');
+					/** Event: candy:core:chat:message:normal
+					 * Messages with the type attribute of normal or those
+					 * that do not have the optional type attribute.
+					 *
+					 * Parameters:
+					 *   (String) type - Type of the message
+					 *   (Object) message - Message object.
+					 */
+					$(Candy).triggerHandler('candy:core:chat:message:normal', {
+						type: type,
+						message: msg
+					});
+					break;
+				case 'headline':
+					// Admin message
+					if(!msg.attr('to')) {
+						/** Event: candy:core.chat.message.admin
+						 * Admin message
+						 *
+						 * Parameters:
+						 *   (String) type - Type of the message
+						 *   (String) message - Message text
+						 */
+						$(Candy).triggerHandler('candy:core.chat.message.admin', {
+							type: type,
+							message: msg.children('body').text()
+						});
+					// Server Message
+					} else {
+						/** Event: candy:core.chat.message.server
+						 * Server message (e.g. subject)
+						 *
+						 * Parameters:
+						 *   (String) type - Message type
+						 *   (String) subject - Subject text
+						 *   (String) message - Message text
+						 */
+						$(Candy).triggerHandler('candy:core.chat.message.server', {
+							type: type,
+							subject: msg.children('subject').text(),
+							message: msg.children('body').text()
+						});
 					}
-
-					/** Event: candy:core:chat:invite
-					 * Incoming chat invite for a MUC.
+					break;
+				case 'groupchat':
+				case 'chat':
+				case 'error':
+					// Room message
+					self.Jabber.Room.Message(msg);
+					break;
+				default:
+					/** Event: candy:core:chat:message:other
+					 * Messages with a type other than the ones listed in RFC3921
+					 * section 2.1.1. This allows plugins to catch custom message
+					 * types.
 					 *
 					 * Parameters:
-					 *   (String) roomJid - The room the invite is to
-					 *   (String) from - User JID that invite is from text
-					 *   (String) reason - Reason for invite [default: '']
-					 *   (String) password - Password for the room [default: null]
-					 *   (String) continuedThread - The thread ID if this is a continuation of a 1-on-1 chat [default: null]
+					 *   (String) type - Type of the message [default: message]
+					 *   (Object) message - Message object.
 					 */
-					$(Candy).triggerHandler('candy:core:chat:invite', {
-						roomJid: fromJid,
-						from: mediatedInvite.attr('from') || 'undefined',
-						reason: mediatedInvite.find('reason').html() || '',
-						password: password,
-						continuedThread: continuedThread
+					// Detect message with type normal or with no type.
+					$(Candy).triggerHandler('candy:core:chat:message:other', {
+						type: type,
+						message: msg
 					});
-				}
-
-				if(directInvite.length > 0) {
-					/** Event: candy:core:chat:invite
-					 * Incoming chat invite for a MUC.
-					 *
-					 * Parameters:
-					 *   (String) roomJid - The room the invite is to
-					 *   (String) from - User JID that invite is from text
-					 *   (String) reason - Reason for invite [default: '']
-					 *   (String) password - Password for the room [default: null]
-					 *   (String) continuedThread - The thread ID if this is a continuation of a 1-on-1 chat [default: null]
-					 */
-					$(Candy).triggerHandler('candy:core:chat:invite', {
-						roomJid: directInvite.attr('jid'),
-						from: fromJid,
-						reason: directInvite.attr('reason') || '',
-						password: directInvite.attr('password'),
-						continuedThread: directInvite.attr('thread')
-					});
-				}
-
-				/** Event: candy:core:chat:message:normal
-				 * Messages with the type attribute of normal or those
-				 * that do not have the optional type attribute.
-				 *
-				 * Parameters:
-				 *   (String) type - Type of the message [default: message]
-				 *   (Object) message - Message object.
-				 */
-				// Detect message with type normal or with no type.
-				$(Candy).triggerHandler('candy:core:chat:message:normal', {
-					type: (type || 'normal'),
-					message: msg
-				});
-
-				return true;
-			} else if (type !== 'groupchat' && type !== 'chat' && type !== 'error' && type !== 'headline') {
-				/** Event: candy:core:chat:message:other
-				 * Messages with a type other than the ones listed in RFC3921
-				 * section 2.1.1. This allows plugins to catch custom message
-				 * types.
-				 *
-				 * Parameters:
-				 *   (String) type - Type of the message [default: message]
-				 *   (Object) message - Message object.
-				 */
-				// Detect message with type normal or with no type.
-				$(Candy).triggerHandler('candy:core:chat:message:other', {
-					type: type,
-					message: msg
-				});
-				return true;
 			}
 
-			// Room message
-			if(fromJid !== Strophe.getDomainFromJid(fromJid) && (type === 'groupchat' || type === 'chat' || type === 'error')) {
-				self.Jabber.Room.Message(msg);
-			// Admin message
-			} else if(!toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
-				/** Event: candy:core.chat.message.admin
-				 * Admin message
-				 *
-				 * Parameters:
-				 *   (String) type - Type of the message [default: message]
-				 *   (String) message - Message text
-				 */
-				$(Candy).triggerHandler('candy:core.chat.message.admin', { type: (type || 'message'), message: msg.children('body').text() });
-			// Server Message
-			} else if(toJid && fromJid === Strophe.getDomainFromJid(fromJid)) {
-				/** Event: candy:core.chat.message.server
-				 * Server message (e.g. subject)
-				 *
-				 * Parameters:
-				 *   (String) type - Message type [default: message]
-				 *   (String) subject - Subject text
-				 *   (String) message - Message text
-				 */
-				$(Candy).triggerHandler('candy:core.chat.message.server', {
-					type: (type || 'message'),
-					subject: msg.children('subject').text(),
-					message: msg.children('body').text()
-				});
-			}
 			return true;
+		},
+
+		_findInvite: function (msg) {
+			var mediatedInvite = msg.find('invite'),
+				directInvite = msg.find('x[xmlns="jabber:x:conference"]'),
+				invite;
+
+			if(mediatedInvite.length > 0) {
+				var passwordNode = msg.find('password'),
+					password,
+					reasonNode = mediatedInvite.find('reason'),
+					reason,
+					continueNode = mediatedInvite.find('continue');
+
+				if(passwordNode.text() !== '') {
+					password = passwordNode.text();
+				}
+
+				if(reasonNode.text() !== '') {
+					reason = reasonNode.text();
+				}
+
+				invite = {
+					roomJid: msg.attr('from'),
+					from: mediatedInvite.attr('from'),
+					reason: reason,
+					password: password,
+					continuedThread: continueNode.attr('thread')
+				};
+			}
+
+			if(directInvite.length > 0) {
+				invite = {
+					roomJid: directInvite.attr('jid'),
+					from: msg.attr('from'),
+					reason: directInvite.attr('reason'),
+					password: directInvite.attr('password'),
+					continuedThread: directInvite.attr('thread')
+				};
+			}
+
+			return invite;
 		},
 
 		/** Class: Candy.Core.Event.Jabber.Room
 		 * Room specific events
 		 */
 		Room: {
-			/** Function: Leave
-			 * Leaves a room and cleans up related data and notifies view.
-			 *
-			 * Parameters:
-			 *   (String) msg - Raw XML Message
-			 *
-			 * Triggers:
-			 *   candy:core.presence.leave using {roomJid, roomName, type, reason, actor, user}
-			 *
-			 * Returns:
-			 *   (Boolean) - true
-			 */
-			Leave: function(msg) {
-				Candy.Core.log('[Jabber:Room] Leave');
-				msg = $(msg);
-				var from = Candy.Util.unescapeJid(msg.attr('from')),
-					roomJid = Strophe.getBareJidFromJid(from);
-
-				// if room is not joined yet, ignore.
-				if (!Candy.Core.getRoom(roomJid)) {
-					return true;
-				}
-
-				var roomName = Candy.Core.getRoom(roomJid).getName(),
-					item = msg.find('item'),
-					type = 'leave',
-					reason,
-					actor;
-
-				delete Candy.Core.getRooms()[roomJid];
-				// if user gets kicked, role is none and there's a status code 307
-				if(item.attr('role') === 'none') {
-					var code = msg.find('status').attr('code');
-					if(code === '307') {
-						type = 'kick';
-					} else if(code === '301') {
-						type = 'ban';
-					}
-					reason = item.find('reason').text();
-					actor  = item.find('actor').attr('jid');
-				}
-
-				var user = new Candy.Core.ChatUser(from, Strophe.getResourceFromJid(from), item.attr('affiliation'), item.attr('role'));
-
-				/** Event: candy:core.presence.leave
-				 * When the local client leaves a room
-				 *
-				 * Also triggered when the local client gets kicked or banned from a room.
-				 *
-				 * Parameters:
-				 *   (String) roomJid - Room
-				 *   (String) roomName - Name of room
-				 *   (String) type - Presence type [kick, ban, leave]
-				 *   (String) reason - When type equals kick|ban, this is the reason the moderator has supplied.
-				 *   (String) actor - When type equals kick|ban, this is the moderator which did the kick
-				 *   (Candy.Core.ChatUser) user - user which leaves the room
-				 */
-				$(Candy).triggerHandler('candy:core.presence.leave', {
-					'roomJid': roomJid,
-					'roomName': roomName,
-					'type': type,
-					'reason': reason,
-					'actor': actor,
-					'user': user
-				});
-				return true;
-			},
-
 			/** Function: Disco
 			 * Sets informations to rooms according to the disco info received.
 			 *
@@ -502,22 +555,9 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				var from = Candy.Util.unescapeJid(msg.attr('from')),
 					roomJid = Strophe.getBareJidFromJid(from),
 					presenceType = msg.attr('type'),
-					status = msg.find('status'),
-					nickAssign = false,
-					nickChange = false;
-
-				if(status.length) {
-					// check if status code indicates a nick assignment or nick change
-					for(var i = 0, l = status.length; i < l; i++) {
-						var $status = $(status[i]),
-							code = $status.attr('code');
-						if(code === '303') {
-							nickChange = true;
-						} else if(code === '210') {
-							nickAssign = true;
-						}
-					}
-				}
+					isNewRoom = self.Jabber.Room._msgHasStatusCode(msg, 201),
+					nickAssign = self.Jabber.Room._msgHasStatusCode(msg, 210),
+					nickChange = self.Jabber.Room._msgHasStatusCode(msg, 303);
 
 				// Current User joined a room
 				var room = Candy.Core.getRoom(roomJid);
@@ -526,16 +566,11 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					room = Candy.Core.getRoom(roomJid);
 				}
 
-				// Current User left a room
-				var currentUser = room.getUser() ? room.getUser() : Candy.Core.getUser();
-				if(Strophe.getResourceFromJid(from) === currentUser.getNick() && presenceType === 'unavailable' && nickChange === false) {
-					self.Jabber.Room.Leave(msg);
-					return true;
-				}
-
 				var roster = room.getRoster(),
+					currentUser = room.getUser() ? room.getUser() : Candy.Core.getUser(),
 					action, user,
 					nick,
+					show = msg.find('show'),
 					item = msg.find('item');
 				// User joined a room
 				if(presenceType !== 'unavailable') {
@@ -549,23 +584,31 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						user.setRole(role);
 						user.setAffiliation(affiliation);
 
+						user.setStatus("available");
+
 						// FIXME: currently role/affilation changes are handled with this action
 						action = 'join';
 					} else {
 						nick = Strophe.getResourceFromJid(from);
-						user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'));
+						user = new Candy.Core.ChatUser(from, nick, item.attr('affiliation'), item.attr('role'), item.attr('jid'));
 						// Room existed but client (myself) is not yet registered
 						if(room.getUser() === null && (Candy.Core.getUser().getNick() === nick || nickAssign)) {
 							room.setUser(user);
 							currentUser = user;
 						}
+						user.setStatus('available');
 						roster.add(user);
 						action = 'join';
+					}
+
+					if (show.length > 0) {
+						user.setStatus(show.text());
 					}
 				// User left a room
 				} else {
 					user = roster.get(from);
 					roster.remove(from);
+
 					if(nickChange) {
 						// user changed nick
 						nick = item.attr('nick');
@@ -577,11 +620,17 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					} else {
 						action = 'leave';
 						if(item.attr('role') === 'none') {
-							if(msg.find('status').attr('code') === '307') {
+							if(self.Jabber.Room._msgHasStatusCode(msg, 307)) {
 								action = 'kick';
-							} else if(msg.find('status').attr('code') === '301') {
+							} else if(self.Jabber.Room._msgHasStatusCode(msg, 301)) {
 								action = 'ban';
 							}
+						}
+
+						if (Strophe.getResourceFromJid(from) === currentUser.getNick()) {
+							// Current User left a room
+							self.Jabber.Room._selfLeave(msg, from, roomJid, room.getName(), action);
+							return true;
 						}
 					}
 				}
@@ -594,15 +643,60 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *   (Candy.Core.ChatUser) user - User which does the presence update
 				 *   (String) action - Action [kick, ban, leave, join]
 				 *   (Candy.Core.ChatUser) currentUser - Current local user
+				 *   (Boolean) isNewRoom - Whether the room is new (has just been created)
 				 */
 				$(Candy).triggerHandler('candy:core.presence.room', {
 					'roomJid': roomJid,
 					'roomName': room.getName(),
 					'user': user,
 					'action': action,
-					'currentUser': currentUser
+					'currentUser': currentUser,
+					'isNewRoom': isNewRoom
 				});
 				return true;
+			},
+
+			_msgHasStatusCode: function (msg, code) {
+				return msg.find('status[code="' + code + '"]').length > 0;
+			},
+
+			_selfLeave: function(msg, from, roomJid, roomName, action) {
+				Candy.Core.log('[Jabber:Room] Leave');
+
+				Candy.Core.removeRoom(roomJid);
+
+				var item = msg.find('item'),
+					reason,
+					actor;
+
+				if(action === 'kick' || action === 'ban') {
+					reason = item.find('reason').text();
+					actor  = item.find('actor').attr('jid');
+				}
+
+				var user = new Candy.Core.ChatUser(from, Strophe.getResourceFromJid(from), item.attr('affiliation'), item.attr('role'));
+
+				/** Event: candy:core.presence.leave
+				 * When the local client leaves a room
+				 *
+				 * Also triggered when the local client gets kicked or banned from a room.
+				 *
+				 * Parameters:
+				 *   (String) roomJid - Room
+				 *   (String) roomName - Name of room
+				 *   (String) type - Presence type [kick, ban, leave]
+				 *   (String) reason - When type equals kick|ban, this is the reason the moderator has supplied.
+				 *   (String) actor - When type equals kick|ban, this is the moderator which did the kick
+				 *   (Candy.Core.ChatUser) user - user which leaves the room
+				 */
+				$(Candy).triggerHandler('candy:core.presence.leave', {
+					'roomJid': roomJid,
+					'roomName': roomName,
+					'type': action,
+					'reason': reason,
+					'actor': actor,
+					'user': user
+				});
 			},
 
 			/** Function: PresenceError
@@ -661,87 +755,116 @@ Candy.Core.Event = (function(self, Strophe, $) {
 			 */
 			Message: function(msg) {
 				Candy.Core.log('[Jabber:Room] Message');
+
+				var carbon = false,
+					partnerJid = Candy.Util.unescapeJid(msg.attr('from'));
+
+				if (msg.children('sent[xmlns="' + Strophe.NS.CARBONS + '"]').length > 0) {
+					carbon = true;
+					msg = $(msg.children('sent').children('forwarded').children('message'));
+					partnerJid = Candy.Util.unescapeJid(msg.attr('to'));
+				}
+
+				if (msg.children('received[xmlns="' + Strophe.NS.CARBONS + '"]').length > 0) {
+					carbon = true;
+					msg = $(msg.children('received').children('forwarded').children('message'));
+					partnerJid = Candy.Util.unescapeJid(msg.attr('from'));
+				}
+
 				// Room subject
-				var roomJid, message, name;
+				var roomJid, roomName, from, message, name, room, sender;
 				if(msg.children('subject').length > 0 && msg.children('subject').text().length > 0 && msg.attr('type') === 'groupchat') {
-					roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
-					message = { name: Strophe.getNodeFromJid(roomJid), body: msg.children('subject').text(), type: 'subject' };
+					roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(partnerJid));
+					from = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
+					roomName = Strophe.getNodeFromJid(roomJid);
+					message = { from: from, name: Strophe.getNodeFromJid(from), body: msg.children('subject').text(), type: 'subject' };
 				// Error messsage
 				} else if(msg.attr('type') === 'error') {
 					var error = msg.children('error');
 					if(error.children('text').length > 0) {
-						roomJid = msg.attr('from');
-						message = { type: 'info', body: error.children('text').text() };
+						roomJid = partnerJid;
+						roomName = Strophe.getNodeFromJid(roomJid);
+						message = { from: msg.attr('from'), type: 'info', body: error.children('text').text() };
 					}
 				// Chat message
 				} else if(msg.children('body').length > 0) {
 					// Private chat message
 					if(msg.attr('type') === 'chat' || msg.attr('type') === 'normal') {
-						roomJid = Candy.Util.unescapeJid(msg.attr('from'));
-						var bareRoomJid = Strophe.getBareJidFromJid(roomJid),
-							// if a 3rd-party client sends a direct message to this user (not via the room) then the username is the node and not the resource.
-							isNoConferenceRoomJid = !Candy.Core.getRoom(bareRoomJid);
+						from = Candy.Util.unescapeJid(msg.attr('from'));
+						var barePartner = Strophe.getBareJidFromJid(partnerJid),
+							bareFrom = Strophe.getBareJidFromJid(from),
+							isNoConferenceRoomJid = !Candy.Core.getRoom(barePartner);
 
-						name = isNoConferenceRoomJid ? Strophe.getNodeFromJid(roomJid) : Strophe.getResourceFromJid(roomJid);
-						message = { name: name, body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
+						if (isNoConferenceRoomJid) {
+							roomJid = barePartner;
+
+							var partner = Candy.Core.getRoster().get(barePartner);
+							if (partner) {
+								roomName = partner.getName();
+							} else {
+								roomName = Strophe.getNodeFromJid(barePartner);
+							}
+
+							if (bareFrom === Candy.Core.getUser().getJid()) {
+								sender = Candy.Core.getUser();
+							} else {
+								sender = Candy.Core.getRoster().get(bareFrom);
+							}
+							if (sender) {
+								name = sender.getName();
+							} else {
+								name = Strophe.getNodeFromJid(from);
+							}
+						} else {
+							roomJid = partnerJid;
+							room = Candy.Core.getRoom(Candy.Util.unescapeJid(Strophe.getBareJidFromJid(from)));
+							sender = room.getRoster().get(from);
+							if (sender) {
+								name = sender.getName();
+							} else {
+								name = Strophe.getResourceFromJid(from);
+							}
+							roomName = name;
+						}
+						message = { from: from, name: name, body: msg.children('body').text(), type: msg.attr('type'), isNoConferenceRoomJid: isNoConferenceRoomJid };
 					// Multi-user chat message
 					} else {
-						roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(msg.attr('from')));
-						var resource = Strophe.getResourceFromJid(msg.attr('from'));
+						from = Candy.Util.unescapeJid(msg.attr('from'));
+						roomJid = Candy.Util.unescapeJid(Strophe.getBareJidFromJid(partnerJid));
+						var resource = Strophe.getResourceFromJid(partnerJid);
 						// Message from a user
 						if(resource) {
-							resource = Strophe.unescapeNode(resource);
-							message = { name: resource, body: msg.children('body').text(), type: msg.attr('type') };
+							room = Candy.Core.getRoom(roomJid);
+							roomName = room.getName();
+							if (resource === Candy.Core.getUser().getNick()) {
+								sender = Candy.Core.getUser();
+							} else {
+								sender = room.getRoster().get(from);
+							}
+							if (sender) {
+								name = sender.getName();
+							} else {
+								name = Strophe.unescapeNode(resource);
+							}
+							message = { from: roomJid, name: name, body: msg.children('body').text(), type: msg.attr('type') };
 						// Message from server (XEP-0045#registrar-statuscodes)
 						} else {
 							// we are not yet present in the room, let's just drop this message (issue #105)
-							if(!Candy.View.Pane.Chat.rooms[msg.attr('from')]) {
+							if(!Candy.Core.getRooms()[partnerJid]) {
 								return true;
 							}
-							message = { name: '', body: msg.children('body').text(), type: 'info' };
+							roomName = '';
+							message = { from: roomJid, name: '', body: msg.children('body').text(), type: 'info' };
 						}
 					}
 
 					var xhtmlChild = msg.children('html[xmlns="' + Strophe.NS.XHTML_IM + '"]');
-					if(Candy.View.getOptions().enableXHTML === true && xhtmlChild.length > 0) {
-						var xhtmlMessage = xhtmlChild.children('body[xmlns="' + Strophe.NS.XHTML + '"]').first().html();
+					if(xhtmlChild.length > 0) {
+						var xhtmlMessage = $($('<div>').append(xhtmlChild.children('body').first().contents()).html());
 						message.xhtmlMessage = xhtmlMessage;
 					}
-				// Typing notification
-				} else if(msg.children('composing').length > 0 || msg.children('inactive').length > 0 || msg.children('paused').length > 0) {
-					roomJid = Candy.Util.unescapeJid(msg.attr('from'));
-					name = Strophe.getResourceFromJid(roomJid);
-					var chatstate;
-					if(msg.children('composing').length > 0) {
-						chatstate = 'composing';
-					} else if(msg.children('paused').length > 0) {
-						chatstate = 'paused';
-					} else if(msg.children('inactive').length > 0) {
-						chatstate = 'inactive';
-					} else if(msg.children('gone').length > 0) {
-						chatstate = 'gone';
-					}
-					/** Event: candy:core.message.chatstate
-					 * Triggers on any recieved chatstate notification.
-					 *
-					 * The resulting message object contains the name of the person, the roomJid, and the indicated chatstate.
-					 *
-					 * The following lists explain those parameters:
-					 *
-					 * Message Object Parameters:
-					 *   (String) name - User name
-					 *   (String) roomJid - Room jid
-					 *   (String) chatstate - Chatstate being indicated. ("paused", "inactive", "composing", "gone")
-					 *
-					 * TODO:
-					 *   Perhaps handle blank "active" as specified by XEP-0085?
-					 */
-					$(Candy).triggerHandler('candy:core.message.chatstate', {
-						name: name,
-						roomJid: roomJid,
-						chatstate: chatstate
-					});
-					return true;
+
+					self.Jabber.Room._checkForChatStateNotification(msg, roomJid, name);
 				// Unhandled message
 				} else {
 					return true;
@@ -749,8 +872,19 @@ Candy.Core.Event = (function(self, Strophe, $) {
 
 				// besides the delayed delivery (XEP-0203), there exists also XEP-0091 which is the legacy delayed delivery.
 				// the x[xmlns=jabber:x:delay] is the format in XEP-0091.
-				var delay = msg.children('delay') ? msg.children('delay') : msg.children('x[xmlns="' + Strophe.NS.DELAY +'"]'),
-					timestamp = delay !== undefined ? delay.attr('stamp') : null;
+				var delay = msg.children('delay[xmlns="' + Strophe.NS.DELAY +'"]');
+
+				message.delay = false; // Default delay to being false.
+
+				if (delay.length < 1) {
+					// The jQuery xpath implementation doesn't support the or operator
+					delay = msg.children('x[xmlns="' + Strophe.NS.JABBER_DELAY +'"]');
+				} else {
+					// Add delay to the message object so that we can more easily tell if it's a delayed message or not.
+					message.delay = true;
+				}
+
+				var timestamp = delay.length > 0 ? delay.attr('stamp') : (new Date()).toISOString();
 
 				/** Event: candy:core.message
 				 * Triggers on various message events (subject changed, private chat message, multi-user chat message).
@@ -761,7 +895,8 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 * The following lists explain those parameters:
 				 *
 				 * Message Object Parameters:
-				 *   (String) name - Room name
+				 *   (String) from - The unmodified JID that the stanza came from
+				 *   (String) name - Sender name
 				 *   (String) body - Message text
 				 *   (String) type - Message type ([normal, chat, groupchat])
 				 *                   or 'info' which is used internally for displaying informational messages
@@ -769,9 +904,12 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *                                     this user (not via the room) then the username is the node
 				 *                                     and not the resource.
 				 *                                     This flag tells if this is the case.
+				 *   (Boolean) delay - If there is a value for the delay element on a message it is a delayed message.
+				 *										 This flag tells if this is the case.
 				 *
 				 * Parameters:
-				 *   (String) roomJid - Room jid
+				 *   (String) roomJid - Room jid. For one-on-one messages, this is sanitized to the bare JID for indexing purposes.
+				 *   (String) roomName - Name of the contact
 				 *   (Object) message - Depending on what kind of message, the object consists of different key-value pairs:
 				 *                        - Room Subject: {name, body, type}
 				 *                        - Error message: {type = 'info', body}
@@ -779,16 +917,45 @@ Candy.Core.Event = (function(self, Strophe, $) {
 				 *                        - MUC msg from a user: {name, body, type}
 				 *                        - MUC msg from server: {name = '', body, type = 'info'}
 				 *   (String) timestamp - Timestamp, only when it's an offline message
+				 *   (Boolean) carbon - Indication of wether or not the message was a carbon
+				 *   (String) stanza - The raw XML stanza
 				 *
 				 * TODO:
 				 *   Streamline those events sent and rename the parameters.
 				 */
 				$(Candy).triggerHandler('candy:core.message', {
 					roomJid: roomJid,
+					roomName: roomName,
 					message: message,
-					timestamp: timestamp
+					timestamp: timestamp,
+					carbon: carbon,
+					stanza: msg
 				});
 				return true;
+			},
+
+			_checkForChatStateNotification: function (msg, roomJid, name) {
+				var chatStateElements = msg.children('*[xmlns="http://jabber.org/protocol/chatstates"]');
+				if (chatStateElements.length > 0) {
+					/** Event: candy:core:message:chatstate
+					 * Triggers on any recieved chatstate notification.
+					 *
+					 * The resulting message object contains the name of the person, the roomJid, and the indicated chatstate.
+					 *
+					 * The following lists explain those parameters:
+					 *
+					 * Message Object Parameters:
+					 *   (String) name - User name
+					 *   (String) roomJid - Room jid
+					 *   (String) chatstate - Chatstate being indicated. ("active", "composing", "paused", "inactive", "gone")
+					 *
+					 */
+					$(Candy).triggerHandler('candy:core:message:chatstate', {
+						name: name,
+						roomJid: roomJid,
+						chatstate: chatStateElements[0].tagName
+					});
+				}
 			}
 		}
 	};
