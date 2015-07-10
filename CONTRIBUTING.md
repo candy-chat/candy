@@ -24,7 +24,7 @@ A few hopefully helpful hints to contributing to Candy
 1. [Fork](https://help.github.com/articles/fork-a-repo) Candy
 2. [Install Vagrant](http://vagrantup.com/)
 3. Run `vagrant up`.
-5. Create a branch based on the `dev` branch (`git checkout -B my-awesome-feature`)
+5. Create a branch based on the `master` branch (`git checkout -B my-awesome-feature`)
 6. Run `grunt watch` to automatically run jshint (syntax checker) and the build of `candy.bundle.js` and `candy.min.js` while developing.
 7. Make your changes, fix eventual *jshint* errors & push them back to your fork
 8. Create a [pull request](https://help.github.com/articles/using-pull-requests)
@@ -35,13 +35,13 @@ Please note that you should have a working XMPP server to test your changes (the
 
 1. [Fork](https://help.github.com/articles/fork-a-repo) Candy
 2. Clone your fork
-3. Checkout out `dev` branch (`git checkout dev`)
+3. Checkout out `master` branch (`git checkout master`)
 4. Install [Node.js](http://nodejs.org/)
 5. Install [Grunt](http://gruntjs.com/) (`npm install -g grunt-cli`)
 6. Install [Bower](http://bower.io/) (`npm install -g bower`)
 7. Install npm dependencies (`npm install` in candy root directory)
 8. Install bower dependencies (`bower install` in candy root directory)
-9. Create a branch based on the `dev` branch (`git checkout -B my-awesome-feature`)
+9. Create a branch based on the `master` branch (`git checkout -B my-awesome-feature`)
 10. Run `grunt watch` to automatically run jshint (syntax checker) and the build of `candy.bundle.js` and `candy.min.js` while developing.
 11. Make your changes, fix eventual *jshint* errors & push them back to your fork
 12. Create a [pull request](https://help.github.com/articles/using-pull-requests)
