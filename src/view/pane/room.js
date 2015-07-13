@@ -299,7 +299,7 @@ Candy.View.Pane = (function(self, $) {
      *   (String) roomJid - Room JID
      */
     onScrollToBottom: function(roomJid) {
-      var messagePane = self.Room.getPane(roomJid, '.message-pane');
+      var messagePane = self.Room.getPane(roomJid, '.message-pane-wrapper');
 
       if (Candy.View.Pane.Chat.rooms[roomJid].enableScroll === true) {
         messagePane.scrollTop(messagePane.prop('scrollHeight'));
