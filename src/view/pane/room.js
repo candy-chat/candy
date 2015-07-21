@@ -128,6 +128,7 @@ Candy.View.Pane = (function(self, $) {
         var elem = $(this);
         evtData = {
           'roomJid': elem.attr('data-roomjid'),
+          'type': elem.attr('data-roomtype'),
           'element' : elem
         };
 
@@ -145,6 +146,7 @@ Candy.View.Pane = (function(self, $) {
            *
            * Parameters:
            *   (String) roomJid - Room JID
+           *   (String) type - Room Type
            *   (jQuery.Element) element - Room element
            */
           $(Candy).triggerHandler('candy:view.room.after-show', evtData);
@@ -157,6 +159,7 @@ Candy.View.Pane = (function(self, $) {
            *
            * Parameters:
            *   (String) roomJid - Room JID
+           *   (String) type - Room Type
            *   (jQuery.Element) element - Room element
            */
           $(Candy).triggerHandler('candy:view.room.after-hide', evtData);
