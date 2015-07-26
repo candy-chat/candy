@@ -3,6 +3,7 @@
 # Easy installation for contributing to candy
 #
 # Copyright 2014 Michael Weibel <michael.weibel@gmail.com>
+# Copyright 2015 Adhearsion Foundation Inc <info@adhearsion.com>
 # License: MIT
 #
 

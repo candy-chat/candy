@@ -8,6 +8,7 @@
  * Copyright:
  *   (c) 2011 Amiado Group AG. All rights reserved.
  *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
+ *   (c) 2015 Adhearsion Foundation Inc <info@adhearsion.com>. All rights reserved.
  */
 'use strict';
 
