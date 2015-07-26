@@ -47,6 +47,22 @@ define([
       expect(contact.getGroups()).to.eql(['Friends']);
     });
 
+    bdd.it('defaults the priority to 0 when not defined', function() {
+     contact.data.resources = {
+       'resource1': {
+          show: 'away',
+          status: 'Hanging out',
+          priority: 0
+        },
+       'resource2': {
+          show: 'available',
+          status: 'Not Hanging out',
+          priority: ""
+        }
+      };
+      expect(contact.getStatus()).to.eql('available');
+    });
+
     bdd.describe('aggregate status', function () {
       bdd.describe('when there are no online resources', function () {
         bdd.it('is unavailable when there are no online resources', function () {
