@@ -2,9 +2,8 @@
 #
 # Vagrant provisioning script
 #
-# Copyright 2014 Michael Weibel <michael.weibel@gmail.com>
-# Copyright 2015 Adhearsion Foundation Inc <info@adhearsion.com>
-# License: MIT
+# Legal: See the LICENSE file at the top-level directory of this distribution
+# and at https://github.com/candy-chat/candy/blob/master/LICENSE
 #
 
 #

@@ -1,14 +1,7 @@
 /** File: util.js
  * Candy - Chats are not dead yet.
  *
- * Authors:
- *   - Patrick Stadler <patrick.stadler@gmail.com>
- *   - Michael Weibel <michael.weibel@gmail.com>
- *
- * Copyright:
- *   (c) 2011 Amiado Group AG. All rights reserved.
- *   (c) 2012-2014 Patrick Stadler & Michael Weibel. All rights reserved.
- *   (c) 2015 Adhearsion Foundation Inc <info@adhearsion.com>. All rights reserved.
+ * Legal: See the LICENSE file at the top-level directory of this distribution and at https://github.com/candy-chat/candy/blob/master/LICENSE
  */
 'use strict';
 
