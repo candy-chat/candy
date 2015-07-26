@@ -113,7 +113,12 @@ Candy.Core.Contact.prototype.getStatus = function() {
     highestResourcePriority;
 
   $.each(this.data.resources, function(resource, obj) {
-    var resourcePriority = parseInt(obj.priority, 10);
+    var resourcePriority;
+    if (obj.priority === undefined || obj.priority === '') {
+      resourcePriority = 0;
+    } else {
+      resourcePriority = parseInt(obj.priority, 10);
+    }
 
     if (obj.show === '' || obj.show === null || obj.show === undefined) {
       // TODO: Submit this as a bugfix to strophejs-plugins' roster plugin
