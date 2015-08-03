@@ -34,9 +34,6 @@ apt-get install -y nginx
 cp /vagrant/devbox/nginx-default.conf /etc/nginx/sites-available/default
 /etc/init.d/nginx restart
 
-ln -fs /vagrant /usr/share/nginx/html/candy
-ln -fs /vagrant/devbox/index.html /usr/share/nginx/html/index.html
-
 #
 # Candy development dependencies
 #
