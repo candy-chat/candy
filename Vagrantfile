@@ -13,6 +13,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision :shell, :path => "devbox/provisioning.sh"
 
+  config.vm.synced_folder ".", "/vagrant", type: "nfs"
+
   config.vm.provider "virtualbox" do |v|
     v.name = "candy"
     v.customize ["modifyvm", :id, "--memory", 768]
