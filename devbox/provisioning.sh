@@ -32,6 +32,7 @@ cp /vagrant/devbox/prosody.cfg.lua /etc/prosody/prosody.cfg.lua
 #
 apt-get install -y nginx
 cp /vagrant/devbox/nginx-default.conf /etc/nginx/sites-available/default
+sed --in-place 's|{{ROOT_DIR}}|/vagrant|g' /etc/nginx/sites-available/default/nginx-default.conf
 /etc/init.d/nginx restart
 
 #
