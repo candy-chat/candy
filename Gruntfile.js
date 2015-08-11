@@ -231,7 +231,7 @@ module.exports = function(grunt) {
 		'github-release': {
 			options: {
 				repository: 'candy-chat/candy',
-				auth: grunt.file.readJSON('github-credentials.json'),
+				auth: grunt.file.exists('data.json') ? grunt.file.readJSON('github-credentials.json') : {},
 				release: {
 					tag_name: 'v' + grunt.file.readJSON('package.json').version,
 					name: 'v' + grunt.file.readJSON('package.json').version
