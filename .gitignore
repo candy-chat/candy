@@ -15,3 +15,4 @@ libs.min.*
 *.log
 lcov.info
 candy.zip
+github-credentials.json

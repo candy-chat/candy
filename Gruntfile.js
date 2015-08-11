@@ -193,16 +193,6 @@ module.exports = function(grunt) {
 							config: 'github-release.options.release.body',
 							type: 'input',
 							message: 'GitHub release body:'
-						},
-						{
-							config: 'github-release.options.auth.user',
-							type: 'input',
-							message: 'GitHub username:'
-						},
-						{
-							config: 'github-release.options.auth.password',
-							type: 'password',
-							message: 'GitHub password:'
 						}
 					]
 				}
@@ -215,7 +205,24 @@ module.exports = function(grunt) {
 				},
 				files: [
 					{
-						src: ['**'],
+						src: [
+							'example/**',
+							'res/**',
+							'bower.json',
+							'candy.bundle.js',
+							'candy.bundle.map',
+							'candy.min.js',
+							'candy.min.map',
+							'CONTRIBUTING.md',
+							'CREDITS.md',
+							'libs.bundle.js',
+							'libs.bundle.map',
+							'libs.min.js',
+							'LICENSE',
+							'package.json',
+							'README.md',
+							'res/**',
+						],
 						dest: './'
 					},
 				]
@@ -224,6 +231,7 @@ module.exports = function(grunt) {
 		'github-release': {
 			options: {
 				repository: 'candy-chat/candy',
+				auth: grunt.file.readJSON('github-credentials.json'),
 				release: {
 					tag_name: 'v' + grunt.file.readJSON('package.json').version,
 					name: 'v' + grunt.file.readJSON('package.json').version
