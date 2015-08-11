@@ -185,6 +185,29 @@ module.exports = function(grunt) {
 			src: ['src/**/*.js'],
 			tests: ['tests/**/*.js']
 		},
+		prompt: {
+			target: {
+				options: {
+					questions: [
+						{
+							config: 'github-release.options.release.body',
+							type: 'input',
+							message: 'GitHub release body:'
+						},
+						{
+							config: 'github-release.options.auth.user',
+							type: 'input',
+							message: 'GitHub username:'
+						},
+						{
+							config: 'github-release.options.auth.password',
+							type: 'password',
+							message: 'GitHub password:'
+						}
+					]
+				}
+			}
+		},
 		compress: {
 			main: {
 				options: {
@@ -197,7 +220,19 @@ module.exports = function(grunt) {
 					},
 				]
 			}
-		}
+		},
+		'github-release': {
+			options: {
+				repository: 'candy-chat/candy',
+				release: {
+					tag_name: grunt.file.readJSON('package.json').version,
+					name: grunt.file.readJSON('package.json').version
+				}
+			},
+			files: {
+				src: ['candy.zip']
+			}
+		},
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -205,6 +240,8 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-compress');
+	grunt.loadNpmTasks('grunt-github-releaser');
+	grunt.loadNpmTasks('grunt-prompt');
 	grunt.loadNpmTasks('grunt-natural-docs');
 	grunt.loadNpmTasks('grunt-mkdir');
 	grunt.loadNpmTasks('grunt-notify');
@@ -221,4 +258,9 @@ module.exports = function(grunt) {
 		'jshint', 'build', 'notify:default', 'intern:unit'
 	]);
 	grunt.registerTask('docs', ['mkdir:docs', 'natural_docs', 'notify:docs']);
+	grunt.registerTask('release', [
+		'prompt',
+		'compress',
+		'github-release'
+	]);
 };
