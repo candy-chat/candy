@@ -225,8 +225,8 @@ module.exports = function(grunt) {
 			options: {
 				repository: 'candy-chat/candy',
 				release: {
-					tag_name: grunt.file.readJSON('package.json').version,
-					name: grunt.file.readJSON('package.json').version
+					tag_name: 'v' + grunt.file.readJSON('package.json').version,
+					name: 'v' + grunt.file.readJSON('package.json').version
 				}
 			},
 			files: {
