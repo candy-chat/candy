@@ -259,6 +259,7 @@ module.exports = function(grunt) {
 	]);
 	grunt.registerTask('docs', ['mkdir:docs', 'natural_docs', 'notify:docs']);
 	grunt.registerTask('release', [
+		'default',
 		'prompt',
 		'compress',
 		'github-release'
