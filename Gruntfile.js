@@ -184,6 +184,19 @@ module.exports = function(grunt) {
 			options: {},
 			src: ['src/**/*.js'],
 			tests: ['tests/**/*.js']
+		},
+		compress: {
+			main: {
+				options: {
+					archive: 'candy.zip'
+				},
+				files: [
+					{
+						src: ['**'],
+						dest: './'
+					},
+				]
+			}
 		}
 	});
 
@@ -191,6 +204,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-contrib-compress');
 	grunt.loadNpmTasks('grunt-natural-docs');
 	grunt.loadNpmTasks('grunt-mkdir');
 	grunt.loadNpmTasks('grunt-notify');
