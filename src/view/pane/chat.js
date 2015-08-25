@@ -25,6 +25,29 @@ Candy.View.Pane = (function(self, $) {
      */
     rooms: [],
 
+    /** Function getFormattedStatus
+     *
+     * Parameters:
+     *   (String) status - aggregate status, one of chat|dnd|available|away|xa|unavailable
+     *
+     * Returns:
+     *   (String) - Text for roster's status
+     */
+    getFormattedStatus: function (status) {
+      switch(status){
+        case 'chat':
+        case 'available':
+          return $.i18n._('rosterStatusAvailable');
+        case 'away':
+        case 'xa':
+          return $.i18n._('rosterStatusAway');
+        case 'dnd':
+          return $.i18n._('rosterStatusDND');
+        default:
+          return $.i18n._('rosterStatusUnavailable');
+      }
+    },
+
     /** Function: addTab
      * Add a tab to the chat pane.
      *
@@ -59,7 +82,18 @@ Candy.View.Pane = (function(self, $) {
         return;
       }
 
+      var contact = Candy.Core.getRoster().get(roomJid),
+          status, formattedStatus;
+
+      if (contact) {
+        status = contact.getStatus();
+        formattedStatus = this.getFormattedStatus(status);
+      }
+
       var html = Mustache.to_html(Candy.View.Template.Chat.tab, {
+          status: status,
+          formattedStatus: formattedStatus,
+          realJid: roomJid,
           roomJid: roomJid,
           roomId: roomId,
           name: roomName || Strophe.getNodeFromJid(roomJid),
