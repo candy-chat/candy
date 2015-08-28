@@ -17,6 +17,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provider "virtualbox" do |v|
     v.name = "candy"
-    v.customize ["modifyvm", :id, "--memory", 768]
+    v.customize ["modifyvm", :id, "--memory", 2048]
   end
 end

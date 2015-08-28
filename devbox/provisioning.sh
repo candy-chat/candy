@@ -59,4 +59,9 @@ cp /vagrant/devbox/selenium.init.sh /etc/init.d/selenium
 chmod 755 /etc/init.d/selenium
 /etc/init.d/selenium start
 update-rc.d selenium defaults
-apt-get install -y phantomjs
+sudo apt-get install build-essential g++ flex bison gperf ruby perl libsqlite3-dev libfontconfig1-dev libicu-dev libfreetype6 libssl-dev libpng-dev libjpeg-dev python libx11-dev libxext-dev
+git clone git://github.com/ariya/phantomjs.git
+cd phantomjs
+git checkout 2.0
+./build.sh --confirm
+sudo cp bin/* /usr/local/bin
