@@ -5,7 +5,7 @@ define([
   , 'intern/chai!expect'
   , 'intern/order!jquery'
   , 'intern/order!candy/libs.bundle.js'
-  , 'intern/order!candy/src/candy.js'
+  , 'intern/order!candy/candy.bundle.js'
 ], function (bdd, expect, $) {
   bdd.describe('Candy', function () {
     bdd.describe('event triggering', function () {

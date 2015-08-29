@@ -10,5 +10,6 @@
 	"trailing": true,
 	"maxdepth": 5,
 	"laxcomma": true,
-	"browser": true
+	"browser": true,
+	"esnext": true
 }

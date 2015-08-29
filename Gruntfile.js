@@ -24,29 +24,31 @@ module.exports = function(grunt) {
 				]
 			}
 		},
-		uglify: {
-			bundle: {
-				files: {
-					'candy.bundle.js': [
-						'src/candy.js', 'src/core.js', 'src/view.js',
-						'src/util.js', 'src/core/action.js',
-						'src/core/chatRoom.js', 'src/core/chatRoster.js',
-						'src/core/chatUser.js', 'src/core/contact.js',
-						'src/core/event.js', 'src/view/observer.js',
-						'src/view/pane/chat.js', 'src/view/pane/message.js',
-						'src/view/pane/privateRoom.js', 'src/view/pane/room.js',
-						'src/view/pane/roster.js', 'src/view/pane/window.js',
-						'src/view/template.js', 'src/view/translation.js'
-					]
+		webpack: {
+			all: {
+				entry: './src/candy.js',
+				output: {
+					path: ".",
+					filename: "candy.bundle.js",
+					libraryTarget: "var",
+					library: "Candy"
 				},
-				options: {
-					sourceMap: true,
-					mangle: false,
-					compress: false,
-					beautify: true,
-					preserveComments: 'all'
+				externals: {
+					"jquery": "jQuery",
+					"strophe": "Strophe",
+					"mustache": "Mustache"
+				},
+				module: {
+					loaders: [
+						{
+							test: /.*/,
+							loader: 'babel-loader'
+						}
+					]
 				}
 			},
+		},
+		uglify: {
 			min: {
 				files: {
 					'candy.min.js': ['candy.bundle.js']
@@ -92,7 +94,7 @@ module.exports = function(grunt) {
 			},
 			bundle: {
 				files: ['src/**/*.js'],
-				tasks: ['todo:src', 'jshint', 'uglify:bundle', 'uglify:min', 'notify:bundle', 'intern:unit']
+				tasks: ['todo:src', 'jshint', 'webpack:all', 'uglify:min', 'notify:bundle', 'intern:unit']
 			},
 			libs: {
 				files: ['bower_components/*/**/*.js', 'vendor_libs/*/**/*.js'],
@@ -258,10 +260,11 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-clear');
 	grunt.loadNpmTasks('grunt-coveralls');
 	grunt.loadNpmTasks('grunt-todo');
+	grunt.loadNpmTasks('grunt-webpack');
 
 	grunt.registerTask('test', ['intern:all']);
 	grunt.registerTask('ci', ['todo', 'jshint', 'build', 'intern:all', 'coveralls:all', 'docs']);
-	grunt.registerTask('build', ['uglify:libs', 'uglify:libs-min', 'uglify:bundle', 'uglify:min']);
+	grunt.registerTask('build', ['uglify:libs', 'uglify:libs-min', 'webpack:all', 'uglify:min']);
 	grunt.registerTask('default', [
 		'jshint', 'build', 'notify:default', 'intern:unit'
 	]);

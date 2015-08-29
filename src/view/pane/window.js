@@ -7,6 +7,9 @@
 
 /* global Candy, jQuery, window */
 
+import Chat from './chat.js';
+import Room from './room.js';
+
 /** Class: Candy.View.Pane
  * Candy view pane handles everything regarding DOM updates etc.
  *
@@ -14,7 +17,7 @@
  *   (Candy.View.Pane) self - itself
  *   (jQuery) $ - jQuery
  */
-Candy.View.Pane = (function(self) {
+var Pane = (function(self) {
 
   /** Class: Candy.View.Pane.Window
    * Window related view updates
@@ -94,8 +97,8 @@ Candy.View.Pane = (function(self) {
     onFocus: function() {
       self.Window._hasFocus = true;
       if (Candy.View.getCurrent().roomJid) {
-        self.Room.setFocusToForm(Candy.View.getCurrent().roomJid);
-        self.Chat.clearUnreadMessages(Candy.View.getCurrent().roomJid);
+        Room.setFocusToForm(Candy.View.getCurrent().roomJid);
+        Chat.clearUnreadMessages(Candy.View.getCurrent().roomJid);
       }
     },
 
@@ -108,4 +111,6 @@ Candy.View.Pane = (function(self) {
   };
 
   return self;
-}(Candy.View.Pane || {}, jQuery));
+}({}, jQuery));
+
+export default Pane.Window;

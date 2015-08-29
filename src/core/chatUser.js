@@ -5,12 +5,15 @@
  */
 'use strict';
 
-/* global Candy, Strophe */
+import Strophe from 'strophe';
 
-/** Class: Candy.Core.ChatUser
+import Core from '../core.js';
+import Util from '../util.js';
+
+/** Class: ChatUser
  * Chat User
  */
-Candy.Core.ChatUser = function(jid, nick, affiliation, role, realJid) {
+var ChatUser = function(jid, nick, affiliation, role, realJid) {
 	/** Constant: ROLE_MODERATOR
 	 * Moderator role
 	 */
@@ -48,14 +51,14 @@ Candy.Core.ChatUser = function(jid, nick, affiliation, role, realJid) {
  * Gets an unescaped user jid
  *
  * See:
- *   <Candy.Util.unescapeJid>
+ *   <Util.unescapeJid>
  *
  * Returns:
  *   (String) - jid
  */
-Candy.Core.ChatUser.prototype.getJid = function() {
+ChatUser.prototype.getJid = function() {
 	if(this.data.jid) {
-		return Candy.Util.unescapeJid(this.data.jid);
+		return Util.unescapeJid(this.data.jid);
 	}
 	return;
 };
@@ -64,13 +67,13 @@ Candy.Core.ChatUser.prototype.getJid = function() {
  * Escapes the user's jid (node & resource get escaped)
  *
  * See:
- *   <Candy.Util.escapeJid>
+ *   <Util.escapeJid>
  *
  * Returns:
  *   (String) - escaped jid
  */
-Candy.Core.ChatUser.prototype.getEscapedJid = function() {
-	return Candy.Util.escapeJid(this.data.jid);
+ChatUser.prototype.getEscapedJid = function() {
+	return Util.escapeJid(this.data.jid);
 };
 
 /** Function: setJid
@@ -79,7 +82,7 @@ Candy.Core.ChatUser.prototype.getEscapedJid = function() {
  * Parameters:
  *   (String) jid - New Jid
  */
-Candy.Core.ChatUser.prototype.setJid = function(jid) {
+ChatUser.prototype.setJid = function(jid) {
 	this.data.jid = jid;
 };
 
@@ -87,14 +90,14 @@ Candy.Core.ChatUser.prototype.setJid = function(jid) {
  * Gets an unescaped real jid if known
  *
  * See:
- *   <Candy.Util.unescapeJid>
+ *   <Util.unescapeJid>
  *
  * Returns:
  *   (String) - realJid
  */
-Candy.Core.ChatUser.prototype.getRealJid = function() {
+ChatUser.prototype.getRealJid = function() {
 	if(this.data.realJid) {
-		return Candy.Util.unescapeJid(this.data.realJid);
+		return Util.unescapeJid(this.data.realJid);
 	}
 	return;
 };
@@ -105,7 +108,7 @@ Candy.Core.ChatUser.prototype.getRealJid = function() {
  * Returns:
  *   (String) - nick
  */
-Candy.Core.ChatUser.prototype.getNick = function() {
+ChatUser.prototype.getNick = function() {
 	return Strophe.unescapeNode(this.data.nick);
 };
 
@@ -115,7 +118,7 @@ Candy.Core.ChatUser.prototype.getNick = function() {
  * Parameters:
  *   (String) nick - New nick
  */
-Candy.Core.ChatUser.prototype.setNick = function(nick) {
+ChatUser.prototype.setNick = function(nick) {
 	this.data.nick = nick;
 };
 
@@ -125,7 +128,7 @@ Candy.Core.ChatUser.prototype.setNick = function(nick) {
  * Returns:
  *   (String) - name
  */
-Candy.Core.ChatUser.prototype.getName = function() {
+ChatUser.prototype.getName = function() {
 	var contact = this.getContact();
 	if (contact) {
 		return contact.getName();
@@ -140,7 +143,7 @@ Candy.Core.ChatUser.prototype.getName = function() {
  * Returns:
  *   (String) - role
  */
-Candy.Core.ChatUser.prototype.getRole = function() {
+ChatUser.prototype.getRole = function() {
 	return this.data.role;
 };
 
@@ -150,7 +153,7 @@ Candy.Core.ChatUser.prototype.getRole = function() {
  * Parameters:
  *   (String) role - Role
  */
-Candy.Core.ChatUser.prototype.setRole = function(role) {
+ChatUser.prototype.setRole = function(role) {
 	this.data.role = role;
 };
 
@@ -160,7 +163,7 @@ Candy.Core.ChatUser.prototype.setRole = function(role) {
  * Parameters:
  *   (String) affiliation - new affiliation
  */
-Candy.Core.ChatUser.prototype.setAffiliation = function(affiliation) {
+ChatUser.prototype.setAffiliation = function(affiliation) {
 	this.data.affiliation = affiliation;
 };
 
@@ -170,7 +173,7 @@ Candy.Core.ChatUser.prototype.setAffiliation = function(affiliation) {
  * Returns:
  *   (String) - affiliation
  */
-Candy.Core.ChatUser.prototype.getAffiliation = function() {
+ChatUser.prototype.getAffiliation = function() {
 	return this.data.affiliation;
 };
 
@@ -180,7 +183,7 @@ Candy.Core.ChatUser.prototype.getAffiliation = function() {
  * Returns:
  *   (Boolean) - true if user has role moderator or affiliation owner
  */
-Candy.Core.ChatUser.prototype.isModerator = function() {
+ChatUser.prototype.isModerator = function() {
 	return this.getRole() === this.ROLE_MODERATOR || this.getAffiliation() === this.AFFILIATION_OWNER;
 };
 
@@ -196,7 +199,7 @@ Candy.Core.ChatUser.prototype.isModerator = function() {
  * Returns:
  *   (Array) - Current privacy list.
  */
-Candy.Core.ChatUser.prototype.addToOrRemoveFromPrivacyList = function(list, jid) {
+ChatUser.prototype.addToOrRemoveFromPrivacyList = function(list, jid) {
 	if (!this.data.privacyLists[list]) {
 		this.data.privacyLists[list] = [];
 	}
@@ -218,7 +221,7 @@ Candy.Core.ChatUser.prototype.addToOrRemoveFromPrivacyList = function(list, jid)
  * Returns:
  *   (Array) - Privacy List
  */
-Candy.Core.ChatUser.prototype.getPrivacyList = function(list) {
+ChatUser.prototype.getPrivacyList = function(list) {
 	if (!this.data.privacyLists[list]) {
 		this.data.privacyLists[list] = [];
 	}
@@ -231,7 +234,7 @@ Candy.Core.ChatUser.prototype.getPrivacyList = function(list) {
  * Parameters:
  *   (Object) lists - List object
  */
-Candy.Core.ChatUser.prototype.setPrivacyLists = function(lists) {
+ChatUser.prototype.setPrivacyLists = function(lists) {
 	this.data.privacyLists = lists;
 };
 
@@ -245,7 +248,7 @@ Candy.Core.ChatUser.prototype.setPrivacyLists = function(lists) {
  * Returns:
  *   (Boolean)
  */
-Candy.Core.ChatUser.prototype.isInPrivacyList = function(list, jid) {
+ChatUser.prototype.isInPrivacyList = function(list, jid) {
 	if (!this.data.privacyLists[list]) {
 		return false;
 	}
@@ -258,7 +261,7 @@ Candy.Core.ChatUser.prototype.isInPrivacyList = function(list, jid) {
  * Parameter:
  *   (Object) data - Object containing custom data
  */
-Candy.Core.ChatUser.prototype.setCustomData = function(data) {
+ChatUser.prototype.setCustomData = function(data) {
 	this.data.customData = data;
 };
 
@@ -268,7 +271,7 @@ Candy.Core.ChatUser.prototype.setCustomData = function(data) {
  * Returns:
  *   (Object) - Object containing custom data
  */
-Candy.Core.ChatUser.prototype.getCustomData = function() {
+ChatUser.prototype.getCustomData = function() {
 	return this.data.customData;
 };
 
@@ -278,7 +281,7 @@ Candy.Core.ChatUser.prototype.getCustomData = function() {
  * Parameters:
  *   (String) previousNick - the previous nickname
  */
-Candy.Core.ChatUser.prototype.setPreviousNick = function(previousNick) {
+ChatUser.prototype.setPreviousNick = function(previousNick) {
 	this.data.previousNick = previousNick;
 };
 
@@ -288,7 +291,7 @@ Candy.Core.ChatUser.prototype.setPreviousNick = function(previousNick) {
  * Returns:
  *   (String) - previous nickname
  */
-Candy.Core.ChatUser.prototype.getPreviousNick = function() {
+ChatUser.prototype.getPreviousNick = function() {
 	return this.data.previousNick;
 };
 
@@ -296,10 +299,10 @@ Candy.Core.ChatUser.prototype.getPreviousNick = function() {
  * Gets the contact matching this user from our roster
  *
  * Returns:
- *   (Candy.Core.Contact) - contact from roster
+ *   (.Contact) - contact from roster
  */
-Candy.Core.ChatUser.prototype.getContact = function() {
-	return Candy.Core.getRoster().get(Strophe.getBareJidFromJid(this.data.realJid));
+ChatUser.prototype.getContact = function() {
+	return Core.getRoster().get(Strophe.getBareJidFromJid(this.data.realJid));
 };
 
 /** Function: setStatus
@@ -308,7 +311,7 @@ Candy.Core.ChatUser.prototype.getContact = function() {
  * Parameters:
  *   (String) status - the new status
  */
-Candy.Core.ChatUser.prototype.setStatus = function(status) {
+ChatUser.prototype.setStatus = function(status) {
 	this.data.status = status;
 };
 
@@ -318,6 +321,8 @@ Candy.Core.ChatUser.prototype.setStatus = function(status) {
  * Returns:
  *   (String) - status
  */
-Candy.Core.ChatUser.prototype.getStatus = function() {
+ChatUser.prototype.getStatus = function() {
 	return this.data.status;
 };
+
+export default ChatUser;

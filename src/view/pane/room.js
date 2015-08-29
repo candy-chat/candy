@@ -7,6 +7,11 @@
 
 /* global Candy, Mustache, Strophe, jQuery */
 
+import Chat from './chat.js';
+import Message from './message.js';
+import Room from './room.js';
+import Window from './window.js';
+
 /** Class: Candy.View.Pane
  * Candy view pane handles everything regarding DOM updates etc.
  *
@@ -14,7 +19,7 @@
  *   (Candy.View.Pane) self - itself
  *   (jQuery) $ - jQuery
  */
-Candy.View.Pane = (function(self, $) {
+var Pane = (function(self, $) {
 
   /** Class: Candy.View.Pane.Room
    * Everything which belongs to room view things belongs here.
@@ -62,12 +67,12 @@ Candy.View.Pane = (function(self, $) {
       }
 
       // First room, show sound control
-      if(Candy.Util.isEmptyObject(self.Chat.rooms)) {
-        self.Chat.Toolbar.show();
+      if(Candy.Util.isEmptyObject(Chat.rooms)) {
+        Chat.Toolbar.show();
       }
 
       var roomId = Candy.Util.jidToId(roomJid);
-      self.Chat.rooms[roomJid] = {id: roomId, usercount: 0, name: roomName, type: roomType, messageCount: 0, scrollPosition: -1, targetJid: roomJid};
+      Chat.rooms[roomJid] = {id: roomId, usercount: 0, name: roomName, type: roomType, messageCount: 0, scrollPosition: -1, targetJid: roomJid};
 
       $('#chat-rooms').append(Mustache.to_html(Candy.View.Template.Room.pane, {
         roomId: roomId,
@@ -84,11 +89,11 @@ Candy.View.Pane = (function(self, $) {
         messages: Candy.View.Template.Message.pane,
         form: Candy.View.Template.Room.form
       }));
-      self.Chat.addTab(roomJid, roomName, roomType);
-      self.Room.getPane(roomJid, '.message-form').submit(self.Message.submit);
-      self.Room.scrollToBottom(roomJid);
+      Chat.addTab(roomJid, roomName, roomType);
+      Room.getPane(roomJid, '.message-form').submit(Message.submit);
+      Room.scrollToBottom(roomJid);
 
-      evtData.element = self.Room.getPane(roomJid);
+      evtData.element = Room.getPane(roomJid);
 
       /** Event: candy:view.room.after-add
        * After initialising a room
@@ -114,7 +119,7 @@ Candy.View.Pane = (function(self, $) {
      *   candy:view.room.after-hide using {roomJid, element}
      */
     show: function(roomJid) {
-      var roomId = self.Chat.rooms[roomJid].id,
+      var roomId = Chat.rooms[roomJid].id,
         evtData;
 
       $('.room-pane').each(function() {
@@ -128,11 +133,11 @@ Candy.View.Pane = (function(self, $) {
         if(elem.attr('id') === ('chat-room-' + roomId)) {
           elem.show();
           Candy.View.getCurrent().roomJid = roomJid;
-          self.Chat.setActiveTab(roomJid);
-          self.Chat.Toolbar.update(roomJid);
-          self.Chat.clearUnreadMessages(roomJid);
-          self.Room.setFocusToForm(roomJid);
-          self.Room.scrollToBottom(roomJid);
+          Chat.setActiveTab(roomJid);
+          Chat.Toolbar.update(roomJid);
+          Chat.clearUnreadMessages(roomJid);
+          Room.setFocusToForm(roomJid);
+          Room.scrollToBottom(roomJid);
 
           /** Event: candy:view.room.after-show
            * After showing a room
@@ -175,13 +180,13 @@ Candy.View.Pane = (function(self, $) {
       var timestamp = new Date();
       var html = Mustache.to_html(Candy.View.Template.Room.subject, {
         subject: subject,
-        roomName: self.Chat.rooms[roomJid].name,
+        roomName: Chat.rooms[roomJid].name,
         _roomSubject: $.i18n._('roomSubject'),
         time: Candy.Util.localizedTime(timestamp),
         timestamp: timestamp.toISOString()
       });
-      self.Room.appendToMessagePane(roomJid, html);
-      self.Room.scrollToBottom(roomJid);
+      Room.appendToMessagePane(roomJid, html);
+      Room.scrollToBottom(roomJid);
 
       /** Event: candy:view.room.after-subject-change
        * After changing the subject of a room
@@ -193,7 +198,7 @@ Candy.View.Pane = (function(self, $) {
        */
       $(Candy).triggerHandler('candy:view.room.after-subject-change', {
         'roomJid': roomJid,
-        'element' : self.Room.getPane(roomJid),
+        'element' : Room.getPane(roomJid),
         'subject' : subject
       });
     },
@@ -211,25 +216,25 @@ Candy.View.Pane = (function(self, $) {
      *   (String) roomJid - Room to close
      */
     close: function(roomJid) {
-      self.Chat.removeTab(roomJid);
-      self.Window.clearUnreadMessages();
+      Chat.removeTab(roomJid);
+      Window.clearUnreadMessages();
 
       /* TODO:
         There's a rendering bug in Opera which doesn't redraw (remove) the message form.
         Only a cosmetical issue (when all tabs are closed) but it's annoying...
         This happens when form has no focus too. Maybe it's because of CSS positioning.
       */
-      self.Room.getPane(roomJid).remove();
+      Room.getPane(roomJid).remove();
       var openRooms = $('#chat-rooms').children();
       if(Candy.View.getCurrent().roomJid === roomJid) {
         Candy.View.getCurrent().roomJid = null;
         if(openRooms.length === 0) {
-          self.Chat.allTabsClosed();
+          Chat.allTabsClosed();
         } else {
-          self.Room.show(openRooms.last().attr('data-roomjid'));
+          Room.show(openRooms.last().attr('data-roomjid'));
         }
       }
-      delete self.Chat.rooms[roomJid];
+      delete Chat.rooms[roomJid];
 
       /** Event: candy:view.room.after-close
        * After closing a room
@@ -250,9 +255,9 @@ Candy.View.Pane = (function(self, $) {
      *   (String) html - rendered message html
      */
     appendToMessagePane: function(roomJid, html) {
-      self.Room.getPane(roomJid, '.message-pane').append(html);
-      self.Chat.rooms[roomJid].messageCount++;
-      self.Room.sliceMessagePane(roomJid);
+      Room.getPane(roomJid, '.message-pane').append(html);
+      Chat.rooms[roomJid].messageCount++;
+      Room.sliceMessagePane(roomJid);
     },
 
     /** Function: sliceMessagePane
@@ -267,11 +272,11 @@ Candy.View.Pane = (function(self, $) {
      */
     sliceMessagePane: function(roomJid) {
       // Only clean if autoscroll is enabled
-      if(self.Window.autoscroll) {
+      if(Window.autoscroll) {
         var options = Candy.View.getOptions().messages;
-        if(self.Chat.rooms[roomJid].messageCount > options.limit) {
-          self.Room.getPane(roomJid, '.message-pane').children().slice(0, options.remove).remove();
-          self.Chat.rooms[roomJid].messageCount -= options.remove;
+        if(Chat.rooms[roomJid].messageCount > options.limit) {
+          Room.getPane(roomJid, '.message-pane').children().slice(0, options.remove).remove();
+          Chat.rooms[roomJid].messageCount -= options.remove;
         }
       }
     },
@@ -286,7 +291,7 @@ Candy.View.Pane = (function(self, $) {
      *   - <onScrollToBottom>
      */
     scrollToBottom: function(roomJid) {
-      self.Room.onScrollToBottom(roomJid);
+      Room.onScrollToBottom(roomJid);
     },
 
     /** Function: onScrollToBottom
@@ -296,7 +301,7 @@ Candy.View.Pane = (function(self, $) {
      *   (String) roomJid - Room JID
      */
     onScrollToBottom: function(roomJid) {
-      var messagePane = self.Room.getPane(roomJid, '.message-pane-wrapper');
+      var messagePane = Room.getPane(roomJid, '.message-pane-wrapper');
 
       if (Candy.View.Pane.Chat.rooms[roomJid].enableScroll === true) {
         messagePane.scrollTop(messagePane.prop('scrollHeight'));
@@ -315,10 +320,10 @@ Candy.View.Pane = (function(self, $) {
     onScrollToStoredPosition: function(roomJid) {
       // This should only apply when entering a room...
       // ... therefore we set scrollPosition to -1 after execution.
-      if(self.Chat.rooms[roomJid].scrollPosition > -1) {
-        var messagePane = self.Room.getPane(roomJid, '.message-pane-wrapper');
-        messagePane.scrollTop(self.Chat.rooms[roomJid].scrollPosition);
-        self.Chat.rooms[roomJid].scrollPosition = -1;
+      if(Chat.rooms[roomJid].scrollPosition > -1) {
+        var messagePane = Room.getPane(roomJid, '.message-pane-wrapper');
+        messagePane.scrollTop(Chat.rooms[roomJid].scrollPosition);
+        Chat.rooms[roomJid].scrollPosition = -1;
       }
     },
 
@@ -332,7 +337,7 @@ Candy.View.Pane = (function(self, $) {
       // If we're on mobile, don't focus the input field.
       if (Candy.Util.isMobile()) { return true; }
 
-      var pane = self.Room.getPane(roomJid, '.message-form');
+      var pane = Room.getPane(roomJid, '.message-form');
       if (pane) {
         // IE8 will fail maybe, because the field isn't there yet.
         try {
@@ -352,8 +357,8 @@ Candy.View.Pane = (function(self, $) {
      *   (Candy.Core.ChatUser) user - The user
      */
     setUser: function(roomJid, user) {
-      self.Chat.rooms[roomJid].user = user;
-      var roomPane = self.Room.getPane(roomJid),
+      Chat.rooms[roomJid].user = user;
+      var roomPane = Room.getPane(roomJid),
         chatPane = $('#chat-pane');
 
       roomPane.attr('data-userjid', user.getJid());
@@ -368,7 +373,7 @@ Candy.View.Pane = (function(self, $) {
       } else {
         chatPane.removeClass('role-moderator affiliation-owner');
       }
-      self.Chat.Context.init();
+      Chat.Context.init();
     },
 
     /** Function: getUser
@@ -381,7 +386,7 @@ Candy.View.Pane = (function(self, $) {
      *   (Candy.Core.ChatUser) - user
      */
     getUser: function(roomJid) {
-      return self.Chat.rooms[roomJid].user;
+      return Chat.rooms[roomJid].user;
     },
 
     /** Function: ignoreUser
@@ -448,16 +453,16 @@ Candy.View.Pane = (function(self, $) {
      *   (String) subPane - Sub pane of the chat room pane if needed [optional]
      */
     getPane: function(roomJid, subPane) {
-      if (self.Chat.rooms[roomJid]) {
+      if (Chat.rooms[roomJid]) {
         if(subPane) {
-          if(self.Chat.rooms[roomJid]['pane-' + subPane]) {
-            return self.Chat.rooms[roomJid]['pane-' + subPane];
+          if(Chat.rooms[roomJid]['pane-' + subPane]) {
+            return Chat.rooms[roomJid]['pane-' + subPane];
           } else {
-            self.Chat.rooms[roomJid]['pane-' + subPane] = $('#chat-room-' + self.Chat.rooms[roomJid].id).find(subPane);
-            return self.Chat.rooms[roomJid]['pane-' + subPane];
+            Chat.rooms[roomJid]['pane-' + subPane] = $('#chat-room-' + Chat.rooms[roomJid].id).find(subPane);
+            return Chat.rooms[roomJid]['pane-' + subPane];
           }
         } else {
-          return $('#chat-room-' + self.Chat.rooms[roomJid].id);
+          return $('#chat-room-' + Chat.rooms[roomJid].id);
         }
       }
     },
@@ -478,4 +483,6 @@ Candy.View.Pane = (function(self, $) {
   };
 
   return self;
-}(Candy.View.Pane || {}, jQuery));
+}({}, jQuery));
+
+export default Pane.Room;

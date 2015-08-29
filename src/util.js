@@ -14,7 +14,7 @@
  *   (Candy.Util) self - itself
  *   (jQuery) $ - jQuery
  */
-Candy.Util = (function(self, $){
+var Util = (function(self, $){
 	/** Function: jidToId
 	 * Translates a jid to a MD5-Id
 	 *
@@ -655,4 +655,6 @@ Candy.Util = (function(self, $){
 	};
 
 	return self;
-}(Candy.Util || {}, jQuery));
+}({}, jQuery));
+
+export default Util;

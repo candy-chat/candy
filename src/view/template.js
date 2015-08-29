@@ -5,12 +5,10 @@
  */
 'use strict';
 
-/* global Candy */
-
 /** Class: Candy.View.Template
  * Contains mustache.js templates
  */
-Candy.View.Template = (function(self){
+export default (function(self){
 	self.Window = {
 		/**
 		 * Unread messages - used to extend the window title
@@ -116,4 +114,4 @@ Candy.View.Template = (function(self){
 	};
 
 	return self;
-}(Candy.View.Template || {}));
+}({}));

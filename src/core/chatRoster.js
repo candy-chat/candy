@@ -5,12 +5,10 @@
  */
 'use strict';
 
-/* global Candy */
-
-/** Class: Candy.Core.ChatRoster
+/** Class: ChatRoster
  * Chat Roster
  */
-Candy.Core.ChatRoster = function () {
+var ChatRoster = function () {
 	/** Object: items
 	 * Roster items
 	 */
@@ -21,9 +19,9 @@ Candy.Core.ChatRoster = function () {
  * Add user to roster
  *
  * Parameters:
- *   (Candy.Core.ChatUser) user - User to add
+ *   (ChatUser) user - User to add
  */
-Candy.Core.ChatRoster.prototype.add = function(user) {
+ChatRoster.prototype.add = function(user) {
 	this.items[user.getJid()] = user;
 };
 
@@ -33,7 +31,7 @@ Candy.Core.ChatRoster.prototype.add = function(user) {
  * Parameters:
  *   (String) jid - User jid
  */
-Candy.Core.ChatRoster.prototype.remove = function(jid) {
+ChatRoster.prototype.remove = function(jid) {
 	delete this.items[jid];
 };
 
@@ -44,9 +42,9 @@ Candy.Core.ChatRoster.prototype.remove = function(jid) {
  *   (String) jid - User jid
  *
  * Returns:
- *   (Candy.Core.ChatUser) - User
+ *   (ChatUser) - User
  */
-Candy.Core.ChatRoster.prototype.get = function(jid) {
+ChatRoster.prototype.get = function(jid) {
 	return this.items[jid];
 };
 
@@ -56,6 +54,8 @@ Candy.Core.ChatRoster.prototype.get = function(jid) {
  * Returns:
  *   (Object) - all roster items
  */
-Candy.Core.ChatRoster.prototype.getAll = function() {
+ChatRoster.prototype.getAll = function() {
 	return this.items;
 };
+
+export default ChatRoster;

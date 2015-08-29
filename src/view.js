@@ -7,6 +7,17 @@
 
 /* global jQuery, Candy, window, Mustache, document */
 
+import Observer from './view/observer.js';
+import Template from './view/template.js';
+import Translation from './view/translation.js';
+
+import Chat from './view/pane/chat.js';
+import Message from './view/pane/message.js';
+import PrivateRoom from './view/pane/privateRoom.js';
+import Room from './view/pane/room.js';
+import Roster from './view/pane/roster.js';
+import Window from './view/pane/window.js';
+
 /** Class: Candy.View
  * The Candy View Class
  *
@@ -14,7 +25,7 @@
  *   (Candy.View) self - itself
  *   (jQuery) $ - jQuery
  */
-Candy.View = (function(self, $) {
+var View = (function(self, $) {
 		/** PrivateObject: _current
 		 * Object containing current container & roomJid which the client sees.
 		 */
@@ -162,4 +173,18 @@ Candy.View = (function(self, $) {
 	};
 
 	return self;
-}(Candy.View || {}, jQuery));
+}({}, jQuery));
+
+View.Observer = Observer;
+View.Template = Template;
+View.Translation = Translation;
+
+View.Pane = {};
+View.Pane.Chat = Chat;
+View.Pane.Message = Message;
+View.Pane.PrivateRoom = PrivateRoom;
+View.Pane.Room = Room;
+View.Pane.Roster = Roster;
+View.Pane.Window = Window;
+
+export default View;

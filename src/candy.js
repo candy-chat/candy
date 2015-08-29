@@ -7,6 +7,10 @@
 
 /* global jQuery */
 
+import Core from './core.js';
+import Util from './util.js';
+import View from './view.js';
+
 /** Class: Candy
  * Candy base class for initalizing the view and the core
  *
@@ -40,11 +44,17 @@ var Candy = (function(self, $) {
 	 */
 	self.init = function(service, options) {
 		if (!options.viewClass) {
-			options.viewClass = self.View;
+			options.viewClass = View;
 		}
 		options.viewClass.init($('#candy'), options.view);
-		self.Core.init(service, options.core);
+		Core.init(service, options.core);
 	};
 
 	return self;
-}(Candy || {}, jQuery));
+}({}, jQuery));
+
+Candy.Core = Core;
+Candy.Util = Util;
+Candy.View = View;
+
+export default Candy;

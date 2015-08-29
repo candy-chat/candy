@@ -6,9 +6,7 @@ define([
 	, 'intern/chai!expect'
 	, 'intern/order!jquery'
 	, 'intern/order!candy/libs.bundle.js'
-	, 'intern/order!candy/src/candy.js'
-	, 'intern/order!candy/src/core.js'
-	, 'intern/order!candy/src/util.js'
+	, 'intern/order!candy/candy.bundle.js'
 ], function (bdd, expect) {
 	bdd.describe('Candy.Util', function () {
 		bdd.describe('jidToId', function () {

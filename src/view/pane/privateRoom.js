@@ -7,6 +7,10 @@
 
 /* global Candy, Strophe, jQuery */
 
+import Chat from './chat.js';
+import Room from './room.js';
+import Roster from './roster.js';
+
 /** Class: Candy.View.Pane
  * Candy view pane handles everything regarding DOM updates etc.
  *
@@ -14,7 +18,7 @@
  *   (Candy.View.Pane) self - itself
  *   (jQuery) $ - jQuery
  */
-Candy.View.Pane = (function(self, $) {
+var Pane = (function(self, $) {
 
   /** Class: Candy.View.Pane.PrivateRoom
    * Private room handling
@@ -35,7 +39,7 @@ Candy.View.Pane = (function(self, $) {
      *   candy:view.private-room.after-open using {roomJid, type, element}
      */
     open: function(roomJid, roomName, switchToRoom, isNoConferenceRoomJid) {
-      var user = isNoConferenceRoomJid ? Candy.Core.getUser() : self.Room.getUser(Strophe.getBareJidFromJid(roomJid)),
+      var user = isNoConferenceRoomJid ? Candy.Core.getUser() : Room.getUser(Strophe.getBareJidFromJid(roomJid)),
         evtData = {
           'roomJid': roomJid,
           'roomName': roomName,
@@ -61,20 +65,20 @@ Candy.View.Pane = (function(self, $) {
       if (Candy.Core.getUser().isInPrivacyList('ignore', roomJid)) {
         return false;
       }
-      if(!self.Chat.rooms[roomJid]) {
-        if(self.Room.init(roomJid, roomName, 'chat') === false) {
+      if(!Chat.rooms[roomJid]) {
+        if(Room.init(roomJid, roomName, 'chat') === false) {
           return false;
         }
       }
       if(switchToRoom) {
-        self.Room.show(roomJid);
+        Room.show(roomJid);
       }
 
-      self.Roster.update(roomJid, new Candy.Core.ChatUser(roomJid, roomName), 'join', user);
-      self.Roster.update(roomJid, user, 'join', user);
+      Roster.update(roomJid, new Candy.Core.ChatUser(roomJid, roomName), 'join', user);
+      Roster.update(roomJid, user, 'join', user);
       self.PrivateRoom.setStatus(roomJid, 'join');
 
-      evtData.element = self.Room.getPane(roomJid);
+      evtData.element = Room.getPane(roomJid);
       /** Event: candy:view.private-room.after-open
        * After opening a new private room
        *
@@ -94,16 +98,16 @@ Candy.View.Pane = (function(self, $) {
      *   (String) status - "leave"/"join"
      */
     setStatus: function(roomJid, status) {
-      var messageForm = self.Room.getPane(roomJid, '.message-form');
+      var messageForm = Room.getPane(roomJid, '.message-form');
       if(status === 'join') {
-        self.Chat.getTab(roomJid).addClass('online').removeClass('offline');
+        Chat.getTab(roomJid).addClass('online').removeClass('offline');
 
         messageForm.children('.field').removeAttr('disabled');
         messageForm.children('.submit').removeAttr('disabled');
 
-        self.Chat.getTab(roomJid);
+        Chat.getTab(roomJid);
       } else if(status === 'leave') {
-        self.Chat.getTab(roomJid).addClass('offline').removeClass('online');
+        Chat.getTab(roomJid).addClass('offline').removeClass('online');
 
         messageForm.children('.field').attr('disabled', true);
         messageForm.children('.submit').attr('disabled', true);
@@ -124,22 +128,22 @@ Candy.View.Pane = (function(self, $) {
         newPrivateRoomJid = roomJid + '/' + user.getNick(),
         previousPrivateRoomId = Candy.Util.jidToId(previousPrivateRoomJid),
         newPrivateRoomId = Candy.Util.jidToId(newPrivateRoomJid),
-        room = self.Chat.rooms[previousPrivateRoomJid],
+        room = Chat.rooms[previousPrivateRoomJid],
         roomElement,
         roomTabElement;
 
       // it could happen that the new private room is already existing -> close it first.
       // if this is not done, errors appear as two rooms would have the same id
-      if (self.Chat.rooms[newPrivateRoomJid]) {
-        self.Room.close(newPrivateRoomJid);
+      if (Chat.rooms[newPrivateRoomJid]) {
+        Room.close(newPrivateRoomJid);
       }
 
       if (room) { /* someone I talk with, changed nick */
         room.name = user.getNick();
         room.id   = newPrivateRoomId;
 
-        self.Chat.rooms[newPrivateRoomJid] = room;
-        delete self.Chat.rooms[previousPrivateRoomJid];
+        Chat.rooms[newPrivateRoomJid] = room;
+        delete Chat.rooms[previousPrivateRoomJid];
 
         roomElement = $('#chat-room-' + previousPrivateRoomId);
         if (roomElement) {
@@ -166,10 +170,12 @@ Candy.View.Pane = (function(self, $) {
         }
       }
       if (roomElement && roomElement.length) {
-        self.Roster.changeNick(previousPrivateRoomId, user);
+        Roster.changeNick(previousPrivateRoomId, user);
       }
     }
   };
 
   return self;
-}(Candy.View.Pane || {}, jQuery));
+}({}, jQuery));
+
+export default Pane.PrivateRoom;

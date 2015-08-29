@@ -5,7 +5,9 @@
  */
 'use strict';
 
-/* global Candy, Strophe */
+import Strophe from 'strophe';
+
+import Core from '../core.js';
 
 /** Class: Candy.Core.ChatRoom
  * Candy Chat Room
@@ -13,7 +15,7 @@
  * Parameters:
  *   (String) roomJid - Room jid
  */
-Candy.Core.ChatRoom = function(roomJid) {
+var ChatRoom = function(roomJid) {
 	/** Object: room
 	 * Object containing roomJid and name.
 	 */
@@ -30,7 +32,7 @@ Candy.Core.ChatRoom = function(roomJid) {
 	/** Variable: Roster
 	 * Candy.Core.ChatRoster instance
 	 */
-	this.roster = new Candy.Core.ChatRoster();
+	this.roster = new Core.ChatRoster();
 };
 
 /** Function: setUser
@@ -39,7 +41,7 @@ Candy.Core.ChatRoom = function(roomJid) {
  * Parameters:
  *   (Candy.Core.ChatUser) user - Chat user
  */
-Candy.Core.ChatRoom.prototype.setUser = function(user) {
+ChatRoom.prototype.setUser = function(user) {
 	this.user = user;
 };
 
@@ -49,7 +51,7 @@ Candy.Core.ChatRoom.prototype.setUser = function(user) {
  * Returns:
  *   (Object) - Candy.Core.ChatUser instance or null
  */
-Candy.Core.ChatRoom.prototype.getUser = function() {
+ChatRoom.prototype.getUser = function() {
 	return this.user;
 };
 
@@ -59,7 +61,7 @@ Candy.Core.ChatRoom.prototype.getUser = function() {
  * Returns:
  *   (String) - Room jid
  */
-Candy.Core.ChatRoom.prototype.getJid = function() {
+ChatRoom.prototype.getJid = function() {
 	return this.room.jid;
 };
 
@@ -69,7 +71,7 @@ Candy.Core.ChatRoom.prototype.getJid = function() {
  * Parameters:
  *   (String) name - Room name
  */
-Candy.Core.ChatRoom.prototype.setName = function(name) {
+ChatRoom.prototype.setName = function(name) {
 	this.room.name = name;
 };
 
@@ -79,7 +81,7 @@ Candy.Core.ChatRoom.prototype.setName = function(name) {
  * Returns:
  *   (String) - Room name
  */
-Candy.Core.ChatRoom.prototype.getName = function() {
+ChatRoom.prototype.getName = function() {
 	return this.room.name;
 };
 
@@ -89,7 +91,7 @@ Candy.Core.ChatRoom.prototype.getName = function() {
  * Parameters:
  *   (Candy.Core.ChatRoster) roster - Chat roster
  */
-Candy.Core.ChatRoom.prototype.setRoster = function(roster) {
+ChatRoom.prototype.setRoster = function(roster) {
 	this.roster = roster;
 };
 
@@ -99,6 +101,8 @@ Candy.Core.ChatRoom.prototype.setRoster = function(roster) {
  * Returns
  *   (Candy.Core.ChatRoster) - instance
  */
-Candy.Core.ChatRoom.prototype.getRoster = function() {
+ChatRoom.prototype.getRoster = function() {
 	return this.roster;
 };
+
+export default ChatRoom;

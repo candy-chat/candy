@@ -5,7 +5,10 @@
  */
 'use strict';
 
-/* global Candy, $iq, navigator, Candy, $pres, Strophe, jQuery, $msg */
+/* global Candy, $iq, navigator, $pres, $msg */
+
+import $ from 'jquery';
+import Strophe from 'strophe';
 
 /** Class: Candy.Core.Action
  * Chat Actions (basicly a abstraction of Jabber commands)
@@ -15,7 +18,7 @@
  *   (Strophe) Strophe - Strophe
  *   (jQuery) $ - jQuery
  */
-Candy.Core.Action = (function(self, Strophe, $) {
+var Action = (function(self) {
 	/** Class: Candy.Core.Action.Jabber
 	 * Jabber actions
 	 */
@@ -431,4 +434,6 @@ Candy.Core.Action = (function(self, Strophe, $) {
 	};
 
 	return self;
-}(Candy.Core.Action || {}, Strophe, jQuery));
+}({}));
+
+export default Action;

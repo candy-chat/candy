@@ -5,12 +5,15 @@
  */
 'use strict';
 
-/* global Candy, Strophe, $ */
+import $ from 'jquery';
+import Strophe from 'strophe';
 
-/** Class: Candy.Core.Contact
+import Util from '../util.js';
+
+/** Class: Contact
  * Roster contact
  */
-Candy.Core.Contact = function(stropheRosterItem) {
+var Contact = function(stropheRosterItem) {
   /** Object: data
    * Strophe Roster plugin item model containing:
    * - jid
@@ -25,14 +28,14 @@ Candy.Core.Contact = function(stropheRosterItem) {
  * Gets an unescaped user jid
  *
  * See:
- *   <Candy.Util.unescapeJid>
+ *   <Util.unescapeJid>
  *
  * Returns:
  *   (String) - jid
  */
-Candy.Core.Contact.prototype.getJid = function() {
+Contact.prototype.getJid = function() {
   if(this.data.jid) {
-    return Candy.Util.unescapeJid(this.data.jid);
+    return Util.unescapeJid(this.data.jid);
   }
   return;
 };
@@ -41,13 +44,13 @@ Candy.Core.Contact.prototype.getJid = function() {
  * Escapes the user's jid (node & resource get escaped)
  *
  * See:
- *   <Candy.Util.escapeJid>
+ *   <Util.escapeJid>
  *
  * Returns:
  *   (String) - escaped jid
  */
-Candy.Core.Contact.prototype.getEscapedJid = function() {
-  return Candy.Util.escapeJid(this.data.jid);
+Contact.prototype.getEscapedJid = function() {
+  return Util.escapeJid(this.data.jid);
 };
 
 /** Function: getName
@@ -56,7 +59,7 @@ Candy.Core.Contact.prototype.getEscapedJid = function() {
  * Returns:
  *   (String) - name
  */
-Candy.Core.Contact.prototype.getName = function() {
+Contact.prototype.getName = function() {
   if (!this.data.name) {
     return this.getJid();
   }
@@ -69,7 +72,7 @@ Candy.Core.Contact.prototype.getName = function() {
  * Returns:
  *   (String) - name
  */
-Candy.Core.Contact.prototype.getNick = Candy.Core.Contact.prototype.getName;
+Contact.prototype.getNick = Contact.prototype.getName;
 
 /** Function: getSubscription
  * Gets user subscription
@@ -77,7 +80,7 @@ Candy.Core.Contact.prototype.getNick = Candy.Core.Contact.prototype.getName;
  * Returns:
  *   (String) - subscription
  */
-Candy.Core.Contact.prototype.getSubscription = function() {
+Contact.prototype.getSubscription = function() {
   if (!this.data.subscription) {
     return 'none';
   }
@@ -90,7 +93,7 @@ Candy.Core.Contact.prototype.getSubscription = function() {
  * Returns:
  *   (Array) - groups
  */
-Candy.Core.Contact.prototype.getGroups = function() {
+Contact.prototype.getGroups = function() {
   return this.data.groups;
 };
 
@@ -100,7 +103,7 @@ Candy.Core.Contact.prototype.getGroups = function() {
  * Returns:
  *   (String) - aggregate status, one of chat|dnd|available|away|xa|unavailable
  */
-Candy.Core.Contact.prototype.getStatus = function() {
+Contact.prototype.getStatus = function() {
   var status = 'unavailable',
     self = this,
     highestResourcePriority;
@@ -133,7 +136,7 @@ Candy.Core.Contact.prototype.getStatus = function() {
   return status;
 };
 
-Candy.Core.Contact.prototype._weightForStatus = function(status) {
+Contact.prototype._weightForStatus = function(status) {
   switch (status) {
     case 'chat':
     case 'dnd':
@@ -149,3 +152,5 @@ Candy.Core.Contact.prototype._weightForStatus = function(status) {
       return 5;
   }
 };
+
+export default Contact;

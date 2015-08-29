@@ -7,6 +7,13 @@
 
 /* global Candy, window, Strophe, jQuery */
 
+import Action from './core/action.js';
+import ChatRoom from './core/chatRoom.js';
+import ChatRoster from './core/chatRoster.js';
+import ChatUser from './core/chatUser.js';
+import Contact from './core/contact.js';
+import Event from './core/event.js';
+
 /** Class: Candy.Core
  * Candy Chat Core
  *
@@ -15,7 +22,7 @@
  *   (Strophe) Strophe - Strophe JS
  *   (jQuery) $ - jQuery
  */
-Candy.Core = (function(self, Strophe, $) {
+var Core = (function(self, Strophe, $) {
 		/** PrivateVariable: _connection
 		 * Strophe connection
 		 */
@@ -102,7 +109,7 @@ Candy.Core = (function(self, Strophe, $) {
 			 * JID resource to use when connecting to the server.
 			 * Specify `''` (an empty string) to request a random resource.
 			 */
-			resource: Candy.about.name,
+			resource: undefined,
 			/** Boolean: useParticipantRealJid
 			 * If set true, will direct one-on-one chats to participant's real JID rather than their MUC jid
 			 */
@@ -276,6 +283,10 @@ Candy.Core = (function(self, Strophe, $) {
 		});
 
 		_anonymousConnection = !_anonymousConnection ? jidOrHost && jidOrHost.indexOf("@") < 0 : true;
+
+		if(_options.resource === undefined) {
+			_options.resource = Candy.about.name;
+		}
 
 		if(jidOrHost && password) {
 			// Respect the resource, if provided
@@ -525,4 +536,13 @@ Candy.Core = (function(self, Strophe, $) {
 	};
 
 	return self;
-}(Candy.Core || {}, Strophe, jQuery));
+}({}, Strophe, jQuery));
+
+Core.Action = Action;
+Core.ChatRoom = ChatRoom;
+Core.ChatRoster = ChatRoster;
+Core.ChatUser = ChatUser;
+Core.Contact = Contact;
+Core.Event = Event;
+
+export default Core;

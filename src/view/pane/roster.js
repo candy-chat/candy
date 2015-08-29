@@ -7,6 +7,10 @@
 
 /* global Candy, Mustache, Strophe, jQuery */
 
+import Chat from './chat.js';
+import PrivateRoom from './privateRoom.js';
+import Room from './room.js';
+
 /** Class: Candy.View.Pane
  * Candy view pane handles everything regarding DOM updates etc.
  *
@@ -14,7 +18,7 @@
  *   (Candy.View.Pane) self - itself
  *   (jQuery) $ - jQuery
  */
-Candy.View.Pane = (function(self, $) {
+var Pane = (function(self, $) {
 
   /** Class Candy.View.Pane.Roster
    * Handles everyhing regarding roster updates.
@@ -38,7 +42,7 @@ Candy.View.Pane = (function(self, $) {
      */
     update: function(roomJid, user, action, currentUser) {
       Candy.Core.log('[View:Pane:Roster] ' + action);
-      var roomId = self.Chat.rooms[roomJid].id,
+      var roomId = Chat.rooms[roomJid].id,
         userId = Candy.Util.jidToId(user.getJid()),
         usercountDiff = -1,
         userElem = $('#user-' + roomId + '-' + userId),
@@ -73,21 +77,21 @@ Candy.View.Pane = (function(self, $) {
           userElem.remove();
           self.Roster._insertUser(roomJid, roomId, user, userId, currentUser);
           // it's me, update the toolbar
-          if(currentUser !== undefined && user.getNick() === currentUser.getNick() && self.Room.getUser(roomJid)) {
-            self.Chat.Toolbar.update(roomJid);
+          if(currentUser !== undefined && user.getNick() === currentUser.getNick() && Room.getUser(roomJid)) {
+            Chat.Toolbar.update(roomJid);
           }
         }
 
         // Presence of client
         if (currentUser !== undefined && currentUser.getNick() === user.getNick()) {
-          self.Room.setUser(roomJid, user);
+          Room.setUser(roomJid, user);
         // add click handler for private chat
         } else {
           $('#user-' + roomId + '-' + userId).click(self.Roster.userClick);
         }
 
         $('#user-' + roomId + '-' + userId + ' .context').click(function(e) {
-          self.Chat.Context.show(e.currentTarget, roomJid, user);
+          Chat.Context.show(e.currentTarget, roomJid, user);
           e.stopPropagation();
         });
 
@@ -99,27 +103,27 @@ Candy.View.Pane = (function(self, $) {
       } else if(action === 'leave') {
         self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
         // always show leave message in private room, even if status messages have been disabled
-        if (self.Chat.rooms[roomJid].type === 'chat') {
-          self.Chat.onInfoMessage(roomJid, null, $.i18n._('userLeftRoom', [user.getNick()]));
+        if (Chat.rooms[roomJid].type === 'chat') {
+          Chat.onInfoMessage(roomJid, null, $.i18n._('userLeftRoom', [user.getNick()]));
         } else {
-          self.Chat.infoMessage(roomJid, null, $.i18n._('userLeftRoom', [user.getNick()]), '');
+          Chat.infoMessage(roomJid, null, $.i18n._('userLeftRoom', [user.getNick()]), '');
         }
 
       } else if(action === 'nickchange') {
         usercountDiff = 0;
         self.Roster.changeNick(roomId, user);
-        self.Room.changeDataUserJidIfUserIsMe(roomId, user);
-        self.PrivateRoom.changeNick(roomJid, user);
+        Room.changeDataUserJidIfUserIsMe(roomId, user);
+        PrivateRoom.changeNick(roomJid, user);
         var infoMessage = $.i18n._('userChangedNick', [user.getPreviousNick(), user.getNick()]);
-        self.Chat.infoMessage(roomJid, null, infoMessage);
+        Chat.infoMessage(roomJid, null, infoMessage);
       // user has been kicked
       } else if(action === 'kick') {
         self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
-        self.Chat.onInfoMessage(roomJid, null, $.i18n._('userHasBeenKickedFromRoom', [user.getNick()]));
+        Chat.onInfoMessage(roomJid, null, $.i18n._('userHasBeenKickedFromRoom', [user.getNick()]));
       // user has been banned
       } else if(action === 'ban') {
         self.Roster.leaveAnimation('user-' + roomId + '-' + userId);
-        self.Chat.onInfoMessage(roomJid, null, $.i18n._('userHasBeenBannedFromRoom', [user.getNick()]));
+        Chat.onInfoMessage(roomJid, null, $.i18n._('userHasBeenBannedFromRoom', [user.getNick()]));
       }
 
       // Update user count
@@ -163,7 +167,7 @@ Candy.View.Pane = (function(self, $) {
         });
 
       var userInserted = false,
-        rosterPane = self.Room.getPane(roomJid, '.roster-pane');
+        rosterPane = Room.getPane(roomJid, '.roster-pane');
 
       // there are already users in the roster
       if(rosterPane.children().length > 0) {
@@ -208,7 +212,7 @@ Candy.View.Pane = (function(self, $) {
         realJid = elem.attr('data-real-jid'),
         useRealJid = Candy.Core.getOptions().useParticipantRealJid && (realJid !== undefined && realJid !== null && realJid !== ''),
         targetJid = useRealJid && realJid ? Strophe.getBareJidFromJid(realJid) : elem.attr('data-jid');
-      self.PrivateRoom.open(targetJid, elem.attr('data-nick'), true, useRealJid);
+      PrivateRoom.open(targetJid, elem.attr('data-nick'), true, useRealJid);
     },
 
     /** Function: showJoinAnimation
@@ -223,12 +227,12 @@ Candy.View.Pane = (function(self, $) {
       if (!user.getPreviousNick() || !$rosterUserElem || $rosterUserElem.is(':visible') === false) {
         self.Roster.joinAnimation(rosterUserId);
         // only show other users joining & don't show if there's no message in the room.
-        if(currentUser !== undefined && user.getNick() !== currentUser.getNick() && self.Room.getUser(roomJid)) {
+        if(currentUser !== undefined && user.getNick() !== currentUser.getNick() && Room.getUser(roomJid)) {
           // always show join message in private room, even if status messages have been disabled
-          if (self.Chat.rooms[roomJid].type === 'chat') {
-            self.Chat.onInfoMessage(roomJid, null, $.i18n._('userJoinedRoom', [user.getNick()]));
+          if (Chat.rooms[roomJid].type === 'chat') {
+            Chat.onInfoMessage(roomJid, null, $.i18n._('userJoinedRoom', [user.getNick()]));
           } else {
-            self.Chat.infoMessage(roomJid, null, $.i18n._('userJoinedRoom', [user.getNick()]));
+            Chat.infoMessage(roomJid, null, $.i18n._('userJoinedRoom', [user.getNick()]));
           }
         }
       }
@@ -286,4 +290,6 @@ Candy.View.Pane = (function(self, $) {
   };
 
   return self;
-}(Candy.View.Pane || {}, jQuery));
+}({}, jQuery));
+
+export default Pane.Roster;

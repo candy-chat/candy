@@ -7,6 +7,10 @@
 
 /* global Candy, Mustache, jQuery */
 
+import Chat from './chat.js';
+import Room from './room.js';
+import Window from './window.js';
+
 /** Class: Candy.View.Pane
  * Candy view pane handles everything regarding DOM updates etc.
  *
@@ -14,7 +18,7 @@
  *   (Candy.View.Pane) self - itself
  *   (jQuery) $ - jQuery
  */
-Candy.View.Pane = (function(self, $) {
+var Pane = (function(self, $) {
 
   /** Class: Candy.View.Pane.Message
    * Message submit/show handling
@@ -68,7 +72,7 @@ Candy.View.Pane = (function(self, $) {
       Candy.Core.Action.Jabber.Room.Message(targetJid, message, roomType, xhtmlMessage);
       // Private user chat. Jabber won't notify the user who has sent the message. Just show it as the user hits the button...
       if(roomType === 'chat' && message) {
-        self.Message.show(roomJid, self.Room.getUser(roomJid).getNick(), message, xhtmlMessage, undefined, Candy.Core.getUser().getJid());
+        self.Message.show(roomJid, Room.getUser(roomJid).getNick(), message, xhtmlMessage, undefined, Candy.Core.getUser().getJid());
       }
       // Clear input and set focus to it
       $(this).children('.field').val('').focus();
@@ -105,7 +109,7 @@ Candy.View.Pane = (function(self, $) {
       }
 
       // Before we add the new message, check to see if we should be automatically scrolling or not.
-      var messagePane = self.Room.getPane(roomJid, '.message-pane');
+      var messagePane = Room.getPane(roomJid, '.message-pane');
       var enableScroll = ((messagePane.scrollTop() + messagePane.outerHeight()) === messagePane.prop('scrollHeight')) || !$(messagePane).is(':visible');
       Candy.View.Pane.Chat.rooms[roomJid].enableScroll = enableScroll;
 
@@ -172,14 +176,14 @@ Candy.View.Pane = (function(self, $) {
       $(Candy).triggerHandler('candy:view.message.before-render', renderEvtData);
 
       var html = Mustache.to_html(renderEvtData.template, renderEvtData.templateData);
-      self.Room.appendToMessagePane(roomJid, html);
-      var elem = self.Room.getPane(roomJid, '.message-pane').children().last();
+      Room.appendToMessagePane(roomJid, html);
+      var elem = Room.getPane(roomJid, '.message-pane').children().last();
       // click on username opens private chat
       elem.find('a.label').click(function(event) {
         event.preventDefault();
         // Check if user is online and not myself
         var room = Candy.Core.getRoom(roomJid);
-        if(room && name !== self.Room.getUser(Candy.View.getCurrent().roomJid).getNick() && room.getRoster().get(roomJid + '/' + name)) {
+        if(room && name !== Room.getUser(Candy.View.getCurrent().roomJid).getNick() && room.getRoster().get(roomJid + '/' + name)) {
           if(Candy.View.Pane.PrivateRoom.open(roomJid + '/' + name, name, true) === false) {
             return false;
           }
@@ -212,19 +216,19 @@ Candy.View.Pane = (function(self, $) {
 
         // Check to see if in-core notifications are disabled
         if(!Candy.Core.getOptions().disableCoreNotifications) {
-          if(Candy.View.getCurrent().roomJid !== roomJid || !self.Window.hasFocus()) {
-            self.Chat.increaseUnreadMessages(roomJid);
-            if(!self.Window.hasFocus()) {
+          if(Candy.View.getCurrent().roomJid !== roomJid || !Window.hasFocus()) {
+            Chat.increaseUnreadMessages(roomJid);
+            if(!Window.hasFocus()) {
               // Notify the user about a new private message OR on all messages if configured
               if(Candy.View.Pane.Chat.rooms[roomJid].type === 'chat' || Candy.View.getOptions().updateWindowOnAllMessages === true) {
-                self.Chat.Toolbar.playSound();
+                Chat.Toolbar.playSound();
               }
             }
           }
         }
 
         if(Candy.View.getCurrent().roomJid === roomJid) {
-          self.Room.scrollToBottom(roomJid);
+          Room.scrollToBottom(roomJid);
         }
       }
 
@@ -244,4 +248,6 @@ Candy.View.Pane = (function(self, $) {
   };
 
   return self;
-}(Candy.View.Pane || {}, jQuery));
+}({}, jQuery));
+
+export default Pane.Message;

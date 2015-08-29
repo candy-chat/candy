@@ -14,7 +14,7 @@
  *   (Candy.View.Observer) self - itself
  *   (jQuery) $ - jQuery
  */
-Candy.View.Observer = (function(self, $) {
+export default (function(self, $) {
 	/** PrivateVariable: _showConnectedMessageModal
 	 * Ugly way to determine if the 'connected' modal should be shown.
 	 * Is set to false in case no autojoin param is set.
@@ -322,4 +322,4 @@ Candy.View.Observer = (function(self, $) {
 	};
 
 	return self;
-}(Candy.View.Observer || {}, jQuery));
+}({}, jQuery));

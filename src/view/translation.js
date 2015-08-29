@@ -5,12 +5,10 @@
  */
 'use strict';
 
-/* global Candy */
-
 /** Class: Candy.View.Translation
  * Contains translations
  */
-Candy.View.Translation = {
+export default {
 	'en' : {
 		'status': 'Status: %s',
 		'statusConnecting': 'Connecting...',

@@ -7,6 +7,9 @@
 
 /* global Candy, document, Mustache, Strophe, Audio, jQuery */
 
+import Room from './room.js';
+import Window from './window.js';
+
 /** Class: Candy.View.Pane
  * Candy view pane handles everything regarding DOM updates etc.
  *
@@ -14,7 +17,7 @@
  *   (Candy.View.Pane) self - itself
  *   (jQuery) $ - jQuery
  */
-Candy.View.Pane = (function(self, $) {
+var Pane = (function(self, $) {
 
   /** Class: Candy.View.Pane.Chat
    * Chat-View related view updates
@@ -132,7 +135,7 @@ Candy.View.Pane = (function(self, $) {
       unreadElem.show().text(unreadElem.text() !== '' ? parseInt(unreadElem.text(), 10) + 1 : 1);
       // only increase window unread messages in private chats
       if (self.Chat.rooms[roomJid].type === 'chat' || Candy.View.getOptions().updateWindowOnAllMessages === true) {
-        self.Window.increaseUnreadMessages();
+        Window.increaseUnreadMessages();
       }
     },
 
@@ -147,7 +150,7 @@ Candy.View.Pane = (function(self, $) {
      */
     clearUnreadMessages: function(roomJid) {
       var unreadElem = self.Chat.getTab(roomJid).find('.unread');
-      self.Window.reduceUnreadMessages(unreadElem.text());
+      Window.reduceUnreadMessages(unreadElem.text());
       unreadElem.hide().text('');
     },
 
@@ -157,12 +160,12 @@ Candy.View.Pane = (function(self, $) {
     tabClick: function(e) {
       // remember scroll position of current room
       var currentRoomJid = Candy.View.getCurrent().roomJid;
-      var roomPane = self.Room.getPane(currentRoomJid, '.message-pane');
+      var roomPane = Room.getPane(currentRoomJid, '.message-pane');
       if (roomPane) {
         self.Chat.rooms[currentRoomJid].scrollPosition = roomPane.scrollTop();
       }
 
-      self.Room.show($(this).attr('data-roomjid'));
+      Room.show($(this).attr('data-roomjid'));
       e.preventDefault();
     },
 
@@ -179,7 +182,7 @@ Candy.View.Pane = (function(self, $) {
       var roomJid = $(this).parent().attr('data-roomjid');
       // close private user tab
       if(self.Chat.rooms[roomJid].type === 'chat') {
-        self.Room.close(roomJid);
+        Room.close(roomJid);
       // close multi-user room tab
       } else {
         Candy.Core.Action.Jabber.Room.Leave(roomJid);
@@ -246,9 +249,9 @@ Candy.View.Pane = (function(self, $) {
           timestamp: timestamp.toISOString()
         });
         $('#chat-rooms').children().each(function() {
-          self.Room.appendToMessagePane($(this).attr('data-roomjid'), html);
+          Room.appendToMessagePane($(this).attr('data-roomjid'), html);
         });
-        self.Room.scrollToBottom(Candy.View.getCurrent().roomJid);
+        Room.scrollToBottom(Candy.View.getCurrent().roomJid);
 
         /** Event: candy:view.chat.admin-message
          * After admin message display
@@ -299,9 +302,9 @@ Candy.View.Pane = (function(self, $) {
           time: Candy.Util.localizedTime(timestamp),
           timestamp: timestamp.toISOString()
         });
-        self.Room.appendToMessagePane(roomJid, html);
+        Room.appendToMessagePane(roomJid, html);
         if (Candy.View.getCurrent().roomJid === roomJid) {
-          self.Room.scrollToBottom(Candy.View.getCurrent().roomJid);
+          Room.scrollToBottom(Candy.View.getCurrent().roomJid);
         }
       }
     },
@@ -364,7 +367,7 @@ Candy.View.Pane = (function(self, $) {
        */
       update: function(roomJid) {
         var context = $('#chat-toolbar').find('.context'),
-          me = self.Room.getUser(roomJid);
+          me = Room.getUser(roomJid);
         if(!me || !me.isModerator()) {
           context.hide();
         } else {
@@ -428,16 +431,16 @@ Candy.View.Pane = (function(self, $) {
       onAutoscrollControlClick: function() {
         var control = $('#chat-autoscroll-control');
         if(control.hasClass('checked')) {
-          self.Room.scrollToBottom = function(roomJid) {
-            self.Room.onScrollToStoredPosition(roomJid);
+          Room.scrollToBottom = function(roomJid) {
+            Room.onScrollToStoredPosition(roomJid);
           };
-          self.Window.autoscroll = false;
+          Window.autoscroll = false;
         } else {
-          self.Room.scrollToBottom = function(roomJid) {
-            self.Room.onScrollToBottom(roomJid);
+          Room.scrollToBottom = function(roomJid) {
+            Room.onScrollToBottom(roomJid);
           };
-          self.Room.scrollToBottom(Candy.View.getCurrent().roomJid);
-          self.Window.autoscroll = true;
+          Room.scrollToBottom(Candy.View.getCurrent().roomJid);
+          Window.autoscroll = true;
         }
         control.toggleClass('checked');
       },
@@ -896,7 +899,7 @@ Candy.View.Pane = (function(self, $) {
         menulinks = evtData.menulinks;
 
         for(id in menulinks) {
-          if(menulinks.hasOwnProperty(id) && menulinks[id].requiredPermission !== undefined && !menulinks[id].requiredPermission(user, self.Room.getUser(roomJid), elem)) {
+          if(menulinks.hasOwnProperty(id) && menulinks[id].requiredPermission !== undefined && !menulinks[id].requiredPermission(user, Room.getUser(roomJid), elem)) {
             delete menulinks[id];
           }
         }
@@ -1056,4 +1059,6 @@ Candy.View.Pane = (function(self, $) {
   };
 
   return self;
-}(Candy.View.Pane || {}, jQuery));
+}({}, jQuery));
+
+export default Pane.Chat;
