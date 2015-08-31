@@ -1,0 +1,14 @@
+selenium:
+  image: selenium/standalone-chrome:2.47.1
+  expose:
+    - 4444
+
+grunt:
+  image: digitallyseamless/nodejs-bower-grunt
+  expose:
+    - 9000
+  links:
+    - selenium
+  volumes:
+   - /vagrant:/data
+  command: grunt watch
