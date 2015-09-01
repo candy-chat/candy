@@ -193,7 +193,8 @@ Candy.View.Pane = (function(self, $) {
           roomJid: roomJid,
           message: message,
           time: Candy.Util.localizedTime(timestamp),
-          timestamp: timestamp.toISOString()
+          timestamp: timestamp.toISOString(),
+          from: from
         };
         /** Event: candy:view.message.notify
          * Notify the user (optionally) that a new message has been received
