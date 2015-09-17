@@ -495,10 +495,20 @@ Candy.Util = (function(self, $){
 		 *   Emotified text
 		 */
 		emotify: function(text) {
-			var i;
-			for(i = this.emoticons.length-1; i >= 0; i--) {
+			var codeMatches = text.match(/(\`[^`]*\`)/gim) || [];
+
+			codeMatches.forEach(function replaceCodeBlocksForHolders(match, i) {
+				text = text.replace(match, '__CODE_' + i + '__');
+			});
+
+			for (var i = this.emoticons.length - 1; i >= 0; i--) {
 				text = text.replace(this.emoticons[i].regex, '$2<img class="emoticon" alt="$1" title="$1" src="' + this._emoticonPath + this.emoticons[i].image + '" />$3');
 			}
+
+			codeMatches.forEach(function replaceHoldersForCodeBlocks(match, i) {
+					text = text.replace('__CODE_' + i + '__', match);
+			});
+
 			return text;
 		},
 
