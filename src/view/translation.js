@@ -963,5 +963,70 @@ Candy.View.Translation = {
         'errorAutojoinMissing': 'Není nastaven parametr autojoin. Nastavte jej prosím.',
 
         'antiSpamMessage': 'Nespamujte prosím. Váš účet byl na chvilku zablokován.'
-    }
+    },
+	'he' : {
+		'status': 'מצב: %s',
+		'statusConnecting': 'כעת מתחבר...',
+		'statusConnected' : 'מחובר',
+		'statusDisconnecting': 'כעת מתנתק...',
+		'statusDisconnected' : 'מנותק',
+		'statusAuthfail': 'אימות נכשל',
+
+		'roomSubject'  : 'נושא:',
+		'messageSubmit': 'שלח',
+
+		'labelUsername': 'שם משתמש:',
+		'labelNickname': 'שם כינוי:',
+		'labelPassword': 'סיסמה:',
+		'loginSubmit'  : 'כניסה',
+		'loginInvalid'  : 'JID לא תקני',
+
+		'reason'				: 'סיבה:',
+		'subject'				: 'נושא:',
+		'reasonWas'				: 'סיבה היתה: %s.',
+		'kickActionLabel'		: 'בעט',
+		'youHaveBeenKickedBy'   : 'נבעטת מתוך %2$s על ידי %1$s',
+		'youHaveBeenKicked'     : 'נבעטת מתוך %s',
+		'banActionLabel'		: 'אסור',
+		'youHaveBeenBannedBy'   : 'נאסרת מתוך %1$s על ידי %2$s',
+		'youHaveBeenBanned'     : 'נאסרת מתוך %s',
+
+		'privateActionLabel' : 'שיחה פרטית',
+		'ignoreActionLabel'  : 'התעלם',
+		'unignoreActionLabel' : 'בטל התעלמות',
+
+		'setSubjectActionLabel': 'שנה נושא',
+
+		'administratorMessageSubject' : 'מנהל',
+
+		'userJoinedRoom'           : '%s נכנס(ה) לחדר.',
+		'userLeftRoom'             : '%s עזב(ה) את החדר.',
+		'userHasBeenKickedFromRoom': '%s נבעט(ה) מתוך החדר.',
+		'userHasBeenBannedFromRoom': '%s נאסר(ה) מתוך החדר.',
+		'userChangedNick': '%1$s מוכר(ת) כעת בתור %2$s.',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'אחראי',
+		'tooltipIgnored'		: 'אתה מתעלם ממשתמש זה',
+		'tooltipEmoticons'		: 'רגשונים',
+		'tooltipSound'			: 'נגן צליל עבור הודעות פרטיות חדשות',
+		'tooltipAutoscroll'		: 'גלילה אוטומטית',
+		'tooltipStatusmessage'	: 'הצג הודעות מצב',
+		'tooltipAdministration'	: 'הנהלת חדר',
+		'tooltipUsercount'		: 'משתתפי חדר',
+
+		'enterRoomPassword' : 'חדר "%s" הינו מוגן סיסמה.',
+		'enterRoomPasswordSubmit' : 'הצטרף לחדר',
+		'passwordEnteredInvalid' : 'סיסמה שגויה לחדר "%s".',
+
+		'nicknameConflict': 'שם משתמש כבר מצוי בשימוש. אנא בחר אחד אחר.',
+
+		'errorMembersOnly': 'אין באפשרותך להצטרף לחדר "%s": הרשאות לקויות.',
+		'errorMaxOccupantsReached': 'אין באפשרותך להצטרף לחדר "%s": יותר מדי משתתפים.',
+		'errorAutojoinMissing': 'לא נקבע פרמטר הצטרפות אוטומטית בתצורה. אנא הזן כזה כדי להמשיך.',
+
+		'antiSpamMessage' : 'אנא אל תשלח ספאם. נחסמת למשך זמן קצר.'
+	}
 };
