@@ -963,7 +963,7 @@ Candy.View.Translation = {
         'errorAutojoinMissing': 'Není nastaven parametr autojoin. Nastavte jej prosím.',
 
         'antiSpamMessage': 'Nespamujte prosím. Váš účet byl na chvilku zablokován.'
-    }
+    },
 	'he' : {
 		'status': 'מצב: %s',
 		'statusConnecting': 'כעת מתחבר...',
@@ -1028,5 +1028,5 @@ Candy.View.Translation = {
 		'errorAutojoinMissing': 'לא נקבע פרמטר הצטרפות אוטומטית בתצורה. אנא הזן כזה כדי להמשיך.',
 
 		'antiSpamMessage' : 'אנא אל תשלח ספאם. נחסמת למשך זמן קצר.'
-	},
+	}
 };
