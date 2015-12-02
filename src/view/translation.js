@@ -512,6 +512,71 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'Var god avstå från att spamma. Du har blivit blockerad för en kort stund.'
 	},
+	'fi' : {
+		'status': 'Status: %s',
+		'statusConnecting': 'Muodostetaan yhteyttä...',
+		'statusConnected' : 'Yhdistetty',
+		'statusDisconnecting': 'Katkaistaan yhteyttä...',
+		'statusDisconnected' : 'Yhteys katkaistu',
+		'statusAuthfail': 'Autentikointi epäonnistui',
+
+		'roomSubject'  : 'Otsikko:',
+		'messageSubmit': 'Lähetä',
+
+		'labelUsername': 'Käyttäjätunnus:',
+		'labelNickname': 'Nimimerkki:',
+		'labelPassword': 'Salasana:',
+		'loginSubmit'  : 'Kirjaudu sisään',
+		'loginInvalid'  : 'Virheellinen JID',
+
+		'reason'				: 'Syy:',
+		'subject'				: 'Otsikko:',
+		'reasonWas'				: 'Syy oli: %s.',
+		'kickActionLabel'		: 'Potkaise',
+		'youHaveBeenKickedBy'   : 'Nimimerkki %1$s potkaisi sinut pois huoneesta %2$s',
+		'youHaveBeenKicked'     : 'Sinut potkaistiin pois huoneesta %s',
+		'banActionLabel'		: 'Porttikielto',
+		'youHaveBeenBannedBy'   : 'Nimimerkki %2$s antoi sinulle porttikiellon huoneeseen %1$s',
+		'youHaveBeenBanned'     : 'Sinulle on annettu porttikielto huoneeseen %s',
+
+		'privateActionLabel' : 'Yksityinen keskustelu',
+		'ignoreActionLabel'  : 'Hiljennä',
+		'unignoreActionLabel' : 'Peruuta hiljennys',
+
+		'setSubjectActionLabel': 'Vaihda otsikkoa',
+
+		'administratorMessageSubject' : 'Ylläpitäjä',
+
+		'userJoinedRoom'           : '%s tuli huoneeseen.',
+		'userLeftRoom'             : '%s lähti huoneesta.',
+		'userHasBeenKickedFromRoom': '%s potkaistiin pois huoneesta.',
+		'userHasBeenBannedFromRoom': '%s sai porttikiellon huoneeseen.',
+		'userChangedNick': '%1$s vaihtoi nimimerkikseen %2$s.',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'Ylläpitäjä',
+		'tooltipIgnored'		: 'Olet hiljentänyt tämän käyttäjän',
+		'tooltipEmoticons'		: 'Hymiöt',
+		'tooltipSound'			: 'Soita äänimerkki uusista yksityisviesteistä',
+		'tooltipAutoscroll'		: 'Automaattinen vieritys',
+		'tooltipStatusmessage'	: 'Näytä statusviestit',
+		'tooltipAdministration'	: 'Huoneen ylläpito',
+		'tooltipUsercount'		: 'Huoneen jäsenet',
+
+		'enterRoomPassword' : 'Huone "%s" on suojattu salasanalla.',
+		'enterRoomPasswordSubmit' : 'Liity huoneeseen',
+		'passwordEnteredInvalid' : 'Virheelinen salasana huoneeseen "%s".',
+
+		'nicknameConflict': 'Käyttäjätunnus oli jo käytössä. Valitse jokin toinen käyttäjätunnus.',
+
+		'errorMembersOnly': 'Et voi liittyä huoneeseen "%s": ei oikeuksia.',
+		'errorMaxOccupantsReached': 'Et voi liittyä huoneeseen "%s": liian paljon jäseniä.',
+		'errorAutojoinMissing': 'Parametria "autojoin" ei ole määritelty asetuksissa. Tee määrittely jatkaaksesi.',
+
+		'antiSpamMessage' : 'Ethän spämmää. Sinut on nyt väliaikaisesti pistetty jäähylle.'
+	},
 	'it' : {
 		'status': 'Stato: %s',
 		'statusConnecting': 'Connessione...',
