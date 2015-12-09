@@ -34,29 +34,13 @@ cp /vagrant/devbox/nginx-default.conf /etc/nginx/sites-available/default
 sed --in-place 's|{{ROOT_DIR}}|/vagrant|g' /etc/nginx/sites-available/default/nginx-default.conf
 /etc/init.d/nginx restart
 
-#
-# Candy development dependencies
-#
-sudo add-apt-repository ppa:chris-lea/node.js
-sudo apt-get update
-sudo apt-get install -y nodejs git
-npm install -g grunt-cli
-npm install -g bower
+# Set it up to cd to /vagrant on login.
+profile='/home/vagrant/.profile';
+if [ "$(tail -n 1 $profile)" != 'cd /vagrant' ]; then
+    echo 'cd /vagrant' >> $profile;
+fi
 
-cd /vagrant
-su -u vagrant npm install
-su -u vagrant bower install
+cd /vagrant;
 
-#
-# Selenium & PhantomJS for testing
-#
-apt-get install -y openjdk-7-jre
-mkdir /usr/lib/selenium/
-wget --no-verbose --output-document=/usr/lib/selenium/selenium-server-standalone-2.42.2.jar -- http://selenium-release.storage.googleapis.com/2.42/selenium-server-standalone-2.42.2.jar
-mkdir -p /var/log/selenium/
-chmod a+w /var/log/selenium/
-cp /vagrant/devbox/selenium.init.sh /etc/init.d/selenium
-chmod 755 /etc/init.d/selenium
-/etc/init.d/selenium start
-update-rc.d selenium defaults
-apt-get install -y phantomjs
+docker-compose run grunt npm install
+docker-compose run grunt bower install

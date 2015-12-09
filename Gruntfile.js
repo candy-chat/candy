@@ -1,7 +1,5 @@
 'use strict';
 
-var localInternConfig = process.env.CANDY_VAGRANT === 'false' ? 'tests/intern.local' : 'tests/intern.vagrant';
-
 module.exports = function(grunt) {
 
 	// Project configuration.
@@ -160,14 +158,14 @@ module.exports = function(grunt) {
 			unit: {
 				options: {
 					runType: 'runner',
-					config: localInternConfig,
+					config: 'tests/intern.local',
 					functionalSuites: []
 				}
 			},
 			functional: {
 				options: {
 					runType: 'runner',
-					config: localInternConfig,
+					config: 'tests/intern.local',
 					suites: []
 				}
 			}
