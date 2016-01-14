@@ -82,6 +82,20 @@ module.exports = function(grunt) {
 				}
 			}
 		},
+		concat: {
+			css:{
+				src: [
+					'bower_components/bootstrap/dist/css/bootstrap.css'
+				],
+				dest: 'libs.bundle.css'
+			}
+		},
+		cssmin: {
+			css:{
+				src: 'libs.bundle.css',
+				dest: 'libs.min.css'
+			}
+		},
 		watch: {
 			clear: {
 				files: ['src/*.js', 'src/**/*.js', 'tests/**/*.js'],
@@ -248,6 +262,8 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-compress');
+	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-github-releaser');
 	grunt.loadNpmTasks('grunt-prompt');
 	grunt.loadNpmTasks('grunt-natural-docs');
@@ -261,7 +277,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('test', ['intern:all']);
 	grunt.registerTask('ci', ['todo', 'jshint', 'build', 'intern:all', 'coveralls:all', 'docs']);
-	grunt.registerTask('build', ['uglify:libs', 'uglify:libs-min', 'uglify:bundle', 'uglify:min']);
+	grunt.registerTask('build', ['uglify:libs', 'uglify:libs-min', 'uglify:bundle', 'uglify:min', 'concat:css', 'cssmin:css']);
 	grunt.registerTask('default', [
 		'jshint', 'build', 'notify:default', 'intern:unit'
 	]);
