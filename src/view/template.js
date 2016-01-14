@@ -19,9 +19,10 @@ Candy.View.Template = (function(self){
 	};
 
 	self.Chat = {
-		pane: '<div id="chat-pane">{{> tabs}}{{> toolbar}}{{> rooms}}</div>{{> modal}}',
+		pane: '<div id="chat-pane">{{> tabs}}{{> mobile}}{{> toolbar}}{{> rooms}}</div>{{> modal}}',
 		rooms: '<div id="chat-rooms" class="rooms"></div>',
 		tabs: '<ul id="chat-tabs"></ul>',
+		mobileIcon: '<div id="mobile-roster-icon"><a class="box-shadow-icon"></a></div>',
 		tab: '<li class="roomtype-{{roomType}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">' +
 				'<a href="#" class="label">{{#privateUserChat}}@{{/privateUserChat}}{{name}}</a>' +
 				'<a href="#" class="transition"></a><a href="#" class="close">\u00D7</a>' +

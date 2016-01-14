@@ -199,6 +199,7 @@ Candy.View.Pane = (function(self, $) {
       if (Candy.Core.getOptions().disconnectWithoutTabs) {
         Candy.Core.disconnect();
         self.Chat.Toolbar.hide();
+        self.Chat.hideMobileIcon();
         return;
       }
     },
@@ -219,6 +220,32 @@ Candy.View.Pane = (function(self, $) {
           tabWidth = Math.floor((availableWidth) / tabs.length) - tabDiffToRealWidth;
         tabs.css({width: tabWidth, overflow: 'hidden'});
       }
+    },
+
+    /** Function: hideMobileIcon
+     * Hide mobile roster pane icon.
+     */
+    hideMobileIcon: function() {
+      $('#mobile-roster-icon').hide();
+    },
+
+    /** Function: showMobileIcon
+     * Show mobile roster pane icon.
+     */
+    showMobileIcon: function() {
+      $('#mobile-roster-icon').show();
+    },
+
+    /** Function: clickMobileIcon
+     * Add class to 'open' roster pane (on mobile).
+     */
+    clickMobileIcon: function(e) {
+      if ($('.room-pane').is('.open')) {
+        $('.room-pane').removeClass('open');
+      } else {
+        $('.room-pane').addClass('open');
+      }
+      e.preventDefault();
     },
 
     /** Function: adminMessage
@@ -343,6 +370,7 @@ Candy.View.Pane = (function(self, $) {
         if(Candy.Util.cookieExists('candy-nostatusmessages')) {
           $('#chat-statusmessage-control').click();
         }
+        $('.box-shadow-icon').click(self.Chat.clickMobileIcon);
       },
 
       /** Function: show
