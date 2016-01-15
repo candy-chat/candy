@@ -683,3 +683,60 @@ ul {
 	color: #333;
 	background-color: #aaa;
 }
+
+
+
+
+/**
+ * Bootstrap Responsive Design
+ */
+
+
+/*
+ * Overriding some bootstrap default styles
+ */
+*, :after, :before {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+}
+
+button, html input[type=button], input[type=reset], input[type=submit] {
+   // -webkit-appearance:none;
+}
+
+label {
+	font-weight:normal;
+}
+
+.label {
+	font-size:100%;
+	font-weight:normal;
+	text-align:left;
+	line-height:inherit;
+	padding:0;
+	color:inherit;
+}
+.message-pane .label:hover {
+	color:inherit;
+}
+
+.close {
+	font-size:inherit;
+	line-height:inherit;
+	opacity:1;
+	text-shadow:none;
+}
+
+
+/*
+ * Tweaking stuff
+ */
+.message-form input.submit {
+	padding:0 10px;
+}
+#chat-tabs .transition {
+	width:30px;
+}
+
+
