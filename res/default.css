@@ -740,3 +740,39 @@ label {
 }
 
 
+/*
+ * Responsive specific styles
+ */
+
+@media (max-width: 599px) {
+	.message-pane-wrapper {
+		margin-right:50px;
+	}
+	.message-pane li>div {
+		padding-left:105px;
+	}
+	.message-pane .label {
+		width:85px;
+		margin-left:-105px;
+	}
+	.message-pane .spacer {
+//		margin:0 5px;
+	}
+
+	.message-form-wrapper {
+		margin-right:50px;
+	}
+	.message-form {
+		margin-right:150px;
+	}
+	.message-form input.submit {
+		margin-right:53px;
+	}
+
+	.roster-pane {
+		right:-150px;
+		z-index:10;
+	}
+}
+
+
