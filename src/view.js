@@ -129,6 +129,7 @@ Candy.View = (function(self, $) {
 			assetsPath : this.getOptions().assets
 		}, {
 			tabs: Candy.View.Template.Chat.tabs,
+			mobile: Candy.View.Template.Chat.mobileIcon,
 			rooms: Candy.View.Template.Chat.rooms,
 			modal: Candy.View.Template.Chat.modal,
 			toolbar: Candy.View.Template.Chat.toolbar

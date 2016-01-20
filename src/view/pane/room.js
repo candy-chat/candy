@@ -64,6 +64,7 @@ Candy.View.Pane = (function(self, $) {
       // First room, show sound control
       if(Candy.Util.isEmptyObject(self.Chat.rooms)) {
         self.Chat.Toolbar.show();
+        self.Chat.showMobileIcon();
       }
 
       var roomId = Candy.Util.jidToId(roomJid);
