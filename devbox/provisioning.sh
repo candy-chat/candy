@@ -31,21 +31,21 @@ cp /vagrant/devbox/prosody.cfg.lua /etc/prosody/prosody.cfg.lua
 #
 apt-get install -y nginx
 cp /vagrant/devbox/nginx-default.conf /etc/nginx/sites-available/default
-sed --in-place 's|{{ROOT_DIR}}|/vagrant|g' /etc/nginx/sites-available/default/nginx-default.conf
+sed --in-place 's|{{ROOT_DIR}}|/vagrant|g' /etc/nginx/sites-available/default
 /etc/init.d/nginx restart
 
 #
 # Candy development dependencies
 #
-sudo add-apt-repository ppa:chris-lea/node.js
-sudo apt-get update
-sudo apt-get install -y nodejs git
+add-apt-repository ppa:chris-lea/node.js
+apt-get update
+apt-get install -y nodejs git
 npm install -g grunt-cli
 npm install -g bower
 
 cd /vagrant
-su -u vagrant npm install
-su -u vagrant bower install
+sudo -H -u vagrant npm install
+sudo -H -u vagrant bower install
 
 #
 # Selenium & PhantomJS for testing
