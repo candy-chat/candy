@@ -132,7 +132,7 @@ module.exports = function(grunt) {
 		},
 		clean: {
 			bundle: ['./candy.bundle.js', './candy.bundle.map', './candy.min.js'],
-			libs: ['./libs.bundle.js', './libs.bundle.map', './libs.min.js'],
+			libs: ['./libs.bundle.css', './libs.bundle.js', './libs.bundle.map', './libs.min.js'],
 			docs: ['./docs']
 		},
 		mkdir: {
@@ -229,6 +229,7 @@ module.exports = function(grunt) {
 							'candy.min.map',
 							'CONTRIBUTING.md',
 							'CREDITS.md',
+							'libs.bundle.css',
 							'libs.bundle.js',
 							'libs.bundle.map',
 							'libs.min.js',
