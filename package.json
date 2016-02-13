@@ -1,6 +1,6 @@
 {
   "name": "candy",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Multi-user XMPP web client",
   "main": "candy.min.js",
   "directories": {
