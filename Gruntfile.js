@@ -232,6 +232,7 @@ module.exports = function(grunt) {
 							'libs.bundle.css',
 							'libs.bundle.js',
 							'libs.bundle.map',
+							'libs.min.css',
 							'libs.min.js',
 							'LICENSE',
 							'package.json',
