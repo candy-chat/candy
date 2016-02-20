@@ -854,7 +854,7 @@ Candy.Core.Event = (function(self, Strophe, $) {
 
 					var xhtmlChild = msg.children('html[xmlns="' + Strophe.NS.XHTML_IM + '"]');
 					if(xhtmlChild.length > 0) {
-						var xhtmlMessage = $($('<div>').append(xhtmlChild.children('body').first().contents()).html());
+						var xhtmlMessage = $($('<div>').append(xhtmlChild.children('body').first().clone()).html());
 						message.xhtmlMessage = xhtmlMessage;
 					}
 
