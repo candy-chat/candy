@@ -1,6 +1,6 @@
 'use strict';
 
-var localInternConfig = process.env.CANDY_VAGRANT === 'false' ? 'tests/intern.local' : 'tests/intern.vagrant';
+var localInternConfig = process.env.CANDY_VAGRANT === 'true' ? 'tests/intern.local' : 'tests/intern.vagrant';
 
 module.exports = function(grunt) {
 
@@ -106,7 +106,8 @@ module.exports = function(grunt) {
 			},
 			bundle: {
 				files: ['src/**/*.js'],
-				tasks: ['todo:src', 'jshint', 'uglify:bundle', 'uglify:min', 'notify:bundle', 'intern:unit']
+				// Disable Intern testing for now
+				tasks: ['todo:src', 'jshint', 'uglify:bundle', 'uglify:min', 'notify:bundle' ]  //, 'intern:unit'
 			},
 			libs: {
 				files: ['bower_components/*/**/*.js', 'vendor_libs/*/**/*.js'],

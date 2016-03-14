@@ -1,0 +1,81 @@
+.roombar {
+  background-color: #1763b0;
+  border-bottom: 1px solid #e7e7e7;
+  height: 30px;
+  padding: 2px 3px;
+  width: 100%;
+  z-index: 2;
+  overflow: hidden;
+  margin-top: -30px;
+}
+
+.roombar .topic {
+  color: white;
+  cursor: pointer;
+  float: left;
+  font-weight: 1.5em;
+  font-size: 1.2em;
+  height: 100%;
+  padding-left: 5px;
+  width: 100%;
+}
+
+.roombar input[type="text"] {
+  background-color: rgba(255,255,255,0.1);
+  border: 1px solid rgba(0,0,0,0.1);
+  bottom: 1px;
+  font-weight: 100;
+  letter-spacing: 2px;
+  padding: 0 3px;
+  position: relative;
+  width: 100%;
+}
+
+.message-pane-wrapper {
+  padding-top: 30px;
+  margin-bottom: -30px;
+  padding-bottom: 30px;
+}
+
+#chat-rooms .roster-wrapper .pane-heading .invite-users {
+  float: right;
+}
+
+.tt-dropdown-menu {
+  background: white;
+  width: 100%;
+}
+
+#invite-users-muc input:disabled {
+  display: none;
+}
+
+#invite-users-muc input {
+  background: white !important;
+}
+
+.tagholder {
+  max-height: 150px;
+  overflow-y: scroll;
+}
+
+.input-tag {
+  background-color: rgba(23, 99, 176, 0.5);
+  border: 1px solid rgba(23, 99, 176, 0.69);
+  border-radius: 6px;
+  color: white;
+  cursor: default;
+  display: block;
+  margin: 2px;
+  padding: 2px;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+  white-space: nowrap;
+}
+
+.input-tag .close-input-tag {
+  padding-left: 10px;
+}
+
+.tt-cursor {
+  background-color: rgba(23,90,176,0.2);
+}

@@ -1,0 +1,239 @@
+/**
+ * LeftTabs CSS
+ *
+ * @author Melissa Adamaitis <melissa@melissanoelle.com>
+ */
+
+/* Message pane/body CSS. */
+#chat-rooms {
+  display: inline-block;
+  float: right;
+  margin-left: 15%;
+  margin-right: 14.6%;
+  width: 70.5%;
+}
+.message-pane-wrapper {
+  float:right;
+  height: auto;
+  margin: 0;
+  position: relative;
+  width: 100%;
+}
+.message-pane {
+  height: 100%;
+  padding-top: 1px;
+  width: 69.8%;
+  overflow-y: scroll;
+  position: fixed;
+}
+.message-pane .label {
+  padding-top: 7px;
+}
+
+/* Input form CSS. */
+.message-form-wrapper {
+  float: left;
+  margin-right:auto;
+  position: relative;
+  width: 100%;
+}
+.message-form {
+  margin: 0;
+  position: relative;
+  width: 100%;
+}
+.message-form input.submit {
+  margin: 2px 3px;
+  position: absolute;
+}
+
+/* Roster (right) menu CSS. */
+.roster-pane {
+  background-color: initial;
+  border: 0;
+  box-shadow: none;
+  float:right;
+  margin: 0;
+  padding-right: 3px;
+  padding-top: 2px;
+  position: fixed;
+  right: 0;
+  width: 14%;
+}
+.roster-pane .label {
+  color: #555;
+  font-size: 0.85em;
+  line-height: 1em;
+  padding-left: 0;
+  text-shadow: none;
+  width: auto;
+}
+.roster-pane .user {
+  border: 0;
+  box-sizing: initial;
+  box-shadow: none;
+  font-size: 14px;
+  padding: 0;
+}
+.roster-pane .user ul {
+  float: right;
+  margin: 0;
+  position: relative;
+}
+.roster-pane .user:hover {
+  background-color: initial;
+}
+.roster-pane .user:hover .label {
+  color: #33bbfc;
+}
+
+/* Toolbar CSS. (Below roster.) */
+#chat-toolbar {
+  height: 30px;
+  margin-bottom: 0;
+  width: 14.5%;
+}
+#chat-toolbar li {
+  background-image: none !important;
+  font-size: 1.25em;
+  line-height: 1em;
+}
+#emoticons-icon {
+  color: #F3E43C;
+}
+/* Volume. */
+#chat-sound-control, #chat-autoscroll-control {
+  color: #ccc;
+}
+#chat-sound-control .glyphicon {
+  display: none;
+}
+#chat-sound-control .glyphicon.glyphicon-volume-off {
+  display: initial;
+  color: #9b1414;
+}
+#chat-sound-control.checked .glyphicon.glyphicon-volume-off {
+  display: none;
+}
+#chat-sound-control.checked .glyphicon.glyphicon-volume-up {
+  display: block;
+}
+/* Scroll */
+#chat-autoscroll-control {
+  position: relative;
+}
+#chat-autoscroll-control .glyphicon.glyphicon-ban-circle {
+  display: initial;
+  color: #9b1414;
+  position: absolute;
+  left: 0;
+}
+#chat-autoscroll-control.checked .glyphicon.glyphicon-ban-circle {
+  display: none;
+}
+/* Status message */
+#chat-statusmessage-control {
+  position: relative;
+  color: #6EAEFF;
+}
+#chat-statusmessage-control .glyphicon.glyphicon-ban-circle {
+  display: initial;
+  color: #9b1414;
+  left: 0;
+  position: absolute;
+}
+#chat-statusmessage-control.checked .glyphicon.glyphicon-ban-circle {
+  display: none;
+}
+/* Users icon */
+.usercount span.glyphicon {
+  background-color: initial;
+}
+
+/* Left menu CSS. */
+#left-menu-wrapper {
+  display: inline-block;
+  float: left;
+  position: fixed;
+  width: 15%;
+}
+#chat-tabs {
+  margin: 0;
+  float: right;
+  width: 99%;
+}
+#chat-tabs > li {
+  margin: 0;
+  margin-top: 2px;
+  width: 100% !important;
+}
+#chat-tabs > li:first-of-type {
+  margin-top: 0;
+}
+#chat-tabs a.transition {
+  display: none;
+}
+#chat-tabs a.label {
+  border-radius: 3px 0 0 3px;
+  text-align: left;
+  width: 100%;
+}
+#chat-tabs a.close {
+  right: -5px;
+  top: -7px;
+}
+
+/* Extra details (badges, non-specific hovers, background colors, etc...) */
+#chat-tabs small.unread {
+  border-radius: 50%;
+  cursor: default;
+  height: 17px;
+  padding: 0;
+  top: 3px;
+  text-align: center;
+  width: 17px;
+}
+.label[href]:hover, .label[href]:focus {
+  color: #858585;
+}
+#chat-pane, #roster-pane {
+  background: #b0e1f2; /* Old browsers */
+  background: -moz-linear-gradient(top,  #b0e1f2 26%, #81bfe2 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(26%,#b0e1f2), color-stop(100%,#81bfe2)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  #b0e1f2 26%,#81bfe2 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  #b0e1f2 26%,#81bfe2 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  #b0e1f2 26%,#81bfe2 100%); /* IE10+ */
+  background: linear-gradient(to bottom,  #b0e1f2 26%,#81bfe2 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b0e1f2', endColorstr='#81bfe2',GradientType=0 ); /* IE6-9 */
+}
+
+/* Compatibility with CreateRoom plugin. */
+#create-group {
+  background: #eee;
+  border-radius: 3px 0 0 3px;
+  cursor: pointer !important;
+  float: right;
+  height: 18px !important;
+  margin-right: 1px;
+  margin-top: 9px;
+  position: initial;
+  width: 99%;
+}
+
+#create-group .click {
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  vertical-align: baseline;
+  position: initial;
+  text-align: left;
+}
+
+.row {
+  margin: 0 !important;
+}
+
+/* Align tooltip context menu properly in the roster. */
+#context-menu {
+  margin-top: 48px !important;
+}

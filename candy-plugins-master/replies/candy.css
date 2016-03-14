@@ -1,0 +1,4 @@
+.message-pane li.mention,
+.message-pane li.mention small {
+  background-color: #FFF7DE;
+}

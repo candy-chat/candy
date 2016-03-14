@@ -1,0 +1,35 @@
+/**
+ * Create Room CSS
+ *
+ * @author Melissa Adamaitis <madamei@mojolingo.com>
+ */
+#create-group {
+  background-color: rgba(255,255,255,0.9);
+  border-radius: 3px;
+  bottom: 7px;
+  cursor: default;
+  display: inline-block;
+  height: 13px;
+  padding: 6px 5px;
+  position: relative;
+}
+#create-group .click {
+  bottom: 3px;
+  position: relative;
+  text-align: center;
+}
+#chat-tabs {
+  display: inline-block;
+}
+#create-group-form input[type='text'] {
+  display: inline-block;
+}
+#create-group-form .text-warning {
+  font-style: oblique;
+  padding-bottom: 3px;
+}
+#create-group-form .has-error .form-control {
+  border-color: #a94442 !important;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075) !important;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075) !important;
+}
