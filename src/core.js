@@ -162,7 +162,7 @@ Candy.Core = (function(self, Strophe, $) {
 
 		// Enable debug logging
 		if(_options.debug) {
-			if(typeof window.console !== undefined && typeof window.console.log !== undefined) {
+			if(typeof window.console !== 'undefined' && typeof window.console.log !== 'undefined') {
 				// Strophe has a polyfill for bind which doesn't work in IE8.
 				if(Function.prototype.bind && Candy.Util.getIeVersion() > 8) {
 					self.log = Function.prototype.bind.call(console.log, console);
