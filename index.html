@@ -121,6 +121,23 @@ Options +MultiViews
 RewriteEngine On
 RewriteRule http-bind/ http://yourhost.com:5280/http-bind/ [P]</code>
 			<p>
+				If you are using nginx - copy this config:
+				<code>location / {
+	root /var/www/xmpp/candy/;
+	index index.html;
+	
+	location /http-bind/ {
+		# you need to change it to your http-bind port
+		proxy_pass https://127.0.0.1:5280/http-bind/;
+		proxy_buffering off;
+		tcp_nodelay on;
+	}
+	
+	# you can use this workaround to allow nginx to send POST data to proxy_pass 
+	error_page  405 =200 $uri;
+}</code>
+			</p>
+			<p>
 				Open your web browser and navigate to <code>example/index.html</code>. Make sure that you're visiting the site via Apache because it's essential that the requests to http-bind/ are redirected to your XMPP server by the .htaccess file.
 			</p>
 			<p>
