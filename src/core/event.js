@@ -852,10 +852,12 @@ Candy.Core.Event = (function(self, Strophe, $) {
 						}
 					}
 
-					var xhtmlChild = msg.children('html[xmlns="' + Strophe.NS.XHTML_IM + '"]');
-					if(xhtmlChild.length > 0) {
-						var xhtmlMessage = $($('<div>').append(xhtmlChild.children('body').first().contents()).html());
-						message.xhtmlMessage = xhtmlMessage;
+					if ( Candy.View.getOptions().enableXHTML === true ) {
+						var xhtmlChild = msg.children('html[xmlns="' + Strophe.NS.XHTML_IM + '"]');
+						if(xhtmlChild.length > 0) {
+							var xhtmlMessage = $($('<div>').append(xhtmlChild.children('body').first().contents()).html());
+							message.xhtmlMessage = xhtmlMessage;
+						}
 					}
 
 					self.Jabber.Room._checkForChatStateNotification(msg, roomJid, name);
