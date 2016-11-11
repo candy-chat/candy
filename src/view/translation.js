@@ -1094,7 +1094,7 @@ Candy.View.Translation = {
 
 		'antiSpamMessage' : 'אנא אל תשלח ספאם. נחסמת למשך זמן קצר.'
     },
-	'en' : {
+	'fa' : {
 		'status': 'وضعیت: %s',
 		'statusConnecting': 'درحال اتصال...',
 		'statusConnected' : 'متصل',
