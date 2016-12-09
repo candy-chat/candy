@@ -112,7 +112,7 @@ Candy.Util = (function(self, $){
     self.parseAndCropXhtml = function(str, len) {
         var msg = str;
         if ( typeof str !== 'string' ) {
-            msg = self.createHtml($(str).get(0), len)
+            msg = self.createHtml($(str).get(0), len);
         }
         return $("<div/>").append(msg).html();
     };
