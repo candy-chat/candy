@@ -104,7 +104,11 @@ Candy.Util = (function(self, $){
 	 *   (Integer) len - Max text length
 	 */
 	self.parseAndCropXhtml = function(str, len) {
-		return $('<div/>').append(self.createHtml($(str).get(0), len)).html();
+		var msg = str;
+		if ( typeof str !== 'string' ) {
+			msg = self.createHtml($(str).get(0), len);
+		}
+		return $("<div/>").append(msg).html();
 	};
 
 	/** Function: setCookie
