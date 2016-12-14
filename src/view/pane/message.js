@@ -110,8 +110,20 @@ Candy.View.Pane = (function(self, $) {
         timestamp = Candy.Util.iso8601toDate(timestamp);
       }
 
+      var messagePane = self.Room.getPane(roomJid, ".message-pane");
+      var messageId;
+      if (stanza) {
+        messageId = $(stanza).attr('id');
+        if (messageId) {
+          var existingMessage = messagePane.find('[data-message-id="' + messageId + '"]');
+          if (messageId && existingMessage.length > 0) {
+            // This message ID has already been rendered
+            return false;
+          }
+        }
+      }
+
       // Before we add the new message, check to see if we should be automatically scrolling or not.
-      var messagePane = self.Room.getPane(roomJid, '.message-pane');
       var enableScroll = ((messagePane.scrollTop() + messagePane.outerHeight()) === messagePane.prop('scrollHeight')) || !$(messagePane).is(':visible');
       Candy.View.Pane.Chat.rooms[roomJid].enableScroll = enableScroll;
 
@@ -158,7 +170,8 @@ Candy.View.Pane = (function(self, $) {
           time: Candy.Util.localizedTime(timestamp),
           timestamp: timestamp.toISOString(),
           roomjid: roomJid,
-          from: from
+          from: from,
+          id: messageId
         },
         stanza: stanza
       };
@@ -246,6 +259,8 @@ Candy.View.Pane = (function(self, $) {
        *   (String) message - Message text
        */
       $(Candy).triggerHandler('candy:view.message.after-show', evtData);
+
+      return true;
     }
   };
 
