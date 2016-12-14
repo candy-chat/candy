@@ -261,8 +261,9 @@ Candy.Core = (function(self, Strophe, $) {
 	 *   (String) password  - Password of the user
 	 *   (String) nick      - Nick of the user. Set one if you want to anonymously connect but preset a nick. If jidOrHost is a domain
 	 *                        and this param is not set, Candy will prompt for a nick.
+	 *   (String) authcid   - Authentication identity (username) if different from the JID.
 	 */
-	self.connect = function(jidOrHost, password, nick) {
+	self.connect = function(jidOrHost, password, nick, authcid) {
 		// Reset before every connection attempt to make sure reconnections work after authfail, alltabsclosed, ...
 		_connection.reset();
 		self.registerEventHandlers();
@@ -291,7 +292,7 @@ Candy.Core = (function(self, Strophe, $) {
 			}
 
 			// authentication
-			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + _options.resource, password, Candy.Core.Event.Strophe.Connect);
+			_connection.connect(_getEscapedJidFromJid(jidOrHost) + '/' + _options.resource, password, Candy.Core.Event.Strophe.Connect, undefined, undefined, undefined, authcid);
 			if (nick) {
 				_user = new self.ChatUser(jidOrHost, nick);
 			} else {
