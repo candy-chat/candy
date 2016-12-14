@@ -162,6 +162,10 @@ Candy.View.Pane = (function(self, $) {
           tooltipIgnored: $.i18n._('tooltipIgnored')
         });
 
+      var $html = $(html);
+      $html.css('display', 'block');
+      $html.css('opacity', 1);
+
       var userInserted = false,
         rosterPane = self.Room.getPane(roomJid, '.roster-pane');
 
@@ -172,7 +176,7 @@ Candy.View.Pane = (function(self, $) {
         rosterPane.children().each(function() {
           var elem = $(this);
           if(self.Roster._userSortCompare(elem.attr('data-nick'), elem.attr('data-status')) > userSortCompare) {
-            elem.before(html);
+            elem.before($html);
             userInserted = true;
             return false;
           }
