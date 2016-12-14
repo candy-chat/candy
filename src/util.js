@@ -116,6 +116,7 @@ Candy.Util = (function(self, $){
 		}
 		return $("<div/>").append(msg).html();
 	};
+
 	/** Function: setCookie
 	 * Sets a new cookie
 	 *
