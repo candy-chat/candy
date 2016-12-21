@@ -269,7 +269,7 @@ module.exports = function (grunt) {
 							'README.md',
 							'res/**',
 						],
-						dest: './'
+						dest: './candy'
 					},
 				]
 			}
