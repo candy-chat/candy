@@ -2,7 +2,7 @@
 
 var localInternConfig = process.env.CANDY_VAGRANT === 'false' ? 'tests/intern.local' : 'tests/intern.vagrant';
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
 	// Project configuration.
 	grunt.initConfig({
@@ -83,7 +83,7 @@ module.exports = function(grunt) {
 			}
 		},
 		concat: {
-			css:{
+			css: {
 				src: [
 					'bower_components/bootstrap/dist/css/bootstrap.css'
 				],
@@ -91,7 +91,7 @@ module.exports = function(grunt) {
 			}
 		},
 		cssmin: {
-			css:{
+			css: {
 				src: 'libs.bundle.css',
 				dest: 'libs.min.css'
 			}
@@ -213,7 +213,7 @@ module.exports = function(grunt) {
 			}
 		},
 		compress: {
-			main: {
+			zip: {
 				options: {
 					archive: 'candy.zip'
 				},
@@ -242,6 +242,36 @@ module.exports = function(grunt) {
 						dest: './'
 					},
 				]
+			},
+			tar: {
+				options: {
+					archive: 'candy.tar.gz'
+				},
+				files: [
+					{
+						src: [
+							'example/**',
+							'res/**',
+							'bower.json',
+							'candy.bundle.js',
+							'candy.bundle.map',
+							'candy.min.js',
+							'candy.min.map',
+							'CONTRIBUTING.md',
+							'CREDITS.md',
+							'libs.bundle.css',
+							'libs.bundle.js',
+							'libs.bundle.map',
+							'libs.min.css',
+							'libs.min.js',
+							'LICENSE',
+							'package.json',
+							'README.md',
+							'res/**',
+						],
+						dest: './candy'
+					},
+				]
 			}
 		},
 		'github-release': {
@@ -254,7 +284,7 @@ module.exports = function(grunt) {
 				}
 			},
 			files: {
-				src: ['candy.zip']
+				src: ['candy.zip', 'candy.tar.gz']
 			}
 		},
 	});
