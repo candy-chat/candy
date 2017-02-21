@@ -385,7 +385,7 @@ Candy.View.Pane = (function(self, $) {
        * Hide toolbar.
        */
       hide: function() {
-        $('#chat-toolbar').hide();
+        $('#chat-toolbar').removeAttr('style').hide();
       },
 
       /* Function: update
