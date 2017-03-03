@@ -1093,5 +1093,70 @@ Candy.View.Translation = {
 		'errorAutojoinMissing': 'לא נקבע פרמטר הצטרפות אוטומטית בתצורה. אנא הזן כזה כדי להמשיך.',
 
 		'antiSpamMessage' : 'אנא אל תשלח ספאם. נחסמת למשך זמן קצר.'
-    }
+    },
+	'fa' : {
+		'status': 'وضعیت: %s',
+		'statusConnecting': 'درحال اتصال...',
+		'statusConnected' : 'متصل',
+		'statusDisconnecting': 'در حال قطع اتصال...',
+		'statusDisconnected' : 'متصل نیست',
+		'statusAuthfail': 'اعتبار سنجی ناموفق',
+
+		'roomSubject'  : 'موضوع:',
+		'messageSubmit': 'ارسال',
+
+		'labelUsername': 'نام کاربری:',
+		'labelNickname': 'نام مستعار:',
+		'labelPassword': 'گذرواژه:',
+		'loginSubmit'  : 'ورود',
+		'loginInvalid'  : ' نامعتبر JID',
+
+		'reason'				: 'دلیل:',
+		'subject'				: 'موضوع:',
+		'reasonWas'				: 'دلیل: %s.',
+		'kickActionLabel'		: 'بیرون راندن',
+		'youHaveBeenKickedBy'   : 'شما اخراج شدید از %2$s توسط %1$s',
+		'youHaveBeenKicked'     : 'شما اخراج شدید از %s',
+		'banActionLabel'		: 'منع',
+		'youHaveBeenBannedBy'   : 'شما منع شدید از %1$s by %2$s',
+		'youHaveBeenBanned'     : 'شما منع شدید از %s',
+
+		'privateActionLabel' : ' گفتگو خصوصی',
+		'ignoreActionLabel'  : 'چشم پوشی',
+		'unignoreActionLabel' : 'عدم چشم پوشی',
+
+		'setSubjectActionLabel': ' تغییر موضوع',
+
+		'administratorMessageSubject' : 'مدیر',
+
+		'userJoinedRoom'           : '%s وارد چت شد.',
+		'userLeftRoom'             : '%s از چت خارج شد.',
+		'userHasBeenKickedFromRoom': '%s از چت اخراج شد.',
+		'userHasBeenBannedFromRoom': '%s منع شد.',
+		'userChangedNick': '%1$s حالا این هست %2$s.',
+
+		'dateFormat': 'dd.mm.yyyy',
+		'timeFormat': 'HH:MM:ss',
+
+		'tooltipRole'			: 'ناظم',
+		'tooltipIgnored'		: 'شما این کاربر را چشم پوشی کردید',
+		'tooltipEmoticons'		: 'استیکر',
+		'tooltipSound'			: 'منتظر یک پیام خصوصی جدید',
+		'tooltipAutoscroll'		: 'قلطک اتوماتیک',
+		'tooltipStatusmessage'	: 'نمایش پیام وضعیت',
+		'tooltipAdministration'	: 'مدیریت چت گروهی',
+		'tooltipUsercount'		: 'اعضای گروه',
+
+		'enterRoomPassword' : 'اتاق "%s" توسط رمز محافظت میشه.',
+		'enterRoomPasswordSubmit' : 'وارد شدن به چت',
+		'passwordEnteredInvalid' : 'رمز نامعتبر "%s".',
+
+		'nicknameConflict': 'نام کاربری از پیش مورد استفاده است',
+
+		'errorMembersOnly': 'شما نمیتوانید به  "%s" وارد شوید چون اجازه ندارید',
+		'errorMaxOccupantsReached': 'شما نمیتوانید وارد شوید به "%s": تعداد اعضا بیش از حد',
+		'errorAutojoinMissing': 'ورود خودکار امکان پذیر نیست',
+
+		'antiSpamMessage' : 'اسپم نکنید. فعلن غیر فعال شدین'
+	}
 };
