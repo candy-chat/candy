@@ -1,0 +1,13 @@
+/**
+ * Static Lobby CSS
+ *
+ * @author Melissa Adamaitis <melissa@melissanoelle.com>
+ */
+
+ #chat-modal-body .room-invite {
+  cursor: pointer;
+ }
+
+ #chat-modal-body .room-invite:hover {
+  font-weight: bold;
+ }

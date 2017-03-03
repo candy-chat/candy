@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+- '0.10'
+env:
+  global:
+  - SAUCE_USERNAME: candy-chat-ci
+  - CANDY_VAGRANT: false
+  - secure: mELRCguJsVl1j5gABX94o1Zfds8c870Mr7dXVWJRVOBYdkVEHAH6HQtcKt5nYxHG/eh960ZeSNbDXy8XMN4Fxp7J2UR+vOXk9mIKEVsZOvwsVYv26GRUizez3AohsELdsg3KDyscZLXQLA9tgvG2s38ImnocsjO/7KoJ/R/37UA=
+before_script:
+- npm install -g grunt-cli bower
+- npm install
+- bower install

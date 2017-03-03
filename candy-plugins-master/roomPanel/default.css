@@ -1,0 +1,17 @@
+.roomList a {
+    color: #333;
+}
+
+#roomPanel-control {
+    width: 16px;
+    background: url(images/room.png);
+}
+
+#roomPanel-tab {
+	font-weight: bold;
+	font-size: 20px;
+	line-height: 23px;
+}
+#roomPanel-tab a {
+	padding: 0px 10px 10px;
+}

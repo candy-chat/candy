@@ -8,12 +8,19 @@
 	<link rel="stylesheet" type="text/css" href="../libs.min.css" />
 	<link rel="stylesheet" type="text/css" href="../res/default.css" />
 
-	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 	<script type="text/javascript" src="../libs.min.js"></script>
 	<script type="text/javascript" src="../candy.min.js"></script>
+
+	<!-- Candy plugins -->
+	<!-- Available Rooms list (currently not working) -->
+	<script type="text/javascript" src="../candy-plugins-master/available-rooms/candy.js"></script>
+
+	<!-- Move tabs to left side -->
+
 	<script type="text/javascript">
 		$(document).ready(function() {
-			Candy.init('http-bind/', {
+			Candy.init('http://vps68792.vps.ovh.ca:7070/http-bind/', {
 				core: {
 					// only set this to true if developing / debugging errors
 					debug: false,
@@ -22,10 +29,14 @@
 					//     -> fetch info from server (NOTE: does only work with openfire server)
 					//   ['test@conference.example.com']
 					//     -> array of rooms to join after connecting
-					autojoin: true
+					autojoin: ['testroom@conference.vps68792.vps.ovh.ca', 'testroom2@conference.vps68792.vps.ovh.ca']
 				},
-				view: { assets: '../res/' }
+				view: { 
+					assets: '../res/' 
+				}
 			});
+
+			CandyShop.AvailableRooms.init();
 
 			Candy.Core.connect();
 

@@ -1,0 +1,115 @@
+html, body {
+	font-family: Trebuchet MS,Tahoma,Verdana,Arial,sans-serif;
+}
+div#candy {
+	background-color: #EEE;
+}
+div#candy div#chat-pane ul#chat-tabs {
+	background-image: url('../images/ui-bg_gloss-wave_35_f6a828_500x100.png');
+	background-repeat: repeat-x;
+	background-color: #F6A828;
+}
+div#candy div#chat-pane ul#chat-tabs li {
+	border-right: 1px solid #CCC;
+}
+div#candy div#chat-pane ul#chat-tabs li a {
+	color: #1C94C4;
+}
+div#candy div#chat-pane ul#chat-tabs li.active a {
+	color: #E78F08;
+}
+div#candy div#chat-pane ul#chat-tabs li.roomtype-chat small.unread {
+	background-color: #F6A828;
+}
+div#candy div#chat-pane ul#chat-tabs li.roomtype-groupchat small.unread {
+	background-color: #F6A828;
+}
+div#candy div#chat-pane ul#chat-toolbar {
+	background-color: #EEE;
+	border-top: 1px solid #DDD;
+}
+div#candy div#chat-pane div#chat-rooms.rooms div.room-pane form.message-form input.submit {
+	padding: 2px 5px 5px 5px;
+	background-color: #F6F6F6;
+	border: 1px solid #CCC;
+	border-radius: 4px;
+	color: #1C94C4;
+}
+div#candy div#chat-pane div#chat-rooms.rooms div.room-pane form.message-form input.submit:hover {
+	background-color: #FDF9E1;
+	border: 1px solid #FBCB09;
+	color: #E78F08;
+}
+div#candy div#chat-pane div#chat-rooms.rooms div.room-pane div.message-form-wrapper {
+	border-top: 1px solid #DDD;
+}
+div#candy div#chat-pane div#chat-rooms.rooms div.room-pane div.message-pane-wrapper dl.message-pane dd span.label a.name {
+	color: #888;
+}
+div#candy div#chat-pane div#chat-rooms.rooms div.room-pane div.message-pane-wrapper dl.message-pane dd.adminmessage {
+	color: #000;
+}
+div#candy div#chat-pane div#chat-rooms.rooms div.room-pane div.message-pane-wrapper dl.message-pane dd.subject {
+	color: #E78F08;
+}
+div#candy div#chat-pane div#chat-rooms.rooms div.room-pane div.roster-pane div.user {
+	background-color: #F8F8F8;
+	border: 1px solid #CCC;
+	border-radius: 4px;
+	color: #1C94C4;
+}
+div#candy div#chat-pane div#chat-rooms.rooms div.room-pane div.roster-pane div.user:hover {
+	cursor: pointer;
+	background-color: #FDF9E1;
+	border: 1px solid #FBCB09;
+	color: #E78F08;
+}
+div#candy div#chat-pane div#chat-rooms.rooms div.room-pane div.roster-pane ul li.context {
+	background-image: url('../images/action/menu.png');
+}
+div#candy div#chat-pane div#chat-rooms.rooms div.room-pane div.roster-pane ul li.context:hover {
+	background-image: url('../images/action/menu-hover.png');
+	background-color: #F6A828;
+}
+#context-menu {
+	position: absolute;
+	z-index: 10;
+	display: none;
+	padding: 15px 10px;
+	margin: 8px -28px -8px -12px;
+	background: url('../images/context-arrows.gif') no-repeat left bottom;
+}
+#context-menu ul {
+	background-color: #F8F8F8;
+	border: 1px solid #CCC;
+	border-radius: 4px;
+	color: #1C94C4;
+}
+#context-menu li:hover {
+	background-color: #FDF9E1 !important;
+	color: #E78F08;
+}
+#chat-modal {
+	background: url('../images/modal-bg.png');
+	color: #000;
+}
+#chat-modal a#admin-message-cancel.close {
+	color: #000;
+}
+#chat-modal a#admin-message-cancel.close:hover {
+	background-color: #F6A828;
+	color: #FFF;
+}
+#chat-modal-overlay {
+	background-image: url('../images/overlay.png');
+	filter:alpha(opacity=50);
+	opacity: 0.5;
+	-moz-opacity:0.5;
+}
+#tooltip {
+	background: url('../images/tooltip-arrows.gif') no-repeat left bottom;
+}
+#tooltip div {
+	background-color: #F6A828;
+	color: #FFF;
+}

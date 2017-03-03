@@ -1,0 +1,33 @@
+#colors-control {
+	background: no-repeat url('colors-control.png');
+	position: relative;
+}
+
+#colors-control-indicator {
+	display: inline-block;
+	height: 6px;
+	width: 6px;
+	border: 1px solid white;
+	position: absolute;
+	top: 100%;
+	left: 100%;
+	margin: -8px 0 0 -8px;
+}
+
+#context-menu .colors {
+	padding-left: 5px;
+	width: 89px;
+	white-space: normal;
+}
+
+#context-menu .colors:hover {
+	background-color: inherit;
+}
+
+#context-menu .colors span {
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	border: 1px solid white;
+	margin: 3px;
+}

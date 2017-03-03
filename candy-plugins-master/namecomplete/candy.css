@@ -1,0 +1,7 @@
+#context-menu li.selected {
+    background-color: #ccc;
+}
+
+#context-menu li.candy-namecomplete-option {
+    padding: 3px 5px;
+}

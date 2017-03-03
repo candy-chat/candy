@@ -1,0 +1,13 @@
+{
+	"node": true,
+	"curly": true,
+	"eqeqeq": true,
+	"latedef": true,
+	"newcap": true,
+	"noarg": true,
+	"undef": true,
+	"unused": true,
+	"trailing": true,
+	"maxdepth": 4,
+	"laxcomma": true
+}

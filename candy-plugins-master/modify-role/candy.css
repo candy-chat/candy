@@ -1,0 +1,6 @@
+#context-menu .add-moderator {
+	background-image: url(add-moderator.png);
+}
+#context-menu .remove-moderator {
+	background-image: url(remove-moderator.png);
+}
