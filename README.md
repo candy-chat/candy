@@ -4,7 +4,7 @@ Candy — a JavaScript-based multi-user chat client
 [![Build Status](https://travis-ci.org/candy-chat/candy.png?branch=dev)](https://travis-ci.org/candy-chat/candy)
 [![Coverage Status](https://coveralls.io/repos/candy-chat/candy/badge.png?branch=dev)](https://coveralls.io/r/candy-chat/candy)
 
-Visit the official project page: http://candy-chat.github.io/candy
+Visit the [official project page](http://candy-im.net).
 
 Features
 --------
