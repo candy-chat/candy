@@ -16,6 +16,12 @@
  */
 Candy.View.Pane = (function(self) {
 
+  // Partial implementation based on
+  // http://stackoverflow.com/questions/21751377/foolproof-way-to-detect-if-this-page-is-inside-a-cross-domain-iframe
+  function isCrossDomain() {
+    return window.self !== window.top;
+  }
+
   /** Class: Candy.View.Pane.Window
    * Window related view updates
    */
@@ -27,7 +33,7 @@ Candy.View.Pane = (function(self) {
     /** PrivateVariable: _plainTitle
      * Document title
      */
-    _plainTitle: window.top.document.title,
+    _plainTitle: isCrossDomain() ? document.title : window.top.document.title,
     /** PrivateVariable: _unreadMessagesCount
      * Unread messages count
      */
@@ -37,6 +43,20 @@ Candy.View.Pane = (function(self) {
      * Boolean whether autoscroll is enabled
      */
     autoscroll: true,
+
+    /** Function: setDocumentTitle
+     * Sets the document title, if possible of the topmost window (in case it's in a frame).
+     *
+     * Parameters:
+     *   (String) title - Set new title
+     */
+    setDocumentTitle: function(title) {
+      var win = window;
+      if (!isCrossDomain()) {
+        win = window.top;
+      }
+      win.document.title = title;
+    },
 
     /** Function: hasFocus
      * Checks if window has focus
@@ -75,7 +95,7 @@ Candy.View.Pane = (function(self) {
      */
     clearUnreadMessages: function() {
       self.Window._unreadMessagesCount = 0;
-      window.top.document.title = self.Window._plainTitle;
+      self.Window.setDocumentTitle(self.Window._plainTitle);
     },
 
     /** Function: renderUnreadMessages
@@ -85,7 +105,7 @@ Candy.View.Pane = (function(self) {
      *   (Integer) count - Number of unread messages to show in window title
      */
     renderUnreadMessages: function(count) {
-      window.top.document.title = Candy.View.Template.Window.unreadmessages.replace('{{count}}', count).replace('{{title}}', self.Window._plainTitle);
+      self.Window.setDocumentTitle(Candy.View.Template.Window.unreadmessages.replace('{{count}}', count).replace('{{title}}', self.Window._plainTitle));
     },
 
     /** Function: onFocus
