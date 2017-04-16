@@ -146,14 +146,18 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					self.Jabber.Room.Presence(msg);
 				}
 			} else {
+				// Find the proper contact for from:
+				var fromUser = Candy.Core.getRoster().get(msg.attr('from'));
+
 				/** Event: candy:core.presence
 				 * Presence updates. Emitted only when not a muc presence.
 				 *
 				 * Parameters:
-				 *   (JID) from - From Jid
-				 *   (String) stanza - Stanza
+				 *   (Candy.Core.Contact) from - Contact user object
 				 */
-				$(Candy).triggerHandler('candy:core.presence', {'from': msg.attr('from'), 'stanza': msg});
+				$(Candy).triggerHandler('candy:core.presence', {
+					'from': fromUser
+				});
 			}
 			return true;
 		},
