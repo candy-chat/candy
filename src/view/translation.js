@@ -19,6 +19,11 @@ Candy.View.Translation = {
 		'statusDisconnected' : 'Disconnected',
 		'statusAuthfail': 'Authentication failed',
 
+		'rosterStatusAvailable': 'Online',
+		'rosterStatusUnavailable': 'Offline',
+		'rosterStatusAway': 'Away',
+		'rosterStatusDND': 'Do not disturb',
+
 		'roomSubject'  : 'Subject:',
 		'messageSubmit': 'Send',
 
