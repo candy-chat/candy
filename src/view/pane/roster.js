@@ -185,7 +185,7 @@ Candy.View.Pane = (function(self, $) {
       }
       // first user in roster
       if(!userInserted) {
-        rosterPane.append(html);
+        rosterPane.append($html);
       }
     },
 

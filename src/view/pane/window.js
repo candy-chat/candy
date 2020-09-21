@@ -70,6 +70,10 @@ Candy.View.Pane = (function(self) {
       }
     },
 
+    getUnreadMessagesCount: function() {
+      return self.Window._unreadMessagesCount;
+    },
+
     /** Function: clearUnreadMessages
      * Clear unread message count in window title.
      */
