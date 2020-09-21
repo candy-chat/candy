@@ -774,11 +774,16 @@ Candy.Core.Event = (function(self, Strophe, $) {
 					message = { from: from, name: Strophe.getNodeFromJid(from), body: msg.children('subject').text(), type: 'subject' };
 				// Error messsage
 				} else if(msg.attr('type') === 'error') {
-					var error = msg.children('error');
-					if(error.children('text').length > 0) {
-						roomJid = partnerJid;
-						roomName = Strophe.getNodeFromJid(roomJid);
-						message = { from: msg.attr('from'), type: 'info', body: error.children('text').text() };
+					var error = msg.children("error");
+					roomJid = partnerJid;
+					roomName = Strophe.getNodeFromJid(roomJid);
+					message = {
+						from: msg.attr("from"),
+						name: "error",
+						body: error.children()[0].nodeName
+					};
+					if (error.text().trim().length > 0) {
+						message.body = error.children('text').text();
 					}
 				// Chat message
 				} else if(msg.children('body').length > 0) {
