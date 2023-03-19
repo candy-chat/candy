@@ -1,4 +1,4 @@
-**Note:** This project is dead and not maintained anymore. 
+**Note:** This project is not maintained and is looking for new maintainers. 
 
 Candy — a JavaScript-based multi-user chat client
 ==================================================
